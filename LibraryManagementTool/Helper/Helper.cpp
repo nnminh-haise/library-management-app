@@ -46,3 +46,49 @@ HELPER::Date HELPER::Date::Random() {
 std::string HELPER::Date::Stringfy() {
     return std::format("{}/{}/{}", this->day, this->month, this->year);
 }
+
+HELPER::Dimension::Dimension() : width(0), height(0) {
+}
+
+HELPER::Dimension::Dimension(int width, int height) : width(width), height(height) {
+}
+
+void HELPER::Dimension::Log() {
+    std::clog << std::format("Dimention: [{}x{}]\n", this->width, this->height);
+}
+
+HELPER::Coordinate::Coordinate() : x(0), y(0) {
+}
+
+HELPER::Coordinate::Coordinate(int x, int y) : x(x), y(y) {
+}
+
+void HELPER::Coordinate::Log() {
+    std::clog << std::format("({}, {})\n", this->x, this->y);
+}
+
+HELPER::Rectangle::Rectangle() {
+    this->topLeft = this->topRight = this->bottomLeft = this->bottomRight = HELPER::Coordinate();
+    this->dimension = HELPER::Dimension();
+}
+
+HELPER::Rectangle::Rectangle(Coordinate topLeft, Coordinate bottomRight) {
+    this->topLeft = topLeft;
+    this->bottomRight = bottomRight;
+    this->topRight = HELPER::Coordinate(this->bottomRight.x, this->topLeft.y);
+    this->bottomLeft = HELPER::Coordinate(this->topLeft.x, this->bottomRight.y);
+    this->dimension = HELPER::Dimension(this->bottomRight.x - this->topLeft.x, this->bottomRight.y - this->topLeft.y);
+}
+
+HELPER::Rectangle::Rectangle(Coordinate topLeft, int width, int height) {
+    this->dimension = HELPER::Dimension(width, height);
+    this->topLeft = topLeft;
+    this->topRight = HELPER::Coordinate(this->topLeft.x + width, this->topLeft.y);
+    this->bottomLeft = HELPER::Coordinate(this->topLeft.x, this->topLeft.y + height);
+    this->bottomRight = HELPER::Coordinate(this->topLeft.x + width, this->topLeft.y + height);
+}
+
+void HELPER::Rectangle::Log() {
+    std::clog << std::format("A({}, {}); B({}, {});\n", this->topLeft.x, this->topLeft.y, this->topRight.x, this->topRight.y);
+    std::clog << std::format("C({}, {}); D({}, {});\n", this->bottomLeft.x, this->bottomLeft.y, this->bottomRight.x, this->bottomRight.y);
+}

@@ -130,12 +130,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DauSach\DauSach.cpp" />
+    <ClCompile Include="Views\Elements.cpp" />
     <ClCompile Include="Helper\Helper.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TheDocGia\TheDocGia.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DauSach\DauSach.h" />
+    <ClInclude Include="Views\Elements.h" />
     <ClInclude Include="Helper\Helper.h" />
     <ClInclude Include="TheDocGia\TheDocGia.h" />
   </ItemGroup>
