@@ -9,6 +9,11 @@ namespace ELEMENTS {
         LEFT, CENTER, RIGHT
     };
 
+    enum SpecialKey {
+        ENTER = 13, BACKSPACE = 8, SPACE = 32, ESCAPE = 27,
+        UP_ARROW = 72, DOWN_ARROW = 80, LEFT_ARROW = 75, RIGHT_ARROW = 77
+    };
+
     struct Window {
         HELPER::Dimension dimension;
         std::string title;
@@ -47,6 +52,23 @@ namespace ELEMENTS {
         void Draw();
     };
 
+    class Cursor {
+    public:
+        HELPER::Coordinate coordinate;
+        HELPER::Dimension dimension;
+        int color;
+
+        Cursor();
+
+        Cursor(HELPER::Coordinate coordinate);
+
+        void Log();
+
+        void Update(HELPER::Coordinate newCoordinate);
+
+        void Draw();
+    };
+
 	class Cell {
     public:
         enum Mode {
@@ -57,11 +79,13 @@ namespace ELEMENTS {
         HELPER::Coordinate textPosition;
         HELPER::Dimension textDimension;
         HELPER::Dimension dimension;
+        HELPER::Dimension characterDimension;
         AlignmentOptions align;
         Padding padding;
         Fill fill;
-        bool active;
+        Cursor cursor;
         Mode mode;
+        bool active;
         int fontSize;
         int fontStyle;
         int textColor;
@@ -69,20 +93,13 @@ namespace ELEMENTS {
         bool defaultFont;
 
         Cell();
-
-        Cell(HELPER::Coordinate position, int maxNumberOfCharacter);
         
+        void Initialize(HELPER::Coordinate position, int maxNumberOfCharacter);
+
         void Log();
 
         void UpdateFont();
 
-        /*virtual void ReadMode() = 0;
-
-        virtual void InputMode() = 0;*/
-
-        void ReadMode();
-
-        void InputMode();
-    };
+        void UpdateAlignment(std::string content);
+    }; 
 }
-

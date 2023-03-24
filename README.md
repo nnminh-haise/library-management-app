@@ -23,7 +23,7 @@ Thiết kế một chương trình thư viện có các danh sách sau:
 
     | Fields | Description | Data type |
     | ---: | :--- | :--- |
-    | <ins>***ISBN***</ins> | Mã đầu sách | Chuỗi duy nhất tối đa $8$ kí tự |
+    | <ins>***ISBN***</ins> | Mã đầu sách | Chuỗi duy nhất tối đa $4$ kí tự gồm các chữ cái in hoa từ `A` - `Z` |
     | Tên sách | Tên của đầu sách | Chuỗi tối đa $50$ kí tự |
     | Số trang | Số trang của đầu sách | Số nguyên dương |
     | Tác giả | Tên tác giả đầu sách | Chuỗi tối đa $50$ kí tự |
