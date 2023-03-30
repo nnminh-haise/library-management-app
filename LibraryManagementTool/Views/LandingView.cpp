@@ -12,76 +12,9 @@ void LANDING_VIEW::RegisterDefaultSettings() {
 	gettextsettings(&GLOBAL_VARIABLES::defaultTextSetting);
 }
 
-class CustomCell : public ELEMENTS::Cell {
-public:
-	bool ReadMode(std::string content) {
-		if (content.length() > this->maxNumberOfCharacter) {
-			this->fill.fillColor = RED;
-			this->fill.Draw();
-			return false;
-		}
-
-		if (this->active) {
-			this->fill.fillColor = 12;
-		}
-
-		this->UpdateFont();
-		this->UpdateAlignment(content);
-		this->fill.Draw();
-		outtextxy(this->textPosition.x, this->textPosition.y, (char*)content.c_str());
-
-		return true;
-	}
-
-	bool AcceptKeys(const char& key, const std::string& s) {
-		if (isalpha(key)) {
-			return true;
-		}
-		if (key == ELEMENTS::SpecialKey::SPACE && s.length() > 0 && s[s.length() - 1] != ' ') {
-			return true;
-		}
-		return false;
-	}
-
-	std::string InputMode() {
-		this->UpdateFont();
-		std::string result = "";
-		char keyPressed{};
-		int counter = 0;
-		this->cursor = ELEMENTS::Cursor(HELPER::Coordinate(this->textPosition.x, this->textPosition.y));
-
-		while (keyPressed != ELEMENTS::SpecialKey::ENTER) {
-			int colorSelector = 0;
-
-			while (!kbhit()) {
-				this->fill.Draw();
-				outtextxy(this->textPosition.x, this->textPosition.y, (char*)result.c_str());
-
-				this->cursor.coordinate.x = this->textPosition.x + textwidth((char*)result.c_str());
-
-				this->cursor.color = (colorSelector++ % 2 == 0 ? BLACK : WHITE);
-
-				this->cursor.Draw();
-			}
-
-			keyPressed = toupper(getch());
-
-			if (result.length() > 0 && keyPressed == ELEMENTS::SpecialKey::BACKSPACE) {
-				result.pop_back();
-				--counter;
-			}
-			else if (keyPressed != ELEMENTS::SpecialKey::ENTER && counter < this->maxNumberOfCharacter && AcceptKeys(keyPressed, result)) {
-				++counter;
-				result += keyPressed;
-			}
-		}
-
-		return STR::Trim(result);
-	}
-};
-
 /*
-* This is the program default running module. This module will render a selection menu for user to choose the next operations.
+* This is the program default running module.
+* This module will render a selection menu for user to choose the next operations.
 * User can use arrow keys to navigate through the available selections.
 */
 void LANDING_VIEW::Run() {
@@ -93,47 +26,44 @@ void LANDING_VIEW::Run() {
 	//* Get all necessary default settings.
 	LANDING_VIEW::RegisterDefaultSettings();
 
-	//* Setup view's background
-	setfillstyle(SOLID_FILL, WHITE);
-	bar(0, 0, 1920, 1080);
+	//* RenderBackground background
+	landing.RenderBackground();
 
-	//* Create app's title box
-	CustomCell programTitle;
-	programTitle.Initialize(HELPER::Coordinate(300, 200), 25);
-	programTitle.align = ELEMENTS::AlignmentOptions::CENTER;
-	programTitle.fill.fillColor = 14;
+	//* Create program's title box
+	ELEMENTS::Cell programTitle(ELEMENTS::Cell::Mode::READ_MODE, "QUAN LI THU VIEN", HELPER::Coordinate(300, 200), 300, -1);
+	programTitle.SetTextAlign(ELEMENTS::AlignmentOptions::CENTER);
+	programTitle.SetBackgroundColor(14);
 	
 	//* Create list of buttons
-	CustomCell buttons[6];
+	ELEMENTS::Cell buttons[6];
 
 	//* Initialize each button with the cooordinate on the graphic window
-	buttons[0].Initialize(HELPER::Coordinate(300, 300), 25);
-	buttons[1].Initialize(HELPER::Coordinate(300, 400), 25);
-	buttons[2].Initialize(HELPER::Coordinate(300, 500), 25);
-	buttons[3].Initialize(HELPER::Coordinate(150, 700), 22);
-	buttons[4].Initialize(HELPER::Coordinate(500, 700), 11);
-	buttons[5].Initialize(HELPER::Coordinate(700, 700), 11);
+	buttons[0] = ELEMENTS::Cell(ELEMENTS::Cell::Mode::READ_MODE, "DANH SACH DAU SACH", HELPER::Coordinate(300, 300), 300, -1);
+	buttons[1] = ELEMENTS::Cell(ELEMENTS::Cell::Mode::READ_MODE, "DANH SACH THE DOC GIA", HELPER::Coordinate(300, 400), 300, -1);
+	buttons[2] = ELEMENTS::Cell(ELEMENTS::Cell::Mode::READ_MODE, "THONG KE", HELPER::Coordinate(300, 500), 300, -1);
+	buttons[3] = ELEMENTS::Cell(ELEMENTS::Cell::Mode::READ_MODE, "HUONG DAN", HELPER::Coordinate(150, 700), 300, -1);
+	buttons[4] = ELEMENTS::Cell(ELEMENTS::Cell::Mode::READ_MODE, "ABOUT US", HELPER::Coordinate(500, 700), 150, -1);
+	buttons[5] = ELEMENTS::Cell(ELEMENTS::Cell::Mode::READ_MODE, "EXIT", HELPER::Coordinate(700, 700), 150, -1);
 
 	//* Program loop 
 	char inputKey{};
 	int activeButtonIndicator = 0;
 
 	while (inputKey != ELEMENTS::SpecialKey::ESCAPE) {
+
 		//* Default menu settings
 		for (int i = 0; i < 6; ++i) {
-			buttons[i].align = ELEMENTS::AlignmentOptions::CENTER;
-			buttons[i].fill.fillColor = 9;
-			buttons[i].textColor = WHITE;
+			buttons[i].SetTextAlign(ELEMENTS::AlignmentOptions::CENTER);
+			buttons[i].SetBackgroundColor(9);
+			buttons[i].SetTextColor(WHITE);
 		}
-		buttons[activeButtonIndicator].active = true;
+		buttons[activeButtonIndicator].SetStatus(true);
 
-		programTitle.ReadMode("QUAN LI THU VIEN");
-		buttons[0].ReadMode("DANH SACH DAU SACH");
-		buttons[1].ReadMode("DANH SACH THE DOC GIA");
-		buttons[2].ReadMode("THONG KE");
-		buttons[3].ReadMode("HUONG DAN");
-		buttons[4].ReadMode("ABOUT US");
-		buttons[5].ReadMode("EXIT");
+		programTitle.ReadMode();
+
+		for (int i = 0; i < 6; ++i) {
+			buttons[i].ReadMode();
+		}
 
 		//* You can uncomment this line to watch which button is currently active when the program is running.
 		//std::cerr << std::format("[ACTIVE STATUS] ACTIVE BUTTON: BUTTON[{}]\n", activeButtonIndicator);
@@ -148,11 +78,11 @@ void LANDING_VIEW::Run() {
 
 				//* Menu's button Indicator changes logic
 				if (activeButtonIndicator - 1 >= 0) {
-					buttons[activeButtonIndicator].active = false;
+					buttons[activeButtonIndicator].SetStatus(false);
 					--activeButtonIndicator;
 				}
 				else {
-					buttons[activeButtonIndicator].active = false;
+					buttons[activeButtonIndicator].SetStatus(false);
 					activeButtonIndicator = 5;
 				}
 				break;
@@ -162,11 +92,11 @@ void LANDING_VIEW::Run() {
 
 				//* Menu's button Indicator changes logic
 				if (activeButtonIndicator + 1 < 6) {
-					buttons[activeButtonIndicator].active = false;
+					buttons[activeButtonIndicator].SetStatus(false);
 					++activeButtonIndicator;
 				}
 				else {
-					buttons[activeButtonIndicator].active = false;
+					buttons[activeButtonIndicator].SetStatus(false);
 					activeButtonIndicator = 0;
 				}
 				break;
@@ -176,11 +106,11 @@ void LANDING_VIEW::Run() {
 
 				//* Menu's button Indicator changes logic
 				if (activeButtonIndicator - 1 >= 0) {
-					buttons[activeButtonIndicator].active = false;
+					buttons[activeButtonIndicator].SetStatus(false);
 					--activeButtonIndicator;
 				}
 				else {
-					buttons[activeButtonIndicator].active = false;
+					buttons[activeButtonIndicator].SetStatus(false);
 					activeButtonIndicator = 5;
 				}
 				break;
@@ -190,11 +120,11 @@ void LANDING_VIEW::Run() {
 
 				//* Menu's button Indicator changes logic
 				if (activeButtonIndicator + 1 < 6) {
-					buttons[activeButtonIndicator].active = false;
+					buttons[activeButtonIndicator].SetStatus(false);
 					++activeButtonIndicator;
 				}
 				else {
-					buttons[activeButtonIndicator].active = false;
+					buttons[activeButtonIndicator].SetStatus(false);
 					activeButtonIndicator = 0;
 				}
 				break;

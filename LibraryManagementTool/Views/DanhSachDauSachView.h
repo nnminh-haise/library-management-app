@@ -17,6 +17,6 @@ namespace DANH_SACH_DAU_SACH_VIEW {
 
 		int GetSize();
 
-		void Render();
+		void RenderBackground();
 	};
 }

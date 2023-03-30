@@ -1,5 +1,6 @@
 #include "Elements.h"
 #include "../Graphics/graphics.h"
+#include "../Helper/ConstantsAndGlobalVariables.h"
 
 #include <iostream>
 #include <string>
@@ -10,11 +11,17 @@ ELEMENTS::Window::Window(HELPER::Dimension dimension, std::string title) {
 	this->dimension = dimension;
 	this->title = title;
 	this->active = false;
+	this->backgroundColor = WHITE;
 }
 
 int ELEMENTS::Window::Activate() {
 	this->active = true;
 	return initwindow(this->dimension.width, this->dimension.height, (const char*)this->title.c_str());
+}
+
+void ELEMENTS::Window::RenderBackground() {
+	setfillstyle(SOLID_FILL, this->backgroundColor);
+	bar(0, 0, this->dimension.width, this->dimension.height);
 }
 
 void ELEMENTS::Window::Deactivate() {
@@ -102,23 +109,41 @@ void ELEMENTS::Cursor::Draw() {
 	Sleep(80);
 }
 
-void ELEMENTS::Cell::UpdateFont() {
-	if (!this->defaultFont) {
+void ELEMENTS::Cell::UpdateTextDecoration() {
+	setcolor(this->textColor);
+	if (this->customFont) {
 		settextstyle(this->fontStyle, HORIZ_DIR, this->fontSize);
 	}
-
-	setcolor(this->textColor);
-	this->dimension = HELPER::Dimension(
-		this->padding.left + this->padding.right + this->characterDimension.width * this->maxNumberOfCharacter,
-		this->padding.top + this->padding.bottom + this->characterDimension.height
-	);
+	this->textDimension.width = textwidth((char*)this->placeholder.c_str());
+	this->textDimension.height = textheight((char*)this->placeholder.c_str());
 }
 
-void ELEMENTS::Cell::UpdateAlignment(std::string content) {
-	int remainWidth = this->characterDimension.width * this->maxNumberOfCharacter - textwidth((char*)content.c_str());
-	int remainHeight = this->characterDimension.height * this->maxNumberOfCharacter - textheight((char*)content.c_str());
+bool ELEMENTS::Cell::FitContent() {
 
-	switch (this->align) {
+	//* Cannot update cell's dimension with none or empty placeholder
+	if (this->placeholder.length() == 0) {
+		return false;
+	}
+
+	this->padding = ELEMENTS::Padding(10); //* Update all side of padding to 10px
+	this->UpdateTextDecoration();
+	this->dimension.width = this->padding.left + this->padding.right + this->textDimension.width;
+	this->dimension.height = this->padding.top + this->padding.bottom + this->textDimension.height;
+	return true;
+}
+
+void ELEMENTS::Cell::UpdateCellDimension() {
+	this->UpdateTextDecoration();
+	this->dimension.width = this->padding.left + this->padding.right + this->textDimension.width;
+	this->dimension.height = this->padding.top + this->padding.bottom + this->textDimension.height;
+}
+
+void ELEMENTS::Cell::UpdateAlignment() {
+	this->UpdateTextDecoration();
+	int remainWidth = this->dimension.width - this->padding.left - this->padding.right - this->textDimension.width;
+	int remainHeight = this->dimension.height - this->padding.top - this->padding.bottom - this->textDimension.height;
+
+	switch (this->textAlign) {
 		case (ELEMENTS::AlignmentOptions::LEFT): {
 			this->textPosition.x = this->position.x + this->padding.left;
 			this->textPosition.y = this->position.y + this->padding.top;
@@ -139,43 +164,186 @@ void ELEMENTS::Cell::UpdateAlignment(std::string content) {
 
 ELEMENTS::Cell::Cell() {
 	this->position = HELPER::Coordinate();
+	this->dimension = HELPER::Dimension();
 	this->textPosition = HELPER::Coordinate();
 	this->textDimension = HELPER::Dimension();
-	this->dimension = HELPER::Dimension();
-	this->characterDimension = HELPER::Dimension();
 	this->padding = ELEMENTS::Padding();
 	this->fill = ELEMENTS::Fill();
-	this->active = false;
-	this->mode = ELEMENTS::Cell::Mode::READ_MODE;
-	this->align = ELEMENTS::AlignmentOptions::LEFT;
-	this->fontSize = 3;
-	this->fontStyle = 8;
-	this->textColor = BLACK;
-	this->defaultFont = true;
-	this->maxNumberOfCharacter = 0;
-	this->UpdateFont();
+	this->textAlign = ELEMENTS::AlignmentOptions::LEFT;
 	this->cursor = ELEMENTS::Cursor();
+	this->mode = ELEMENTS::Cell::Mode::READ_MODE;
+	this->active = false;
+	this->fontSize = GLOBAL_VARIABLES::defaultTextSetting.charsize;
+	this->fontStyle = GLOBAL_VARIABLES::defaultTextSetting.font;
+	this->textColor = BLACK;
+	this->backgroundColor = WHITE;
+	this->characterLimit = -1;
+	this->customFont = false;
 }
 
-void ELEMENTS::Cell::Initialize(HELPER::Coordinate position, int maxNumberOfCharacter) {
-	this->maxNumberOfCharacter = maxNumberOfCharacter;
-	this->position = position;
-	this->characterDimension = HELPER::Dimension(textwidth((char*)"H"), textheight((char*)"H"));
-	this->fontSize = 3;
-	this->fontStyle = 8;
-	this->textColor = BLACK;
-	this->defaultFont = true;
+ELEMENTS::Cell::Cell(ELEMENTS::Cell::Mode mode, const std::string& placeholder, HELPER::Coordinate position, int width, int height) {
+	//* Default settings
+	this->customFont = false;
 	this->padding = ELEMENTS::Padding(10);
-	this->UpdateFont();
-	this->fill = ELEMENTS::Fill(this->position, this->dimension.width, this->dimension.height);
+	this->textAlign = ELEMENTS::AlignmentOptions::LEFT;
+	this->cursor = ELEMENTS::Cursor();
 	this->active = false;
-	this->mode = ELEMENTS::Cell::Mode::READ_MODE;
-	this->textPosition = HELPER::Coordinate(
-		this->position.x + this->padding.left,
-		this->position.y + this->padding.top
-	);
-	this->cursor = this->textPosition;
-	this->align = ELEMENTS::AlignmentOptions::LEFT;
+	this->fontSize = GLOBAL_VARIABLES::defaultTextSetting.charsize;
+	this->fontStyle = GLOBAL_VARIABLES::defaultTextSetting.font;
+	this->textColor = BLACK;
+	this->backgroundColor = WHITE;
+	this->characterLimit = placeholder.length();
+
+	//* Argument settings
+	this->mode = mode;
+	this->placeholder = placeholder;
+	this->position = position;
+
+	//* Update cell's dimension
+	this->FitContent();
+	if (width > this->dimension.width) {
+		this->dimension.width = width;
+	}
+	if (height > this->dimension.height) {
+		this->dimension.height = height;
+	}
+
+	//* Follow up settings
+	this->fill = ELEMENTS::Fill(this->position, this->dimension.width, this->dimension.height);
+	this->textPosition = HELPER::Coordinate(this->position.x + this->padding.left, this->position.y + this->padding.top);
+}
+
+ELEMENTS::Cell::Cell(ELEMENTS::Cell::Mode mode, const std::string& placeholder, HELPER::Coordinate position, HELPER::Dimension dimension) {
+	//* Default settings
+	this->customFont = false;
+	this->padding = ELEMENTS::Padding(10);
+	this->textAlign = ELEMENTS::AlignmentOptions::LEFT;
+	this->cursor = ELEMENTS::Cursor();
+	this->active = false;
+	this->fontSize = GLOBAL_VARIABLES::defaultTextSetting.charsize;
+	this->fontStyle = GLOBAL_VARIABLES::defaultTextSetting.font;
+	this->textColor = BLACK;
+	this->backgroundColor = WHITE;
+	this->characterLimit = placeholder.length();
+
+	//* Argument settings
+	this->mode = mode;
+	this->placeholder = placeholder;
+	this->position = position;
+	this->dimension = dimension;
+
+	//* Follow up settings
+	this->fill = ELEMENTS::Fill(this->position, this->dimension.width, this->dimension.height);
+	this->textPosition = HELPER::Coordinate(this->position.x + this->padding.left, this->position.y + this->padding.top);
+}
+
+void ELEMENTS::Cell::SetPosition(HELPER::Coordinate position) {
+	this->position = position;
+}
+
+HELPER::Coordinate ELEMENTS::Cell::GetPosition() {
+	return this->position;
+}
+
+bool ELEMENTS::Cell::SetDimension(HELPER::Dimension dimension) {
+	if (dimension.width >= textDimension.width && dimension.height >= textDimension.height) {
+		this->dimension = dimension;
+		return true;
+	}
+	return false;
+}
+
+HELPER::Dimension ELEMENTS::Cell::GetDimension() {
+	return this->dimension;
+}
+
+void ELEMENTS::Cell::SetPadding(ELEMENTS::Padding padding) {
+	this->padding = padding;
+}
+
+ELEMENTS::Padding ELEMENTS::Cell::GetPadding() {
+	return this->padding;
+}
+
+void ELEMENTS::Cell::SetTextAlign(ELEMENTS::AlignmentOptions align) {
+	this->textAlign = align;
+	this->UpdateAlignment();
+}
+
+ELEMENTS::AlignmentOptions ELEMENTS::Cell::GetTextAlign() {
+	return this->textAlign;
+}
+
+void ELEMENTS::Cell::SetPlaceHolder(const std::string& placeholder) {
+	this->placeholder = placeholder;
+	this->UpdateTextDecoration();
+	this->FitContent();
+}
+
+std::string ELEMENTS::Cell::GetPlaceholder() {
+	return this->placeholder;
+}
+
+void ELEMENTS::Cell::SetFontSize(int fontSize) {
+	this->fontSize = fontSize;
+	this->customFont = true;
+	this->FitContent();
+}
+
+int ELEMENTS::Cell::GetFontSize() {
+	return this->fontSize;
+}
+
+void ELEMENTS::Cell::SetFontStyle(int fontStyle) {
+	this->fontStyle = fontStyle;
+	this->customFont = true;
+	this->FitContent();
+}
+
+int ELEMENTS::Cell::GetFontStyle() {
+	return this->fontStyle;
+}
+
+void ELEMENTS::Cell::SetTextColor(int color) {
+	this->textColor = color;
+	this->UpdateTextDecoration();
+}
+
+int ELEMENTS::Cell::GetTextColor() {
+	return this->textColor;
+}
+
+void ELEMENTS::Cell::SetBackgroundColor(int color) {
+	this->backgroundColor = color;
+	this->fill.fillColor = this->backgroundColor;
+}
+
+int ELEMENTS::Cell::GetBackgroundColor() {
+	return this->backgroundColor;
+}
+
+void ELEMENTS::Cell::SetCharacterLimit(int limit) {
+	this->characterLimit = limit;
+}
+
+int ELEMENTS::Cell::GetCharacterLimit() {
+	return this->characterLimit;
+}
+
+void ELEMENTS::Cell::SetStatus(bool status) {
+	this->active = status;
+}
+
+bool ELEMENTS::Cell::GetStatus() {
+	return this->active;
+}
+
+void ELEMENTS::Cell::SetTextPosition(HELPER::Coordinate position) {
+	this->textPosition = position;
+}
+
+HELPER::Coordinate ELEMENTS::Cell::GetTextPosition() {
+	return this->textPosition;
 }
 
 void ELEMENTS::Cell::Log() {
@@ -183,15 +351,36 @@ void ELEMENTS::Cell::Log() {
 	this->position.Log();
 	std::clog << std::format("Dimension : [{} x {}]\n", this->dimension.width, this->dimension.height);
 	std::clog << std::format("Text size : [{} x {}]\n", this->textDimension.width, this->textDimension.height);
-	std::clog << std::format("Default f : {}\n", this->defaultFont);
 	std::clog << std::format("Font size : {}\n", this->fontSize);
 	std::clog << std::format("Font style: {}\n", this->fontStyle);
 	std::clog << std::format("Status    : {}\n", this->active ? "Active" : "Inactive");
 	std::clog << std::format("Cell mode : {}\n", this->mode == ELEMENTS::Cell::Mode::READ_MODE ? "READ" : "INPUT");
 	std::clog << std::format("Text color: {}\n", this->textColor);
-	std::clog << std::format("Alignment : {}\n", this->align == ELEMENTS::AlignmentOptions::LEFT ? "LEFT" : this->align == ELEMENTS::AlignmentOptions::CENTER ? "CENTER" : "RIGHT");
+	std::clog << std::format("Alignment : {}\n", this->textAlign == ELEMENTS::AlignmentOptions::LEFT ? "LEFT" : this->textAlign == ELEMENTS::AlignmentOptions::CENTER ? "CENTER" : "RIGHT");
 	std::clog << std::format("Coordinate: \n");
 	this->fill.coordinates.Log();
+	std::clog << std::format("Text posi : ");
+	this->textPosition.Log();
+}
+
+bool ELEMENTS::Cell::ReadMode() {
+	if (this->placeholder.length() > this->characterLimit) {
+		std::cerr << std::format("[ERROR] Placeholder exceed character's limit!\n");
+		return false;
+	}
+
+	if (this->active) {
+		this->fill.fillColor = 12;
+	}
+
+	this->mode = ELEMENTS::Cell::Mode::READ_MODE;
+	this->UpdateTextDecoration();
+	this->UpdateAlignment();
+	this->fill.Draw();
+	moveto(this->textPosition.x, this->textPosition.y);
+	outtext((char*)this->placeholder.c_str());
+
+	return true;
 }
 
 

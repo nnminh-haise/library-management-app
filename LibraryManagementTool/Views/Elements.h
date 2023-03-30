@@ -18,10 +18,13 @@ namespace ELEMENTS {
         HELPER::Dimension dimension;
         std::string title;
         bool active;
+        int backgroundColor;
 
         Window(HELPER::Dimension dimension, std::string title);
 
         int Activate();
+
+        void RenderBackground();
 
         void Deactivate();
     };
@@ -69,37 +72,97 @@ namespace ELEMENTS {
         void Draw();
     };
 
-	class Cell {
+	struct Cell {
     public:
         enum Mode {
             INPUT_MODE, READ_MODE
         };
-
+        
+    private:
         HELPER::Coordinate position;
+        HELPER::Dimension dimension;
         HELPER::Coordinate textPosition;
         HELPER::Dimension textDimension;
-        HELPER::Dimension dimension;
-        HELPER::Dimension characterDimension;
-        AlignmentOptions align;
         Padding padding;
         Fill fill;
+        AlignmentOptions textAlign;
         Cursor cursor;
+        std::string placeholder;
         Mode mode;
         bool active;
         int fontSize;
         int fontStyle;
         int textColor;
-        int maxNumberOfCharacter;
-        bool defaultFont;
+        int backgroundColor;
+        int characterLimit;
+        bool customFont;
+
+    public:
 
         Cell();
-        
-        void Initialize(HELPER::Coordinate position, int maxNumberOfCharacter);
+
+        Cell(ELEMENTS::Cell::Mode mode, const std::string& placeholder, HELPER::Coordinate position, int width, int height);
+
+        Cell(ELEMENTS::Cell::Mode mode, const std::string& placeholder, HELPER::Coordinate position, HELPER::Dimension dimension);
+
+        void SetPosition(HELPER::Coordinate position);
+
+        HELPER::Coordinate GetPosition();
+
+        bool SetDimension(HELPER::Dimension dimension);
+
+        HELPER::Dimension GetDimension();
+
+        void SetPadding(ELEMENTS::Padding padding);
+
+        ELEMENTS::Padding GetPadding();
+
+        void SetTextAlign(ELEMENTS::AlignmentOptions align);
+
+        ELEMENTS::AlignmentOptions GetTextAlign();
+
+        void SetPlaceHolder(const std::string& placeholder);
+
+        std::string GetPlaceholder();
+
+        void SetFontSize(int fontSize);
+
+        int GetFontSize();
+
+        void SetFontStyle(int fontStyle);
+
+        int GetFontStyle();
+
+        void SetTextColor(int color);
+
+        int GetTextColor();
+
+        void SetBackgroundColor(int color);
+
+        int GetBackgroundColor();
+
+        void SetCharacterLimit(int limit);
+
+        int GetCharacterLimit();
+
+        void SetStatus(bool status);
+
+        bool GetStatus();
+
+        void SetTextPosition(HELPER::Coordinate position);
+
+        HELPER::Coordinate GetTextPosition();
 
         void Log();
 
-        void UpdateFont();
+        bool FitContent();
 
-        void UpdateAlignment(std::string content);
-    }; 
+        void UpdateTextDecoration();
+
+        void UpdateCellDimension();
+
+        void UpdateAlignment();
+
+        bool ReadMode();
+    };
 }
