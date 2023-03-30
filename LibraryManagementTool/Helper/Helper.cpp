@@ -181,3 +181,6 @@ std::string STR::Trim(std::string target) {
     return target;
 }
 
+int rgb(int r, int g, int b) {
+    return COLOR(r, g, b);
+}

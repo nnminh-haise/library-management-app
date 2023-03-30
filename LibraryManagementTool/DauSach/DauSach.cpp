@@ -70,7 +70,7 @@ bool SACH::IsEmpty(const SACH::LinkedListController& controller) {
 }
 
 void SACH::InsertItemLast(LinkedListController& controller, Sach item) {
-	SACH::NodePointer newNode = new Node(item, nullptr);
+	SACH::Pointer newNode = new Node(item, nullptr);
 
 	++controller.total;
 	if (item.GetTrangThai() == SACH::TrangThaiSach::DA_CO_DOC_GIA_MUON) {
@@ -84,7 +84,7 @@ void SACH::InsertItemLast(LinkedListController& controller, Sach item) {
 		controller.first = newNode;
 	}
 	else {
-		SACH::NodePointer Last = controller.first;
+		SACH::Pointer Last = controller.first;
 		for (; Last->next != nullptr; Last = Last->next);
 		Last->next = newNode;
 	}
@@ -101,7 +101,7 @@ DAU_SACH::DauSach::DauSach() {
 	this->DanhMucSach = nullptr;
 }
 
-DAU_SACH::DauSach::DauSach(std::string ISBN, std::string TenSach, unsigned int SoTrang, std::string TacGia, unsigned int NamXuatBan, std::string TheLoai, SACH::NodePointer DanhMucSach) {
+DAU_SACH::DauSach::DauSach(std::string ISBN, std::string TenSach, unsigned int SoTrang, std::string TacGia, unsigned int NamXuatBan, std::string TheLoai, SACH::Pointer DanhMucSach) {
 	this->ISBN = ISBN;
 	this->TenSach = TenSach;
 	this->SoTrang = SoTrang;
@@ -159,11 +159,11 @@ std::string DAU_SACH::DauSach::GetTheLoai() {
 	return this->TheLoai;
 }
 
-void DAU_SACH::DauSach::SetDanhMucSach(SACH::NodePointer DanhMucSach) {
+void DAU_SACH::DauSach::SetDanhMucSach(SACH::Pointer DanhMucSach) {
 	this->DanhMucSach = DanhMucSach;
 }
 
-SACH::NodePointer DAU_SACH::DauSach::GetDanhMucSach() {
+SACH::Pointer DAU_SACH::DauSach::GetDanhMucSach() {
 	return this->DanhMucSach;
 }
 
@@ -184,7 +184,7 @@ DAU_SACH::LinearList::LinearList() {
 //	}
 //	dataSet[indicator] = data.substr(start);
 //
-//	SACH::NodePointer newDanhMucSach_First;
+//	SACH::Pointer newDanhMucSach_First;
 //	SACH::Initialize(newDanhMucSach_First);
 //	for (int i = 0; i < std::stoi(dataSet[6]); ++i) {
 //		//std::getline()

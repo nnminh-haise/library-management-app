@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Views\DanhSachTheDocGia.cpp" />
     <ClCompile Include="temp.cpp" />
     <ClCompile Include="Views\ExitView.cpp" />
     <ClCompile Include="Views\LandingView.cpp" />
@@ -142,6 +143,7 @@
     <ClCompile Include="TheDocGia\TheDocGia.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Views\DanhSachTheDocGia.h" />
     <ClInclude Include="Helper\ConstantsAndGlobalVariables.h" />
     <ClInclude Include="Views\ExitView.h" />
     <ClInclude Include="Views\LandingView.h" />

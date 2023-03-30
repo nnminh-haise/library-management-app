@@ -1,5 +1,5 @@
 #pragma once
 
-namespace ExitView {
+namespace EXIT_VIEW {
 	void Run();
 }

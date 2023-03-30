@@ -5,8 +5,8 @@
 #include <string>
 
 namespace ELEMENTS {
-    enum AlignmentOptions {
-        LEFT, CENTER, RIGHT
+    enum Align {
+        LEFT, CENTER, RIGHT, TOP, MIDDLE, BOTTOM
     };
 
     enum SpecialKey {
@@ -40,11 +40,14 @@ namespace ELEMENTS {
     };
 
     struct Fill {
+    private:
+        int fillColor;
+        int borderColor;
+
+    public:
         HELPER::Coordinate position;
         HELPER::Rectangle coordinates;
         HELPER::Dimension dimension;
-        int fillColor;
-        int borderColor;
 
         Fill();
 
@@ -53,6 +56,14 @@ namespace ELEMENTS {
         Fill(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight);
 
         void Draw();
+
+        void SetFillColor(int color);
+
+        int GetFillColor();
+
+        void SetBorderColor(int color);
+
+        int GetBorderColor();
     };
 
     class Cursor {
@@ -85,7 +96,8 @@ namespace ELEMENTS {
         HELPER::Dimension textDimension;
         Padding padding;
         Fill fill;
-        AlignmentOptions textAlign;
+        Align horizontalAlign;
+        Align verticalAlign;
         Cursor cursor;
         std::string placeholder;
         Mode mode;
@@ -93,17 +105,30 @@ namespace ELEMENTS {
         int fontSize;
         int fontStyle;
         int textColor;
-        int backgroundColor;
         int characterLimit;
         bool customFont;
+
+        bool ValidDimension();
 
     public:
 
         Cell();
 
-        Cell(ELEMENTS::Cell::Mode mode, const std::string& placeholder, HELPER::Coordinate position, int width, int height);
+        Cell (
+            ELEMENTS::Cell::Mode mode, 
+            const std::string& placeholder, 
+            HELPER::Coordinate position, 
+            int width, int height, 
+            int characterLimit
+        );
 
-        Cell(ELEMENTS::Cell::Mode mode, const std::string& placeholder, HELPER::Coordinate position, HELPER::Dimension dimension);
+        Cell (
+            ELEMENTS::Cell::Mode mode,
+            const std::string& placeholder,
+            HELPER::Coordinate position,
+            HELPER::Dimension dimension,
+            int characterLimit
+        );
 
         void SetPosition(HELPER::Coordinate position);
 
@@ -117,9 +142,13 @@ namespace ELEMENTS {
 
         ELEMENTS::Padding GetPadding();
 
-        void SetTextAlign(ELEMENTS::AlignmentOptions align);
+        void SetHorizontalAlign(ELEMENTS::Align align);
 
-        ELEMENTS::AlignmentOptions GetTextAlign();
+        ELEMENTS::Align GetHorizontalAlign();
+
+        void SetVerticalAlign(ELEMENTS::Align align);
+
+        ELEMENTS::Align GetVerticalAlign();
 
         void SetPlaceHolder(const std::string& placeholder);
 
@@ -141,6 +170,10 @@ namespace ELEMENTS {
 
         int GetBackgroundColor();
 
+        void SetBorderColor(int color);
+
+        int GetBorderColor();
+
         void SetCharacterLimit(int limit);
 
         int GetCharacterLimit();
@@ -159,10 +192,12 @@ namespace ELEMENTS {
 
         void UpdateTextDecoration();
 
-        void UpdateCellDimension();
-
         void UpdateAlignment();
 
+        bool LoadContent(const std::string& content);
+
         bool ReadMode();
+
+        std::string InputMode(bool(*validInput)(std::string), bool(*validKey)(char));
     };
 }

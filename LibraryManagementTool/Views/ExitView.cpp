@@ -8,7 +8,7 @@
 #include <string>
 #include <format>
 
-void ExitView::Run() {
+void EXIT_VIEW::Run() {
 	
 	//* Setup view's background
 	setfillstyle(SOLID_FILL, WHITE);
@@ -22,7 +22,7 @@ void ExitView::Run() {
 		CONSTANTS::WINDOW_DIMENSION.width / 2 - greetingDimension.width / 2,
 		CONSTANTS::WINDOW_DIMENSION.height / 2 - greetingDimension.height / 2 - 100
 	);
-	ELEMENTS::Cell greetingBox(ELEMENTS::Cell::Mode::READ_MODE, greeting, greetingCoordinate, greetingDimension);
+	ELEMENTS::Cell greetingBox(ELEMENTS::Cell::Mode::READ_MODE, greeting, greetingCoordinate, greetingDimension, 0);
 
 	bool escapeFlag = false;
 	int milisecondCounter = 3000;
@@ -32,7 +32,8 @@ void ExitView::Run() {
 
 		while (!kbhit() && milisecondCounter != 0) {
 			--milisecondCounter;
-			std::cerr << std::format("time: {}\n", milisecondCounter);
+			//std::cerr << std::format("time: {}\n", milisecondCounter);
+			std::cerr << milisecondCounter << "\n";
 
 			if (milisecondCounter == 999 || milisecondCounter == 1999 || milisecondCounter == 2999) {
 				settextstyle(3, HORIZ_DIR, 3);
@@ -42,7 +43,7 @@ void ExitView::Run() {
 					CONSTANTS::WINDOW_DIMENSION.width / 2 - notifyMessageDimension.width / 2,
 					CONSTANTS::WINDOW_DIMENSION.height / 2 - notifyMessageDimension.height / 2 + 100
 				);
-				ELEMENTS::Cell notifyBox(ELEMENTS::Cell::Mode::READ_MODE, notifyMessage, notifyMessageCoordinate, notifyMessageDimension);
+				ELEMENTS::Cell notifyBox(ELEMENTS::Cell::Mode::READ_MODE, notifyMessage, notifyMessageCoordinate, notifyMessageDimension, 0);
 				notifyBox.ReadMode();
 			}
 		}

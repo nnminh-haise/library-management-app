@@ -36,25 +36,29 @@ namespace MUON_TRA {
 
 		TrangThaiMuonTra GetTrangThai();
 	};
+}
 
+namespace DOUBLE_LINKED_LIST {
 	struct Node {
-		MuonTra info;
+		MUON_TRA::MuonTra info;
 		Node* left;
 		Node* right;
 
 		Node();
 	};
 
-	typedef Node* NodePointer;
+	typedef Node* Pointer;
 
-	struct DoubleLinkedList {
-		NodePointer first;
-		NodePointer last;
+	struct Controller {
+		Pointer First;
+		Pointer Last;
 
-		DoubleLinkedList();
+		Controller();
 	};
 
-	void Initialize(MUON_TRA::DoubleLinkedList& list);
+	void Initialize(DOUBLE_LINKED_LIST::Controller& list);
+
+	bool IsEmpty(const Controller& list);
 }
 
 namespace THE_DOC_GIA {
@@ -68,21 +72,21 @@ namespace THE_DOC_GIA {
 
 	class TheDocGia {
 	private:
-		std::string MaThe;
+		int MaThe;
 		std::string Ho;
 		std::string Ten;
 		GioiTinh Phai;
 		TrangThaiThe TrangThai;
-		MUON_TRA::DoubleLinkedList DanhSachMuonTra;
+		DOUBLE_LINKED_LIST::Controller DanhSachMuonTra;
 
 	public:
 		TheDocGia();
 
-		TheDocGia(std::string MaThe, std::string Ho, std::string Ten, GioiTinh Phai, TrangThaiThe TrangThai, MUON_TRA::DoubleLinkedList DanhSachMuonTra);
+		TheDocGia(int MaThe, std::string Ho, std::string Ten, GioiTinh Phai, TrangThaiThe TrangThai, DOUBLE_LINKED_LIST::Controller DanhSachMuonTra);
 
-		void SetMaThe(std::string MaThe);
+		void SetMaThe(int MaThe);
 
-		std::string GetMaThe();
+		int GetMaThe();
 
 		void SetHo(std::string Ho);
 
@@ -100,19 +104,45 @@ namespace THE_DOC_GIA {
 
 		TrangThaiThe GetTrangThai();
 
-		void SetDanhSachMuonTra(MUON_TRA::DoubleLinkedList DanhSachMuonTra);
+		void SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controller DanhSachMuonTra);
 
-		MUON_TRA::DoubleLinkedList GetDanhSachMuonTra();
+		DOUBLE_LINKED_LIST::Controller GetDanhSachMuonTra();
+
+		void Log();
 	};
+}
 
+namespace AVL_TREE {
 	struct Node {
-		TheDocGia info;
+		THE_DOC_GIA::TheDocGia info;
 		int balanceFactor;
 		Node* left;
 		Node* right;
 
 		Node();
+
+		int GetKey();
 	};
 
-	typedef Node* NodePointer;
+	typedef Node* Pointer;
+
+	void Initialize(Pointer& root);
+
+	bool IsEmpty(const Pointer& root);
+
+	void PreOrderTraversal(const Pointer& root);
+
+	void InOrderTraversal(const Pointer& root);
+
+	void PostOrderTraversal(const Pointer& root);
+
+	Pointer RotateLeft(Pointer root);
+
+	Pointer RotateRight(Pointer root);
+
+	bool Insert(Pointer& root, THE_DOC_GIA::TheDocGia info);
 }
+
+bool TheDocGiaExtractor(std::string data, std::string seperator, THE_DOC_GIA::TheDocGia& returnData);
+
+bool LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE::Pointer& tree);

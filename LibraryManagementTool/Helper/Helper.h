@@ -63,6 +63,8 @@ namespace HELPER {
     void ShowColorPallet();
 }
 
+int rgb(int r, int g, int b);
+
 namespace STR {
     std::string Trim(std::string target);
 }

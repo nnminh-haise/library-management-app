@@ -42,13 +42,13 @@ namespace SACH {
 		Node(Sach info, Node* next);
 	};
 
-	typedef Node* NodePointer;
+	typedef Node* Pointer;
 
 	struct LinkedListController {
 		unsigned int total; //* The size of the linked list.
 		unsigned int borrowed;
 		unsigned int sold;
-		NodePointer first;
+		Pointer first;
 	};
 
 	void Initialize(LinkedListController& controller);
@@ -67,12 +67,12 @@ namespace DAU_SACH {
 		std::string TacGia;
 		unsigned int NamXuatBan;
 		std::string TheLoai;
-		SACH::NodePointer DanhMucSach;
+		SACH::Pointer DanhMucSach;
 
 	public:
 		DauSach();
 
-		DauSach(std::string ISBN, std::string TenSach, unsigned int SoTrang, std::string TacGia, unsigned int NamXuatBan, std::string TheLoai, SACH::NodePointer DanhMucSach);
+		DauSach(std::string ISBN, std::string TenSach, unsigned int SoTrang, std::string TacGia, unsigned int NamXuatBan, std::string TheLoai, SACH::Pointer DanhMucSach);
 
 		void SetISBN(std::string ISBN);
 
@@ -98,9 +98,9 @@ namespace DAU_SACH {
 
 		std::string GetTheLoai();
 
-		void SetDanhMucSach(SACH::NodePointer DanhMucSach);
+		void SetDanhMucSach(SACH::Pointer DanhMucSach);
 
-		SACH::NodePointer GetDanhMucSach();
+		SACH::Pointer GetDanhMucSach();
 	};
 
 	//DauSach* SplitDataFromString(const std::string& data, const std::string& seperator);
