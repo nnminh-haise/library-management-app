@@ -1,4 +1,8 @@
+
 #include "Helper.h"
+
+#include "../Graphics/graphics.h"
+#include "../Views/Elements.h"
 
 #include <iostream>
 #include <ctime>
@@ -92,3 +96,55 @@ void HELPER::Rectangle::Log() {
     std::clog << std::format("A({}, {}); B({}, {});\n", this->topLeft.x, this->topLeft.y, this->topRight.x, this->topRight.y);
     std::clog << std::format("C({}, {}); D({}, {});\n", this->bottomLeft.x, this->bottomLeft.y, this->bottomRight.x, this->bottomRight.y);
 }
+
+void HELPER::GetKey() {
+    ELEMENTS::Window trial(HELPER::Dimension(800, 300), "TRIAL KEY PRESS");
+
+    trial.Activate();
+
+    setfillstyle(SOLID_FILL, WHITE);
+    bar(0, 0, 1920, 1080);
+
+    char inputKey = -1;
+
+    while (inputKey != ELEMENTS::SpecialKey::ESCAPE) {
+        while (!kbhit()) {
+            
+            setbkcolor(WHITE);
+            setcolor(BLACK);
+
+            moveto(100, 150);
+            outtext((char*)"PRESS ANY KEY TO GET ASCII CODE OR PRESS ESC TO EXIT PRORGAM!");
+
+            if (inputKey != -1) {
+                std::string text = "PRESSED KEY CODE: " + std::to_string((int)inputKey);
+                moveto(100, 190);
+                outtext((char*)text.c_str());
+            }
+        }
+
+        inputKey = getch();
+    }
+
+    trial.Deactivate();
+}
+
+std::string STR::Trim(std::string target) {
+    if (target.length() == 0) {
+        return target;
+    }
+
+    while (target[0] == ' ') {
+        target.erase(0, 1);
+    }
+    while (target[target.length() - 1] == ' ') {
+        target.erase(target.length() - 1, 1); 
+    }
+    for (int i = 0; i < target.length() - 1; ++i) {
+        if (target[i] == ' ' && target[i + 1] == ' ') {
+            target.erase(i, 1);
+        }
+    }
+    return target;
+}
+

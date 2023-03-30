@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace SACH{
+namespace SACH {
 	enum TrangThaiSach {
 		CHO_MUON_DUOC, DA_CO_DOC_GIA_MUON, DA_THANH_LY
 	};
@@ -31,6 +31,8 @@ namespace SACH{
 		std::string GetViTri();
 	};
 
+	//Sach* SplitDataFromString(const std::string& data, const std::string& seperator);
+
 	struct Node {
 		Sach info;
 		Node* next;
@@ -45,6 +47,8 @@ namespace SACH{
 	void Initialize(NodePointer& First);
 
 	bool IsEmpty(const NodePointer& First);
+
+	void InsertItemLast(NodePointer& First, Sach item);
 }
 
 namespace DAU_SACH {
@@ -55,7 +59,7 @@ namespace DAU_SACH {
 		unsigned int SoTrang;
 		std::string TacGia;
 		unsigned int NamXuatBan;
-	    std::string TheLoai;
+		std::string TheLoai;
 		SACH::NodePointer DanhMucSach;
 
 	public:
@@ -92,6 +96,8 @@ namespace DAU_SACH {
 		SACH::NodePointer GetDanhMucSach();
 	};
 
+	//DauSach* SplitDataFromString(const std::string& data, const std::string& seperator);
+
 	const unsigned int MAX_SIZE = 10000;
 
 	struct LinearList {
@@ -100,4 +106,12 @@ namespace DAU_SACH {
 
 		LinearList();
 	};
+
+	void Initialize(LinearList& list);
+
+	bool IsEmpty(const LinearList& list);
+
+	bool IsFull(const LinearList& list);
+
+	//bool InsertItem(LinearList& list, DauSach* item, int position);
 }

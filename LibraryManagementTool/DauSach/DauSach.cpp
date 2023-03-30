@@ -1,6 +1,9 @@
 #include "DauSach.h"
 
 #include <string>
+#include <iostream>
+#include <fstream>
+#include <format>
 
 SACH::Sach::Sach() {
 	this->MaSach = std::string();
@@ -44,12 +47,39 @@ SACH::Node::Node() : info(SACH::Sach()), next(nullptr) {
 SACH::Node::Node(SACH::Sach info, SACH::Node* next) : info(info), next(next) {
 }
 
+//SACH::Sach* SACH::SplitDataFromString(const std::string& data, const std::string& seperator) {
+//	std::string dataSet[3]{};
+//	int indicator = 0;
+//	std::size_t start = 0, end = 0;
+//	while ((end = data.find(seperator, start)) != std::string::npos) {
+//		dataSet[indicator++] = data.substr(start, end - start);
+//		start = end + seperator.length();
+//	}
+//	dataSet[indicator] = data.substr(start);
+//
+//	SACH::Sach* newSach = new SACH::Sach(dataSet[0], dataSet[1], dataSet[2]);
+//	return newSach;
+//}
+
 void SACH::Initialize(SACH::NodePointer& First) {
 	First = nullptr;
 }
 
 bool SACH::IsEmpty(const SACH::NodePointer& First) {
 	return First == nullptr;
+}
+
+void SACH::InsertItemLast(NodePointer& First, Sach item) {
+	SACH::NodePointer newNode = new Node(item, nullptr);
+
+	if (SACH::IsEmpty(First)) {
+		First = newNode;
+	}
+	else {
+		SACH::NodePointer Last = First;
+		for (; Last->next != nullptr; Last = Last->next);
+		Last->next = newNode;
+	}
 }
 
 
@@ -135,4 +165,65 @@ DAU_SACH::LinearList::LinearList() {
 		this->nodes[i] = nullptr;
 	}
 }
+
+//DAU_SACH::DauSach* DAU_SACH::SplitDataFromString(const std::string& data, const std::string& seperator) {
+//	std::string dataSet[7]{};
+//	int indicator = 0;
+//	std::size_t start = 0, end = 0;
+//	while ((end = data.find(seperator, start)) != std::string::npos) {
+//		dataSet[indicator++] = data.substr(start, end - start);
+//		start = end + seperator.length();
+//	}
+//	dataSet[indicator] = data.substr(start);
+//
+//	SACH::NodePointer newDanhMucSach_First;
+//	SACH::Initialize(newDanhMucSach_First);
+//	for (int i = 0; i < std::stoi(dataSet[6]); ++i) {
+//		//std::getline()
+//		//SACH::Sach newSach = SACH::SplitDataFromString()
+//		//SACH::InsertItemLast(newDanhMucSach_First, );
+//	}
+//	
+//
+//	return nullptr;
+//}
+
+void DAU_SACH::Initialize(DAU_SACH::LinearList& list) {
+	list.numberOfNode = 0;
+	for (int i = 0; i < DAU_SACH::MAX_SIZE; ++i) {
+		list.nodes[i] = nullptr;
+	}
+}
+
+bool DAU_SACH::IsEmpty(const LinearList& list) {
+	return list.numberOfNode == 0;
+}
+
+bool DAU_SACH::IsFull(const LinearList& list) {
+	return list.numberOfNode == MAX_SIZE;
+}
+
+//bool DAU_SACH::InsertItem(LinearList& list, DauSach* item, int position) {
+//	if (DAU_SACH::IsFull(list)) {
+//		std::cerr << std::format("[ERROR] LIST IS FULL CANNOT INSERT NEW ELEMENT!\nSUGGEST CREATE A NEW LIST WITH BIGGER SIZE!\n");
+//		return false;
+//	}
+//
+//	if (position < 0 || position >= list.numberOfNode) {
+//		std::cerr << std::format("[ERROR] POSITION OUT OF RANGE! INSERT POSITION MUST IN RANGE 0 TO {}\n", DAU_SACH::MAX_SIZE - 1);
+//		return false;
+//	}
+//	//* Shift all item from position + 1 to the right by 1.
+//	for (int i = list.numberOfNode; i > position; --i) {
+//		list.nodes[i] = list.nodes[i - 1];
+//	}
+//	
+//	//* Insert new item into the list.
+//	list.nodes[position] = item;
+//
+//	//* Increase the size of the list by one.
+//	++list.numberOfNode;
+//
+//	return true;
+//}
 

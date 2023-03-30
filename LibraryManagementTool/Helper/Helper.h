@@ -4,6 +4,8 @@
 #include <ctime>
 #include <string>
 
+#include "../Graphics/graphics.h"
+
 namespace HELPER {
     struct Date {
         int day;
@@ -53,4 +55,10 @@ namespace HELPER {
 
         void Log();
     };
+
+    void GetKey();
+}
+
+namespace STR {
+    std::string Trim(std::string target);
 }

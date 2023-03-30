@@ -129,6 +129,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Views\LandingView.cpp" />
+    <ClCompile Include="Views\DanhSachDauSachView.cpp" />
     <ClCompile Include="DauSach\DauSach.cpp" />
     <ClCompile Include="Views\Elements.cpp" />
     <ClCompile Include="Helper\Helper.cpp" />
@@ -136,6 +138,8 @@
     <ClCompile Include="TheDocGia\TheDocGia.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Views\LandingView.h" />
+    <ClInclude Include="Views\DanhSachDauSachView.h" />
     <ClInclude Include="DauSach\DauSach.h" />
     <ClInclude Include="Views\Elements.h" />
     <ClInclude Include="Helper\Helper.h" />
