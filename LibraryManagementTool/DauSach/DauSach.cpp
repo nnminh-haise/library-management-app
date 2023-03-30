@@ -7,7 +7,7 @@
 
 SACH::Sach::Sach() {
 	this->MaSach = std::string();
-	this->TrangThai = SACH::TrangThaiSach::DA_THANH_LY;
+	this->TrangThai = SACH::TrangThaiSach::CHO_MUON_DUOC;
 	this->ViTri = std::string();
 }
 
@@ -61,22 +61,30 @@ SACH::Node::Node(SACH::Sach info, SACH::Node* next) : info(info), next(next) {
 //	return newSach;
 //}
 
-void SACH::Initialize(SACH::NodePointer& First) {
-	First = nullptr;
+void SACH::Initialize(SACH::LinkedListController& controller) {
+	controller.first = nullptr;
 }
 
-bool SACH::IsEmpty(const SACH::NodePointer& First) {
-	return First == nullptr;
+bool SACH::IsEmpty(const SACH::LinkedListController& controller) {
+	return controller.first == nullptr;
 }
 
-void SACH::InsertItemLast(NodePointer& First, Sach item) {
+void SACH::InsertItemLast(LinkedListController& controller, Sach item) {
 	SACH::NodePointer newNode = new Node(item, nullptr);
 
-	if (SACH::IsEmpty(First)) {
-		First = newNode;
+	++controller.total;
+	if (item.GetTrangThai() == SACH::TrangThaiSach::DA_CO_DOC_GIA_MUON) {
+		++controller.borrowed;
+	}
+	else if (item.GetTrangThai() == SACH::TrangThaiSach::DA_THANH_LY) {
+		++controller.sold;
+	}
+
+	if (SACH::IsEmpty(controller)) {
+		controller.first = newNode;
 	}
 	else {
-		SACH::NodePointer Last = First;
+		SACH::NodePointer Last = controller.first;
 		for (; Last->next != nullptr; Last = Last->next);
 		Last->next = newNode;
 	}
@@ -203,27 +211,28 @@ bool DAU_SACH::IsFull(const LinearList& list) {
 	return list.numberOfNode == MAX_SIZE;
 }
 
-//bool DAU_SACH::InsertItem(LinearList& list, DauSach* item, int position) {
-//	if (DAU_SACH::IsFull(list)) {
-//		std::cerr << std::format("[ERROR] LIST IS FULL CANNOT INSERT NEW ELEMENT!\nSUGGEST CREATE A NEW LIST WITH BIGGER SIZE!\n");
-//		return false;
-//	}
-//
-//	if (position < 0 || position >= list.numberOfNode) {
-//		std::cerr << std::format("[ERROR] POSITION OUT OF RANGE! INSERT POSITION MUST IN RANGE 0 TO {}\n", DAU_SACH::MAX_SIZE - 1);
-//		return false;
-//	}
-//	//* Shift all item from position + 1 to the right by 1.
-//	for (int i = list.numberOfNode; i > position; --i) {
-//		list.nodes[i] = list.nodes[i - 1];
-//	}
-//	
-//	//* Insert new item into the list.
-//	list.nodes[position] = item;
-//
-//	//* Increase the size of the list by one.
-//	++list.numberOfNode;
-//
-//	return true;
-//}
+bool DAU_SACH::InsertItem(LinearList& list, DauSach* item, int position) {
+	if (DAU_SACH::IsFull(list)) {
+		std::cerr << std::format("[ERROR] LIST IS FULL CANNOT INSERT NEW ELEMENT!\nSUGGEST CREATE A NEW LIST WITH BIGGER SIZE!\n");
+		return false;
+	}
+
+	if (position < 0 || position >= list.numberOfNode) {
+		std::cerr << std::format("[ERROR] POSITION OUT OF RANGE! INSERT POSITION MUST IN RANGE 0 TO {}\n", DAU_SACH::MAX_SIZE - 1);
+		return false;
+	}
+
+	//* Shift all item from position + 1 to the right by 1.
+	for (int i = list.numberOfNode; i > position; --i) {
+		list.nodes[i] = list.nodes[i - 1];
+	}
+	
+	//* Insert new item into the list.
+	list.nodes[position] = item;
+
+	//* Increase the size of the list by one.
+	++list.numberOfNode;
+
+	return true;
+}
 

@@ -129,6 +129,34 @@ void HELPER::GetKey() {
     trial.Deactivate();
 }
 
+void HELPER::ShowColorPallet() {
+    ELEMENTS::Window window(HELPER::Dimension(1000, 500), "COLOR PALLET WINDOW");
+    window.Activate();
+
+    setfillstyle(SOLID_FILL, WHITE);
+    bar(0, 0, 1000, 500);
+
+    char inputKey{};
+    while (inputKey != ELEMENTS::SpecialKey::ESCAPE) {
+        moveto(20, 20);
+        outtext((char*)"BGI COLOR PALLET");
+
+        for (int i = 0; i < 16; ++i) {
+            std::cerr << std::format("({}, {})\n", 50, i * 20 + 50);
+            moveto(50, i * 20 + 50);
+            setbkcolor(i);
+            std::string text = "THIS IS A SAMPLE STRING WITH THE CODED COLOR: " + std::to_string(i);
+            std::cerr << text + "\n";
+            outtext((char*)text.c_str());
+        }
+
+        inputKey = getch();
+
+    }
+
+    window.Deactivate();
+}
+
 std::string STR::Trim(std::string target) {
     if (target.length() == 0) {
         return target;

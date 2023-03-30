@@ -95,7 +95,8 @@ int main() {
 
 	//LandingView::Run();
 
-	HELPER::GetKey();
+	HELPER::ShowColorPallet();
+
 	return 0;
 }
 
