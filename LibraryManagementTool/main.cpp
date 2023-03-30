@@ -87,8 +87,6 @@ int main() {
 	//std::string res = idCell.InputMode();
 	//idCell.ReadMode(res);
 
-	//std::cin.get();
-
 	//window.Deactivate();
 
 	//std::clog << "[INFO] PROGRAM STOPPED!\n";
