@@ -44,11 +44,18 @@ namespace SACH {
 
 	typedef Node* NodePointer;
 
-	void Initialize(NodePointer& First);
+	struct LinkedListController {
+		unsigned int total; //* The size of the linked list.
+		unsigned int borrowed;
+		unsigned int sold;
+		NodePointer first;
+	};
 
-	bool IsEmpty(const NodePointer& First);
+	void Initialize(LinkedListController& controller);
 
-	void InsertItemLast(NodePointer& First, Sach item);
+	bool IsEmpty(const LinkedListController& controller);
+
+	void InsertItemLast(LinkedListController& controller, Sach item);
 }
 
 namespace DAU_SACH {
@@ -113,5 +120,7 @@ namespace DAU_SACH {
 
 	bool IsFull(const LinearList& list);
 
-	//bool InsertItem(LinearList& list, DauSach* item, int position);
+	bool InsertItem(LinearList& list, DauSach* item, int position);
 }
+
+

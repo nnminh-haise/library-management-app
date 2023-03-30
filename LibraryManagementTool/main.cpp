@@ -6,7 +6,6 @@
 #include "Graphics/graphics.h"
 #pragma comment(lib, "Graphics/graphics.lib")
 
-
 #include "Helper/Helper.h"
 #include "Views/Elements.h"
 #include "DauSach/DauSach.h"
@@ -94,7 +93,8 @@ int main() {
 
 	//LandingView::Run();
 
-	HELPER::GetKey();
+	HELPER::ShowColorPallet();
+
 	return 0;
 }
 

@@ -57,6 +57,8 @@ namespace HELPER {
     };
 
     void GetKey();
+
+    void ShowColorPallet();
 }
 
 namespace STR {
