@@ -6,6 +6,7 @@
 #include "Graphics/graphics.h"
 #pragma comment(lib, "Graphics/graphics.lib")
 
+
 #include "Helper/Helper.h"
 #include "Views/Elements.h"
 #include "DauSach/DauSach.h"
@@ -86,8 +87,6 @@ int main() {
 	//idCell.characterDimension.width = textwidth((char*)"B");
 	//std::string res = idCell.InputMode();
 	//idCell.ReadMode(res);
-
-	//std::cin.get();
 
 	//window.Deactivate();
 
