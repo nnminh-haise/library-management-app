@@ -100,10 +100,10 @@ Thiết kế một chương trình thư viện có các danh sách sau:
 
 3. Nhập thông tin đầu sách và đánh mã sách tự động. Chương trình cho phép xóa 1 mã sách nếu mã sách này chưa cho độc giả mượn.
 
-4. In danh sách các đầu sách trong thư viện theo từng thể loại, trong từng thể loại thì in theo thứ tự tên sách tăng dần.
+**4. In danh sách các đầu sách trong thư viện theo từng thể loại, trong từng thể loại thì in theo thứ tự tên sách tăng dần.
 
 5. Tìm thông tin sách dựa vào tên sách: in ra các thông tin mã ISBN, tên sách, tác giả, năm xuất bản, thể loại, các mã sách , trạng thái mã sách trong thư viện.
-
+**
 6. Mượn sách: nhập vào mã thẻ độc giả, chương trình sẽ liệt kê các sách mà độc giả đang mượn. Mỗi độc giả chỉ được mượn tối đa 3 cuốn, không cho mượn khi giữ 1 sách quá hạn (7 ngày) hoặc nếu các sách mượn thuộc cùng 1 đầu sách.
 
 7. Trả sách.
