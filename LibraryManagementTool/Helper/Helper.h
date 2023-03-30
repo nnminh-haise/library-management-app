@@ -29,6 +29,8 @@ namespace HELPER {
 
         Dimension(int width, int height);
 
+        Dimension(const std::string& target);
+
         void Log();
     };
 

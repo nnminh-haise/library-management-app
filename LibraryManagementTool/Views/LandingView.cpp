@@ -2,10 +2,15 @@
 #include "../Graphics/graphics.h"
 #include "../Helper/Helper.h"
 #include "Elements.h"
+#include "ExitView.h"
 
 #include <iostream>
 #include <string>
 #include <format>
+
+void LANDING_VIEW::RegisterDefaultSettings() {
+	gettextsettings(&GLOBAL_VARIABLES::defaultTextSetting);
+}
 
 class CustomCell : public ELEMENTS::Cell {
 public:
@@ -75,95 +80,156 @@ public:
 	}
 };
 
-void LandingView::Run() {
-	ELEMENTS::Window landing(HELPER::Dimension(1920, 1080), "LIBRARY MANAGEMENT TOOL");
+/*
+* This is the program default running module. This module will render a selection menu for user to choose the next operations.
+* User can use arrow keys to navigate through the available selections.
+*/
+void LANDING_VIEW::Run() {
+
+	//* Create window.
+	ELEMENTS::Window landing(CONSTANTS::WINDOW_DIMENSION, CONSTANTS::WINDOW_TITLE);
 	landing.Activate();
 
-	//* Setup background
+	//* Get all necessary default settings.
+	LANDING_VIEW::RegisterDefaultSettings();
+
+	//* Setup view's background
 	setfillstyle(SOLID_FILL, WHITE);
 	bar(0, 0, 1920, 1080);
 
-	//* Create menu options
+	//* Create app's title box
 	CustomCell programTitle;
 	programTitle.Initialize(HELPER::Coordinate(300, 200), 25);
 	programTitle.align = ELEMENTS::AlignmentOptions::CENTER;
 	programTitle.fill.fillColor = 14;
 	
+	//* Create list of buttons
 	CustomCell buttons[6];
 
+	//* Initialize each button with the cooordinate on the graphic window
 	buttons[0].Initialize(HELPER::Coordinate(300, 300), 25);
-	buttons[0].align = ELEMENTS::AlignmentOptions::CENTER;
-	buttons[0].fill.fillColor = 9;
-	buttons[0].textColor = WHITE;
-	buttons[0].active = true;
-
 	buttons[1].Initialize(HELPER::Coordinate(300, 400), 25);
-	buttons[1].align = ELEMENTS::AlignmentOptions::CENTER;
-	buttons[1].fill.fillColor = 9;
-	buttons[1].textColor = WHITE;
-
 	buttons[2].Initialize(HELPER::Coordinate(300, 500), 25);
-	buttons[2].align = ELEMENTS::AlignmentOptions::CENTER;
-	buttons[2].fill.fillColor = 9;
-	buttons[2].textColor = WHITE;
-
 	buttons[3].Initialize(HELPER::Coordinate(150, 700), 22);
-	buttons[3].align = ELEMENTS::AlignmentOptions::CENTER;
-	buttons[3].fill.fillColor = 9;
-	buttons[3].textColor = WHITE;
-
 	buttons[4].Initialize(HELPER::Coordinate(500, 700), 11);
-	buttons[4].align = ELEMENTS::AlignmentOptions::CENTER;
-	buttons[4].fill.fillColor = 9;
-	buttons[4].textColor = WHITE;
-
 	buttons[5].Initialize(HELPER::Coordinate(700, 700), 11);
-	buttons[5].align = ELEMENTS::AlignmentOptions::CENTER;
-	buttons[5].fill.fillColor = 9;
-	buttons[5].textColor = WHITE;
 
-	//* Program loop
+	//* Program loop 
 	char inputKey{};
+	int activeButtonIndicator = 0;
 
 	while (inputKey != ELEMENTS::SpecialKey::ESCAPE) {
-		// programTitle.ReadMode("QUAN LI THU VIEN");
-		// danhSachDauSachView.ReadMode("DANH SACH DAU SACH");
-		// danhSachTheDocGiaView.ReadMode("DANH SACH THE DOC GIA");
-		// thongKeView.ReadMode("THONG KE");
-		// huongDanView.ReadMode("HUONG DAN");
-		// aboutView.ReadMode("ABOUT US");
-		// exitView.ReadMode("EXIT");
+		//* Default menu settings
+		for (int i = 0; i < 6; ++i) {
+			buttons[i].align = ELEMENTS::AlignmentOptions::CENTER;
+			buttons[i].fill.fillColor = 9;
+			buttons[i].textColor = WHITE;
+		}
+		buttons[activeButtonIndicator].active = true;
 
-		// std::cerr << std::format("[ACTIVE STATUS] DANH SACH DAU SACH BUTTON : {}\n", danhSachDauSachView.active);
-		// std::cerr << std::format("[ACTIVE STATUS] DANH SACH THE DOC GIA BUTTON : {}\n", danhSachTheDocGiaView.active);
-		// std::cerr << std::format("[ACTIVE STATUS] DANH SACH THONG KE BUTTON : {}\n", thongKeView.active);
-		// std::cerr << std::format("[ACTIVE STATUS] DANH SACH HUONG DAN BUTTON : {}\n", huongDanView.active);
-		// std::cerr << std::format("[ACTIVE STATUS] DANH SACH ABOUT US BUTTON : {}\n", aboutView.active);
-		// std::cerr << std::format("[ACTIVE STATUS] DANH SACH EXIT BUTTON : {}\n", exitView.active);
+		programTitle.ReadMode("QUAN LI THU VIEN");
+		buttons[0].ReadMode("DANH SACH DAU SACH");
+		buttons[1].ReadMode("DANH SACH THE DOC GIA");
+		buttons[2].ReadMode("THONG KE");
+		buttons[3].ReadMode("HUONG DAN");
+		buttons[4].ReadMode("ABOUT US");
+		buttons[5].ReadMode("EXIT");
 
+		//* You can uncomment this line to watch which button is currently active when the program is running.
+		//std::cerr << std::format("[ACTIVE STATUS] ACTIVE BUTTON: BUTTON[{}]\n", activeButtonIndicator);
+
+		//* Get user's pressed key.
 		inputKey = getch();
 
-		//std::cout << std::format("key = {}\n", (int)inputKey);
-
+		//* Menu's logic controller base on the user's pressed key.
 		switch (inputKey) {
 			case (ELEMENTS::SpecialKey::UP_ARROW): {
-				std::cout << std::format("UP ARROW!\n");
+				std::cerr << std::format("PRESSED UP ARROW!\n");
+
+				//* Menu's button Indicator changes logic
+				if (activeButtonIndicator - 1 >= 0) {
+					buttons[activeButtonIndicator].active = false;
+					--activeButtonIndicator;
+				}
+				else {
+					buttons[activeButtonIndicator].active = false;
+					activeButtonIndicator = 5;
+				}
 				break;
 			}
 			case (ELEMENTS::SpecialKey::DOWN_ARROW): {
-				std::cout << std::format("DOWN ARROW!\n");
+				std::cerr << std::format("PRESSED DOWN ARROW!\n");
+
+				//* Menu's button Indicator changes logic
+				if (activeButtonIndicator + 1 < 6) {
+					buttons[activeButtonIndicator].active = false;
+					++activeButtonIndicator;
+				}
+				else {
+					buttons[activeButtonIndicator].active = false;
+					activeButtonIndicator = 0;
+				}
 				break;
 			}
 			case (ELEMENTS::SpecialKey::LEFT_ARROW): {
-				std::cout << std::format("LEFT ARROW!\n");
+				std::cerr << std::format("PRESSED LEFT ARROW!\n");
+
+				//* Menu's button Indicator changes logic
+				if (activeButtonIndicator - 1 >= 0) {
+					buttons[activeButtonIndicator].active = false;
+					--activeButtonIndicator;
+				}
+				else {
+					buttons[activeButtonIndicator].active = false;
+					activeButtonIndicator = 5;
+				}
 				break;
 			}
 			case (ELEMENTS::SpecialKey::RIGHT_ARROW): {
-				std::cout << std::format("RIGHT ARROW!\n");
+				std::cerr << std::format("PRESSED RIGHT ARROW!\n");
+
+				//* Menu's button Indicator changes logic
+				if (activeButtonIndicator + 1 < 6) {
+					buttons[activeButtonIndicator].active = false;
+					++activeButtonIndicator;
+				}
+				else {
+					buttons[activeButtonIndicator].active = false;
+					activeButtonIndicator = 0;
+				}
 				break;
 			}
 			case (ELEMENTS::SpecialKey::ESCAPE): {
-				std::cout << std::format("PROGRAM STOPPED\n");
+				std::cerr << std::format("PRESSED ESCAPE KEY!\n");
+				std::cerr << std::format("PROGRAM STOPPED!\n");
+				break;
+			}
+			case (ELEMENTS::SpecialKey::ENTER): {
+				//std::cerr << std::format("PRESSED ENTER KEY!\n");
+				
+				switch (activeButtonIndicator) {
+					case (0): {
+						break;
+					}
+					case (1): {
+						break;
+					}
+					case (2): {
+						break;
+					}
+					case (3): {
+						break;
+					}
+					case (4): {
+						break;
+					}
+					case (5): {
+						ExitView::Run();
+						return;
+						break;
+					}
+				}
+
 				break;
 			}
 		}

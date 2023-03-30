@@ -57,6 +57,11 @@ HELPER::Dimension::Dimension() : width(0), height(0) {
 HELPER::Dimension::Dimension(int width, int height) : width(width), height(height) {
 }
 
+HELPER::Dimension::Dimension(const std::string& target) {
+    this->width = textwidth((char*)target.c_str());
+    this->height = textheight((char*)target.c_str());
+}
+
 void HELPER::Dimension::Log() {
     std::clog << std::format("Dimention: [{}x{}]\n", this->width, this->height);
 }
