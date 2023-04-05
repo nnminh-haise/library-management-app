@@ -7,6 +7,7 @@
 #include "Views/Elements.h"
 #include "Helper/Helper.h"
 #include "TheDocGia/TheDocGia.h"
+#include "Helper/ConstantsAndGlobalVariables.h"
 
 void TestUIElement() {
 
@@ -23,7 +24,11 @@ int main() {
 	AVL_TREE::Pointer danhSachTheDocgia;
 	AVL_TREE::Initialize(danhSachTheDocgia);
 	
-	LANDING_VIEW::Run(danhSachTheDocgia);
+	LoadDanhSachTheDocGiaFromDB(CONSTANTS::THE_DOC_GIA_DB, danhSachTheDocgia);
+
+	AVL_TREE::NonrecursiveInOrderTraversal(danhSachTheDocgia);
+
+	//LANDING_VIEW::Run(danhSachTheDocgia);
 
 
 	return 0;
