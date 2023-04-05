@@ -5,7 +5,5 @@
 #include "../TheDocGia/TheDocGia.h"
 
 namespace LANDING_VIEW {
-	void RegisterDefaultSettings();
-
 	void Run(AVL_TREE::Pointer& danhSachTheDocGia);
 }

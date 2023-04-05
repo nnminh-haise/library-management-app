@@ -102,6 +102,10 @@ void HELPER::Rectangle::Log() {
     std::clog << std::format("C({}, {}); D({}, {});\n", this->bottomLeft.x, this->bottomLeft.y, this->bottomRight.x, this->bottomRight.y);
 }
 
+HELPER::Coordinate HELPER::GetCurrentMouseCoordinate() {
+    return {mousex(), mousey()};
+}
+
 void HELPER::GetKey() {
     ELEMENTS::Window trial(HELPER::Dimension(800, 300), "TRIAL KEY PRESS");
 

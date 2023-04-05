@@ -1,5 +1,6 @@
 #include "TheDocGia.h"
 #include "../Helper/Helper.h"
+#include "../DataStructures/Stack.h"
 
 #include <string>
 #include <iostream>
@@ -196,6 +197,29 @@ void AVL_TREE::PostOrderTraversal(AVL_TREE::Pointer const& node) {
 		AVL_TREE::InOrderTraversal(node->right);
 		std::cerr << node->info.GetMaThe() << " ";
 	}
+}
+
+void AVL_TREE::NonrecursiveInOrderTraversal(const AVL_TREE::Pointer& root) {
+    STACK::Stack stk;
+    STACK::Initialize(stk);
+
+    AVL_TREE::Pointer p = root;
+
+    do {
+        while (p != nullptr) {
+            STACK::Push(stk, p);
+            p = p->left;
+        }
+
+        if (STACK::IsEmpty(stk) == false) {
+            p = STACK::Pop(stk);
+            p->info.Log();
+            p = p->right;
+        }
+        else {
+            break;
+        }
+    } while (true);
 }
 
 AVL_TREE::Pointer AVL_TREE::RotateLeft(AVL_TREE::Pointer root) {
@@ -496,7 +520,7 @@ bool LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE::Pointer& tree) 
 		bool result = TheDocGiaExtractor(line, ", ", newTheDocGia);
 		if (result) {
             ++recordCount;
-            newTheDocGia.Log();
+            //newTheDocGia.Log();
 
             //* If the tree is empty, then directly insert to the tree
             if (AVL_TREE::IsEmpty(tree)) {
@@ -514,8 +538,8 @@ bool LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE::Pointer& tree) 
 
     time_t endPoint = time(0);
 
-    std::cerr << std::format("Record count: {}\n", recordCount);
-    std::cerr << std::format("performance : {}s\n", ((double)(endPoint - startPoint)) / CLOCKS_PER_SEC);
+    //std::cerr << std::format("Record count: {}\n", recordCount);
+    //std::cerr << std::format("performance : {}s\n", ((double)(endPoint - startPoint)) / CLOCKS_PER_SEC);
 
 	return processResult;
 }

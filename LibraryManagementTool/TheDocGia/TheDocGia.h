@@ -136,6 +136,8 @@ namespace AVL_TREE {
 
 	void PostOrderTraversal(const Pointer& root);
 
+	void NonrecursiveInOrderTraversal(const Pointer& root);
+
 	Pointer RotateLeft(Pointer root);
 
 	Pointer RotateRight(Pointer root);
@@ -146,3 +148,5 @@ namespace AVL_TREE {
 bool TheDocGiaExtractor(std::string data, std::string seperator, THE_DOC_GIA::TheDocGia& returnData);
 
 bool LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE::Pointer& tree);
+
+

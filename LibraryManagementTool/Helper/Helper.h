@@ -58,6 +58,8 @@ namespace HELPER {
         void Log();
     };
 
+    Coordinate GetCurrentMouseCoordinate();
+
     void GetKey();
 
     void ShowColorPallet();
