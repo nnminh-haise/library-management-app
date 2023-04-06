@@ -106,6 +106,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -120,6 +121,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -129,6 +131,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DataStructures\Stack.cpp" />
+    <ClCompile Include="Views\DanhSachTheDocGia.cpp" />
+    <ClCompile Include="temp.cpp" />
+    <ClCompile Include="Views\ExitView.cpp" />
     <ClCompile Include="Views\LandingView.cpp" />
     <ClCompile Include="Views\DanhSachDauSachView.cpp" />
     <ClCompile Include="DauSach\DauSach.cpp" />
@@ -138,6 +144,10 @@
     <ClCompile Include="TheDocGia\TheDocGia.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DataStructures\Stack.h" />
+    <ClInclude Include="Views\DanhSachTheDocGia.h" />
+    <ClInclude Include="Helper\ConstantsAndGlobalVariables.h" />
+    <ClInclude Include="Views\ExitView.h" />
     <ClInclude Include="Views\LandingView.h" />
     <ClInclude Include="Views\DanhSachDauSachView.h" />
     <ClInclude Include="DauSach\DauSach.h" />

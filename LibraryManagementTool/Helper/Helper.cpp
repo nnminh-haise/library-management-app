@@ -57,6 +57,11 @@ HELPER::Dimension::Dimension() : width(0), height(0) {
 HELPER::Dimension::Dimension(int width, int height) : width(width), height(height) {
 }
 
+HELPER::Dimension::Dimension(const std::string& target) {
+    this->width = textwidth((char*)target.c_str());
+    this->height = textheight((char*)target.c_str());
+}
+
 void HELPER::Dimension::Log() {
     std::clog << std::format("Dimention: [{}x{}]\n", this->width, this->height);
 }
@@ -129,6 +134,34 @@ void HELPER::GetKey() {
     trial.Deactivate();
 }
 
+void HELPER::ShowColorPallet() {
+    ELEMENTS::Window window(HELPER::Dimension(1000, 500), "COLOR PALLET WINDOW");
+    window.Activate();
+
+    setfillstyle(SOLID_FILL, WHITE);
+    bar(0, 0, 1000, 500);
+
+    char inputKey{};
+    while (inputKey != ELEMENTS::SpecialKey::ESCAPE) {
+        moveto(20, 20);
+        outtext((char*)"BGI COLOR PALLET");
+
+        for (int i = 0; i < 16; ++i) {
+            std::cerr << std::format("({}, {})\n", 50, i * 20 + 50);
+            moveto(50, i * 20 + 50);
+            setbkcolor(i);
+            std::string text = "THIS IS A SAMPLE STRING WITH THE CODED COLOR: " + std::to_string(i);
+            std::cerr << text + "\n";
+            outtext((char*)text.c_str());
+        }
+
+        inputKey = getch();
+
+    }
+
+    window.Deactivate();
+}
+
 std::string STR::Trim(std::string target) {
     if (target.length() == 0) {
         return target;
@@ -148,3 +181,6 @@ std::string STR::Trim(std::string target) {
     return target;
 }
 
+int rgb(int r, int g, int b) {
+    return COLOR(r, g, b);
+}

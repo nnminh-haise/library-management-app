@@ -29,6 +29,8 @@ namespace HELPER {
 
         Dimension(int width, int height);
 
+        Dimension(const std::string& target);
+
         void Log();
     };
 
@@ -57,7 +59,11 @@ namespace HELPER {
     };
 
     void GetKey();
+
+    void ShowColorPallet();
 }
+
+int rgb(int r, int g, int b);
 
 namespace STR {
     std::string Trim(std::string target);
