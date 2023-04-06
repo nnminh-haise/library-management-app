@@ -112,19 +112,7 @@ namespace THE_DOC_GIA {
 	};
 }
 
-/*
-* AVL TREE NAMESPACE.
-* 
-* Each node of the AVL tree is a @TheDocGia object. 
-* The key of each node is the @TheDocGia.MaThe itself.
-* The maximum size of the tree is 1000 nodes.
-* 
-* Due to the effect of the AVL Tree, @danhSachTheDocGia will be sorted to increasement order buy @maThe.
-*/
-
 namespace AVL_TREE {
-	const int MAX_SIZE = 1000;
-
 	struct Node {
 		THE_DOC_GIA::TheDocGia info;
 		int balanceFactor;

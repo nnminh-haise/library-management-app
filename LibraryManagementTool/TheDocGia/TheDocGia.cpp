@@ -8,7 +8,6 @@
 #include <format>
 #include <ctime>
 
-
 MUON_TRA::MuonTra::MuonTra() {
 	this->MaSach = std::string();
 	this->NgayMuon = HELPER::Date();
@@ -504,8 +503,6 @@ bool LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE::Pointer& tree) 
 	*/
     time_t startPoint = time(0);
 
-    //std::cerr << "[INFO] Begin to load data from DB!\n\n";
-
     std::filebuf databaseBuffer{};
 
 	if (!databaseBuffer.open(filename, std::ios::in)) {
@@ -543,8 +540,6 @@ bool LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE::Pointer& tree) 
 
     //std::cerr << std::format("Record count: {}\n", recordCount);
     //std::cerr << std::format("performance : {}s\n", ((double)(endPoint - startPoint)) / CLOCKS_PER_SEC);
-
-    //std::cerr << "[INFO] DB Load complete!\n\n";
 
 	return processResult;
 }
