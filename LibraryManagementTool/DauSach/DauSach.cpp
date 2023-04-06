@@ -236,3 +236,29 @@ bool DAU_SACH::InsertItem(LinearList& list, DauSach* item, int position) {
 	return true;
 }
 
+void DAU_SACH::swap(DauSach*& ClassPtr1, DauSach*& ClassPtr2)
+{
+	DauSach* temp = ClassPtr1;
+	ClassPtr1 = ClassPtr2;
+	ClassPtr2 = temp;
+}
+
+void DAU_SACH::sortByCategory(LinearList& list)
+{
+	int j, k, min_index;
+	for (j = 0; j < list.numberOfNode - 1; j++)
+	{
+		min_index = j;
+		for (k = j + 1; k < list.numberOfNode; k++)
+		{
+			if (list.nodes[min_index]->GetTheLoai().compare(list.nodes[k]->GetTheLoai()) > 0)
+				min_index = k;
+			else if (list.nodes[min_index]->GetTheLoai().compare(list.nodes[k]->GetTheLoai()) == 0)
+				if (list.nodes[min_index]->GetTenSach().compare(list.nodes[k]->GetTenSach()) > 0)
+					swap(list.nodes[min_index], list.nodes[k]);
+		}
+		if (min_index != j)
+			swap(list.nodes[min_index], list.nodes[j]);
+	}
+}
+

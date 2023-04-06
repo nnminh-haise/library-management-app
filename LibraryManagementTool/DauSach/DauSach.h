@@ -121,6 +121,10 @@ namespace DAU_SACH {
 	bool IsFull(const LinearList& list);
 
 	bool InsertItem(LinearList& list, DauSach* item, int position);
+
+	void swap(DauSach*&, DauSach*&);
+
+	void sortByCategory(LinearList& list);
 }
 
 
