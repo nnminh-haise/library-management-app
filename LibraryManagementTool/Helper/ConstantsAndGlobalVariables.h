@@ -10,10 +10,19 @@ namespace CONSTANTS {
 	inline extern const std::string WINDOW_TITLE = "LIBRARY MANAGEMENT TOOL";
 	inline extern const std::string THE_DOC_GIA_DB = "Databases/DOC_GIA_DB.txt";
 	inline extern const int BACKGROUND_COLOR = WHITE;
+	inline extern const int MAX_ROW_COUNT = 16;
+
 }
 
 namespace GLOBAL_VARIABLES {
 	inline extern textsettingstype defaultTextSetting{};
+}
+
+namespace THE_DOC_GIA_PROPERTIES {
+	const int PROPERTIES_COUNT = 7;
+	const int CHARACTER_LIMITS[] = { 3, 4, 30, 15, 3, 9, 10 };
+	const int ROW_HEIGHT = 50;
+	const std::string LABEL_PLACEHOLDERS[] = { "STT", "MA THE", "HO", "TEN", "PHAI", "TRANG THAI", "SACH DANG MUON" };
 }
 
 namespace VIEW_ELEMENTS_PROPERTIES {
@@ -31,3 +40,4 @@ namespace BUTTON_DEFAULT_PROPERTIES {
 	const int TEXT_COLOR = rgb(252, 255, 231);
 	const int BORDER_COLOR = rgb(43, 52, 103);
 }
+

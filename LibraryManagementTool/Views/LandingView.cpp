@@ -27,10 +27,10 @@ void ButtonHover(ELEMENTS::Button& button) {
 	button.SetTextColor(rgb(233, 248, 249));
 }
 
-void ProgramTitleProperties(ELEMENTS::TextBox& box) {
-	box.SetFillColor(rgb(236, 242, 255));
-	box.SetBorderColor(box.GetFillColor());
-	box.SetTextColor(rgb(46, 56, 64));
+void ProgramTitleProperties(ELEMENTS::Button& btn) {
+	btn.SetFillColor(rgb(236, 242, 255));
+	btn.SetBorderColor(btn.GetFillColor());
+	btn.SetTextColor(rgb(46, 56, 64));
 }
 
 void DefaultCloseButtonProperties(ELEMENTS::CloseButton& btn) {
@@ -43,7 +43,7 @@ void CloseButtonHover(ELEMENTS::CloseButton& button) {
 	button.SetFillColor(rgb(255, 3, 3));
 }
 
-void LANDING_VIEW::Run(AVL_TREE::Pointer& danhSachTheDocGia) {
+void LANDING_VIEW::Run(AVL_TREE::Pointer& danhSachTheDocGia, LINEAR_LIST::LinearList danhSachDauSach) {
 
 	ELEMENTS::Window programWindow(HELPER::Dimension(1800, 1000), "CHUONG TRINH QUAN LI THU VIEN - PTITHCM");
 	programWindow.backgroundColor = WHITE;
@@ -53,25 +53,28 @@ void LANDING_VIEW::Run(AVL_TREE::Pointer& danhSachTheDocGia) {
 	ELEMENTS::Fill navigationBar(HELPER::Coordinate(0, 0), 1800, 100, rgb(11, 36, 71), rgb(11, 36, 71));
 
 	//* Program name setups
-	ELEMENTS::TextBox programnTitle(HELPER::Coordinate(36, 25), 440, 50);
+	ELEMENTS::Button programnTitle(HELPER::Coordinate(36, 25), 440, 50);
 	programnTitle.SetPlaceholder("Q U A N   L I   T H U   V I E N");
 	ProgramTitleProperties(programnTitle);
 
 	//* Button setups
-	std::string placeholders[3]{ "DANH SACH DAU SACH", "DANH SACH THE DOC GIA", "THONG KE" };
+	std::string labelPlaceholders[3]{ "DANH SACH DAU SACH", "DANH SACH THE DOC GIA", "THONG KE" };
 	ELEMENTS::Button buttons[3]{
 		ELEMENTS::Button(HELPER::Coordinate(640, 25), 300, 50),
 		ELEMENTS::Button(HELPER::Coordinate(980, 25), 300, 50),
 		ELEMENTS::Button(HELPER::Coordinate(1320, 25), 300, 50)
 	};
 	for (int i = 0; i < 3; ++i) {
-		buttons[i].SetPlaceholder(placeholders[i]);
+		buttons[i].SetPlaceholder(labelPlaceholders[i]);
 		DefaultButtonProperties(buttons[i]);
 	}
 
 	//* Close button
 	ELEMENTS::CloseButton closeBtn(HELPER::Coordinate(1705, 25), 50, 50);
 	DefaultCloseButtonProperties(closeBtn);
+
+	//* Create Views
+	DanhSachTheDocGiaView theDocGiaView(danhSachTheDocGia);
 
 	int currentTab = 0;
 	bool stopFlag = false;
@@ -94,10 +97,10 @@ void LANDING_VIEW::Run(AVL_TREE::Pointer& danhSachTheDocGia) {
 
 		switch (currentTab) {
 		case (0):
-			DANH_SACH_DAU_SACH_VIEW::Run();
+			//DANH_SACH_DAU_SACH_VIEW::Run(danhSachDauSach);
 			break;
 		case (1):
-			DANH_SACH_THE_DOC_GIA_VIEW::Run(danhSachTheDocGia);
+			theDocGiaView.Run();
 			break;
 		case (2):
 			break;
@@ -110,15 +113,22 @@ void LANDING_VIEW::Run(AVL_TREE::Pointer& danhSachTheDocGia) {
 			}
 			else if (i != currentTab) {
 				if (buttons[i].IsPointed() && buttons[i].LeftMouseClicked() == false) {
+					std::cerr << "Hover\n";
 					ButtonHover(buttons[i]);
+					buttons[i].ResetLeftClick();
 				}
 				else if (buttons[i].LeftMouseClicked()) {
+					std::cerr << "Before tab: " << currentTab << "\n";
 					currentTab = i;
+					clearmouseclick(VK_LBUTTON);
+					buttons[i].ResetLeftClick();
+					std::cerr << "After tab: " << currentTab << "\n";
 				}
 				else {
 					DefaultButtonProperties(buttons[i]);
 				}
 			}
+			buttons[i].ResetLeftClick();
 		}
 
 		if (closeBtn.IsPointed() && closeBtn.LeftMouseClicked() == false) {
@@ -126,6 +136,7 @@ void LANDING_VIEW::Run(AVL_TREE::Pointer& danhSachTheDocGia) {
 		}
 		else if (closeBtn.LeftMouseClicked()) {
 			stopFlag = true;
+			clearmouseclick(VK_LBUTTON);
 		}
 		else {
 			DefaultCloseButtonProperties(closeBtn);

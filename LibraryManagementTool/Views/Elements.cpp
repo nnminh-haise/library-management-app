@@ -270,6 +270,40 @@ ELEMENTS::Button::Button(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRi
 	this->placeholder = "BUTTON";
 }
 
+void ELEMENTS::Button::SetTopLeft(HELPER::Coordinate topLeft) {
+	this->topLeft = topLeft;
+	this->fill.topLeft = topLeft;
+}
+
+HELPER::Coordinate ELEMENTS::Button::GetTopLeft() {
+	return this->topLeft;
+}
+
+void ELEMENTS::Button::SetDimension(HELPER::Dimension newDimension) {
+	this->dimension = newDimension;
+	this->fill.dimension = newDimension;
+}
+
+HELPER::Dimension ELEMENTS::Button::GetDimension() {
+	return this->fill.dimension;
+}
+
+bool ELEMENTS::Button::UpdateWithNewTopLeft() {
+	if (this->dimension.width == 0 && this->dimension.height == 0) {
+		return false;
+	}
+
+	this->bottomRight.x = this->topLeft.x + this->dimension.width;
+	this->bottomRight.y = this->topLeft.y + this->dimension.height;
+	this->fill.bottomRight.x = this->topLeft.x + this->dimension.width;
+	this->fill.bottomRight.y = this->topLeft.y + this->dimension.height;
+	return true;
+}
+
+HELPER::Coordinate ELEMENTS::Button::GetBottomRight() {
+	return this->bottomRight;
+}
+
 void ELEMENTS::Button::SetFillColor(int color) {
 	this->fill.fillColor = color;
 }
@@ -337,8 +371,7 @@ bool ELEMENTS::Button::IsPointed() {
 
 bool ELEMENTS::Button::LeftMouseClicked() {
 	if (this->IsPointed() && GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
-		this->leftClicked = true;
-		this->active = true;
+		this->SetLeftClicked();
 		return true;
 	}
 	return false;
@@ -346,106 +379,198 @@ bool ELEMENTS::Button::LeftMouseClicked() {
 
 bool ELEMENTS::Button::RightMouseClicked() {
 	if (this->IsPointed() && GetAsyncKeyState(VK_RBUTTON) & 0x8000) {
-		this->leftClicked = true;
+		this->SetRightClicked();
 		return true;
 	}
 	return false;
 }
 
-ELEMENTS::TextBox::TextBox() {
+void ELEMENTS::Button::SetLeftClicked() {
+	this->leftClicked = true;
+}
+
+void ELEMENTS::Button::SetRightClicked() {
+	this->rightClicked = true;
+}
+
+void ELEMENTS::Button::ResetLeftClick() {
+	this->leftClicked = false;
+}
+
+void ELEMENTS::Button::ResetRightClick() {
+	this->rightClicked = false;
+}
+
+bool ELEMENTS::Button::GetLeftMouseStatus() {
+	return this->leftClicked;
+}
+
+bool ELEMENTS::Button::GetRightMouseStatus() {
+	return this->rightClicked;
+}
+
+DATASHEET::Row::Row() {
 	this->topLeft = this->bottomRight = HELPER::Coordinate();
-	this->dimension = HELPER::Dimension();
-	this->fill = ELEMENTS::Fill();
-	this->textColor = WHITE;
-	this->textStyle = DEFAULT_FONT;
-	this->textSize = 0;
+	this->labels = nullptr;
+	this->labelPlaceholders = nullptr;
+	this->characterLimits = nullptr;
+	this->columnCount = 0;
+	this->rowHeight = 0;
 }
 
-ELEMENTS::TextBox::TextBox(HELPER::Coordinate topLeft, int width, int height, int textColor, int fillcolor, int borderColor) {
+DATASHEET::Row::Row(int columnCount, HELPER::Coordinate topLeft, std::string* labelPlaceholders, int* characterLimits, int rowHeight) {
+	this->columnCount = columnCount;
 	this->topLeft = topLeft;
-	this->dimension = { width, height };
-	this->bottomRight = HELPER::Coordinate(topLeft.x + width, topLeft.y + height);
-	this->fill = ELEMENTS::Fill(this->topLeft, this->bottomRight, fillcolor, borderColor);
-	this->textColor = textColor;
-	this->placeholder = "TEXT BOX";
-	this->textStyle = DEFAULT_FONT;
-	this->textSize = 0;
+	this->labelPlaceholders = labelPlaceholders;
+	this->characterLimits = characterLimits;
+	this->rowHeight = rowHeight;
+
+	ELEMENTS::Padding padding(10);
+	this->labels = new ELEMENTS::Button[this->columnCount];
+	HELPER::Dimension boxDimension;
+	for (int i = 0; i < this->columnCount; ++i) {
+		boxDimension.width = max(textwidth((char*)this->labelPlaceholders[i].c_str()), textwidth((char*)"W") * this->characterLimits[i]) + padding.left + padding.right;
+		boxDimension.height = this->rowHeight;
+		if (i == 0) {
+			this->labels[i].SetTopLeft(this->topLeft);
+		}
+		else {
+			this->labels[i].SetTopLeft(HELPER::Coordinate(this->labels[i - 1].GetTopLeft().x + this->labels[i - 1].GetDimension().width, this->labels[i - 1].GetTopLeft().y));
+		}
+		this->labels[i].SetDimension(boxDimension);
+		this->labels[i].UpdateWithNewTopLeft();
+		this->labels[i].SetPlaceholder(this->labelPlaceholders[i]);
+	}
+	this->bottomRight = this->labels[columnCount - 1].GetBottomRight();
 }
 
-ELEMENTS::TextBox::TextBox(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int textColor, int fillcolor, int borderColor) {
+void DATASHEET::Row::SetPlaceHolder(std::string* labelPlaceholders) {
+	this->labelPlaceholders = labelPlaceholders;
+	for (int i = 0; i < this->columnCount; ++i) {
+		this->labels[i].SetPlaceholder(this->labelPlaceholders[i]);
+	}
+}
+
+void DATASHEET::Row::Display() {
+	for (int i = 0; i < this->columnCount; ++i) {
+		this->labels[i].Display();
+	}
+}
+
+void DATASHEET::Datasheet::DefaultLabelsProperties(DATASHEET::Row& field) {
+	for (int i = 0; i < field.columnCount; ++i) {
+		field.labels[i].SetFillColor(rgb(210, 218, 255));
+		field.labels[i].SetBorderColor(rgb(25, 24, 37));
+		field.labels[i].SetTextColor(rgb(25, 24, 37));
+	}
+}
+
+void DATASHEET::Datasheet::DefaultDataFieldProperties(DATASHEET::Row& field, int order) {
+	for (int i = 0; i < field.columnCount; ++i) {
+		if (order % 2 != 0) {
+			field.labels[i].SetFillColor(rgb(255, 251, 245));
+		}
+		else {
+			field.labels[i].SetFillColor(rgb(238, 238, 238));
+		}
+		field.labels[i].SetBorderColor(rgb(25, 24, 37));
+		field.labels[i].SetTextColor(rgb(25, 24, 37));
+	}
+}
+
+DATASHEET::Datasheet::Datasheet() {
+	this->rowCount = this->columnCount = 0;
+	this->topLeft = this->bottomRight = HELPER::Coordinate();
+	this->labelPlaceholders = nullptr;
+	this->characterLimits = nullptr;
+	this->rows = nullptr;
+	this->rowHeight = 0;
+}
+
+DATASHEET::Datasheet::Datasheet(int rowCount, int columnCount, int rowHeight, HELPER::Coordinate topLeft, std::string* labelPlaceholders, int* characterLimits) {
+	//* Assign parameterized field
+	this->rowCount = rowCount;
+	this->columnCount = columnCount;
 	this->topLeft = topLeft;
-	this->bottomRight = bottomRight;
-	this->dimension = { this->bottomRight.x - this->topLeft.x, this->bottomRight.y - this->topLeft.y };
-	this->fill = ELEMENTS::Fill(this->topLeft, this->bottomRight, fillcolor, borderColor);
-	this->textColor = textColor;
-	this->placeholder = "TEXT BOX";
-	this->textStyle = DEFAULT_FONT;
-	this->textSize = 0;
+	this->labelPlaceholders = labelPlaceholders;
+	this->characterLimits = characterLimits;
+	this->rowHeight = rowHeight;
+
+	//* Some references for easy coding
+	std::string* defaultData = new std::string[this->columnCount];
+	for (int i = 0; i < this->columnCount; ++i) {
+		defaultData[i] = "...";
+	}
+
+	//* Create Datasheet logic
+	this->rows = new DATASHEET::Row[this->rowCount];
+	for (int i = 0; i < this->rowCount; ++i) {
+		DATASHEET::Row& currentRow = this->rows[i];
+
+		if (i == 0) {//* Create labels
+			currentRow = DATASHEET::Row(this->columnCount, this->topLeft, this->labelPlaceholders, this->characterLimits, this->rowHeight);
+			currentRow.SetPlaceHolder(this->labelPlaceholders);
+			DATASHEET::Datasheet::DefaultLabelsProperties(currentRow);
+		}
+		else {//* Create data's field
+			currentRow = DATASHEET::Row(this->columnCount,
+				HELPER::Coordinate(this->rows[i - 1].topLeft.x, this->rows[i - 1].bottomRight.y),
+				this->labelPlaceholders, this->characterLimits,
+				this->rowHeight
+			);
+			currentRow.SetPlaceHolder(defaultData);
+			DATASHEET::Datasheet::DefaultDataFieldProperties(currentRow, i);
+		}
+	}
+
+	delete[this->columnCount] defaultData;
 }
 
-void ELEMENTS::TextBox::SetFillColor(int color) {
-	this->fill.fillColor = color;
+void DATASHEET::Datasheet::UpdateNewPlaceholder(std::string* newPlaceholder, int rowIndicator) {
+	if (rowIndicator <= 0 || rowIndicator >= CONSTANTS::MAX_ROW_COUNT) {
+		return;
+	}
+
+	for (int i = 0; i < this->columnCount; ++i) {
+		this->rows[rowIndicator].labels[i].SetPlaceholder(newPlaceholder[i]);
+	}
 }
 
-int ELEMENTS::TextBox::GetFillColor() {
-	return this->fill.fillColor;
+void DATASHEET::Datasheet::Display() {
+	for (int i = 0; i < this->rowCount; ++i) {
+		this->rows[i].Display();
+	}
 }
 
-void ELEMENTS::TextBox::SetTextColor(int color) {
-	this->textColor = color;
+DATASHEET::Controler::Controler() {
+	this->datasheetCount = 0;
+	this->sheets = nullptr;
+	this->activeSheet = -1;
 }
 
-int ELEMENTS::TextBox::GetTextColor() {
-	return this->textColor;
+DATASHEET::Controler::Controler(int rowCount, int columnCount, int rowHeight, HELPER::Coordinate topLeft) {
+	this->rowCount = rowCount;
+	this->columnCount = columnCount;
+	this->rowHeight = rowHeight;
+	this->topLeft = topLeft;
+
+	this->datasheetCount = 0;
+	this->sheets = nullptr;
+	this->activeSheet = -1;
 }
 
-void ELEMENTS::TextBox::SetBorderColor(int color) {
-	this->fill.borderColor = color;
+DATASHEET::Controler::~Controler() {
+	delete[this->datasheetCount] this->sheets;
 }
 
-int ELEMENTS::TextBox::GetBorderColor() {
-	return this->fill.borderColor;
+void DATASHEET::Controler::UpdateActiveSheet(int indicator) {
+	if (indicator < 0 || indicator >= this->datasheetCount) {
+		return;
+	}
+	this->activeSheet = indicator;
 }
 
-void ELEMENTS::TextBox::SetTextSize(int size) {
-	this->textSize = size;
+void DATASHEET::Controler::Display() {
+	//std::cerr << std::format("[INFO] CURRENT ACTIVE SHEET: {}\n", this->activeSheet);
+	this->sheets[this->activeSheet].Display();
 }
-
-int ELEMENTS::TextBox::GetTextSize() {
-	return this->textSize;
-}
-
-void ELEMENTS::TextBox::SetTextStyle(int style) {
-	this->textStyle = style;
-}
-
-int ELEMENTS::TextBox::GetTextStyle() {
-	return this->textStyle;
-}
-
-void ELEMENTS::TextBox::SetPlaceholder(std::string placeholder) {
-	this->placeholder = placeholder;
-}
-
-std::string ELEMENTS::TextBox::GetPlaceholder() {
-	return this->placeholder;
-}
-
-void ELEMENTS::TextBox::Display() {
-	this->fill.Draw();
-	setcolor(this->textColor);
-	HELPER::Dimension textDimension(
-		textwidth((char*)this->placeholder.c_str()),
-		textheight((char*)this->placeholder.c_str())
-	);
-	HELPER::Coordinate textPosition(
-		this->topLeft.x + (this->dimension.width / 2 - textDimension.width / 2),
-		this->topLeft.y + (this->dimension.height / 2 - textDimension.height / 2)
-	);
-	setbkcolor(this->fill.fillColor);
-	//settextstyle(this->textStyle, HORIZ_DIR, this->textSize);
-	outtextxy(textPosition.x, textPosition.y, (char*)this->placeholder.c_str());
-
-	//settextstyle(DEFAULT_FONT, HORIZ_DIR, 0);
-}
-

@@ -41,36 +41,22 @@ std::string SACH::Sach::GetViTri() {
 	return this->ViTri;
 }
 
-SACH::Node::Node() : info(SACH::Sach()), next(nullptr) {
+LINKED_LIST::Node::Node() : info(SACH::Sach()), next(nullptr) {
 }
 
-SACH::Node::Node(SACH::Sach info, SACH::Node* next) : info(info), next(next) {
+LINKED_LIST::Node::Node(SACH::Sach info, LINKED_LIST::Node* next) : info(info), next(next) {
 }
 
-//SACH::Sach* SACH::SplitDataFromString(const std::string& data, const std::string& seperator) {
-//	std::string dataSet[3]{};
-//	int indicator = 0;
-//	std::size_t start = 0, end = 0;
-//	while ((end = data.find(seperator, start)) != std::string::npos) {
-//		dataSet[indicator++] = data.substr(start, end - start);
-//		start = end + seperator.length();
-//	}
-//	dataSet[indicator] = data.substr(start);
-//
-//	SACH::Sach* newSach = new SACH::Sach(dataSet[0], dataSet[1], dataSet[2]);
-//	return newSach;
-//}
-
-void SACH::Initialize(SACH::LinkedListController& controller) {
+void LINKED_LIST::Initialize(LINKED_LIST::Controler& controller) {
 	controller.first = nullptr;
 }
 
-bool SACH::IsEmpty(const SACH::LinkedListController& controller) {
+bool LINKED_LIST::IsEmpty(const LINKED_LIST::Controler& controller) {
 	return controller.first == nullptr;
 }
 
-void SACH::InsertItemLast(LinkedListController& controller, Sach item) {
-	SACH::Pointer newNode = new Node(item, nullptr);
+void LINKED_LIST::InsertItemLast(LINKED_LIST::Controler& controller, SACH::Sach item) {
+	LINKED_LIST::Pointer newNode = new Node(item, nullptr);
 
 	++controller.total;
 	if (item.GetTrangThai() == SACH::TrangThaiSach::DA_CO_DOC_GIA_MUON) {
@@ -80,11 +66,11 @@ void SACH::InsertItemLast(LinkedListController& controller, Sach item) {
 		++controller.sold;
 	}
 
-	if (SACH::IsEmpty(controller)) {
+	if (LINKED_LIST::IsEmpty(controller)) {
 		controller.first = newNode;
 	}
 	else {
-		SACH::Pointer Last = controller.first;
+		LINKED_LIST::Pointer Last = controller.first;
 		for (; Last->next != nullptr; Last = Last->next);
 		Last->next = newNode;
 	}
@@ -98,10 +84,10 @@ DAU_SACH::DauSach::DauSach() {
 	this->TacGia = std::string();
 	this->NamXuatBan = 0;
 	this->TheLoai = std::string();
-	this->DanhMucSach = nullptr;
+	this->DanhMucSach.first = nullptr;
 }
 
-DAU_SACH::DauSach::DauSach(std::string ISBN, std::string TenSach, unsigned int SoTrang, std::string TacGia, unsigned int NamXuatBan, std::string TheLoai, SACH::Pointer DanhMucSach) {
+DAU_SACH::DauSach::DauSach(std::string ISBN, std::string TenSach, unsigned int SoTrang, std::string TacGia, unsigned int NamXuatBan, std::string TheLoai, LINKED_LIST::Controler DanhMucSach) {
 	this->ISBN = ISBN;
 	this->TenSach = TenSach;
 	this->SoTrang = SoTrang;
@@ -159,66 +145,44 @@ std::string DAU_SACH::DauSach::GetTheLoai() {
 	return this->TheLoai;
 }
 
-void DAU_SACH::DauSach::SetDanhMucSach(SACH::Pointer DanhMucSach) {
+void DAU_SACH::DauSach::SetDanhMucSach(LINKED_LIST::Controler DanhMucSach) {
 	this->DanhMucSach = DanhMucSach;
 }
 
-SACH::Pointer DAU_SACH::DauSach::GetDanhMucSach() {
+LINKED_LIST::Controler DAU_SACH::DauSach::GetDanhMucSach() {
 	return this->DanhMucSach;
 }
 
-DAU_SACH::LinearList::LinearList() {
+LINEAR_LIST::LinearList::LinearList() {
 	this->numberOfNode = 0;
-	for (int i = 0; i < DAU_SACH::MAX_SIZE; ++i) {
+	for (int i = 0; i < LINEAR_LIST::MAX_SIZE; ++i) {
 		this->nodes[i] = nullptr;
 	}
 }
 
-//DAU_SACH::DauSach* DAU_SACH::SplitDataFromString(const std::string& data, const std::string& seperator) {
-//	std::string dataSet[7]{};
-//	int indicator = 0;
-//	std::size_t start = 0, end = 0;
-//	while ((end = data.find(seperator, start)) != std::string::npos) {
-//		dataSet[indicator++] = data.substr(start, end - start);
-//		start = end + seperator.length();
-//	}
-//	dataSet[indicator] = data.substr(start);
-//
-//	SACH::Pointer newDanhMucSach_First;
-//	SACH::Initialize(newDanhMucSach_First);
-//	for (int i = 0; i < std::stoi(dataSet[6]); ++i) {
-//		//std::getline()
-//		//SACH::Sach newSach = SACH::SplitDataFromString()
-//		//SACH::InsertItemLast(newDanhMucSach_First, );
-//	}
-//	
-//
-//	return nullptr;
-//}
-
-void DAU_SACH::Initialize(DAU_SACH::LinearList& list) {
+void LINEAR_LIST::Initialize(LINEAR_LIST::LinearList& list) {
 	list.numberOfNode = 0;
-	for (int i = 0; i < DAU_SACH::MAX_SIZE; ++i) {
+	for (int i = 0; i < LINEAR_LIST::MAX_SIZE; ++i) {
 		list.nodes[i] = nullptr;
 	}
 }
 
-bool DAU_SACH::IsEmpty(const LinearList& list) {
+bool LINEAR_LIST::IsEmpty(const LinearList& list) {
 	return list.numberOfNode == 0;
 }
 
-bool DAU_SACH::IsFull(const LinearList& list) {
+bool LINEAR_LIST::IsFull(const LinearList& list) {
 	return list.numberOfNode == MAX_SIZE;
 }
 
-bool DAU_SACH::InsertItem(LinearList& list, DauSach* item, int position) {
-	if (DAU_SACH::IsFull(list)) {
+bool LINEAR_LIST::InsertItem(LINEAR_LIST::LinearList& list, DAU_SACH::DauSach* item, int position) {
+	if (LINEAR_LIST::IsFull(list)) {
 		std::cerr << std::format("[ERROR] LIST IS FULL CANNOT INSERT NEW ELEMENT!\nSUGGEST CREATE A NEW LIST WITH BIGGER SIZE!\n");
 		return false;
 	}
 
 	if (position < 0 || position >= list.numberOfNode) {
-		std::cerr << std::format("[ERROR] POSITION OUT OF RANGE! INSERT POSITION MUST IN RANGE 0 TO {}\n", DAU_SACH::MAX_SIZE - 1);
+		std::cerr << std::format("[ERROR] POSITION OUT OF RANGE! INSERT POSITION MUST IN RANGE 0 TO {}\n", LINEAR_LIST::MAX_SIZE - 1);
 		return false;
 	}
 
