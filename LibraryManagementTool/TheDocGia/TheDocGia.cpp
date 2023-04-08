@@ -534,7 +534,7 @@ bool THE_DOC_GIA_MODULES::LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_
         std::string line{};
 		std::getline(database, line);
         THE_DOC_GIA::TheDocGia newTheDocGia{};
-		bool result = TheDocGiaExtractor(line, ", ", newTheDocGia);
+		bool result = THE_DOC_GIA_MODULES::TheDocGiaExtractor(line, ", ", newTheDocGia);
 		if (result) {
             ++recordCount;
             //newTheDocGia.Log();

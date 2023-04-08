@@ -63,16 +63,16 @@ namespace DAU_SACH {
 	private:
 		std::string ISBN;
 		std::string TenSach;
-		unsigned int SoTrang;
+		int SoTrang;
 		std::string TacGia;
-		unsigned int NamXuatBan;
+		int NamXuatBan;
 		std::string TheLoai;
 		LINKED_LIST::Controler DanhMucSach;
 
 	public:
 		DauSach();
 
-		DauSach(std::string ISBN, std::string TenSach, unsigned int SoTrang, std::string TacGia, unsigned int NamXuatBan, std::string TheLoai, LINKED_LIST::Controler DanhMucSach);
+		DauSach(std::string ISBN, std::string TenSach, int SoTrang, std::string TacGia, int NamXuatBan, std::string TheLoai, LINKED_LIST::Controler DanhMucSach);
 
 		void SetISBN(std::string ISBN);
 
@@ -82,17 +82,17 @@ namespace DAU_SACH {
 
 		std::string GetTenSach();
 
-		void SetSoTrang(unsigned int Sotrang);
+		void SetSoTrang(int sotrang);
 
-		unsigned int GetSoTrang();
+		int GetSoTrang();
 		
 		void SetTacGia(std::string TacGia);
 
 		std::string GetTacGia();
 
-		void SetNamXuatBan(unsigned int NamXuatBan);
+		void SetNamXuatBan(int NamXuatBan);
 
-		unsigned int GetNamXuatBan();
+		int GetNamXuatBan();
 
 		void SetTheLoai(std::string TheLoai);
 
@@ -101,6 +101,8 @@ namespace DAU_SACH {
 		void SetDanhMucSach(LINKED_LIST::Controler DanhMucSach);
 
 		LINKED_LIST::Controler GetDanhMucSach();
+
+		void Log();
 	};
 }
 
@@ -121,4 +123,14 @@ namespace LINEAR_LIST {
 	bool IsFull(const LinearList& list);
 
 	bool InsertItem(LinearList& list, DAU_SACH::DauSach* item, int position);
+
+	bool InsertLast(LinearList& list, DAU_SACH::DauSach* item);
+
+	void Traversal(const LinearList& list);
+}
+
+namespace DAU_SACH_MODULES {
+	bool DauSachExtractor(std::string data, std::string seperator, DAU_SACH::DauSach* returnData);
+
+	bool LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LIST::LinearList& danhSachDauSach);
 }

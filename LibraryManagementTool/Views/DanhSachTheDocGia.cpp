@@ -112,6 +112,7 @@ void DanhSachTheDocGiaView::Run() {
 			this->DatasheetChangeBTNHover(this->sheetChange[i]);
 		}
 		else if (this->sheetChange[i].LeftMouseClicked()) {
+			
 			if (i == 0) {
 				if (this->controler.activeSheet == 0) {
 					this->controler.activeSheet = this->controler.datasheetCount - 1;
@@ -128,6 +129,7 @@ void DanhSachTheDocGiaView::Run() {
 					++this->controler.activeSheet;
 				}
 			}
+			delay(100);
 		}
 		else {
 			this->DatasheetChangeBTNProperties(this->sheetChange[i]);

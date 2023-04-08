@@ -75,6 +75,7 @@ void LANDING_VIEW::Run(AVL_TREE::Pointer& danhSachTheDocGia, LINEAR_LIST::Linear
 
 	//* Create Views
 	DanhSachTheDocGiaView theDocGiaView(danhSachTheDocGia);
+	DanhSachDauSachView dauSachView(danhSachDauSach);
 
 	int currentTab = 0;
 	bool stopFlag = false;
@@ -97,7 +98,7 @@ void LANDING_VIEW::Run(AVL_TREE::Pointer& danhSachTheDocGia, LINEAR_LIST::Linear
 
 		switch (currentTab) {
 		case (0):
-			//DANH_SACH_DAU_SACH_VIEW::Run(danhSachDauSach);
+			dauSachView.Run();
 			break;
 		case (1):
 			theDocGiaView.Run();
