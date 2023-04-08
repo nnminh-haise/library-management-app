@@ -1,7 +1,25 @@
 #pragma once
 
 #include "../TheDocGia/TheDocGia.h"
+#include "Elements.h"
 
-namespace DANH_SACH_THE_DOC_GIA_VIEW {
-	void Run(AVL_TREE::Pointer& danhSachTheDocGia);
-}
+
+
+class DanhSachTheDocGiaView {
+private:
+	bool active;
+	DATASHEET::Controler controler;
+	ELEMENTS::Button sheetChange[2];
+
+private:
+	void DatasheetChangeBTNHover(ELEMENTS::Button& btn);
+
+	void DatasheetChangeBTNProperties(ELEMENTS::Button& btn);
+
+	void CreateDatasheetsFromDatabase(AVL_TREE::Pointer& danhSachThedocGia, DATASHEET::Controler& controler);
+
+public:
+	DanhSachTheDocGiaView(AVL_TREE::Pointer& danhSachTheDocGia);
+
+	void Run();
+};

@@ -8,7 +8,6 @@
 #include <format>
 #include <ctime>
 
-
 MUON_TRA::MuonTra::MuonTra() {
 	this->MaSach = std::string();
 	this->NgayMuon = HELPER::Date();
@@ -60,15 +59,15 @@ DOUBLE_LINKED_LIST::Node::Node() {
 	this->left = this->right = nullptr;
 }
 
-DOUBLE_LINKED_LIST::Controller::Controller() {
+DOUBLE_LINKED_LIST::Controler::Controler() {
 	this->First = this->Last = nullptr;
 }
 
-void DOUBLE_LINKED_LIST::Initialize(Controller& list) {
+void DOUBLE_LINKED_LIST::Initialize(Controler& list) {
 	list.First = list.Last = nullptr;
 }
 
-bool DOUBLE_LINKED_LIST::IsEmpty(const Controller& list) {
+bool DOUBLE_LINKED_LIST::IsEmpty(const Controler& list) {
 	return list.First == nullptr;
 }
 
@@ -78,10 +77,10 @@ THE_DOC_GIA::TheDocGia::TheDocGia() {
 	this->Ten = std::string();
 	this->Phai = THE_DOC_GIA::GioiTinh::NAM;
 	this->TrangThai = THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA;
-	this->DanhSachMuonTra = DOUBLE_LINKED_LIST::Controller();
+	this->DanhSachMuonTra = DOUBLE_LINKED_LIST::Controler();
 }
 
-THE_DOC_GIA::TheDocGia::TheDocGia(int MaThe, std::string Ho, std::string Ten, THE_DOC_GIA::GioiTinh Phai, THE_DOC_GIA::TrangThaiThe TrangThai, DOUBLE_LINKED_LIST::Controller DanhSachMuonTra) {
+THE_DOC_GIA::TheDocGia::TheDocGia(int MaThe, std::string Ho, std::string Ten, THE_DOC_GIA::GioiTinh Phai, THE_DOC_GIA::TrangThaiThe TrangThai, DOUBLE_LINKED_LIST::Controler DanhSachMuonTra) {
 	this->MaThe = MaThe;
 	this->Ho = Ho;
 	this->Ten = Ten;
@@ -122,6 +121,10 @@ THE_DOC_GIA::GioiTinh THE_DOC_GIA::TheDocGia::GetPhai() {
 	return this->Phai;
 }
 
+std::string THE_DOC_GIA::TheDocGia::GetStringfyPhai() {
+    return (this->Phai == THE_DOC_GIA::GioiTinh::NAM ? "NAM" : "NU");
+}
+
 void THE_DOC_GIA::TheDocGia::SetTrangThai(THE_DOC_GIA::TrangThaiThe TrangThai) {
 	this->TrangThai = TrangThai;
 }
@@ -130,11 +133,15 @@ THE_DOC_GIA::TrangThaiThe THE_DOC_GIA::TheDocGia::GetTrangThai() {
 	return this->TrangThai;
 }
 
-void THE_DOC_GIA::TheDocGia::SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controller DanhSachMuonTra) {
+std::string THE_DOC_GIA::TheDocGia::GetStringfyTrangThai() {
+    return (this->TrangThai == THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA ? "BI KHOA" : "HOAT DONG");
+}
+
+void THE_DOC_GIA::TheDocGia::SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controler DanhSachMuonTra) {
 	this->DanhSachMuonTra = DanhSachMuonTra;
 }
 
-DOUBLE_LINKED_LIST::Controller THE_DOC_GIA::TheDocGia::GetDanhSachMuonTra() {
+DOUBLE_LINKED_LIST::Controler THE_DOC_GIA::TheDocGia::GetDanhSachMuonTra() {
 	return this->DanhSachMuonTra;
 }
 
@@ -198,6 +205,14 @@ void AVL_TREE::PostOrderTraversal(AVL_TREE::Pointer const& node) {
 		AVL_TREE::InOrderTraversal(node->right);
 		std::cerr << node->info.GetMaThe() << " ";
 	}
+}
+
+void AVL_TREE::CountNode(const AVL_TREE::Pointer& root, int& counter) {
+    if (root != nullptr) {
+        ++counter;
+        AVL_TREE::CountNode(root->left, counter);
+        AVL_TREE::CountNode(root->right, counter);
+    }
 }
 
 void AVL_TREE::NonrecursiveInOrderTraversal(const AVL_TREE::Pointer& root) {
@@ -437,7 +452,7 @@ bool AVL_TREE::Insert(AVL_TREE::Pointer& root, THE_DOC_GIA::TheDocGia info) {
 /**
 * The function will extract the data string and return an object pointer.
 */
-bool TheDocGiaExtractor(std::string data, std::string separator, THE_DOC_GIA::TheDocGia& returnData) {
+bool THE_DOC_GIA_MODULES::TheDocGiaExtractor(std::string data, std::string separator, THE_DOC_GIA::TheDocGia& returnData) {
 	if (data.length() == 0) {
 		return false;
 	}
@@ -477,13 +492,13 @@ bool TheDocGiaExtractor(std::string data, std::string separator, THE_DOC_GIA::Th
 	}
 
 	if (data.length() == 0) {
-        returnData.SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controller());
+        returnData.SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controler());
 		return true;
 	}
 
 	int muonTraCount = std::stoi(data);
 	if (muonTraCount == 0) {
-        returnData.SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controller());
+        returnData.SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controler());
 	}
 	else {
 		/**
@@ -495,16 +510,15 @@ bool TheDocGiaExtractor(std::string data, std::string separator, THE_DOC_GIA::Th
 	return true;
 }
 
-bool LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE::Pointer& tree) {
-	/**
-	* READ DATA FROM FILE BASED DATABASE!
-	*
-	* 1. Create a file buffer reader.
-	* 2. Filter out the case where we cannot open the file!
-	*/
-    time_t startPoint = time(0);
+/**
+* READ DATA FROM FILE BASED DATABASE!
+*
+* 1. Create a file buffer reader.
+* 2. Filter out the case where we cannot open the file!
+*/
+bool THE_DOC_GIA_MODULES::LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE::Pointer& tree) {
 
-    //std::cerr << "[INFO] Begin to load data from DB!\n\n";
+    //time_t startPoint = time(0);
 
     std::filebuf databaseBuffer{};
 
@@ -539,12 +553,9 @@ bool LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE::Pointer& tree) 
 	}
 	databaseBuffer.close();
 
-    time_t endPoint = time(0);
-
+    //time_t endPoint = time(0);
     //std::cerr << std::format("Record count: {}\n", recordCount);
     //std::cerr << std::format("performance : {}s\n", ((double)(endPoint - startPoint)) / CLOCKS_PER_SEC);
-
-    //std::cerr << "[INFO] DB Load complete!\n\n";
 
 	return processResult;
 }

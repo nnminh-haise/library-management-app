@@ -7,29 +7,28 @@
 #include "Views/Elements.h"
 #include "Helper/Helper.h"
 #include "TheDocGia/TheDocGia.h"
+#include "DauSach/DauSach.h"
 #include "Helper/ConstantsAndGlobalVariables.h"
+#include "Graphics/graphics.h"
 
-void TestUIElement() {
-	AVL_TREE::Pointer danhSachTheDocgia;
-	AVL_TREE::Initialize(danhSachTheDocgia);
-	LoadDanhSachTheDocGiaFromDB(CONSTANTS::THE_DOC_GIA_DB, danhSachTheDocgia);
-	AVL_TREE::NonrecursiveInOrderTraversal(danhSachTheDocgia);
-}
 
 //* Program's entrance
 int main() {
-
-	TestUIElement();
 
 	/**
 	* Internal storage declaration.
 	* @danhSachTheDocgia: AVL Tree
 	*/
-	/*AVL_TREE::Pointer danhSachTheDocgia;
+	AVL_TREE::Pointer danhSachTheDocgia;
 	AVL_TREE::Initialize(danhSachTheDocgia);
-	
-	LANDING_VIEW::Run(danhSachTheDocgia);*/
 
+	LINEAR_LIST::LinearList danhSachDauSach;
+	LINEAR_LIST::Initialize(danhSachDauSach);
+
+	//* Run program main function
+	LANDING_VIEW::Run(danhSachTheDocgia, danhSachDauSach);
+
+	
 
 	return 0;
 }

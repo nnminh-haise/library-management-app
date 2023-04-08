@@ -1,11 +1,9 @@
 #pragma once
 
 #include "../Graphics/graphics.h"
-#include "../Helper/ConstantsAndGlobalVariables.h"
 #include "../TheDocGia/TheDocGia.h"
+#include "../DauSach/DauSach.h"
 
 namespace LANDING_VIEW {
-	void RegisterDefaultSettings();
-
-	void Run(AVL_TREE::Pointer& danhSachTheDocGia);
+	void Run(AVL_TREE::Pointer& danhSachTheDocGia, LINEAR_LIST::LinearList danhSachDauSach);
 }

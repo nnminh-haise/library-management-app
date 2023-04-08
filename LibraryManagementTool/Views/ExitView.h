@@ -1,5 +1,5 @@
-#pragma once
-
-namespace EXIT_VIEW {
-	void Run();
-}
+//#pragma once
+//
+//namespace EXIT_VIEW {
+//	void Run();
+//}

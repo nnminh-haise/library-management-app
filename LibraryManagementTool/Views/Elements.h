@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Helper/Helper.h"
+#include "../Helper/ConstantsAndGlobalVariables.h"
 
 #include <string>
 
@@ -20,7 +21,7 @@ namespace ELEMENTS {
         bool active;
         int backgroundColor;
 
-        Window(HELPER::Dimension dimension, std::string title);
+        Window(const HELPER::Dimension& dimension, const std::string& title);
 
         int Activate();
 
@@ -40,164 +41,223 @@ namespace ELEMENTS {
     };
 
     struct Fill {
-    private:
+        HELPER::Coordinate topLeft;
+        HELPER::Coordinate bottomRight;
+        HELPER::Dimension dimension;
         int fillColor;
         int borderColor;
 
-    public:
-        HELPER::Coordinate position;
-        HELPER::Rectangle coordinates;
-        HELPER::Dimension dimension;
-
         Fill();
 
-        Fill(HELPER::Coordinate position, int width, int height);
+        Fill(HELPER::Coordinate topLeft, int width, int height, int fillColor = WHITE, int borderColor = WHITE);
 
-        Fill(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight);
+        Fill(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int fillColor = WHITE, int borderColor = WHITE);
+
+        Fill(int left, int top, int right, int bottom, int fillColor = WHITE, int borderColor = WHITE);
 
         void Draw();
+    };
+
+    struct CircleFill {
+        HELPER::Coordinate topLeft;
+        HELPER::Coordinate bottomRight;
+        HELPER::Dimension dimension;
+        int fillColor;
+        int borderColor;
+
+        CircleFill();
+
+        CircleFill(HELPER::Coordinate topLeft, int width, int height, int fillColor = WHITE, int borderColor = WHITE);
+
+        CircleFill(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int fillColor = WHITE, int borderColor = WHITE);
+
+        CircleFill(int left, int top, int right, int bottom, int fillColor = WHITE, int borderColor = WHITE);
+
+        void Draw();
+    };
+
+    class CloseButton {
+    private:
+        HELPER::Coordinate topLeft;
+        HELPER::Coordinate bottomRight;
+        HELPER::Dimension dimension;
+        CircleFill fill;
+        int textColor;
+        std::string placeholder;
+        bool isPointed;
+        bool rightClicked;
+        bool leftClicked;
+        bool active;
+
+    public:
+        CloseButton();
+
+        CloseButton(HELPER::Coordinate topLeft, int with, int height, int textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR, int fillcolor = BUTTON_DEFAULT_PROPERTIES::FILL_COLOR, int borderColor = BUTTON_DEFAULT_PROPERTIES::BORDER_COLOR);
+
+        CloseButton(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR, int fillcolor = BUTTON_DEFAULT_PROPERTIES::FILL_COLOR, int borderColor = BUTTON_DEFAULT_PROPERTIES::BORDER_COLOR);
 
         void SetFillColor(int color);
 
         int GetFillColor();
 
-        void SetBorderColor(int color);
-
-        int GetBorderColor();
-    };
-
-    class Cursor {
-    public:
-        HELPER::Coordinate coordinate;
-        HELPER::Dimension dimension;
-        int color;
-
-        Cursor();
-
-        Cursor(HELPER::Coordinate coordinate);
-
-        void Log();
-
-        void Update(HELPER::Coordinate newCoordinate);
-
-        void Draw();
-    };
-
-	struct Cell {
-    public:
-        enum Mode {
-            INPUT_MODE, READ_MODE
-        };
-        
-    private:
-        HELPER::Coordinate position;
-        HELPER::Dimension dimension;
-        HELPER::Coordinate textPosition;
-        HELPER::Dimension textDimension;
-        Padding padding;
-        Fill fill;
-        Align horizontalAlign;
-        Align verticalAlign;
-        Cursor cursor;
-        std::string placeholder;
-        Mode mode;
-        bool active;
-        int fontSize;
-        int fontStyle;
-        int textColor;
-        int characterLimit;
-        bool customFont;
-
-        bool ValidDimension();
-
-    public:
-
-        Cell();
-
-        Cell (
-            ELEMENTS::Cell::Mode mode, 
-            const std::string& placeholder, 
-            HELPER::Coordinate position, 
-            int width, int height, 
-            int characterLimit
-        );
-
-        Cell (
-            ELEMENTS::Cell::Mode mode,
-            const std::string& placeholder,
-            HELPER::Coordinate position,
-            HELPER::Dimension dimension,
-            int characterLimit
-        );
-
-        void SetPosition(HELPER::Coordinate position);
-
-        HELPER::Coordinate GetPosition();
-
-        bool SetDimension(HELPER::Dimension dimension);
-
-        HELPER::Dimension GetDimension();
-
-        void SetPadding(ELEMENTS::Padding padding);
-
-        ELEMENTS::Padding GetPadding();
-
-        void SetHorizontalAlign(ELEMENTS::Align align);
-
-        ELEMENTS::Align GetHorizontalAlign();
-
-        void SetVerticalAlign(ELEMENTS::Align align);
-
-        ELEMENTS::Align GetVerticalAlign();
-
-        void SetPlaceHolder(const std::string& placeholder);
-
-        std::string GetPlaceholder();
-
-        void SetFontSize(int fontSize);
-
-        int GetFontSize();
-
-        void SetFontStyle(int fontStyle);
-
-        int GetFontStyle();
-
         void SetTextColor(int color);
 
         int GetTextColor();
 
-        void SetBackgroundColor(int color);
-
-        int GetBackgroundColor();
-
         void SetBorderColor(int color);
 
         int GetBorderColor();
 
-        void SetCharacterLimit(int limit);
+        void SetPlaceholder(std::string placeholder);
 
-        int GetCharacterLimit();
+        std::string GetPlaceholder();
 
         void SetStatus(bool status);
 
         bool GetStatus();
 
-        void SetTextPosition(HELPER::Coordinate position);
+        void Display();
 
-        HELPER::Coordinate GetTextPosition();
+        bool IsPointed();
 
-        void Log();
+        bool LeftMouseClicked();
 
-        bool FitContent();
+        bool RightMouseClicked();
+    };
 
-        void UpdateTextDecoration();
+    class Button {
+    private:
+        HELPER::Coordinate topLeft;
+        HELPER::Coordinate bottomRight;
+        HELPER::Dimension dimension;
+        Fill fill;
+        int textColor;
+        std::string placeholder;
+        bool isPointed;
+        bool rightClicked;
+        bool leftClicked;
+        bool active;
 
-        void UpdateAlignment();
+    public:
+        Button();
 
-        bool LoadContent(const std::string& content);
+        Button(HELPER::Coordinate topLeft, int with, int height, int textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR, int fillcolor = BUTTON_DEFAULT_PROPERTIES::FILL_COLOR, int borderColor = BUTTON_DEFAULT_PROPERTIES::BORDER_COLOR);
 
-        bool ReadMode();
+        Button(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR, int fillcolor = BUTTON_DEFAULT_PROPERTIES::FILL_COLOR, int borderColor = BUTTON_DEFAULT_PROPERTIES::BORDER_COLOR);
 
-        std::string InputMode(bool(*validInput)(std::string), bool(*validKey)(char));
+        void SetTopLeft(HELPER::Coordinate topLeft);
+
+        HELPER::Coordinate GetTopLeft();
+
+        void SetDimension(HELPER::Dimension newDimension);
+
+        HELPER::Dimension GetDimension();
+
+        bool UpdateWithNewTopLeft();
+
+        HELPER::Coordinate GetBottomRight();
+
+        void SetFillColor(int color);
+
+        int GetFillColor();
+
+        void SetTextColor(int color);
+
+        int GetTextColor();
+
+        void SetBorderColor(int color);
+
+        int GetBorderColor();
+
+        void SetPlaceholder(std::string placeholder);
+
+        std::string GetPlaceholder();
+
+        void SetStatus(bool status);
+
+        bool GetStatus();
+
+        void Display();
+
+        bool IsPointed();
+
+        bool LeftMouseClicked();
+
+        bool RightMouseClicked();
+
+        void SetLeftClicked();
+
+        void SetRightClicked();
+
+        void ResetLeftClick();
+
+        void ResetRightClick();
+
+        bool GetLeftMouseStatus();
+
+        bool GetRightMouseStatus();
+    };
+}
+
+namespace DATASHEET {
+    struct Row {
+        HELPER::Coordinate topLeft;
+        HELPER::Coordinate bottomRight;
+        int columnCount;
+        ELEMENTS::Button* labels;
+        std::string* labelPlaceholders;
+        int* characterLimits;
+        int rowHeight;
+
+        Row();
+
+        Row(int columnCount, HELPER::Coordinate topLeft, std::string* labelPlaceholders, int* characterLimits, int rowHeight);
+
+        void SetPlaceHolder(std::string* labelPlaceholders);
+
+        void Display();
+    };
+
+    struct Datasheet {
+        int rowCount;
+        int columnCount;
+        int rowHeight;
+        HELPER::Coordinate topLeft;
+        HELPER::Coordinate bottomRight;
+        std::string* labelPlaceholders;
+        int* characterLimits;
+        Row* rows;
+
+        void DefaultLabelsProperties(Row& tbx);
+
+        void DefaultDataFieldProperties(Row& tbx, int order);
+
+        Datasheet();
+
+        Datasheet(int rowCount, int columnCount, int rowHeight, HELPER::Coordinate topLeft, std::string* labelPlaceholders, int* characterLimits);
+
+        void UpdateNewPlaceholder(std::string* newPlaceholder, int rowIndicator);
+
+        void Display();
+    };
+
+    struct Controler {
+        int rowCount;
+        int columnCount;
+        int rowHeight;
+        HELPER::Coordinate topLeft;
+        int datasheetCount;
+        Datasheet* sheets;
+        int activeSheet;
+
+        Controler();
+
+        Controler(int rowCount, int columnCount, int rowHeight, HELPER::Coordinate topLeft);
+
+        ~Controler();
+
+        void UpdateActiveSheet(int indicator);
+
+        void Display();
     };
 }
