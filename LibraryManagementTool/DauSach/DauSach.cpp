@@ -87,7 +87,7 @@ DAU_SACH::DauSach::DauSach() {
 	this->DanhMucSach.first = nullptr;
 }
 
-DAU_SACH::DauSach::DauSach(std::string ISBN, std::string TenSach, unsigned int SoTrang, std::string TacGia, unsigned int NamXuatBan, std::string TheLoai, LINKED_LIST::Controler DanhMucSach) {
+DAU_SACH::DauSach::DauSach(std::string ISBN, std::string TenSach, int SoTrang, std::string TacGia, int NamXuatBan, std::string TheLoai, LINKED_LIST::Controler DanhMucSach) {
 	this->ISBN = ISBN;
 	this->TenSach = TenSach;
 	this->SoTrang = SoTrang;
@@ -113,11 +113,11 @@ std::string DAU_SACH::DauSach::GetTenSach() {
 	return this->TenSach;
 }
 
-void DAU_SACH::DauSach::SetSoTrang(unsigned int Sotrang) {
-	this->SoTrang = SoTrang;
+void DAU_SACH::DauSach::SetSoTrang(int soTrang) {
+	this->SoTrang = soTrang;
 }
 
-unsigned int DAU_SACH::DauSach::GetSoTrang() {
+int DAU_SACH::DauSach::GetSoTrang() {
 	return this->SoTrang;
 }
 
@@ -129,11 +129,11 @@ std::string DAU_SACH::DauSach::GetTacGia() {
 	return this->TacGia;
 }
 
-void DAU_SACH::DauSach::SetNamXuatBan(unsigned int NamXuatBan) {
+void DAU_SACH::DauSach::SetNamXuatBan(int NamXuatBan) {
 	this->NamXuatBan = NamXuatBan;
 }
 
-unsigned int DAU_SACH::DauSach::GetNamXuatBan() {
+int DAU_SACH::DauSach::GetNamXuatBan() {
 	return this->NamXuatBan;
 }
 
@@ -151,6 +151,17 @@ void DAU_SACH::DauSach::SetDanhMucSach(LINKED_LIST::Controler DanhMucSach) {
 
 LINKED_LIST::Controler DAU_SACH::DauSach::GetDanhMucSach() {
 	return this->DanhMucSach;
+}
+
+void DAU_SACH::DauSach::Log() {
+	std::cerr << std::format("___ Dau Sach ___\n");
+	std::cerr << std::format("ISBN    : {}\n", this->ISBN);
+	std::cerr << std::format("Ten sach: {}\n", this->TenSach);
+	std::cerr << std::format("So trang: {}\n", this->SoTrang);
+	std::cerr << std::format("Tac gia : {}\n", this->TacGia);
+	std::cerr << std::format("NXB     : {}\n", this->NamXuatBan);
+	std::cerr << std::format("The loai: {}\n", this->TheLoai);
+	std::cerr << std::format("----------------\n");
 }
 
 LINEAR_LIST::LinearList::LinearList() {
@@ -200,3 +211,115 @@ bool LINEAR_LIST::InsertItem(LINEAR_LIST::LinearList& list, DAU_SACH::DauSach* i
 	return true;
 }
 
+bool LINEAR_LIST::InsertLast(LinearList& list, DAU_SACH::DauSach* item) {
+	if (LINEAR_LIST::IsFull(list)) {
+		std::cerr << std::format("[ERROR] DANH SACH DAU SACH IS FULL!\n");
+		return false;
+	}
+
+	list.nodes[list.numberOfNode] = item;
+	++list.numberOfNode;
+
+	return false;
+}
+
+void LINEAR_LIST::Traversal(const LinearList& list) {
+	for (int i = 0; i < list.numberOfNode; ++i) {
+		list.nodes[i]->Log();
+	}
+}
+
+bool DAU_SACH_MODULES::DauSachExtractor(std::string data, std::string seperator, DAU_SACH::DauSach* returnData) {
+	if (data.length() == 0) {
+		return false;
+	}
+
+	int indicator = 0;
+	size_t pos = 0;
+
+	while ((pos = data.find(seperator)) != std::string::npos) {
+		std::string extractedData = data.substr(0, pos);
+		if (extractedData.length() == 0) {
+			continue;
+		}
+
+		switch (indicator++) {
+		case (0): {
+			returnData->SetISBN(extractedData);
+			break;
+		}
+		case (1): {
+			returnData->SetTenSach(extractedData);
+			break;
+		}
+		case (2): {
+			returnData->SetSoTrang(std::stoi(extractedData));
+			break;
+		}
+		case (3): {
+			returnData->SetTacGia(extractedData);
+			break;
+		}
+		case (4): {
+			returnData->SetNamXuatBan(std::stoi(extractedData));
+			break;
+		}
+		case (5): {
+			returnData->SetTheLoai(extractedData);
+		}
+		}
+		data.erase(0, pos + seperator.length());
+	}
+
+	if (data.length() == 0) {
+		returnData->SetDanhMucSach(LINKED_LIST::Controler());
+		return true;
+	}
+
+	int danhMucSachCount = std::stoi(data);
+	if (danhMucSachCount == 0) {
+		returnData->SetDanhMucSach(LINKED_LIST::Controler());
+	}
+	else {
+		/**
+		* Currently this session is for LOADING @DanhSachMuonTra from file based database.
+		* todo: update database and write these code.
+		*/
+	}
+
+	return true;
+}
+
+bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LIST::LinearList& danhSachDauSach) {
+
+	//time_t startPoint = time(0);
+
+	std::filebuf databaseBuffer{};
+
+	if (!databaseBuffer.open(filename, std::ios::in)) {
+		std::cerr << std::format("[ERROR] Can not open file {}\n", filename);
+		return false;
+	}
+
+	std::istream database(&databaseBuffer);
+	bool processResult = true;
+	int recordCount = 0;
+	while (database) {
+		std::string line{};
+		std::getline(database, line);
+		DAU_SACH::DauSach* newDauSach = new DAU_SACH::DauSach;
+		bool result = DAU_SACH_MODULES::DauSachExtractor(line, ", ", newDauSach);
+		if (result) {
+			++recordCount;
+			//newDauSach->Log();
+			LINEAR_LIST::InsertLast(danhSachDauSach, newDauSach);
+		}
+	}
+	databaseBuffer.close();
+
+	//time_t endPoint = time(0);
+	//std::cerr << std::format("Record count: {}\n", recordCount);
+	//std::cerr << std::format("performance : {}s\n", ((double)(endPoint - startPoint)) / CLOCKS_PER_SEC);
+
+	return processResult;
+}

@@ -1,7 +1,25 @@
 #pragma once
 
 #include "../DauSach/DauSach.h"
+#include "Elements.h"
 
-namespace DANH_SACH_DAU_SACH_VIEW {
-	void Run(LINEAR_LIST::LinearList& danhSachDauSach);
-}
+
+class DanhSachDauSachView {
+private:
+	bool active;
+	DATASHEET::Controler controler;
+	ELEMENTS::Button sheetChange[2];
+
+private:
+	void DatasheetChangeBTNHover(ELEMENTS::Button& btn);
+
+	void DatasheetChangeBTNProperties(ELEMENTS::Button& btn);
+
+	void CreateDatasheetsFromDatabase(LINEAR_LIST::LinearList& danhSachDauSach, DATASHEET::Controler& controler);
+
+public:
+	DanhSachDauSachView(LINEAR_LIST::LinearList& danhSachDauSach);
+
+	void Run();
+};
+
