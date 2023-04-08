@@ -1,13 +1,14 @@
 #include "Elements.h"
 #include "../Graphics/graphics.h"
 #include "../Helper/ConstantsAndGlobalVariables.h"
+#include "../Helper/Helper.h"
 
 #include <iostream>
 #include <string>
 #include <format>
 #include <thread>
 
-ELEMENTS::Window::Window(HELPER::Dimension dimension, std::string title) {
+ELEMENTS::Window::Window(const HELPER::Dimension& dimension, const std::string& title) {
 	this->dimension = dimension;
 	this->title = title;
 	this->active = false;
@@ -16,7 +17,11 @@ ELEMENTS::Window::Window(HELPER::Dimension dimension, std::string title) {
 
 int ELEMENTS::Window::Activate() {
 	this->active = true;
-	return initwindow(this->dimension.width, this->dimension.height, (const char*)this->title.c_str());
+	return initwindow(
+		this->dimension.width, this->dimension.height, 
+		(const char*)this->title.c_str(), 
+		(getmaxwidth() - this->dimension.width) / 2, (getmaxheight() - this->dimension.height) / 2
+	);
 }
 
 void ELEMENTS::Window::RenderBackground() {
@@ -29,507 +34,543 @@ void ELEMENTS::Window::Deactivate() {
 	closegraph();
 }
 
-ELEMENTS::Padding::Padding() {
-	this->top = this->bottom = this->left = this->right = 0;
+ELEMENTS::Padding::Padding():
+	top(0), bottom(0), left(0), right(0) {
 }
 
-ELEMENTS::Padding::Padding(int all) {
-	this->top = this->bottom = this->left = this->right = all;
+ELEMENTS::Padding::Padding(int all):
+	top(all), bottom(all), left(all), right(all) {
 }
 
-ELEMENTS::Padding::Padding(int top, int bottom, int left, int right) {
-	this->top = top;
-	this->bottom = bottom;
-	this->left = left;
-	this->right = right;
+ELEMENTS::Padding::Padding(int top, int bottom, int left, int right):
+	top(top), bottom(bottom), left(left), right(right) {
 }
 
-ELEMENTS::Fill::Fill() {
-	this->position = HELPER::Coordinate();
-	this->coordinates = HELPER::Rectangle();
-	this->dimension = HELPER::Dimension();
-	this->fillColor = WHITE;
-	this->borderColor = this->fillColor;
+ELEMENTS::Fill::Fill():
+	topLeft(HELPER::Coordinate()), bottomRight(HELPER::Coordinate()), dimension(HELPER::Dimension()),
+	fillColor(WHITE), borderColor(WHITE) {
 }
 
-ELEMENTS::Fill::Fill(HELPER::Coordinate position, int width, int height) {
-	this->position = position;
-	this->dimension = HELPER::Dimension(width, height);
-	this->coordinates = HELPER::Rectangle(position, width, height);
-	this->fillColor = WHITE;
-	this->borderColor = this->fillColor;
+ELEMENTS::Fill::Fill(HELPER::Coordinate topLeft, int width, int height, int fillColor, int borderColor) {
+	this->topLeft = topLeft;
+	this->dimension.width = width;
+	this->dimension.height = height;
+	this->bottomRight = HELPER::Coordinate(topLeft.x + width, topLeft.y + height);
+	this->fillColor = fillColor;
+	this->borderColor = borderColor;
 }
 
-ELEMENTS::Fill::Fill(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight) {
-	this->position = topLeft;
-	this->coordinates = HELPER::Rectangle(topLeft, bottomRight);
-	this->dimension = this->coordinates.dimension;
-	this->fillColor = WHITE;
-	this->borderColor = this->fillColor;
+ELEMENTS::Fill::Fill(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int fillColor, int borderColor) {
+	this->topLeft = topLeft;
+	this->bottomRight = bottomRight;
+	this->dimension.width = this->bottomRight.x - this->topLeft.x;
+	this->dimension.height - this->bottomRight.y - this->topLeft.x;
+	this->fillColor = fillColor;
+	this->borderColor = borderColor;
+}
+
+ELEMENTS::Fill::Fill(int left, int top, int right, int bottom, int fillColor, int borderColor) {
+	this->topLeft = { left, top };
+	this->bottomRight = { right, bottom };
+	this->dimension = { this->bottomRight.x - this->topLeft.x, this->bottomRight.y - this->topLeft.y };
+	this->fillColor = fillColor;
+	this->borderColor = borderColor;
 }
 
 void ELEMENTS::Fill::Draw() {
 	setfillstyle(SOLID_FILL, this->fillColor);
-	setbkcolor(fillColor);
 	setcolor(borderColor);
-	bar(this->coordinates.topLeft.x, this->coordinates.topLeft.y, this->coordinates.bottomRight.x, this->coordinates.bottomRight.y);
-	rectangle(this->coordinates.topLeft.x, this->coordinates.topLeft.y, this->coordinates.bottomRight.x, this->coordinates.bottomRight.y);
+	bar(this->topLeft.x, this->topLeft.y, this->bottomRight.x, this->bottomRight.y);
+	rectangle(this->topLeft.x, this->topLeft.y, this->bottomRight.x, this->bottomRight.y);
 }
 
-void ELEMENTS::Fill::SetFillColor(int color) {
-	this->fillColor = color;
-	this->borderColor = this->fillColor;
+ELEMENTS::CircleFill::CircleFill() :
+	topLeft(HELPER::Coordinate()), bottomRight(HELPER::Coordinate()), dimension(HELPER::Dimension()),
+	fillColor(WHITE), borderColor(WHITE) {
 }
 
-int ELEMENTS::Fill::GetFillColor() {
-	return this->fillColor;
+ELEMENTS::CircleFill::CircleFill(HELPER::Coordinate topLeft, int width, int height, int fillColor, int borderColor) {
+	this->topLeft = topLeft;
+	this->dimension.width = width;
+	this->dimension.height = height;
+	this->bottomRight = HELPER::Coordinate(topLeft.x + width, topLeft.y + height);
+	this->fillColor = fillColor;
+	this->borderColor = borderColor;
 }
 
-void ELEMENTS::Fill::SetBorderColor(int color) {
-	this->borderColor = color;
+ELEMENTS::CircleFill::CircleFill(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int fillColor, int borderColor) {
+	this->topLeft = topLeft;
+	this->bottomRight = bottomRight;
+	this->dimension.width = this->bottomRight.x - this->topLeft.x;
+	this->dimension.height - this->bottomRight.y - this->topLeft.x;
+	this->fillColor = fillColor;
+	this->borderColor = borderColor;
 }
 
-int ELEMENTS::Fill::GetBorderColor() {
-	return this->borderColor;
+ELEMENTS::CircleFill::CircleFill(int left, int top, int right, int bottom, int fillColor, int borderColor) {
+	this->topLeft = { left, top };
+	this->bottomRight = { right, bottom };
+	this->dimension = { this->bottomRight.x - this->topLeft.x, this->bottomRight.y - this->topLeft.y };
+	this->fillColor = fillColor;
+	this->borderColor = borderColor;
 }
 
-ELEMENTS::Cursor::Cursor() {
-	this->coordinate = HELPER::Coordinate();
+void ELEMENTS::CircleFill::Draw() {
+	setfillstyle(SOLID_FILL, this->fillColor);
+	setcolor(borderColor);
+	fillellipse(this->topLeft.x + this->dimension.width / 2, this->topLeft.y + this->dimension.width / 2, 25, 25);
+	circle(this->topLeft.x + this->dimension.width / 2, 50, 25);
+}
+
+ELEMENTS::CloseButton::CloseButton() {
+	this->topLeft = this->bottomRight = HELPER::Coordinate();
+	this->fill = ELEMENTS::CircleFill();
 	this->dimension = HELPER::Dimension();
-	this->color = BLACK;
+	this->textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR;
+	this->isPointed = false;
+	this->rightClicked = false;
+	this->leftClicked = false;
+	this->placeholder = "BUTTON";
 }
 
-ELEMENTS::Cursor::Cursor(HELPER::Coordinate coordinate) {
-	this->coordinate = coordinate;
-	this->dimension = HELPER::Dimension(2, textheight((char*)"H"));
-	this->color = BLACK;
+ELEMENTS::CloseButton::CloseButton(HELPER::Coordinate topLeft, int width, int height, int textColor, int fillcolor, int borderColor) {
+	this->topLeft = topLeft;
+	this->dimension = { width, height };
+	this->bottomRight = HELPER::Coordinate(topLeft.x + width, topLeft.y + height);
+	this->fill = ELEMENTS::CircleFill(this->topLeft, this->bottomRight, fillcolor, borderColor);
+	this->textColor = textColor;
+	this->isPointed = false;
+	this->leftClicked = this->rightClicked = false;
+	this->placeholder = "BUTTON";
 }
 
-void ELEMENTS::Cursor::Log() {
-	std::clog << std::format("Cursor   : ");
-	this->coordinate.Log();
-	std::clog << std::format("Dimension: [{} x {}]\n", this->dimension.width, this->dimension.height);
-	std::clog << std::format("Color    : {}\n", this->color);
+ELEMENTS::CloseButton::CloseButton(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int textColor, int fillcolor, int borderColor) {
+	this->topLeft = topLeft;
+	this->bottomRight = bottomRight;
+	this->dimension = { this->bottomRight.x - this->topLeft.x, this->bottomRight.y - this->topLeft.y };
+	this->fill = ELEMENTS::CircleFill(this->topLeft, this->bottomRight, fillcolor, borderColor);
+	this->textColor = textColor;
+	this->isPointed = false;
+	this->leftClicked = this->rightClicked = false;
+	this->placeholder = "BUTTON";
 }
 
-void ELEMENTS::Cursor::Update(HELPER::Coordinate newCoordinate) {
-	this->coordinate = newCoordinate;
+void ELEMENTS::CloseButton::SetFillColor(int color) {
+	this->fill.fillColor = color;
 }
 
-void ELEMENTS::Cursor::Draw() {
-	setfillstyle(SOLID_FILL, this->color);
-	setbkcolor(this->color);
-	bar(
-		this->coordinate.x,
-		this->coordinate.y,
-		this->coordinate.x + this->dimension.width,
-		this->coordinate.y + this->dimension.height
-	);
-	Sleep(80);
+int ELEMENTS::CloseButton::GetFillColor() {
+	return this->fill.fillColor;
 }
 
-void ELEMENTS::Cell::UpdateTextDecoration() {
+void ELEMENTS::CloseButton::SetTextColor(int color) {
+	this->textColor = color;
+}
+
+int ELEMENTS::CloseButton::GetTextColor() {
+	return this->textColor;
+}
+
+void ELEMENTS::CloseButton::SetBorderColor(int color) {
+	this->fill.borderColor = color;
+}
+
+int ELEMENTS::CloseButton::GetBorderColor() {
+	return this->fill.borderColor;
+}
+
+void ELEMENTS::CloseButton::SetPlaceholder(std::string placeholder) {
+	this->placeholder = placeholder;
+}
+
+std::string ELEMENTS::CloseButton::GetPlaceholder() {
+	return this->placeholder;
+}
+
+void ELEMENTS::CloseButton::SetStatus(bool status) {
+	this->active = status;
+}
+
+bool ELEMENTS::CloseButton::GetStatus() {
+	return this->active;
+}
+
+void ELEMENTS::CloseButton::Display() {
+	this->fill.Draw();
 	setcolor(this->textColor);
-	if (this->customFont) {
-		settextstyle(this->fontStyle, HORIZ_DIR, this->fontSize);
-	}
-	this->textDimension.width = textwidth((char*)this->placeholder.c_str());
-	this->textDimension.height = textheight((char*)this->placeholder.c_str());
+	HELPER::Dimension textDimension(
+		textwidth((char*)this->placeholder.c_str()),
+		textheight((char*)this->placeholder.c_str())
+	);
+	HELPER::Coordinate textPosition(
+		this->topLeft.x + (this->dimension.width / 2 - textDimension.width / 2),
+		this->topLeft.y + (this->dimension.height / 2 - textDimension.height / 2)
+	);
+	setbkcolor(this->fill.fillColor);
+	outtextxy(textPosition.x, textPosition.y, (char*)this->placeholder.c_str());
 }
 
-bool ELEMENTS::Cell::FitContent() {
-
-	//* Cannot update cell's dimension with none or empty placeholder
-	if (this->placeholder.length() == 0) {
-		return false;
-	}
-
-	this->padding = ELEMENTS::Padding(10); //* Update all side of padding to 10px
-	this->UpdateTextDecoration();
-	
-	//* As a fit content option, the cell's dimension is equal to the sum of the text's dimension + the padding option.
-	this->dimension.width = this->padding.left + this->padding.right + this->textDimension.width;
-	this->dimension.height = this->padding.top + this->padding.bottom + this->textDimension.height;
-	return true;
-}
-
-void ELEMENTS::Cell::UpdateAlignment() {
-	this->UpdateTextDecoration();
-	int remainWidth = this->dimension.width - this->padding.left - this->padding.right - this->textDimension.width;
-	int remainHeight = this->dimension.height - this->padding.top - this->padding.bottom - this->textDimension.height;
-
-	switch (this->horizontalAlign) {
-		case (ELEMENTS::Align::LEFT): {
-			this->textPosition.x = this->position.x + this->padding.left;
-			break;
-		}
-		case (ELEMENTS::Align::CENTER): {
-			this->textPosition.x = this->position.x + this->padding.left + remainWidth / 2;
-			break;
-		}
-		case (ELEMENTS::Align::RIGHT): {
-			this->textPosition.x = this->position.x + this->padding.left + remainWidth;
-			break;
-		}
-	}
-
-	switch (this->verticalAlign) {
-		case (ELEMENTS::Align::MIDDLE): {
-			this->textPosition.y = this->position.y + this->padding.top + remainHeight / 2;
-			break;
-		}
-		case (ELEMENTS::Align::TOP): {
-			this->textPosition.y = this->position.y + this->padding.top;
-			break;
-		}
-		case (ELEMENTS::Align::BOTTOM): {
-			this->textPosition.y = this->position.y + this->padding.top + remainHeight;
-			break;
-		}
-	}
-}
-
-bool ELEMENTS::Cell::ValidDimension() {
-	if (this->dimension.width < this->padding.left + this->padding.right + this->textDimension.width) {
-		return false;
-	}
-	
-	if (this->dimension.height < this->padding.top + this->padding.bottom + this->textDimension.height) {
-		return false;
-	}
-
-	return true;
-}
-
-ELEMENTS::Cell::Cell() {
-	this->position = HELPER::Coordinate();
-	this->dimension = HELPER::Dimension();
-	this->textPosition = HELPER::Coordinate();
-	this->textDimension = HELPER::Dimension();
-	this->padding = ELEMENTS::Padding();
-	this->fill = ELEMENTS::Fill();
-	this->horizontalAlign = ELEMENTS::Align::LEFT;
-	this->verticalAlign = ELEMENTS::Align::MIDDLE;
-	this->cursor = ELEMENTS::Cursor();
-	this->mode = ELEMENTS::Cell::Mode::READ_MODE;
-	this->active = false;
-	this->fontSize = GLOBAL_VARIABLES::defaultTextSetting.charsize;
-	this->fontStyle = GLOBAL_VARIABLES::defaultTextSetting.font;
-	this->textColor = BLACK;
-	this->fill.SetFillColor(WHITE);
-	this->characterLimit = -1;
-	this->customFont = false;
-}
-
-/*
-* This constructor will be automatically change to content fit dimension.
-* Which means that the cell's dimension will equal to the text's dimension plus the padding of the cell which is 10px
-*/
-ELEMENTS::Cell::Cell(ELEMENTS::Cell::Mode mode, const std::string& placeholder, HELPER::Coordinate position, int width, int height, int characterLimit) {
-	//* Default settings
-	this->customFont = false;
-	this->padding = ELEMENTS::Padding(10);
-	this->horizontalAlign = ELEMENTS::Align::LEFT;
-	this->verticalAlign = ELEMENTS::Align::MIDDLE;
-	this->cursor = ELEMENTS::Cursor();
-	this->active = false;
-	this->fontSize = GLOBAL_VARIABLES::defaultTextSetting.charsize;
-	this->fontStyle = GLOBAL_VARIABLES::defaultTextSetting.font;
-	this->textColor = BLACK;
-	this->fill.SetFillColor(WHITE);
-	this->characterLimit = characterLimit;
-
-	//* Argument settings
-	this->mode = mode;
-	this->placeholder = placeholder;
-	this->position = position;
-
-	/**
-	* Firstly, the cell will be automatically in content fit mode.
-	* Next the given width and height will be check.
-	* If any of them are greater the fit content mode's dimension then the relating dimension will be updated.
-	*/
-	this->FitContent();
-	if (width == -1) {
-		this->dimension.width = max(textwidth((char*)"W") * this->characterLimit, textwidth((char*)"W") * this->placeholder.length());
-	}
-	else if (width > this->dimension.width) {
-		this->dimension.width = width;
-	}
-	if (height == -1) {
-		this->dimension.height = max(textheight((char*)"W") * this->characterLimit, textheight((char*)"W") * this->placeholder.length());
-	}
-	else if (height > this->dimension.height) {
-		this->dimension.height = height;
-	}
-
-	//* Follow up settings
-	this->fill = ELEMENTS::Fill(this->position, this->dimension.width, this->dimension.height);
-	this->UpdateAlignment();
-}
-
-ELEMENTS::Cell::Cell(ELEMENTS::Cell::Mode mode, const std::string& placeholder, HELPER::Coordinate position, HELPER::Dimension dimension, int characterLimit) {
-	//* Default settings
-	this->customFont = false;
-	this->padding = ELEMENTS::Padding(10);
-	this->horizontalAlign = ELEMENTS::Align::LEFT;
-	this->verticalAlign = ELEMENTS::Align::MIDDLE;
-	this->cursor = ELEMENTS::Cursor();
-	this->active = false;
-	this->fontSize = GLOBAL_VARIABLES::defaultTextSetting.charsize;
-	this->fontStyle = GLOBAL_VARIABLES::defaultTextSetting.font;
-	this->textColor = BLACK;
-	this->fill.SetFillColor(WHITE);
-	this->characterLimit = characterLimit;
-
-	//* Argument settings
-	this->mode = mode;
-	this->placeholder = placeholder;
-	this->position = position;
-	this->dimension = dimension;
-
-	//* Follow up settings
-	this->fill = ELEMENTS::Fill(this->position, this->dimension.width, this->dimension.height);
-	this->UpdateTextDecoration();
-	this->UpdateAlignment();
-}
-
-void ELEMENTS::Cell::SetPosition(HELPER::Coordinate position) {
-	this->position = position;
-}
-
-HELPER::Coordinate ELEMENTS::Cell::GetPosition() {
-	return this->position;
-}
-
-bool ELEMENTS::Cell::SetDimension(HELPER::Dimension dimension) {
-	if (dimension.width >= textDimension.width && dimension.height >= textDimension.height) {
-		this->dimension = dimension;
+bool ELEMENTS::CloseButton::IsPointed() {
+	HELPER::Coordinate currentMouse(HELPER::GetCurrentMouseCoordinate());
+	if (this->topLeft.x <= currentMouse.x && this->topLeft.y <= currentMouse.y &&
+		this->bottomRight.x >= currentMouse.x && this->bottomRight.y >= currentMouse.y) {
+		this->isPointed = true;
 		return true;
 	}
 	return false;
 }
 
-HELPER::Dimension ELEMENTS::Cell::GetDimension() {
-	return this->dimension;
+bool ELEMENTS::CloseButton::LeftMouseClicked() {
+	if (this->IsPointed() && GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
+		this->leftClicked = true;
+		this->active = true;
+		return true;
+	}
+	return false;
 }
 
-void ELEMENTS::Cell::SetPadding(ELEMENTS::Padding padding) {
-	this->padding = padding;
+bool ELEMENTS::CloseButton::RightMouseClicked() {
+	if (this->IsPointed() && GetAsyncKeyState(VK_RBUTTON) & 0x8000) {
+		this->leftClicked = true;
+		return true;
+	}
+	return false;
 }
 
-ELEMENTS::Padding ELEMENTS::Cell::GetPadding() {
-	return this->padding;
+ELEMENTS::Button::Button() {
+	this->topLeft = this->bottomRight = HELPER::Coordinate();
+	this->fill = ELEMENTS::Fill();
+	this->dimension = HELPER::Dimension();
+	this->textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR;
+	this->isPointed = false;
+	this->rightClicked = false;
+	this->leftClicked = false;
+	this->placeholder = "BUTTON";
 }
 
-void ELEMENTS::Cell::SetHorizontalAlign(ELEMENTS::Align align) {
-	this->horizontalAlign = align;
-	this->UpdateAlignment();
+ELEMENTS::Button::Button(HELPER::Coordinate topLeft, int width, int height, int textColor, int fillcolor, int borderColor) {
+	this->topLeft = topLeft;
+	this->dimension = { width, height };
+	this->bottomRight = HELPER::Coordinate(topLeft.x + width, topLeft.y + height);
+	this->fill = ELEMENTS::Fill(this->topLeft, this->bottomRight, fillcolor, borderColor);
+	this->textColor = textColor;
+	this->isPointed = false;
+	this->leftClicked = this->rightClicked = false;
+	this->placeholder = "BUTTON";
 }
 
-ELEMENTS::Align ELEMENTS::Cell::GetHorizontalAlign() {
-	return this->horizontalAlign;
+ELEMENTS::Button::Button(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int textColor, int fillcolor, int borderColor) {
+	this->topLeft = topLeft;
+	this->bottomRight = bottomRight;
+	this->dimension = {this->bottomRight.x - this->topLeft.x, this->bottomRight.y - this->topLeft.y};
+	this->fill = ELEMENTS::Fill(this->topLeft, this->bottomRight, fillcolor, borderColor);
+	this->textColor = textColor;
+	this->isPointed = false;
+	this->leftClicked = this->rightClicked = false;
+	this->placeholder = "BUTTON";
 }
 
-void ELEMENTS::Cell::SetVerticalAlign(ELEMENTS::Align align) {
-	this->verticalAlign = align;
-	this->UpdateAlignment();
+void ELEMENTS::Button::SetTopLeft(HELPER::Coordinate topLeft) {
+	this->topLeft = topLeft;
+	this->fill.topLeft = topLeft;
 }
 
-ELEMENTS::Align ELEMENTS::Cell::GetVerticalAlign() {
-	return this->verticalAlign;
+HELPER::Coordinate ELEMENTS::Button::GetTopLeft() {
+	return this->topLeft;
 }
 
-void ELEMENTS::Cell::SetPlaceHolder(const std::string& placeholder) {
-	this->placeholder = placeholder;
-	this->UpdateTextDecoration();
-	this->FitContent();
+void ELEMENTS::Button::SetDimension(HELPER::Dimension newDimension) {
+	this->dimension = newDimension;
+	this->fill.dimension = newDimension;
 }
 
-std::string ELEMENTS::Cell::GetPlaceholder() {
-	return this->placeholder;
+HELPER::Dimension ELEMENTS::Button::GetDimension() {
+	return this->fill.dimension;
 }
 
-void ELEMENTS::Cell::SetFontSize(int fontSize) {
-	this->fontSize = fontSize;
-	this->customFont = true;
-	this->FitContent();
+bool ELEMENTS::Button::UpdateWithNewTopLeft() {
+	if (this->dimension.width == 0 && this->dimension.height == 0) {
+		return false;
+	}
+
+	this->bottomRight.x = this->topLeft.x + this->dimension.width;
+	this->bottomRight.y = this->topLeft.y + this->dimension.height;
+	this->fill.bottomRight.x = this->topLeft.x + this->dimension.width;
+	this->fill.bottomRight.y = this->topLeft.y + this->dimension.height;
+	return true;
 }
 
-int ELEMENTS::Cell::GetFontSize() {
-	return this->fontSize;
+HELPER::Coordinate ELEMENTS::Button::GetBottomRight() {
+	return this->bottomRight;
 }
 
-void ELEMENTS::Cell::SetFontStyle(int fontStyle) {
-	this->fontStyle = fontStyle;
-	this->customFont = true;
-	this->FitContent();
+void ELEMENTS::Button::SetFillColor(int color) {
+	this->fill.fillColor = color;
 }
 
-int ELEMENTS::Cell::GetFontStyle() {
-	return this->fontStyle;
+int ELEMENTS::Button::GetFillColor() {
+	return this->fill.fillColor;
 }
 
-void ELEMENTS::Cell::SetTextColor(int color) {
+void ELEMENTS::Button::SetTextColor(int color) {
 	this->textColor = color;
-	this->UpdateTextDecoration();
 }
 
-int ELEMENTS::Cell::GetTextColor() {
+int ELEMENTS::Button::GetTextColor() {
 	return this->textColor;
 }
 
-void ELEMENTS::Cell::SetBackgroundColor(int color) {
-	this->fill.SetFillColor(color);
+void ELEMENTS::Button::SetBorderColor(int color) {
+	this->fill.borderColor = color;
 }
 
-int ELEMENTS::Cell::GetBackgroundColor() {
-	return this->fill.GetFillColor();
+int ELEMENTS::Button::GetBorderColor() {
+	return this->fill.borderColor;
 }
 
-void ELEMENTS::Cell::SetBorderColor(int color) {
-	this->fill.SetBorderColor(color);
+void ELEMENTS::Button::SetPlaceholder(std::string placeholder) {
+	this->placeholder = placeholder;
 }
 
-int ELEMENTS::Cell::GetBorderColor() {
-	return this->fill.GetBorderColor();
+std::string ELEMENTS::Button::GetPlaceholder() {
+	return this->placeholder;
 }
 
-void ELEMENTS::Cell::SetCharacterLimit(int limit) {
-	this->characterLimit = limit;
-}
-
-int ELEMENTS::Cell::GetCharacterLimit() {
-	return this->characterLimit;
-}
-
-void ELEMENTS::Cell::SetStatus(bool status) {
+void ELEMENTS::Button::SetStatus(bool status) {
 	this->active = status;
 }
 
-bool ELEMENTS::Cell::GetStatus() {
+bool ELEMENTS::Button::GetStatus() {
 	return this->active;
 }
 
-void ELEMENTS::Cell::SetTextPosition(HELPER::Coordinate position) {
-	this->textPosition = position;
-}
-
-HELPER::Coordinate ELEMENTS::Cell::GetTextPosition() {
-	return this->textPosition;
-}
-
-void ELEMENTS::Cell::Log() {
-	std::clog << std::format("Position  : ");
-	this->position.Log();
-	std::clog << std::format("Dimension : [{} x {}]\n", this->dimension.width, this->dimension.height);
-	std::clog << std::format("Text size : [{} x {}]\n", this->textDimension.width, this->textDimension.height);
-	std::clog << std::format("Font size : {}\n", this->fontSize);
-	std::clog << std::format("Font style: {}\n", this->fontStyle);
-	std::clog << std::format("Status    : {}\n", this->active ? "Active" : "Inactive");
-	std::clog << std::format("Cell mode : {}\n", this->mode == ELEMENTS::Cell::Mode::READ_MODE ? "READ" : "INPUT");
-	std::clog << std::format("Text color: {}\n", this->textColor);
-	std::clog << std::format("Alignment : {}\n", this->horizontalAlign == ELEMENTS::Align::LEFT ? "LEFT" : this->horizontalAlign == ELEMENTS::Align::CENTER ? "CENTER" : "RIGHT");
-	std::clog << std::format("Coordinate: \n");
-	this->fill.coordinates.Log();
-	std::clog << std::format("Text posi : ");
-	this->textPosition.Log();
-}
-
-bool ELEMENTS::Cell::LoadContent(const std::string& content) {
-	if ((int)content.length() > this->characterLimit) {
-		std::cerr << "[ERROR] Content too long!\n";
-		return false;
-	}
-	
-	if (this->padding.left + this->padding.right + textwidth((char*)content.c_str()) > this->dimension.width) {
-		std::cerr << "[ERROR] Cannot fit content to cell!\n";
-		return false;
-	}
-
-	this->placeholder = content;
-	return true;
-}
-
-bool ELEMENTS::Cell::ReadMode() {
-	if (this->active) {
-		this->fill.SetFillColor(12);
-	}
-
-	this->mode = ELEMENTS::Cell::Mode::READ_MODE;
+void ELEMENTS::Button::Display() {
 	this->fill.Draw();
-	this->UpdateTextDecoration();
-	this->UpdateAlignment();
-	outtextxy(this->textPosition.x, this->textPosition.y, (char*)this->placeholder.c_str());
-	return true;
+	setcolor(this->textColor);
+	HELPER::Dimension textDimension(
+		textwidth((char*)this->placeholder.c_str()),
+		textheight((char*)this->placeholder.c_str())
+	);
+	HELPER::Coordinate textPosition(
+		this->topLeft.x + (this->dimension.width / 2 - textDimension.width / 2), 
+		this->topLeft.y + (this->dimension.height / 2 - textDimension.height / 2)
+	);
+	setbkcolor(this->fill.fillColor);
+	outtextxy(textPosition.x, textPosition.y, (char*)this->placeholder.c_str());
 }
 
-std::string ELEMENTS::Cell::InputMode(bool(*validInput)(std::string), bool(*validKey)(char)) {
-	//* Draw background
-	this->fill.Draw();
-
-	//* Update text settings and change the text's position to the left and middle.
-	this->UpdateTextDecoration();
-
-	/**
-	* Create a string to hold the user's input string.
-	* We will control the coordinate of the graphical string which get drown onto the graphic window.
-	* We will animated a blinking cursor at the end of the input field. Therefore we need to get 
-	* control over the coordinate of the input field which is the coordinate of the output text to
-	* the graphic window.
-	*/
-	std::string resultString{};
-	const unsigned int characterWidth = textwidth((char*)"W");
-	const unsigned int characterHeight = textheight((char*)"W");
-	int remainHeight = this->dimension.height - characterHeight - this->padding.top - this->padding.bottom;
-	HELPER::Coordinate topLeft(this->position.x + this->padding.left, this->position.y + this->padding.top + remainHeight / 2);
-	HELPER::Coordinate bottomRight = topLeft;
-
-	//* Draw loop, each loop will be a frame.
-	char inputKey{};
-	bool inputLoopStopFlag = false;
-	do {
-		this->fill.Draw();
-		outtextxy(topLeft.x, topLeft.y, (char*)resultString.c_str());
-
-		inputKey = std::toupper(getch());
-
-		//* Control logic
-		switch (inputKey) {
-			//* When ESCAPE key is pressed, the operation will stop and return an empty string.
-			case (ELEMENTS::SpecialKey::ESCAPE): {
-				return std::string();
-			}
-
-			//* When ENTER key is pressed, the operation will stop and return the input string.
-			case (ELEMENTS::SpecialKey::ENTER): {
-				inputLoopStopFlag = true;
-				break;
-			}
-
-			//* When BACKSPACE is pressed, the will remove the latest input key get input by the user.
-			case (ELEMENTS::SpecialKey::BACKSPACE): {
-				if (resultString.length() > 0) {
-					bottomRight.x -= textwidth(&resultString[resultString.length() - 1]);
-					resultString.pop_back();
-					bar(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
-				}
-				break;
-			}
-		}
-
-		/**
-		* We only accept a character if that character is valid and the number of valid character does not exceed the character limit of the cell.
-		*/
-		bool inputKeyValidationResult = validKey(inputKey);
-		if (inputKeyValidationResult == true && resultString.length() < this->characterLimit) {
-			resultString.push_back(inputKey);
-			bottomRight.x += textwidth(&inputKey);
-		}
-
-	} while (inputLoopStopFlag == false);
-
-	return resultString;
+bool ELEMENTS::Button::IsPointed() {
+	HELPER::Coordinate currentMouse(HELPER::GetCurrentMouseCoordinate());
+	if (this->topLeft.x <= currentMouse.x && this->topLeft.y <= currentMouse.y &&
+		this->bottomRight.x >= currentMouse.x && this->bottomRight.y >= currentMouse.y) {
+		this->isPointed = true;
+		return true;
+	}
+	return false;
 }
 
+bool ELEMENTS::Button::LeftMouseClicked() {
+	if (this->IsPointed() && GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
+		this->SetLeftClicked();
+		return true;
+	}
+	return false;
+}
 
+bool ELEMENTS::Button::RightMouseClicked() {
+	if (this->IsPointed() && GetAsyncKeyState(VK_RBUTTON) & 0x8000) {
+		this->SetRightClicked();
+		return true;
+	}
+	return false;
+}
+
+void ELEMENTS::Button::SetLeftClicked() {
+	this->leftClicked = true;
+}
+
+void ELEMENTS::Button::SetRightClicked() {
+	this->rightClicked = true;
+}
+
+void ELEMENTS::Button::ResetLeftClick() {
+	this->leftClicked = false;
+}
+
+void ELEMENTS::Button::ResetRightClick() {
+	this->rightClicked = false;
+}
+
+bool ELEMENTS::Button::GetLeftMouseStatus() {
+	return this->leftClicked;
+}
+
+bool ELEMENTS::Button::GetRightMouseStatus() {
+	return this->rightClicked;
+}
+
+DATASHEET::Row::Row() {
+	this->topLeft = this->bottomRight = HELPER::Coordinate();
+	this->labels = nullptr;
+	this->labelPlaceholders = nullptr;
+	this->characterLimits = nullptr;
+	this->columnCount = 0;
+	this->rowHeight = 0;
+}
+
+DATASHEET::Row::Row(int columnCount, HELPER::Coordinate topLeft, std::string* labelPlaceholders, int* characterLimits, int rowHeight) {
+	this->columnCount = columnCount;
+	this->topLeft = topLeft;
+	this->labelPlaceholders = labelPlaceholders;
+	this->characterLimits = characterLimits;
+	this->rowHeight = rowHeight;
+
+	ELEMENTS::Padding padding(10);
+	this->labels = new ELEMENTS::Button[this->columnCount];
+	HELPER::Dimension boxDimension;
+	for (int i = 0; i < this->columnCount; ++i) {
+		boxDimension.width = max(textwidth((char*)this->labelPlaceholders[i].c_str()), textwidth((char*)"W") * this->characterLimits[i]) + padding.left + padding.right;
+		boxDimension.height = this->rowHeight;
+		if (i == 0) {
+			this->labels[i].SetTopLeft(this->topLeft);
+		}
+		else {
+			this->labels[i].SetTopLeft(HELPER::Coordinate(this->labels[i - 1].GetTopLeft().x + this->labels[i - 1].GetDimension().width, this->labels[i - 1].GetTopLeft().y));
+		}
+		this->labels[i].SetDimension(boxDimension);
+		this->labels[i].UpdateWithNewTopLeft();
+		this->labels[i].SetPlaceholder(this->labelPlaceholders[i]);
+	}
+	this->bottomRight = this->labels[columnCount - 1].GetBottomRight();
+}
+
+void DATASHEET::Row::SetPlaceHolder(std::string* labelPlaceholders) {
+	this->labelPlaceholders = labelPlaceholders;
+	for (int i = 0; i < this->columnCount; ++i) {
+		this->labels[i].SetPlaceholder(this->labelPlaceholders[i]);
+	}
+}
+
+void DATASHEET::Row::Display() {
+	for (int i = 0; i < this->columnCount; ++i) {
+		this->labels[i].Display();
+	}
+}
+
+void DATASHEET::Datasheet::DefaultLabelsProperties(DATASHEET::Row& field) {
+	for (int i = 0; i < field.columnCount; ++i) {
+		field.labels[i].SetFillColor(rgb(210, 218, 255));
+		field.labels[i].SetBorderColor(rgb(25, 24, 37));
+		field.labels[i].SetTextColor(rgb(25, 24, 37));
+	}
+}
+
+void DATASHEET::Datasheet::DefaultDataFieldProperties(DATASHEET::Row& field, int order) {
+	for (int i = 0; i < field.columnCount; ++i) {
+		if (order % 2 != 0) {
+			field.labels[i].SetFillColor(rgb(255, 251, 245));
+		}
+		else {
+			field.labels[i].SetFillColor(rgb(238, 238, 238));
+		}
+		field.labels[i].SetBorderColor(rgb(25, 24, 37));
+		field.labels[i].SetTextColor(rgb(25, 24, 37));
+	}
+}
+
+DATASHEET::Datasheet::Datasheet() {
+	this->rowCount = this->columnCount = 0;
+	this->topLeft = this->bottomRight = HELPER::Coordinate();
+	this->labelPlaceholders = nullptr;
+	this->characterLimits = nullptr;
+	this->rows = nullptr;
+	this->rowHeight = 0;
+}
+
+DATASHEET::Datasheet::Datasheet(int rowCount, int columnCount, int rowHeight, HELPER::Coordinate topLeft, std::string* labelPlaceholders, int* characterLimits) {
+	//* Assign parameterized field
+	this->rowCount = rowCount;
+	this->columnCount = columnCount;
+	this->topLeft = topLeft;
+	this->labelPlaceholders = labelPlaceholders;
+	this->characterLimits = characterLimits;
+	this->rowHeight = rowHeight;
+
+	//* Some references for easy coding
+	std::string* defaultData = new std::string[this->columnCount];
+	for (int i = 0; i < this->columnCount; ++i) {
+		defaultData[i] = "...";
+	}
+
+	//* Create Datasheet logic
+	this->rows = new DATASHEET::Row[this->rowCount];
+	for (int i = 0; i < this->rowCount; ++i) {
+		DATASHEET::Row& currentRow = this->rows[i];
+
+		if (i == 0) {//* Create labels
+			currentRow = DATASHEET::Row(this->columnCount, this->topLeft, this->labelPlaceholders, this->characterLimits, this->rowHeight);
+			currentRow.SetPlaceHolder(this->labelPlaceholders);
+			DATASHEET::Datasheet::DefaultLabelsProperties(currentRow);
+		}
+		else {//* Create data's field
+			currentRow = DATASHEET::Row(this->columnCount,
+				HELPER::Coordinate(this->rows[i - 1].topLeft.x, this->rows[i - 1].bottomRight.y),
+				this->labelPlaceholders, this->characterLimits,
+				this->rowHeight
+			);
+			currentRow.SetPlaceHolder(defaultData);
+			DATASHEET::Datasheet::DefaultDataFieldProperties(currentRow, i);
+		}
+	}
+
+	delete[this->columnCount] defaultData;
+}
+
+void DATASHEET::Datasheet::UpdateNewPlaceholder(std::string* newPlaceholder, int rowIndicator) {
+	if (rowIndicator <= 0 || rowIndicator >= CONSTANTS::MAX_ROW_COUNT) {
+		return;
+	}
+
+	for (int i = 0; i < this->columnCount; ++i) {
+		this->rows[rowIndicator].labels[i].SetPlaceholder(newPlaceholder[i]);
+	}
+}
+
+void DATASHEET::Datasheet::Display() {
+	for (int i = 0; i < this->rowCount; ++i) {
+		this->rows[i].Display();
+	}
+}
+
+DATASHEET::Controler::Controler() {
+	this->datasheetCount = 0;
+	this->sheets = nullptr;
+	this->activeSheet = -1;
+}
+
+DATASHEET::Controler::Controler(int rowCount, int columnCount, int rowHeight, HELPER::Coordinate topLeft) {
+	this->rowCount = rowCount;
+	this->columnCount = columnCount;
+	this->rowHeight = rowHeight;
+	this->topLeft = topLeft;
+
+	this->datasheetCount = 0;
+	this->sheets = nullptr;
+	this->activeSheet = -1;
+}
+
+DATASHEET::Controler::~Controler() {
+	delete[this->datasheetCount] this->sheets;
+}
+
+void DATASHEET::Controler::UpdateActiveSheet(int indicator) {
+	if (indicator < 0 || indicator >= this->datasheetCount) {
+		return;
+	}
+	this->activeSheet = indicator;
+}
+
+void DATASHEET::Controler::Display() {
+	//std::cerr << std::format("[INFO] CURRENT ACTIVE SHEET: {}\n", this->activeSheet);
+	this->sheets[this->activeSheet].Display();
+}

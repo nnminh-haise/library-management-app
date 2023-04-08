@@ -30,32 +30,32 @@ namespace SACH {
 
 		std::string GetViTri();
 	};
+}
 
-	//Sach* SplitDataFromString(const std::string& data, const std::string& seperator);
-
+namespace LINKED_LIST {
 	struct Node {
-		Sach info;
+		SACH::Sach info;
 		Node* next;
 
 		Node();
 
-		Node(Sach info, Node* next);
+		Node(SACH::Sach info, Node* next);
 	};
 
 	typedef Node* Pointer;
 
-	struct LinkedListController {
+	struct Controler {
 		unsigned int total; //* The size of the linked list.
 		unsigned int borrowed;
 		unsigned int sold;
 		Pointer first;
 	};
 
-	void Initialize(LinkedListController& controller);
+	void Initialize(Controler& controller);
 
-	bool IsEmpty(const LinkedListController& controller);
+	bool IsEmpty(const Controler& controller);
 
-	void InsertItemLast(LinkedListController& controller, Sach item);
+	void InsertItemLast(Controler& controller, SACH::Sach item);
 }
 
 namespace DAU_SACH {
@@ -67,12 +67,12 @@ namespace DAU_SACH {
 		std::string TacGia;
 		unsigned int NamXuatBan;
 		std::string TheLoai;
-		SACH::Pointer DanhMucSach;
+		LINKED_LIST::Controler DanhMucSach;
 
 	public:
 		DauSach();
 
-		DauSach(std::string ISBN, std::string TenSach, unsigned int SoTrang, std::string TacGia, unsigned int NamXuatBan, std::string TheLoai, SACH::Pointer DanhMucSach);
+		DauSach(std::string ISBN, std::string TenSach, unsigned int SoTrang, std::string TacGia, unsigned int NamXuatBan, std::string TheLoai, LINKED_LIST::Controler DanhMucSach);
 
 		void SetISBN(std::string ISBN);
 
@@ -98,18 +98,18 @@ namespace DAU_SACH {
 
 		std::string GetTheLoai();
 
-		void SetDanhMucSach(SACH::Pointer DanhMucSach);
+		void SetDanhMucSach(LINKED_LIST::Controler DanhMucSach);
 
-		SACH::Pointer GetDanhMucSach();
+		LINKED_LIST::Controler GetDanhMucSach();
 	};
+}
 
-	//DauSach* SplitDataFromString(const std::string& data, const std::string& seperator);
-
+namespace LINEAR_LIST {
 	const unsigned int MAX_SIZE = 10000;
 
 	struct LinearList {
 		unsigned int numberOfNode;
-		DauSach* nodes[MAX_SIZE];
+		DAU_SACH::DauSach* nodes[MAX_SIZE];
 
 		LinearList();
 	};
@@ -120,7 +120,5 @@ namespace DAU_SACH {
 
 	bool IsFull(const LinearList& list);
 
-	bool InsertItem(LinearList& list, DauSach* item, int position);
+	bool InsertItem(LinearList& list, DAU_SACH::DauSach* item, int position);
 }
-
-

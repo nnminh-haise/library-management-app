@@ -49,16 +49,16 @@ namespace DOUBLE_LINKED_LIST {
 
 	typedef Node* Pointer;
 
-	struct Controller {
+	struct Controler {
 		Pointer First;
 		Pointer Last;
 
-		Controller();
+		Controler();
 	};
 
-	void Initialize(DOUBLE_LINKED_LIST::Controller& list);
+	void Initialize(DOUBLE_LINKED_LIST::Controler& list);
 
-	bool IsEmpty(const Controller& list);
+	bool IsEmpty(const Controler& list);
 }
 
 namespace THE_DOC_GIA {
@@ -77,12 +77,12 @@ namespace THE_DOC_GIA {
 		std::string Ten;
 		GioiTinh Phai;
 		TrangThaiThe TrangThai;
-		DOUBLE_LINKED_LIST::Controller DanhSachMuonTra;
+		DOUBLE_LINKED_LIST::Controler DanhSachMuonTra;
 
 	public:
 		TheDocGia();
 
-		TheDocGia(int MaThe, std::string Ho, std::string Ten, GioiTinh Phai, TrangThaiThe TrangThai, DOUBLE_LINKED_LIST::Controller DanhSachMuonTra);
+		TheDocGia(int MaThe, std::string Ho, std::string Ten, GioiTinh Phai, TrangThaiThe TrangThai, DOUBLE_LINKED_LIST::Controler DanhSachMuonTra);
 
 		void SetMaThe(int MaThe);
 
@@ -100,13 +100,17 @@ namespace THE_DOC_GIA {
 
 		GioiTinh GetPhai();
 
+		std::string GetStringfyPhai();
+
 		void SetTrangThai(TrangThaiThe TrangThai);
 
 		TrangThaiThe GetTrangThai();
 
-		void SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controller DanhSachMuonTra);
+		std::string GetStringfyTrangThai();
 
-		DOUBLE_LINKED_LIST::Controller GetDanhSachMuonTra();
+		void SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controler DanhSachMuonTra);
+
+		DOUBLE_LINKED_LIST::Controler GetDanhSachMuonTra();
 
 		void Log();
 	};
@@ -136,6 +140,8 @@ namespace AVL_TREE {
 
 	void PostOrderTraversal(const Pointer& root);
 
+	void CountNode(const Pointer& root, int& counter);
+
 	void NonrecursiveInOrderTraversal(const Pointer& root);
 
 	Pointer RotateLeft(Pointer root);
@@ -145,6 +151,8 @@ namespace AVL_TREE {
 	bool Insert(Pointer& root, THE_DOC_GIA::TheDocGia info);
 }
 
-bool TheDocGiaExtractor(std::string data, std::string seperator, THE_DOC_GIA::TheDocGia& returnData);
+namespace THE_DOC_GIA_MODULES {
+	bool TheDocGiaExtractor(std::string data, std::string seperator, THE_DOC_GIA::TheDocGia& returnData);
 
-bool LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE::Pointer& tree);
+	bool LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE::Pointer& tree);
+}

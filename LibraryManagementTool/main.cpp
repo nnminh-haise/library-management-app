@@ -7,12 +7,10 @@
 #include "Views/Elements.h"
 #include "Helper/Helper.h"
 #include "TheDocGia/TheDocGia.h"
+#include "DauSach/DauSach.h"
 #include "Helper/ConstantsAndGlobalVariables.h"
+#include "Graphics/graphics.h"
 
-void TestUIElement() {
-
-
-}
 
 //* Program's entrance
 int main() {
@@ -23,13 +21,14 @@ int main() {
 	*/
 	AVL_TREE::Pointer danhSachTheDocgia;
 	AVL_TREE::Initialize(danhSachTheDocgia);
+
+	LINEAR_LIST::LinearList danhSachDauSach;
+	LINEAR_LIST::Initialize(danhSachDauSach);
+
+	//* Run program main function
+	LANDING_VIEW::Run(danhSachTheDocgia, danhSachDauSach);
+
 	
-	LoadDanhSachTheDocGiaFromDB(CONSTANTS::THE_DOC_GIA_DB, danhSachTheDocgia);
-
-	AVL_TREE::NonrecursiveInOrderTraversal(danhSachTheDocgia);
-
-	//LANDING_VIEW::Run(danhSachTheDocgia);
-
 
 	return 0;
 }
