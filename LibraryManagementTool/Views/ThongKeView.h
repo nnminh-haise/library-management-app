@@ -9,10 +9,14 @@
 
 class ThongKeView {
 private:
-	ELEMENTS::Button* txtbx;
-	ELEMENTS::InputBox* inpbx;
+	bool active;
+	DATASHEET::Controler controler;
+
+private:
+	void CreateDatasheets(LINEAR_LIST::LinearList& danhSachDauSach, DATASHEET::Controler& controler);
 
 public:
+
 	ThongKeView(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& dsDauSach);
 
 	void Run();
