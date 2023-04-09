@@ -259,6 +259,17 @@ ELEMENTS::Button::Button(HELPER::Coordinate topLeft, int width, int height, int 
 	this->placeholder = "BUTTON";
 }
 
+ELEMENTS::Button::Button(HELPER::Coordinate topLeft, HELPER::Dimension dimension, int textColor, int fillcolor, int borderColor) {
+	this->topLeft = topLeft;
+	this->dimension = dimension;
+	this->bottomRight = HELPER::Coordinate(topLeft.x + this->dimension.width, topLeft.y + this->dimension.height);
+	this->fill = ELEMENTS::Fill(this->topLeft, this->bottomRight, fillcolor, borderColor);
+	this->textColor = textColor;
+	this->isPointed = false;
+	this->leftClicked = this->rightClicked = false;
+	this->placeholder = "BUTTON";
+}
+
 ELEMENTS::Button::Button(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int textColor, int fillcolor, int borderColor) {
 	this->topLeft = topLeft;
 	this->bottomRight = bottomRight;
@@ -409,6 +420,274 @@ bool ELEMENTS::Button::GetRightMouseStatus() {
 	return this->rightClicked;
 }
 
+ELEMENTS::InputBox::InputBox() {
+	this->topLeft = this->bottomRight = HELPER::Coordinate();
+	this->fill = ELEMENTS::Fill();
+	this->dimension = HELPER::Dimension();
+	this->textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR;
+	this->isPointed = false;
+	this->rightClicked = false;
+	this->leftClicked = false;
+	this->placeholder = "InputBox";
+	this->inputMode = false;
+}
+
+ELEMENTS::InputBox::InputBox(HELPER::Coordinate topLeft, int width, int height, int textColor, int fillcolor, int borderColor) {
+	this->topLeft = topLeft;
+	this->dimension = { width, height };
+	this->bottomRight = HELPER::Coordinate(topLeft.x + width, topLeft.y + height);
+	this->fill = ELEMENTS::Fill(this->topLeft, this->bottomRight, fillcolor, borderColor);
+	this->textColor = textColor;
+	this->isPointed = false;
+	this->leftClicked = this->rightClicked = false;
+	this->placeholder = "InputBox";
+	this->inputMode = false;
+}
+
+ELEMENTS::InputBox::InputBox(HELPER::Coordinate topLeft, HELPER::Dimension dimension, int textColor, int fillcolor, int borderColor) {
+	this->topLeft = topLeft;
+	this->dimension = dimension;
+	this->bottomRight = HELPER::Coordinate(topLeft.x + this->dimension.width, topLeft.y + this->dimension.height);
+	this->fill = ELEMENTS::Fill(this->topLeft, this->bottomRight, fillcolor, borderColor);
+	this->textColor = textColor;
+	this->isPointed = false;
+	this->leftClicked = this->rightClicked = false;
+	this->placeholder = "InputBox";
+	this->inputMode = false;
+}
+
+ELEMENTS::InputBox::InputBox(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int textColor, int fillcolor, int borderColor) {
+	this->topLeft = topLeft;
+	this->bottomRight = bottomRight;
+	this->dimension = { this->bottomRight.x - this->topLeft.x, this->bottomRight.y - this->topLeft.y };
+	this->fill = ELEMENTS::Fill(this->topLeft, this->bottomRight, fillcolor, borderColor);
+	this->textColor = textColor;
+	this->isPointed = false;
+	this->leftClicked = this->rightClicked = false;
+	this->placeholder = "InputBox";
+	this->inputMode = false;
+}
+
+void ELEMENTS::InputBox::SetTopLeft(HELPER::Coordinate topLeft) {
+	this->topLeft = topLeft;
+	this->fill.topLeft = topLeft;
+}
+
+HELPER::Coordinate ELEMENTS::InputBox::GetTopLeft() {
+	return this->topLeft;
+}
+
+void ELEMENTS::InputBox::SetDimension(HELPER::Dimension newDimension) {
+	this->dimension = newDimension;
+	this->fill.dimension = newDimension;
+}
+
+HELPER::Dimension ELEMENTS::InputBox::GetDimension() {
+	return this->fill.dimension;
+}
+
+bool ELEMENTS::InputBox::UpdateWithNewTopLeft() {
+	if (this->dimension.width == 0 && this->dimension.height == 0) {
+		return false;
+	}
+
+	this->bottomRight.x = this->topLeft.x + this->dimension.width;
+	this->bottomRight.y = this->topLeft.y + this->dimension.height;
+	this->fill.bottomRight.x = this->topLeft.x + this->dimension.width;
+	this->fill.bottomRight.y = this->topLeft.y + this->dimension.height;
+	return true;
+}
+
+HELPER::Coordinate ELEMENTS::InputBox::GetBottomRight() {
+	return this->bottomRight;
+}
+
+void ELEMENTS::InputBox::SetFillColor(int color) {
+	this->fill.fillColor = color;
+}
+
+int ELEMENTS::InputBox::GetFillColor() {
+	return this->fill.fillColor;
+}
+
+void ELEMENTS::InputBox::SetTextColor(int color) {
+	this->textColor = color;
+}
+
+int ELEMENTS::InputBox::GetTextColor() {
+	return this->textColor;
+}
+
+void ELEMENTS::InputBox::SetBorderColor(int color) {
+	this->fill.borderColor = color;
+}
+
+int ELEMENTS::InputBox::GetBorderColor() {
+	return this->fill.borderColor;
+}
+
+void ELEMENTS::InputBox::SetPlaceholder(std::string placeholder) {
+	this->placeholder = placeholder;
+}
+
+std::string ELEMENTS::InputBox::GetPlaceholder() {
+	return this->placeholder;
+}
+
+void ELEMENTS::InputBox::SetStatus(bool status) {
+	this->active = status;
+}
+
+bool ELEMENTS::InputBox::GetStatus() {
+	return this->active;
+}
+
+bool ELEMENTS::InputBox::IsPointed() {
+	HELPER::Coordinate currentMouse(HELPER::GetCurrentMouseCoordinate());
+	if (this->topLeft.x <= currentMouse.x && this->topLeft.y <= currentMouse.y &&
+		this->bottomRight.x >= currentMouse.x && this->bottomRight.y >= currentMouse.y) {
+		this->isPointed = true;
+		return true;
+	}
+	return false;
+}
+
+bool ELEMENTS::InputBox::LeftMouseClicked() {
+	if (this->IsPointed() && GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
+		this->SetLeftClicked();
+		return true;
+	}
+	return false;
+}
+
+bool ELEMENTS::InputBox::RightMouseClicked() {
+	if (this->IsPointed() && GetAsyncKeyState(VK_RBUTTON) & 0x8000) {
+		this->SetRightClicked();
+		return true;
+	}
+	return false;
+}
+
+void ELEMENTS::InputBox::SetLeftClicked() {
+	this->leftClicked = true;
+}
+
+void ELEMENTS::InputBox::SetRightClicked() {
+	this->rightClicked = true;
+}
+
+void ELEMENTS::InputBox::ResetLeftClick() {
+	this->leftClicked = false;
+}
+
+void ELEMENTS::InputBox::ResetRightClick() {
+	this->rightClicked = false;
+}
+
+bool ELEMENTS::InputBox::GetLeftMouseStatus() {
+	return this->leftClicked;
+}
+
+bool ELEMENTS::InputBox::GetRightMouseStatus() {
+	return this->rightClicked;
+}
+
+std::string ELEMENTS::InputBox::InputMode(int characterLimit, bool(*KeyValidation)(const char&)) {
+
+	this->fill.Draw();
+	setcolor(this->textColor);
+	setbkcolor(this->fill.fillColor);
+
+	if (this->placeholder.length() != 0 && this->inputMode == true) {
+		this->placeholder = "";
+	}
+
+	HELPER::Dimension textDimension(
+		textwidth((char*)this->placeholder.c_str()),
+		textheight((char*)this->placeholder.c_str())
+	);
+	HELPER::Coordinate textPosition(
+		this->topLeft.x + (this->dimension.width / 2 - textDimension.width / 2),
+		this->topLeft.y + (this->dimension.height / 2 - textDimension.height / 2)
+	);
+	
+	if (this->inputMode == true) {
+		int characterCount = 0;
+		char inputKey{};
+
+		while (inputKey != ELEMENTS::SpecialKey::ENTER && inputKey != ELEMENTS::SpecialKey::ESCAPE) {
+			//std::cerr << "-------------------\n";
+			//std::cerr << std::format("placeholder before: {}\n", this->placeholder);
+			//textPosition.Log();
+			//textDimension.Log();
+
+			while (!kbhit()) {
+				this->fill.Draw();
+				std::cerr << this->placeholder << "\n";
+				outtextxy(500, 345, (char*)"debuging");
+				textPosition.Log();
+				std::cerr << "bug: " << (char*)this->placeholder.c_str() << "\n";
+				outtextxy(textPosition.x, textPosition.y, (char*)this->placeholder.c_str());
+				bar(
+					textPosition.x + textDimension.width, textPosition.y,
+					textPosition.x + textDimension.width + 2, textPosition.y + textDimension.height
+				);
+			}
+
+			std::cerr << "not debug\n";
+
+			//std::cerr << std::format("{}, {}\n", textPosition.x + textDimension.width, textPosition.y);
+			//std::cerr << std::format("{}, {}\n", textPosition.x + textDimension.width + 2, textPosition.y + textDimension.height);
+
+			inputKey = toupper(getch());
+
+			std::cerr << std::format("pressed key: {}\n", inputKey);
+			
+
+			//* If the pressed key is the ENTER key or ESCAPE key, then stop the input process and return the result string.
+			if (inputKey == ELEMENTS::SpecialKey::ENTER || inputKey == ELEMENTS::SpecialKey::ESCAPE) {
+				continue;
+			}
+
+			//* Filter out the case where there are more than two SPACE in the string.
+			if (this->placeholder.length() != 0 && this->placeholder[this->placeholder.length() - 1] == ' ' && inputKey == ELEMENTS::SpecialKey::SPACE) {
+				continue;
+			}
+
+			//* Filter out the case where the first pressed key is SPACE.
+			if (this->placeholder.length() == 0 && inputKey == ELEMENTS::SpecialKey::SPACE) {
+				continue;
+			}
+
+			if (characterCount + 1 < characterLimit && KeyValidation(inputKey)) {
+				this->placeholder += inputKey;
+				++characterCount;
+				textDimension.width = textwidth((char*)this->placeholder.c_str());
+			}
+
+			std::cerr << std::format("placeholder after: {}\n", this->placeholder);
+		}
+	}
+	else {
+		outtextxy(textPosition.x, textPosition.y, (char*)this->placeholder.c_str());
+	}
+
+
+	return STR::Trim(this->placeholder);
+}
+
+void ELEMENTS::InputBox::ActivateInputMode() {
+	this->inputMode = true;
+}
+
+void ELEMENTS::InputBox::DeactivateInputMode() {
+	this->inputMode = false;
+}
+
+bool ELEMENTS::InputBox::InInputMode() {
+	return this->inputMode;
+}
+
 DATASHEET::Row::Row() {
 	this->topLeft = this->bottomRight = HELPER::Coordinate();
 	this->labels = nullptr;
@@ -546,6 +825,9 @@ DATASHEET::Controler::Controler() {
 	this->datasheetCount = 0;
 	this->sheets = nullptr;
 	this->activeSheet = -1;
+	this->columnCount = 0;
+	this->rowCount = 0;
+	this->rowHeight = 0;
 }
 
 DATASHEET::Controler::Controler(int rowCount, int columnCount, int rowHeight, HELPER::Coordinate topLeft) {

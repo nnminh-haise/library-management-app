@@ -143,6 +143,8 @@ namespace ELEMENTS {
 
         Button(HELPER::Coordinate topLeft, int with, int height, int textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR, int fillcolor = BUTTON_DEFAULT_PROPERTIES::FILL_COLOR, int borderColor = BUTTON_DEFAULT_PROPERTIES::BORDER_COLOR);
 
+        Button(HELPER::Coordinate topLeft, HELPER::Dimension dimension, int textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR, int fillcolor = BUTTON_DEFAULT_PROPERTIES::FILL_COLOR, int borderColor = BUTTON_DEFAULT_PROPERTIES::BORDER_COLOR);
+
         Button(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR, int fillcolor = BUTTON_DEFAULT_PROPERTIES::FILL_COLOR, int borderColor = BUTTON_DEFAULT_PROPERTIES::BORDER_COLOR);
 
         void SetTopLeft(HELPER::Coordinate topLeft);
@@ -196,6 +198,88 @@ namespace ELEMENTS {
         bool GetLeftMouseStatus();
 
         bool GetRightMouseStatus();
+    };
+
+    class InputBox {
+    private:
+        HELPER::Coordinate topLeft;
+        HELPER::Coordinate bottomRight;
+        HELPER::Dimension dimension;
+        Fill fill;
+        int textColor;
+        std::string placeholder;
+        bool isPointed;
+        bool rightClicked;
+        bool leftClicked;
+        bool active;
+        bool inputMode;
+
+    public:
+        InputBox();
+
+        InputBox(HELPER::Coordinate topLeft, int with, int height, int textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR, int fillcolor = BUTTON_DEFAULT_PROPERTIES::FILL_COLOR, int borderColor = BUTTON_DEFAULT_PROPERTIES::BORDER_COLOR);
+
+        InputBox(HELPER::Coordinate topLeft, HELPER::Dimension dimension, int textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR, int fillcolor = BUTTON_DEFAULT_PROPERTIES::FILL_COLOR, int borderColor = BUTTON_DEFAULT_PROPERTIES::BORDER_COLOR);
+
+        InputBox(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR, int fillcolor = BUTTON_DEFAULT_PROPERTIES::FILL_COLOR, int borderColor = BUTTON_DEFAULT_PROPERTIES::BORDER_COLOR);
+
+        void SetTopLeft(HELPER::Coordinate topLeft);
+
+        HELPER::Coordinate GetTopLeft();
+
+        void SetDimension(HELPER::Dimension newDimension);
+
+        HELPER::Dimension GetDimension();
+
+        bool UpdateWithNewTopLeft();
+
+        HELPER::Coordinate GetBottomRight();
+
+        void SetFillColor(int color);
+
+        int GetFillColor();
+
+        void SetTextColor(int color);
+
+        int GetTextColor();
+
+        void SetBorderColor(int color);
+
+        int GetBorderColor();
+
+        void SetPlaceholder(std::string placeholder);
+
+        std::string GetPlaceholder();
+
+        void SetStatus(bool status);
+
+        bool GetStatus();
+
+        bool IsPointed();
+
+        bool LeftMouseClicked();
+
+        bool RightMouseClicked();
+
+        void SetLeftClicked();
+
+        void SetRightClicked();
+
+        void ResetLeftClick();
+
+        void ResetRightClick();
+
+        bool GetLeftMouseStatus();
+
+        bool GetRightMouseStatus();
+
+        std::string InputMode(int characterLimit, bool(*KeyValidation)(const char&));
+
+        void ActivateInputMode();
+
+        void DeactivateInputMode();
+
+        bool InInputMode();
     };
 }
 

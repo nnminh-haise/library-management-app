@@ -48,6 +48,9 @@
     <ClCompile Include="DataStructures\Stack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Views\ThongKeView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DauSach\DauSach.h">
@@ -78,6 +81,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DataStructures\Stack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Views\ThongKeView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
