@@ -229,6 +229,56 @@ void LINEAR_LIST::Traversal(const LinearList& list) {
 	}
 }
 
+void LINEAR_LIST::printBooks(LinearList& list)
+{
+	std::string bookName;
+	std::cout << "Vui long nhap ten sach can tim: ";
+	std::cin.ignore();
+	std::getline(std::cin, bookName);
+
+	DAU_SACH::DauSach* dauSach;
+	LINKED_LIST::Pointer ptr;
+	SACH::Sach sach;
+
+	for (unsigned int i = 0; i < list.numberOfNode; i++)
+	{
+		dauSach = list.nodes[i];
+		if (bookName == dauSach->GetTenSach())
+		{
+			std::cout << "ISBN: " << dauSach->GetISBN() << std::endl;
+			std::cout << "Ten sach: " << dauSach->GetTenSach() << std::endl;
+			std::cout << "Tac gia: " << dauSach->GetTacGia() << std::endl;
+			std::cout << "Nam xuat ban: " << dauSach->GetNamXuatBan() << std::endl;
+			std::cout << "The loai: " << dauSach->GetTheLoai() << std::endl;
+
+			ptr = dauSach->GetDanhMucSach().first;
+
+			while (ptr != NULL)
+			{
+				sach = ptr->info;
+				std::cout << "Ma sach: " << sach.GetMaSach() << "\n";
+				switch (sach.GetTrangThai())
+				{
+				case SACH::CHO_MUON_DUOC:
+					std::cout << "Trang thai: " << "Cho muon duoc\n";
+					break;
+				case SACH::DA_CO_DOC_GIA_MUON:
+					std::cout << "Trang thai: " << "Da co doc gia muon\n";
+					break;
+				case SACH::DA_THANH_LY:
+					std::cout << "Trang thai: " << "Da thanh ly\n";
+					break;
+				default:
+					break;
+				}
+				std::cout << "Vi tri: " << sach.GetViTri() << "\n";
+				ptr = ptr->next;
+			}
+			std::cout << "\n";
+		}
+	}
+}
+
 bool DAU_SACH_MODULES::DauSachExtractor(std::string data, std::string seperator, DAU_SACH::DauSach* returnData) {
 	if (data.length() == 0) {
 		return false;

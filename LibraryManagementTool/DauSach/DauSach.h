@@ -127,6 +127,8 @@ namespace LINEAR_LIST {
 	bool InsertLast(LinearList& list, DAU_SACH::DauSach* item);
 
 	void Traversal(const LinearList& list);
+
+	void printBooks(LinearList& list);
 }
 
 namespace DAU_SACH_MODULES {
