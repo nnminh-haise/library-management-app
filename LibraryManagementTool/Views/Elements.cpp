@@ -356,8 +356,6 @@ bool ELEMENTS::Button::GetStatus() {
 }
 
 void ELEMENTS::Button::Display() {
-	this->fill.Draw();
-	setcolor(this->textColor);
 	HELPER::Dimension textDimension(
 		textwidth((char*)this->placeholder.c_str()),
 		textheight((char*)this->placeholder.c_str())
@@ -366,6 +364,8 @@ void ELEMENTS::Button::Display() {
 		this->topLeft.x + (this->dimension.width / 2 - textDimension.width / 2), 
 		this->topLeft.y + (this->dimension.height / 2 - textDimension.height / 2)
 	);
+	this->fill.Draw();
+	setcolor(this->textColor);
 	setbkcolor(this->fill.fillColor);
 	outtextxy(textPosition.x, textPosition.y, (char*)this->placeholder.c_str());
 }
@@ -593,87 +593,65 @@ bool ELEMENTS::InputBox::GetRightMouseStatus() {
 }
 
 std::string ELEMENTS::InputBox::InputMode(int characterLimit, bool(*KeyValidation)(const char&)) {
+	std::cerr << std::format("Input mode status: {}\n", this->inputMode);
 
-	this->fill.Draw();
-	setcolor(this->textColor);
-	setbkcolor(this->fill.fillColor);
-
-	if (this->placeholder.length() != 0 && this->inputMode == true) {
-		this->placeholder = "";
-	}
-
-	HELPER::Dimension textDimension(
-		textwidth((char*)this->placeholder.c_str()),
-		textheight((char*)this->placeholder.c_str())
-	);
-	HELPER::Coordinate textPosition(
-		this->topLeft.x + (this->dimension.width / 2 - textDimension.width / 2),
-		this->topLeft.y + (this->dimension.height / 2 - textDimension.height / 2)
-	);
-	
-	if (this->inputMode == true) {
-		int characterCount = 0;
-		char inputKey{};
-
-		while (inputKey != ELEMENTS::SpecialKey::ENTER && inputKey != ELEMENTS::SpecialKey::ESCAPE) {
-			//std::cerr << "-------------------\n";
-			//std::cerr << std::format("placeholder before: {}\n", this->placeholder);
-			//textPosition.Log();
-			//textDimension.Log();
-
-			while (!kbhit()) {
-				this->fill.Draw();
-				std::cerr << this->placeholder << "\n";
-				outtextxy(500, 345, (char*)"debuging");
-				textPosition.Log();
-				std::cerr << "bug: " << (char*)this->placeholder.c_str() << "\n";
-				outtextxy(textPosition.x, textPosition.y, (char*)this->placeholder.c_str());
-				bar(
-					textPosition.x + textDimension.width, textPosition.y,
-					textPosition.x + textDimension.width + 2, textPosition.y + textDimension.height
-				);
-			}
-
-			std::cerr << "not debug\n";
-
-			//std::cerr << std::format("{}, {}\n", textPosition.x + textDimension.width, textPosition.y);
-			//std::cerr << std::format("{}, {}\n", textPosition.x + textDimension.width + 2, textPosition.y + textDimension.height);
-
-			inputKey = toupper(getch());
-
-			std::cerr << std::format("pressed key: {}\n", inputKey);
-			
-
-			//* If the pressed key is the ENTER key or ESCAPE key, then stop the input process and return the result string.
-			if (inputKey == ELEMENTS::SpecialKey::ENTER || inputKey == ELEMENTS::SpecialKey::ESCAPE) {
-				continue;
-			}
-
-			//* Filter out the case where there are more than two SPACE in the string.
-			if (this->placeholder.length() != 0 && this->placeholder[this->placeholder.length() - 1] == ' ' && inputKey == ELEMENTS::SpecialKey::SPACE) {
-				continue;
-			}
-
-			//* Filter out the case where the first pressed key is SPACE.
-			if (this->placeholder.length() == 0 && inputKey == ELEMENTS::SpecialKey::SPACE) {
-				continue;
-			}
-
-			if (characterCount + 1 < characterLimit && KeyValidation(inputKey)) {
-				this->placeholder += inputKey;
-				++characterCount;
-				textDimension.width = textwidth((char*)this->placeholder.c_str());
-			}
-
-			std::cerr << std::format("placeholder after: {}\n", this->placeholder);
-		}
+	if (this->inputMode == false) {
+		this->fill.Draw();
+		setcolor(this->textColor);  //* Set text color
+		setbkcolor(this->fill.fillColor);//* Set text background color
+		HELPER::Coordinate textPosision( //* Normally, the text will appear at left most and middle of the box
+			this->topLeft.x + 10,
+			this->topLeft.y + this->dimension.height / 2 - textheight((char*)this->placeholder.c_str()) / 2
+		);
+		outtextxy(textPosision.x, textPosision.y, (char*)this->placeholder.c_str());
+		return {};
 	}
 	else {
-		outtextxy(textPosition.x, textPosition.y, (char*)this->placeholder.c_str());
+		std::string inpStr{};
+		char inpKey{};
+		int chrCnt = 0;
+
+		HELPER::Dimension chrDimension(textwidth((char*)"W"), textheight((char*)"W"));
+		HELPER::Coordinate txtPos( //* Text will be printed out 10px to the right from the box edge and in the middle of the box
+			this->topLeft.x + 10,
+			this->topLeft.y + this->dimension.height / 2 - chrDimension.height / 2
+		);
+
+		while (inpKey != ELEMENTS::SpecialKey::ENTER && inpKey != ELEMENTS::SpecialKey::ESCAPE) {
+
+			while (!kbhit()) {
+				setactivepage(1 - getactivepage());
+
+				this->fill.Draw();
+				setcolor(this->textColor);
+				setbkcolor(this->fill.fillColor);
+				outtextxy(txtPos.x, txtPos.y, (char*)inpStr.c_str());
+
+				setvisualpage(getactivepage());
+
+				clearmouseclick(VK_LBUTTON);
+				clearmouseclick(VK_RBUTTON);
+			}
+
+			inpKey = std::toupper(getch());
+
+			//* Escape condition
+			if (inpKey == ELEMENTS::SpecialKey::ENTER || inpKey == ELEMENTS::SpecialKey::ESCAPE) {
+				break;
+			}
+
+			if (inpKey == ELEMENTS::SpecialKey::BACKSPACE) {
+				--chrCnt;
+				inpStr.pop_back();
+			}
+
+			if (chrCnt + 1 < characterLimit && KeyValidation(inpKey)) {
+				inpStr.push_back(inpKey);
+				++chrCnt;
+			}
+		}
+		return STR::Trim(inpStr);
 	}
-
-
-	return STR::Trim(this->placeholder);
 }
 
 void ELEMENTS::InputBox::ActivateInputMode() {

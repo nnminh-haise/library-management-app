@@ -8,27 +8,29 @@
 #include "DauSach/DauSach.h"
 #include "Views/Elements.h"
 
+#define ff std::format
+
 bool validation(const char& chr) {
-	return ('A' <= chr && chr <= 'Z');
+	return ('A' <= chr && chr <= 'Z' || chr == ' ');
 }
 
-void testFunc(){
+void testFunc(){ // main loop
 	ELEMENTS::Window win(HELPER::Dimension(1000, 700), "TEST");
 	win.Activate();
 
 	ELEMENTS::Fill fill(HELPER::Coordinate(0, 0), 1000, 700);
 	fill.fillColor = WHITE;
-	
 
-	ELEMENTS::InputBox bx(HELPER::Coordinate(100, 50), 300, 50);
+	ELEMENTS::InputBox bx(HELPER::Coordinate(100, 50), 300, 100);
 	bx.SetFillColor(WHITE);
 	bx.SetBorderColor(BLACK);
 	bx.SetTextColor(BLACK);
 
-
 	char escKey{};
 	while (escKey != ELEMENTS::SpecialKey::ESCAPE) {
+		int frCnt = 0;
 		while (!kbhit()) {
+
 			setactivepage(1 - getactivepage());
 
 			fill.Draw();
@@ -37,22 +39,24 @@ void testFunc(){
 			}
 			else if (bx.LeftMouseClicked()) {
 				bx.ActivateInputMode();
+				bx.SetTextColor(BLACK);
+				bx.SetFillColor(rgb(246, 241, 241));
 			}
 			else {
 				bx.SetFillColor(WHITE);
+				bx.SetTextColor(BLACK);
 			}
 
-			std::string res = bx.InputMode(10, validation);
-			if (bx.InInputMode() == true) {
+			std::string res = bx.InputMode(30, validation);
+			if (bx.InInputMode()) {
+				bx.SetPlaceholder(res);
 				bx.DeactivateInputMode();
 			}
 
-			outtextxy(800, 50, (char*)res.c_str());
+			outtextxy(100, 600, (char*)bx.GetPlaceholder().c_str());
 
 			setvisualpage(getactivepage());
-			//* Draw elements end above
 
-			//* Clear mouseclick
 			clearmouseclick(VK_LBUTTON);
 			clearmouseclick(VK_RBUTTON);
 		}
@@ -77,10 +81,11 @@ int main() {
 	LINEAR_LIST::Initialize(danhSachDauSach);
 
 	//* Run program main function
-	LandingView mainView(danhSachTheDocgia, danhSachDauSach);
-	mainView.Run();
+	//LandingView mainView(danhSachTheDocgia, danhSachDauSach);
+	//mainView.Run();
 	
-	//testFunc();
+	testFunc();
+	//testFunc2();
 
 	return 0;
 }
