@@ -129,6 +129,10 @@ namespace LINEAR_LIST {
 	void Traversal(const LinearList& list);
 
 	void printBooks(LinearList& list);
+
+	void swap(DAU_SACH::DauSach*& ClassPtr1, DAU_SACH::DauSach*& ClassPtr2);
+
+	void sortByCategory(LinearList& list);
 }
 
 namespace DAU_SACH_MODULES {

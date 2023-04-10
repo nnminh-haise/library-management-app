@@ -279,6 +279,32 @@ void LINEAR_LIST::printBooks(LinearList& list)
 	}
 }
 
+void LINEAR_LIST::swap(DAU_SACH::DauSach*& ClassPtr1, DAU_SACH::DauSach*& ClassPtr2)
+{
+	DAU_SACH::DauSach* temp = ClassPtr1;
+	ClassPtr1 = ClassPtr2;
+	ClassPtr2 = temp;
+}
+
+void LINEAR_LIST::sortByCategory(LinearList& list)
+{
+	unsigned int j, k, min_index;
+	for (j = 0; j < list.numberOfNode - 1; j++)
+	{
+		min_index = j;
+		for (k = j + 1; k < list.numberOfNode; k++)
+		{
+			if (list.nodes[min_index]->GetTheLoai().compare(list.nodes[k]->GetTheLoai()) > 0)
+				min_index = k;
+			else if (list.nodes[min_index]->GetTheLoai().compare(list.nodes[k]->GetTheLoai()) == 0)
+				if (list.nodes[min_index]->GetTenSach().compare(list.nodes[k]->GetTenSach()) > 0)
+					swap(list.nodes[min_index], list.nodes[k]);
+		}
+		if (min_index != j)
+			swap(list.nodes[min_index], list.nodes[j]);
+	}
+}
+
 bool DAU_SACH_MODULES::DauSachExtractor(std::string data, std::string seperator, DAU_SACH::DauSach* returnData) {
 	if (data.length() == 0) {
 		return false;
