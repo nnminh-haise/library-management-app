@@ -34,6 +34,8 @@ void ELEMENTS::Window::Deactivate() {
 	closegraph();
 }
 
+//---
+
 ELEMENTS::Padding::Padding():
 	top(0), bottom(0), left(0), right(0) {
 }
@@ -45,6 +47,8 @@ ELEMENTS::Padding::Padding(int all):
 ELEMENTS::Padding::Padding(int top, int bottom, int left, int right):
 	top(top), bottom(bottom), left(left), right(right) {
 }
+
+//---
 
 ELEMENTS::Fill::Fill():
 	topLeft(HELPER::Coordinate()), bottomRight(HELPER::Coordinate()), dimension(HELPER::Dimension()),
@@ -83,6 +87,8 @@ void ELEMENTS::Fill::Draw() {
 	bar(this->topLeft.x, this->topLeft.y, this->bottomRight.x, this->bottomRight.y);
 	rectangle(this->topLeft.x, this->topLeft.y, this->bottomRight.x, this->bottomRight.y);
 }
+
+//---
 
 ELEMENTS::CircleFill::CircleFill() :
 	topLeft(HELPER::Coordinate()), bottomRight(HELPER::Coordinate()), dimension(HELPER::Dimension()),
@@ -237,6 +243,8 @@ bool ELEMENTS::CloseButton::RightMouseClicked() {
 	return false;
 }
 
+//---
+
 ELEMENTS::Button::Button() {
 	this->topLeft = this->bottomRight = HELPER::Coordinate();
 	this->fill = ELEMENTS::Fill();
@@ -380,6 +388,10 @@ bool ELEMENTS::Button::IsPointed() {
 	return false;
 }
 
+bool ELEMENTS::Button::IsHover() {
+	return this->IsPointed() && this->LeftMouseClicked() == false && this->RightMouseClicked() == false;
+}
+
 bool ELEMENTS::Button::LeftMouseClicked() {
 	if (this->IsPointed() && GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
 		this->SetLeftClicked();
@@ -420,251 +432,84 @@ bool ELEMENTS::Button::GetRightMouseStatus() {
 	return this->rightClicked;
 }
 
-ELEMENTS::InputBox::InputBox() {
-	this->topLeft = this->bottomRight = HELPER::Coordinate();
-	this->fill = ELEMENTS::Fill();
-	this->dimension = HELPER::Dimension();
-	this->textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR;
-	this->isPointed = false;
-	this->rightClicked = false;
-	this->leftClicked = false;
-	this->placeholder = "InputBox";
+//---
+
+ELEMENTS::InputModeController::InputModeController() {
 	this->inputMode = false;
+	this->acceptKey = false;
+	this->characterCount = 0;
+	this->characterLimit = 0;
+	this->currentTextBox = nullptr;
+	this->outputTextBox = nullptr;
+	this->inputKey = NULL;
+	this->inputString = "";
 }
 
-ELEMENTS::InputBox::InputBox(HELPER::Coordinate topLeft, int width, int height, int textColor, int fillcolor, int borderColor) {
-	this->topLeft = topLeft;
-	this->dimension = { width, height };
-	this->bottomRight = HELPER::Coordinate(topLeft.x + width, topLeft.y + height);
-	this->fill = ELEMENTS::Fill(this->topLeft, this->bottomRight, fillcolor, borderColor);
-	this->textColor = textColor;
-	this->isPointed = false;
-	this->leftClicked = this->rightClicked = false;
-	this->placeholder = "InputBox";
-	this->inputMode = false;
-}
-
-ELEMENTS::InputBox::InputBox(HELPER::Coordinate topLeft, HELPER::Dimension dimension, int textColor, int fillcolor, int borderColor) {
-	this->topLeft = topLeft;
-	this->dimension = dimension;
-	this->bottomRight = HELPER::Coordinate(topLeft.x + this->dimension.width, topLeft.y + this->dimension.height);
-	this->fill = ELEMENTS::Fill(this->topLeft, this->bottomRight, fillcolor, borderColor);
-	this->textColor = textColor;
-	this->isPointed = false;
-	this->leftClicked = this->rightClicked = false;
-	this->placeholder = "InputBox";
-	this->inputMode = false;
-}
-
-ELEMENTS::InputBox::InputBox(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int textColor, int fillcolor, int borderColor) {
-	this->topLeft = topLeft;
-	this->bottomRight = bottomRight;
-	this->dimension = { this->bottomRight.x - this->topLeft.x, this->bottomRight.y - this->topLeft.y };
-	this->fill = ELEMENTS::Fill(this->topLeft, this->bottomRight, fillcolor, borderColor);
-	this->textColor = textColor;
-	this->isPointed = false;
-	this->leftClicked = this->rightClicked = false;
-	this->placeholder = "InputBox";
-	this->inputMode = false;
-}
-
-void ELEMENTS::InputBox::SetTopLeft(HELPER::Coordinate topLeft) {
-	this->topLeft = topLeft;
-	this->fill.topLeft = topLeft;
-}
-
-HELPER::Coordinate ELEMENTS::InputBox::GetTopLeft() {
-	return this->topLeft;
-}
-
-void ELEMENTS::InputBox::SetDimension(HELPER::Dimension newDimension) {
-	this->dimension = newDimension;
-	this->fill.dimension = newDimension;
-}
-
-HELPER::Dimension ELEMENTS::InputBox::GetDimension() {
-	return this->fill.dimension;
-}
-
-bool ELEMENTS::InputBox::UpdateWithNewTopLeft() {
-	if (this->dimension.width == 0 && this->dimension.height == 0) {
-		return false;
-	}
-
-	this->bottomRight.x = this->topLeft.x + this->dimension.width;
-	this->bottomRight.y = this->topLeft.y + this->dimension.height;
-	this->fill.bottomRight.x = this->topLeft.x + this->dimension.width;
-	this->fill.bottomRight.y = this->topLeft.y + this->dimension.height;
-	return true;
-}
-
-HELPER::Coordinate ELEMENTS::InputBox::GetBottomRight() {
-	return this->bottomRight;
-}
-
-void ELEMENTS::InputBox::SetFillColor(int color) {
-	this->fill.fillColor = color;
-}
-
-int ELEMENTS::InputBox::GetFillColor() {
-	return this->fill.fillColor;
-}
-
-void ELEMENTS::InputBox::SetTextColor(int color) {
-	this->textColor = color;
-}
-
-int ELEMENTS::InputBox::GetTextColor() {
-	return this->textColor;
-}
-
-void ELEMENTS::InputBox::SetBorderColor(int color) {
-	this->fill.borderColor = color;
-}
-
-int ELEMENTS::InputBox::GetBorderColor() {
-	return this->fill.borderColor;
-}
-
-void ELEMENTS::InputBox::SetPlaceholder(std::string placeholder) {
-	this->placeholder = placeholder;
-}
-
-std::string ELEMENTS::InputBox::GetPlaceholder() {
-	return this->placeholder;
-}
-
-void ELEMENTS::InputBox::SetStatus(bool status) {
-	this->active = status;
-}
-
-bool ELEMENTS::InputBox::GetStatus() {
-	return this->active;
-}
-
-bool ELEMENTS::InputBox::IsPointed() {
-	HELPER::Coordinate currentMouse(HELPER::GetCurrentMouseCoordinate());
-	if (this->topLeft.x <= currentMouse.x && this->topLeft.y <= currentMouse.y &&
-		this->bottomRight.x >= currentMouse.x && this->bottomRight.y >= currentMouse.y) {
-		this->isPointed = true;
-		return true;
-	}
-	return false;
-}
-
-bool ELEMENTS::InputBox::LeftMouseClicked() {
-	if (this->IsPointed() && GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
-		this->SetLeftClicked();
-		return true;
-	}
-	return false;
-}
-
-bool ELEMENTS::InputBox::RightMouseClicked() {
-	if (this->IsPointed() && GetAsyncKeyState(VK_RBUTTON) & 0x8000) {
-		this->SetRightClicked();
-		return true;
-	}
-	return false;
-}
-
-void ELEMENTS::InputBox::SetLeftClicked() {
-	this->leftClicked = true;
-}
-
-void ELEMENTS::InputBox::SetRightClicked() {
-	this->rightClicked = true;
-}
-
-void ELEMENTS::InputBox::ResetLeftClick() {
-	this->leftClicked = false;
-}
-
-void ELEMENTS::InputBox::ResetRightClick() {
-	this->rightClicked = false;
-}
-
-bool ELEMENTS::InputBox::GetLeftMouseStatus() {
-	return this->leftClicked;
-}
-
-bool ELEMENTS::InputBox::GetRightMouseStatus() {
-	return this->rightClicked;
-}
-
-std::string ELEMENTS::InputBox::InputMode(int characterLimit, bool(*KeyValidation)(const char&)) {
-	std::cerr << std::format("Input mode status: {}\n", this->inputMode);
-
-	if (this->inputMode == false) {
-		this->fill.Draw();
-		setcolor(this->textColor);  //* Set text color
-		setbkcolor(this->fill.fillColor);//* Set text background color
-		HELPER::Coordinate textPosision( //* Normally, the text will appear at left most and middle of the box
-			this->topLeft.x + 10,
-			this->topLeft.y + this->dimension.height / 2 - textheight((char*)this->placeholder.c_str()) / 2
-		);
-		outtextxy(textPosision.x, textPosision.y, (char*)this->placeholder.c_str());
-		return {};
-	}
-	else {
-		std::string inpStr{};
-		char inpKey{};
-		int chrCnt = 0;
-
-		HELPER::Dimension chrDimension(textwidth((char*)"W"), textheight((char*)"W"));
-		HELPER::Coordinate txtPos( //* Text will be printed out 10px to the right from the box edge and in the middle of the box
-			this->topLeft.x + 10,
-			this->topLeft.y + this->dimension.height / 2 - chrDimension.height / 2
-		);
-
-		while (inpKey != ELEMENTS::SpecialKey::ENTER && inpKey != ELEMENTS::SpecialKey::ESCAPE) {
-
-			while (!kbhit()) {
-				setactivepage(1 - getactivepage());
-
-				this->fill.Draw();
-				setcolor(this->textColor);
-				setbkcolor(this->fill.fillColor);
-				outtextxy(txtPos.x, txtPos.y, (char*)inpStr.c_str());
-
-				setvisualpage(getactivepage());
-
-				clearmouseclick(VK_LBUTTON);
-				clearmouseclick(VK_RBUTTON);
-			}
-
-			inpKey = std::toupper(getch());
-
-			//* Escape condition
-			if (inpKey == ELEMENTS::SpecialKey::ENTER || inpKey == ELEMENTS::SpecialKey::ESCAPE) {
-				break;
-			}
-
-			if (inpKey == ELEMENTS::SpecialKey::BACKSPACE) {
-				--chrCnt;
-				inpStr.pop_back();
-			}
-
-			if (chrCnt + 1 < characterLimit && KeyValidation(inpKey)) {
-				inpStr.push_back(inpKey);
-				++chrCnt;
-			}
-		}
-		return STR::Trim(inpStr);
-	}
-}
-
-void ELEMENTS::InputBox::ActivateInputMode() {
+void ELEMENTS::InputModeController::Activate(ELEMENTS::Button* inputTextBox, ELEMENTS::Button* outputTextBox, int characterLimit) {
 	this->inputMode = true;
+	this->acceptKey = true;
+	this->characterCount = 0;
+	this->characterLimit = characterLimit;
+	this->currentTextBox = inputTextBox;
+	this->outputTextBox = outputTextBox;
+	this->inputKey = NULL;
+	this->inputString = "";
+	
+	this->currentTextBox->SetPlaceholder("");
 }
 
-void ELEMENTS::InputBox::DeactivateInputMode() {
+void ELEMENTS::InputModeController::Deactivate() {
 	this->inputMode = false;
+	this->acceptKey = false;
+	this->characterCount = 0;
+	this->characterLimit = 0;
+	this->currentTextBox = nullptr;
+	this->outputTextBox = nullptr;
+	this->inputKey = NULL;
+	this->inputString = "";
 }
 
-bool ELEMENTS::InputBox::InInputMode() {
-	return this->inputMode;
+void ELEMENTS::InputModeController::SetTextBox(ELEMENTS::Button* textBox) {
+	this->currentTextBox = textBox;
 }
+
+void ELEMENTS::InputModeController::SetCharacterLimit(int characterLimit) {
+	this->characterLimit = characterLimit;
+}
+
+bool ELEMENTS::InputModeController::SetInputKey(char inputKey) {
+	if (this->characterCount + 1 < this->characterLimit && this->KeyValidation(inputKey)) {
+		this->inputKey = inputKey;
+		this->inputString.push_back(this->inputKey);
+		++this->characterCount;
+		return true;
+	}
+	return false;
+}
+
+bool ELEMENTS::InputModeController::RemoveInputKey() {
+	if (this->inputString.length() != 0) {
+		this->characterCount--;
+		this->inputString.pop_back();
+		return true;
+	}
+
+	return false;
+}
+
+std::string ELEMENTS::InputModeController::GetInputString() {
+	return this->inputString;
+}
+
+bool ELEMENTS::InputModeController::InInputMode() {
+	return this->inputMode == true;
+}
+
+bool ELEMENTS::InputModeController::IsAcceptKey() {
+	return this->acceptKey == true;
+}
+
+//---
 
 DATASHEET::Row::Row() {
 	this->topLeft = this->bottomRight = HELPER::Coordinate();

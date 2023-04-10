@@ -183,6 +183,8 @@ namespace ELEMENTS {
 
         bool IsPointed();
 
+        bool IsHover();
+
         bool LeftMouseClicked();
 
         bool RightMouseClicked();
@@ -200,86 +202,40 @@ namespace ELEMENTS {
         bool GetRightMouseStatus();
     };
 
-    class InputBox {
-    private:
-        HELPER::Coordinate topLeft;
-        HELPER::Coordinate bottomRight;
-        HELPER::Dimension dimension;
-        Fill fill;
-        int textColor;
-        std::string placeholder;
-        bool isPointed;
-        bool rightClicked;
-        bool leftClicked;
-        bool active;
-        bool inputMode;
-
+    class InputModeController { //* interface
     public:
-        InputBox();
+        char inputKey;
+        bool inputMode;
+        bool acceptKey;
+        int characterCount;
+        int characterLimit;
+        std::string inputString;
+        ELEMENTS::Button* currentTextBox;
+        ELEMENTS::Button* outputTextBox;
 
-        InputBox(HELPER::Coordinate topLeft, int with, int height, int textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR, int fillcolor = BUTTON_DEFAULT_PROPERTIES::FILL_COLOR, int borderColor = BUTTON_DEFAULT_PROPERTIES::BORDER_COLOR);
+        InputModeController();
 
-        InputBox(HELPER::Coordinate topLeft, HELPER::Dimension dimension, int textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR, int fillcolor = BUTTON_DEFAULT_PROPERTIES::FILL_COLOR, int borderColor = BUTTON_DEFAULT_PROPERTIES::BORDER_COLOR);
+        void Activate(ELEMENTS::Button* inputTextBox, ELEMENTS::Button* outputTextBox, int characterLimit);
 
-        InputBox(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR, int fillcolor = BUTTON_DEFAULT_PROPERTIES::FILL_COLOR, int borderColor = BUTTON_DEFAULT_PROPERTIES::BORDER_COLOR);
+        void Deactivate();
 
-        void SetTopLeft(HELPER::Coordinate topLeft);
+        void SetTextBox(ELEMENTS::Button* textBox);
 
-        HELPER::Coordinate GetTopLeft();
+        void SetCharacterLimit(int characterLimit);
 
-        void SetDimension(HELPER::Dimension newDimension);
+        bool SetInputKey(char inputKey);
 
-        HELPER::Dimension GetDimension();
+        bool RemoveInputKey();
 
-        bool UpdateWithNewTopLeft();
-
-        HELPER::Coordinate GetBottomRight();
-
-        void SetFillColor(int color);
-
-        int GetFillColor();
-
-        void SetTextColor(int color);
-
-        int GetTextColor();
-
-        void SetBorderColor(int color);
-
-        int GetBorderColor();
-
-        void SetPlaceholder(std::string placeholder);
-
-        std::string GetPlaceholder();
-
-        void SetStatus(bool status);
-
-        bool GetStatus();
-
-        bool IsPointed();
-
-        bool LeftMouseClicked();
-
-        bool RightMouseClicked();
-
-        void SetLeftClicked();
-
-        void SetRightClicked();
-
-        void ResetLeftClick();
-
-        void ResetRightClick();
-
-        bool GetLeftMouseStatus();
-
-        bool GetRightMouseStatus();
-
-        std::string InputMode(int characterLimit, bool(*KeyValidation)(const char&));
-
-        void ActivateInputMode();
-
-        void DeactivateInputMode();
+        std::string GetInputString();
 
         bool InInputMode();
+
+        bool IsAcceptKey();
+
+        virtual bool KeyValidation(const char& chr) = 0;
+
+        virtual void ActionOnKey(const char& chr) = 0;
     };
 }
 
