@@ -28,43 +28,6 @@ void ButtonHoverProperties(ELEMENTS::Button& btn) {
 	btn.SetTextColor(rgb(244, 238, 224));
 }
 
-
-class nameInputController : public ELEMENTS::InputModeController {
-public:
-	bool KeyValidation(const char& chr) override {
-		return (chr == ' ' || 'A' <= chr && chr <= 'Z');
-	}
-
-	void ActionOnKey(const char& chr) override {
-		if (chr == ELEMENTS::SpecialKey::ENTER || chr == ELEMENTS::SpecialKey::ESCAPE) {
-			if (this->outputTextBox != nullptr) {
-				this->outputTextBox->SetPlaceholder(this->inputString);
-			}
-			this->Deactivate();
-		}
-		else if (this->inputString.length() == 0 && chr == ' ') {
-			return;
-		}
-		else if (this->inputString.length() != 0 && this->inputString[this->inputString.length() - 1] == ' ' && chr == ' ') {
-			return;
-		}
-		else if (this->inputString.length() == 0 && chr == ELEMENTS::SpecialKey::BACKSPACE) {
-			return;
-		}
-		else if (chr == ELEMENTS::SpecialKey::BACKSPACE) {
-			this->inputString.pop_back();
-			this->characterCount--;
-			this->currentTextBox->SetPlaceholder(this->inputString);
-		}
-		else if (this->characterCount + 1 < this->characterLimit && this->KeyValidation(chr)) {
-			this->inputString.push_back(chr);
-			++this->characterCount;
-			this->currentTextBox->SetPlaceholder(this->inputString);
-		}
-	}
-};
-
-
 void testFunc(){ // main loop
 	ELEMENTS::Window win(HELPER::Dimension(1000, 700), "TEST");
 	win.Activate();
@@ -93,7 +56,7 @@ void testFunc(){ // main loop
 	ButtonDefaultProperties(outputtext);
 	outputtext.SetPlaceholder("Output text");
 
-	nameInputController inpController;
+	ELEMENTS::InputModeController inpController;
 
 	while (true) {
 		while (!kbhit()) {
@@ -118,13 +81,14 @@ void testFunc(){ // main loop
 				ButtonHoverProperties(btn3);
 			}
 			else if (btn1.LeftMouseClicked()) {
-				inpController.Activate(&btn1, &outputtext, 20);
+				inpController.Activate(&btn1, &btn1, 20, true, true, true);
 			}
 			else if (btn2.LeftMouseClicked()) {
-				inpController.Activate(&btn2, &outputtext, 20);
+				//inpController.Activate(&btn2, &btn2, 20);
+				inpController.Activate(&btn2, &btn2, 10, true, false, true);
 			}
 			else if (btn3.LeftMouseClicked()) {
-				inpController.Activate(&btn3, &outputtext, 20);
+				inpController.Activate(&btn3, &btn3, 20, false, true, false);
 			}
 			else {
 				ButtonDefaultProperties(btn1);
@@ -137,6 +101,8 @@ void testFunc(){ // main loop
 			clearmouseclick(VK_LBUTTON);
 			clearmouseclick(VK_RBUTTON);
 		}
+
+		
 
 		if (inpController.InInputMode()) {
 			char tmp = std::toupper(getch());
@@ -164,11 +130,10 @@ int main() {
 	LINEAR_LIST::Initialize(danhSachDauSach);
 
 	//* Run program main function
-	//LandingView mainView(danhSachTheDocgia, danhSachDauSach);
-	//mainView.Run();
+	LandingView mainView(danhSachTheDocgia, danhSachDauSach);
+	mainView.Run();
 	
-	testFunc();
-	//testFunc2();
+	//testFunc();
 
 	return 0;
 }

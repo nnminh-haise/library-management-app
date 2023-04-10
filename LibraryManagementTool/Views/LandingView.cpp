@@ -8,6 +8,52 @@
 #include <format>
 #include <ctime>
 
+
+//* Input Controller
+//bool UniversalInputModeController::KeyValidation(const char& chr) {
+//	if (chr == ' ') {
+//		return true;
+//	}
+//
+//	if (isalnum(chr)) {
+//		return true;
+//	}
+//
+//	return false;
+//}
+//
+//void UniversalInputModeController::ActionOnKey(const char& chr) {
+//	if (chr == ELEMENTS::SpecialKey::ENTER || chr == ELEMENTS::SpecialKey::ESCAPE) {
+//		if (this->outputTextBox != nullptr) {
+//			this->outputTextBox->SetPlaceholder(this->inputString);
+//		}
+//		this->Deactivate();
+//	}
+//	else if (this->inputString.length() == 0 && chr == ' ') {
+//		return;
+//	}
+//	else if (this->inputString.length() != 0 && this->inputString[this->inputString.length() - 1] == ' ' && chr == ' ') {
+//		return;
+//	}
+//	else if (this->inputString.length() == 0 && chr == ELEMENTS::SpecialKey::BACKSPACE) {
+//		return;
+//	}
+//	else if (chr == ELEMENTS::SpecialKey::BACKSPACE) {
+//		this->inputString.pop_back();
+//		this->characterCount--;
+//		this->currentTextBox->SetPlaceholder(this->inputString);
+//	}
+//	else if (this->characterCount < this->characterLimit && this->KeyValidation(chr)) {
+//		this->inputString.push_back(chr);
+//		++this->characterCount;
+//		this->currentTextBox->SetPlaceholder(this->inputString);
+//	}
+//}
+
+
+
+//* Styling elements session start below
+
 void LandingView::GraphicalWindowDefaultProperties(ELEMENTS::Window*& win) {
 	win->backgroundColor = WHITE;
 }
@@ -44,19 +90,23 @@ void LandingView::CloseButtonHover(ELEMENTS::CloseButton*& button) {
 	button->SetFillColor(rgb(255, 3, 3));
 }
 
+//--- Styling elements end above!
+
+
+
+//* View Constructor function.
+
 LandingView::LandingView(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& dsDauSach) {
-	
-	//* Initializations
+
+	//* Elements initialization start below
 	this->graphicalWindow = new ELEMENTS::Window(CONSTANTS::WINDOW_DIMENSION, (std::string)CONSTANTS::WINDOW_TITLE);
 	this->GraphicalWindowDefaultProperties(this->graphicalWindow);
-
-	//* Program elements initialize
 	this->graphicalWindow->Activate();
+
 	this->programTitle = new ELEMENTS::Button(HELPER::Coordinate(36, 25), 440, 50);
 	this->programTitle->SetPlaceholder("Q U A N   L I   T H U   V I E N");
 	this->ProgramTitleProperties(this->programTitle);
 
-	//* Tabs setup
 	std::string tabPlaceholders[3]{ "DANH SACH DAU SACH", "DANH SACH THE DOC GIA", "THONG KE" };
 	HELPER::Coordinate tabCoordinates[3]{
 		HELPER::Coordinate(640, 25),
@@ -72,88 +122,119 @@ LandingView::LandingView(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList
 		this->DefaultButtonProperties(this->tabs[i]);
 	}
 
-	//* Close button setup
 	this->closeBtn = new ELEMENTS::CloseButton(HELPER::Coordinate(1705, 25), 50, 50);
 	this->DefaultCloseButtonProperties(this->closeBtn);
 
-	//* Views setup
+	//* Views initialization
 	this->dauSachView = new DanhSachDauSachView(dsDauSach);
 	this->theDocGiaView = new DanhSachTheDocGiaView(dsTheDocGia);
 	this->thongKeView = new ThongKeView(dsTheDocGia, dsDauSach);
 }
 
+
+
+//* View Run function
+
 void LandingView::Run() {
-	//* Navigation bar setup
-	ELEMENTS::Fill navigationBar(HELPER::Coordinate(0, 0), 1800, 100, rgb(11, 36, 71), rgb(11, 36, 71));
+	//* Create a background for the navigation bar
+	ELEMENTS::Fill navigationBar(
+		HELPER::Coordinate(0, 0),
+		CONSTANTS::WINDOW_DIMENSION.width, 100, //* Background dimension
+		rgb(11, 36, 71), //* Background color
+		rgb(11, 36, 71)  //* Border color
+	);
 
 	int currentTab = 0;
 	bool stopFlag = false;
 	while (stopFlag == false) {
 
-		//* Draw elements begin below
-		setactivepage(1 - getactivepage());
+		while (!kbhit() && stopFlag == false) {
 
-		//* Draw elements
-		this->graphicalWindow->RenderBackground();
-		navigationBar.Draw();
-		this->programTitle->Display();
+			//std::cerr << std::format("last key: {}\n", this->inpController.inputKey);
+			//std::cerr << std::format("inpStr  : {}\n", this->inpController.inputString);
 
-		for (int i = 0; i < 3; ++i) {
-			this->tabs[currentTab].SetStatus(true);
-			this->FocusOnCurrentTab(this->tabs[currentTab]);
-			this->tabs[i].Display();
-		}
-		this->closeBtn->Display();
+			//* Draw elements begin below
+			setactivepage(1 - getactivepage());
 
-		switch (currentTab) {
-		case (0):
-			this->dauSachView->Run();
-			break;
-		case (1):
-			this->theDocGiaView->Run();
-			break;
-		case (2):
-			this->thongKeView->Run();
-			break;
-		}
+			//* Draw elements
+			this->graphicalWindow->RenderBackground();
+			navigationBar.Draw();
+			this->programTitle->Display();
 
-		//* Update elements session
-		for (int i = 0; i < 3; ++i) {
-			if (i == currentTab && (this->tabs[i].IsPointed() || this->tabs[i].LeftMouseClicked())) {
-				continue;
+			for (int i = 0; i < 3; ++i) {
+				this->tabs[currentTab].SetStatus(true);
+				this->FocusOnCurrentTab(this->tabs[currentTab]);
+				this->tabs[i].Display();
 			}
-			else if (i != currentTab) {
-				if (this->tabs[i].IsPointed() && this->tabs[i].LeftMouseClicked() == false) {
-					this->ButtonHover(this->tabs[i]);
+			this->closeBtn->Display();
+
+			switch (currentTab) {
+			case (0):
+				this->dauSachView->Run();
+				break;
+			case (1):
+				this->theDocGiaView->Run(this->inpController);
+				break;
+			case (2):
+				this->thongKeView->Run();
+				break;
+			}
+
+			//* Update elements session
+			for (int i = 0; i < 3; ++i) {
+				if (i == currentTab && (this->tabs[i].IsPointed() || this->tabs[i].LeftMouseClicked())) {
+					continue;
 				}
-				else if (this->tabs[i].LeftMouseClicked()) {
-					currentTab = i;
-				}
-				else {
-					DefaultButtonProperties(this->tabs[i]);
+				else if (i != currentTab) {
+					if (this->tabs[i].IsPointed() && this->tabs[i].LeftMouseClicked() == false) {
+						this->ButtonHover(this->tabs[i]);
+					}
+					else if (this->tabs[i].LeftMouseClicked()) {
+						currentTab = i;
+					}
+					else {
+						DefaultButtonProperties(this->tabs[i]);
+					}
 				}
 			}
+
+			if (this->closeBtn->IsPointed() && this->closeBtn->LeftMouseClicked() == false) {
+				this->CloseButtonHover(this->closeBtn);
+			}
+			else if (closeBtn->LeftMouseClicked()) {
+				stopFlag = true;
+			}
+			else {
+				this->DefaultCloseButtonProperties(this->closeBtn);
+			}
+
+
+			setvisualpage(getactivepage());
+			//* Draw elements end above
+
+			//* Clear mouseclick
+			clearmouseclick(VK_LBUTTON);
+			clearmouseclick(VK_RBUTTON);
 		}
 
-		if (this->closeBtn->IsPointed() && this->closeBtn->LeftMouseClicked() == false) {
-			this->CloseButtonHover(this->closeBtn);
-		}
-		else if (closeBtn->LeftMouseClicked()) {
-			stopFlag = true;
-		}
-		else {
-			this->DefaultCloseButtonProperties(this->closeBtn);
+		//std::cerr << std::format("global input mode: {}\n", this->inpController.InInputMode());
+
+		//* Input processing start in this if statement
+		if (stopFlag == false && this->inpController.InInputMode()) {
+			char tmp = std::toupper(getch());
+			this->inpController.ActionOnKey(tmp);
 		}
 
-
-		setvisualpage(getactivepage());
-		//* Draw elements end above
-
-		//* Clear mouseclick
-		clearmouseclick(VK_LBUTTON);
-		clearmouseclick(VK_RBUTTON);
+		//* This currently filter out the case where input mode is not on but user still press some key.
+		else if (stopFlag == false) {
+			char emptychr = getch();//take an empty char then do notthing
+		}
 	}
 }
+
+
+
+//* View destructor
 
 LandingView::~LandingView() {
 	this->graphicalWindow->Deactivate();

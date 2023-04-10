@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../Graphics/graphics.h"
 #include "../TheDocGia/TheDocGia.h"
 #include "../DauSach/DauSach.h"
 #include "Elements.h"
@@ -8,6 +7,13 @@
 #include "DanhSachDauSachView.h"
 #include "ThongKeView.h"
 
+
+//class UniversalInputModeController : public ELEMENTS::InputModeController {
+//public:
+//	bool KeyValidation(const char& chr) override;
+//
+//	void ActionOnKey(const char& chr) override;
+//};
 
 class LandingView {
 private:
@@ -20,7 +26,10 @@ private:
 	DanhSachTheDocGiaView* theDocGiaView;
 	ThongKeView* thongKeView;
 
+	ELEMENTS::InputModeController inpController;
+
 private:
+	//* Elements styling methods
 	void GraphicalWindowDefaultProperties(ELEMENTS::Window*& win);
 
 	void DefaultButtonProperties(ELEMENTS::Button& button);
@@ -34,7 +43,7 @@ private:
 	void DefaultCloseButtonProperties(ELEMENTS::CloseButton*& btn);
 	
 	void CloseButtonHover(ELEMENTS::CloseButton*& button);
-
+	
 public:
 	LandingView(AVL_TREE::Pointer& danhSachTheDocGia, LINEAR_LIST::LinearList& danhSachDauSach);
 

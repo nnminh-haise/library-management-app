@@ -202,7 +202,7 @@ namespace ELEMENTS {
         bool GetRightMouseStatus();
     };
 
-    class InputModeController { //* interface
+    class InputModeController { //* Interface
     public:
         char inputKey;
         bool inputMode;
@@ -213,29 +213,23 @@ namespace ELEMENTS {
         ELEMENTS::Button* currentTextBox;
         ELEMENTS::Button* outputTextBox;
 
+        bool acceptNum;
+        bool acceptAlpha;
+        bool acceptSpace;
+
         InputModeController();
 
-        void Activate(ELEMENTS::Button* inputTextBox, ELEMENTS::Button* outputTextBox, int characterLimit);
+        void Activate(ELEMENTS::Button* inputTextBox, ELEMENTS::Button* outputTextBox, int characterLimit, bool acceptAlpha, bool acceptNum, bool acceptSpace);
 
         void Deactivate();
-
-        void SetTextBox(ELEMENTS::Button* textBox);
-
-        void SetCharacterLimit(int characterLimit);
-
-        bool SetInputKey(char inputKey);
-
-        bool RemoveInputKey();
 
         std::string GetInputString();
 
         bool InInputMode();
 
-        bool IsAcceptKey();
+        bool KeyValidation(const char& chr);
 
-        virtual bool KeyValidation(const char& chr) = 0;
-
-        virtual void ActionOnKey(const char& chr) = 0;
+        void ActionOnKey(const char& chr);
     };
 }
 

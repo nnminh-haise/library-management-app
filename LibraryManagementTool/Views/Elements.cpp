@@ -1,5 +1,6 @@
 #include "Elements.h"
 #include "../Graphics/graphics.h"
+#pragma comment(lib, "Graphics/graphics.lib")
 #include "../Helper/ConstantsAndGlobalVariables.h"
 #include "../Helper/Helper.h"
 
@@ -445,7 +446,7 @@ ELEMENTS::InputModeController::InputModeController() {
 	this->inputString = "";
 }
 
-void ELEMENTS::InputModeController::Activate(ELEMENTS::Button* inputTextBox, ELEMENTS::Button* outputTextBox, int characterLimit) {
+void ELEMENTS::InputModeController::Activate(ELEMENTS::Button* inputTextBox, ELEMENTS::Button* outputTextBox, int characterLimit, bool acceptAlpha, bool acceptNum, bool acceptSpace) {
 	this->inputMode = true;
 	this->acceptKey = true;
 	this->characterCount = 0;
@@ -454,7 +455,11 @@ void ELEMENTS::InputModeController::Activate(ELEMENTS::Button* inputTextBox, ELE
 	this->outputTextBox = outputTextBox;
 	this->inputKey = NULL;
 	this->inputString = "";
-	
+
+	this->acceptAlpha = acceptAlpha;
+	this->acceptNum = acceptNum;
+	this->acceptSpace = acceptSpace;
+
 	this->currentTextBox->SetPlaceholder("");
 }
 
@@ -469,34 +474,6 @@ void ELEMENTS::InputModeController::Deactivate() {
 	this->inputString = "";
 }
 
-void ELEMENTS::InputModeController::SetTextBox(ELEMENTS::Button* textBox) {
-	this->currentTextBox = textBox;
-}
-
-void ELEMENTS::InputModeController::SetCharacterLimit(int characterLimit) {
-	this->characterLimit = characterLimit;
-}
-
-bool ELEMENTS::InputModeController::SetInputKey(char inputKey) {
-	if (this->characterCount + 1 < this->characterLimit && this->KeyValidation(inputKey)) {
-		this->inputKey = inputKey;
-		this->inputString.push_back(this->inputKey);
-		++this->characterCount;
-		return true;
-	}
-	return false;
-}
-
-bool ELEMENTS::InputModeController::RemoveInputKey() {
-	if (this->inputString.length() != 0) {
-		this->characterCount--;
-		this->inputString.pop_back();
-		return true;
-	}
-
-	return false;
-}
-
 std::string ELEMENTS::InputModeController::GetInputString() {
 	return this->inputString;
 }
@@ -505,8 +482,48 @@ bool ELEMENTS::InputModeController::InInputMode() {
 	return this->inputMode == true;
 }
 
-bool ELEMENTS::InputModeController::IsAcceptKey() {
-	return this->acceptKey == true;
+bool ELEMENTS::InputModeController::KeyValidation(const char& chr) {
+	if (this->acceptSpace == false && chr == ELEMENTS::SpecialKey::SPACE) {
+		return false;
+	}
+
+	if (this->acceptNum == false && isdigit(chr)) {
+		return false;
+	}
+
+	if (this->acceptAlpha == false && isalpha(chr)) {
+		return false;
+	}
+
+	return true;
+}
+
+void ELEMENTS::InputModeController::ActionOnKey(const char& chr) {
+	if (chr == ELEMENTS::SpecialKey::ENTER || chr == ELEMENTS::SpecialKey::ESCAPE) {
+		if (this->outputTextBox != nullptr) {
+			this->outputTextBox->SetPlaceholder(this->inputString);
+		}
+		this->Deactivate();
+	}
+	else if (this->inputString.length() == 0 && chr == ' ') {
+		return;
+	}
+	else if (this->inputString.length() != 0 && this->inputString[this->inputString.length() - 1] == ' ' && chr == ' ') {
+		return;
+	}
+	else if (this->inputString.length() == 0 && chr == ELEMENTS::SpecialKey::BACKSPACE) {
+		return;
+	}
+	else if (chr == ELEMENTS::SpecialKey::BACKSPACE) {
+		this->inputString.pop_back();
+		this->characterCount--;
+		this->currentTextBox->SetPlaceholder(this->inputString);
+	}
+	else if (this->characterCount < this->characterLimit && this->KeyValidation(chr)) {
+		this->inputString.push_back(chr);
+		++this->characterCount;
+		this->currentTextBox->SetPlaceholder(this->inputString);
+	}
 }
 
 //---
