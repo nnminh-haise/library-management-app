@@ -1,8 +1,7 @@
 #include "Elements.h"
-#include "../Graphics/graphics.h"
-#pragma comment(lib, "Graphics/graphics.lib")
-#include "../Helper/ConstantsAndGlobalVariables.h"
-#include "../Helper/Helper.h"
+#include "../../Graphics/graphics.h"
+#include "../../Helper/ConstantsAndGlobalVariables.h"
+#include "../../Helper/Helper.h"
 
 #include <iostream>
 #include <string>
@@ -252,9 +251,8 @@ ELEMENTS::Button::Button() {
 	this->dimension = HELPER::Dimension();
 	this->textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR;
 	this->isPointed = false;
-	this->rightClicked = false;
-	this->leftClicked = false;
 	this->placeholder = "BUTTON";
+	this->mode = false;
 }
 
 ELEMENTS::Button::Button(HELPER::Coordinate topLeft, int width, int height, int textColor, int fillcolor, int borderColor) {
@@ -264,7 +262,6 @@ ELEMENTS::Button::Button(HELPER::Coordinate topLeft, int width, int height, int 
 	this->fill = ELEMENTS::Fill(this->topLeft, this->bottomRight, fillcolor, borderColor);
 	this->textColor = textColor;
 	this->isPointed = false;
-	this->leftClicked = this->rightClicked = false;
 	this->placeholder = "BUTTON";
 }
 
@@ -275,7 +272,6 @@ ELEMENTS::Button::Button(HELPER::Coordinate topLeft, HELPER::Dimension dimension
 	this->fill = ELEMENTS::Fill(this->topLeft, this->bottomRight, fillcolor, borderColor);
 	this->textColor = textColor;
 	this->isPointed = false;
-	this->leftClicked = this->rightClicked = false;
 	this->placeholder = "BUTTON";
 }
 
@@ -286,7 +282,6 @@ ELEMENTS::Button::Button(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRi
 	this->fill = ELEMENTS::Fill(this->topLeft, this->bottomRight, fillcolor, borderColor);
 	this->textColor = textColor;
 	this->isPointed = false;
-	this->leftClicked = this->rightClicked = false;
 	this->placeholder = "BUTTON";
 }
 
@@ -395,7 +390,6 @@ bool ELEMENTS::Button::IsHover() {
 
 bool ELEMENTS::Button::LeftMouseClicked() {
 	if (this->IsPointed() && GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
-		this->SetLeftClicked();
 		return true;
 	}
 	return false;
@@ -403,34 +397,9 @@ bool ELEMENTS::Button::LeftMouseClicked() {
 
 bool ELEMENTS::Button::RightMouseClicked() {
 	if (this->IsPointed() && GetAsyncKeyState(VK_RBUTTON) & 0x8000) {
-		this->SetRightClicked();
 		return true;
 	}
 	return false;
-}
-
-void ELEMENTS::Button::SetLeftClicked() {
-	this->leftClicked = true;
-}
-
-void ELEMENTS::Button::SetRightClicked() {
-	this->rightClicked = true;
-}
-
-void ELEMENTS::Button::ResetLeftClick() {
-	this->leftClicked = false;
-}
-
-void ELEMENTS::Button::ResetRightClick() {
-	this->rightClicked = false;
-}
-
-bool ELEMENTS::Button::GetLeftMouseStatus() {
-	return this->leftClicked;
-}
-
-bool ELEMENTS::Button::GetRightMouseStatus() {
-	return this->rightClicked;
 }
 
 //---

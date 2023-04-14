@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../DauSach/DauSach.h"
-#include "Elements.h"
+#include "../../DauSach/DauSach.h"
+#include "../UI/Elements.h"
 
 
 class DanhSachDauSachView {

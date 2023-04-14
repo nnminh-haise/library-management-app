@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "../TheDocGia/TheDocGia.h"
-#include "../DauSach/DauSach.h"
-#include "Elements.h"
+#include "../../TheDocGia/TheDocGia.h"
+#include "../../DauSach/DauSach.h"
+#include "../UI/Elements.h"
 
 class ThongKeView {
 private:

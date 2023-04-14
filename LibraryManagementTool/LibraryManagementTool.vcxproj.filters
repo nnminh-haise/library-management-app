@@ -27,28 +27,28 @@
     <ClCompile Include="Helper\Helper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Views\Elements.cpp">
+    <ClCompile Include="Tabs\UI\Elements.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Views\DanhSachDauSachView.cpp">
+    <ClCompile Include="Tabs\DanhSachDauSachTab\DanhSachDauSachView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Views\LandingView.cpp">
+    <ClCompile Include="Tabs\LandingView\LandingView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Views\ExitView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="temp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Views\DanhSachTheDocGia.cpp">
+    <ClCompile Include="Tabs\DanhSachTheDocGiaTab\DanhSachTheDocGia.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DataStructures\Stack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Views\ThongKeView.cpp">
+    <ClCompile Include="Tabs\ThongKeTab\ThongKeView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tabs\LandingView\LandingViewStyling.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tabs\DanhSachTheDocGiaTab\DanhSachTheDocGiaStyling.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -62,29 +62,42 @@
     <ClInclude Include="Helper\Helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Views\Elements.h">
+    <ClInclude Include="Tabs\UI\Elements.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Views\DanhSachDauSachView.h">
+    <ClInclude Include="Tabs\DanhSachDauSachTab\DanhSachDauSachView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Views\LandingView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Views\ExitView.h">
+    <ClInclude Include="Tabs\LandingView\LandingView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Helper\ConstantsAndGlobalVariables.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Views\DanhSachTheDocGia.h">
+    <ClInclude Include="Tabs\DanhSachTheDocGiaTab\DanhSachTheDocGia.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DataStructures\Stack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Views\ThongKeView.h">
+    <ClInclude Include="Tabs\ThongKeTab\ThongKeView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Graphics\graphics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\winbgim.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tabs\LandingView\LandingViewStyling.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tabs\DanhSachTheDocGiaTab\DanhSachTheDocGiaStyling.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="Graphics\graphics.lib" />
+    <Library Include="Graphics\libbgi.a" />
   </ItemGroup>
 </Project>

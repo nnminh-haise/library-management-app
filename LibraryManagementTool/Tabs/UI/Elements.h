@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Helper/Helper.h"
-#include "../Helper/ConstantsAndGlobalVariables.h"
+#include "../../Helper/Helper.h"
+#include "../../Helper/ConstantsAndGlobalVariables.h"
 
 #include <string>
 
@@ -134,9 +134,8 @@ namespace ELEMENTS {
         int textColor;
         std::string placeholder;
         bool isPointed;
-        bool rightClicked;
-        bool leftClicked;
         bool active;
+        bool mode;
 
     public:
         Button();
@@ -188,18 +187,6 @@ namespace ELEMENTS {
         bool LeftMouseClicked();
 
         bool RightMouseClicked();
-
-        void SetLeftClicked();
-
-        void SetRightClicked();
-
-        void ResetLeftClick();
-
-        void ResetRightClick();
-
-        bool GetLeftMouseStatus();
-
-        bool GetRightMouseStatus();
     };
 
     class InputModeController { //* Interface

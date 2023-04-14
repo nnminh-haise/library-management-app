@@ -131,31 +131,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Tabs\DanhSachTheDocGiaTab\DanhSachTheDocGiaStyling.cpp" />
     <ClCompile Include="DataStructures\Stack.cpp" />
-    <ClCompile Include="Views\ThongKeView.cpp" />
-    <ClCompile Include="Views\DanhSachTheDocGia.cpp" />
-    <ClCompile Include="temp.cpp" />
-    <ClCompile Include="Views\ExitView.cpp" />
-    <ClCompile Include="Views\LandingView.cpp" />
-    <ClCompile Include="Views\DanhSachDauSachView.cpp" />
+    <ClCompile Include="Tabs\LandingView\LandingViewStyling.cpp" />
+    <ClCompile Include="Tabs\ThongKeTab\ThongKeView.cpp" />
+    <ClCompile Include="Tabs\DanhSachTheDocGiaTab\DanhSachTheDocGia.cpp" />
+    <ClCompile Include="Tabs\LandingView\LandingView.cpp" />
+    <ClCompile Include="Tabs\DanhSachDauSachTab\DanhSachDauSachView.cpp" />
     <ClCompile Include="DauSach\DauSach.cpp" />
-    <ClCompile Include="Views\Elements.cpp" />
+    <ClCompile Include="Tabs\UI\Elements.cpp" />
     <ClCompile Include="Helper\Helper.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TheDocGia\TheDocGia.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Tabs\DanhSachTheDocGiaTab\DanhSachTheDocGiaStyling.h" />
     <ClInclude Include="DataStructures\Stack.h" />
-    <ClInclude Include="Views\ThongKeView.h" />
-    <ClInclude Include="Views\DanhSachTheDocGia.h" />
+    <ClInclude Include="Graphics\graphics.h" />
+    <ClInclude Include="Graphics\winbgim.h" />
+    <ClInclude Include="Tabs\LandingView\LandingViewStyling.h" />
+    <ClInclude Include="Tabs\ThongKeTab\ThongKeView.h" />
+    <ClInclude Include="Tabs\DanhSachTheDocGiaTab\DanhSachTheDocGia.h" />
     <ClInclude Include="Helper\ConstantsAndGlobalVariables.h" />
-    <ClInclude Include="Views\ExitView.h" />
-    <ClInclude Include="Views\LandingView.h" />
-    <ClInclude Include="Views\DanhSachDauSachView.h" />
+    <ClInclude Include="Tabs\LandingView\LandingView.h" />
+    <ClInclude Include="Tabs\DanhSachDauSachTab\DanhSachDauSachView.h" />
     <ClInclude Include="DauSach\DauSach.h" />
-    <ClInclude Include="Views\Elements.h" />
+    <ClInclude Include="Tabs\UI\Elements.h" />
     <ClInclude Include="Helper\Helper.h" />
     <ClInclude Include="TheDocGia\TheDocGia.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="Graphics\graphics.lib" />
+    <Library Include="Graphics\libbgi.a" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,9 +1,8 @@
 #include "DanhSachDauSachView.h"
-#include "Elements.h"
-#include "../Graphics/graphics.h"
-#include "../Helper/Helper.h"
-#include "../Helper/ConstantsAndGlobalVariables.h"
-#include "../DataStructures/Stack.h"
+#include "../../Graphics/graphics.h"
+#include "../../Helper/Helper.h"
+#include "../../Helper/ConstantsAndGlobalVariables.h"
+#include "../../DataStructures/Stack.h"
 
 #include <iostream>
 #include <format>
