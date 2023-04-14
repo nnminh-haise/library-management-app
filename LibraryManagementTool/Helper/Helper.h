@@ -70,3 +70,7 @@ int rgb(int r, int g, int b);
 namespace STR {
     std::string Trim(std::string target);
 }
+
+namespace VALIDATOR {
+    bool OnlyDigit(std::string str);
+}

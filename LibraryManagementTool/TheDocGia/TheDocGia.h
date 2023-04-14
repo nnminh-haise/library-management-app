@@ -102,6 +102,8 @@ namespace THE_DOC_GIA {
 
 		GioiTinh GetPhai();
 
+		std::string GetFullName();
+
 		std::string GetStringfyPhai();
 
 		void SetTrangThai(TrangThaiThe TrangThai);
@@ -151,6 +153,8 @@ namespace AVL_TREE {
 	Pointer RotateRight(Pointer root);
 
 	bool Insert(Pointer& root, THE_DOC_GIA::TheDocGia info);
+
+	Pointer SearchByKey(const Pointer& root, const int& key);
 }
 
 namespace THE_DOC_GIA_MODULES {

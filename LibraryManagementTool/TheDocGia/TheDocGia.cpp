@@ -129,6 +129,10 @@ THE_DOC_GIA::GioiTinh THE_DOC_GIA::TheDocGia::GetPhai() {
 	return this->Phai;
 }
 
+std::string THE_DOC_GIA::TheDocGia::GetFullName() {
+    return this->Ho + " " + this->Ten;
+}
+
 std::string THE_DOC_GIA::TheDocGia::GetStringfyPhai() {
     return (this->Phai == THE_DOC_GIA::GioiTinh::NAM ? "NAM" : "NU");
 }
@@ -455,6 +459,20 @@ bool AVL_TREE::Insert(AVL_TREE::Pointer& root, THE_DOC_GIA::TheDocGia info) {
     }
 
     return true;
+}
+
+AVL_TREE::Pointer AVL_TREE::SearchByKey(const AVL_TREE::Pointer& root, const int& key) {
+    AVL_TREE::Pointer p = root;
+
+    while (p != nullptr && p->GetKey() != key) {
+        if (p->GetKey() < key) {
+            p = p->right;
+        }
+        else {
+            p = p->left;
+        }
+    }
+    return p;
 }
 
 /**

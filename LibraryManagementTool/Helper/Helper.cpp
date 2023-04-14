@@ -188,3 +188,12 @@ std::string STR::Trim(std::string target) {
 int rgb(int r, int g, int b) {
     return COLOR(r, g, b);
 }
+
+bool VALIDATOR::OnlyDigit(std::string str) {
+    for (const char& chr : str) {
+        if (std::isdigit(chr) == false) {
+            return false;
+        }
+    }
+    return true;
+}

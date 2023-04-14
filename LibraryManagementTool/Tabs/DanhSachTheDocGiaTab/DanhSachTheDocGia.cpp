@@ -119,16 +119,13 @@ bool NewListItemForm::SubmitForm(AVL_TREE::Pointer& dsTheDocGia, ELEMENTS::Input
 		newItem.SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controler());
 		delay(100);
 
-		std::cerr << std::format("mathe: \"{}\"\n", newItem.GetMaThe());
-		std::cerr << std::format("ho: \"{}\"\n", newItem.GetHo());
-		std::cerr << std::format("ten: \"{}\"\n", newItem.GetTen());
-		std::cerr << std::format("phai: \"{}\"\n", newItem.GetStringfyPhai());
-		std::cerr << std::format("trangthai: \"{}\"\n", newItem.GetStringfyTrangThai());
+		//std::cerr << std::format("mathe: \"{}\"\n", newItem.GetMaThe());
+		//std::cerr << std::format("ho: \"{}\"\n", newItem.GetHo());
+		//std::cerr << std::format("ten: \"{}\"\n", newItem.GetTen());
+		//std::cerr << std::format("phai: \"{}\"\n", newItem.GetStringfyPhai());
+		//std::cerr << std::format("trangthai: \"{}\"\n", newItem.GetStringfyTrangThai());
 
 		bool res = AVL_TREE::Insert(dsTheDocGia, newItem);
-
-		std::cerr << std::format("res = {}\n", res);
-		delay(10000);
 
 		return true;
 	}
@@ -271,7 +268,6 @@ void DanhSachTheDocGiaView::Run(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::
 			//* Display form
 			this->newItemForm.Display();
 			bool formSubmitted = this->newItemForm.SubmitForm(danhSachTheDocGia, InputController);
-			std::cerr << std::format("form submitted: {}\n", formSubmitted);
 
 			if (formSubmitted) {
 				DanhSachTheDocGiaView::CreateDatasheetsFromList(danhSachTheDocGia, &this->controler);
@@ -279,6 +275,11 @@ void DanhSachTheDocGiaView::Run(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::
 			break;
 		}
 		case (1): {
+			this->deleteItemForm.Display(danhSachTheDocGia, InputController);
+			bool confirmDelete = this->deleteItemForm.SubmitForm(danhSachTheDocGia, InputController);
+			if (confirmDelete) {
+				DanhSachTheDocGiaView::CreateDatasheetsFromList(danhSachTheDocGia, &this->controler);
+			}
 			break;
 		}
 		case (2): {
@@ -346,4 +347,120 @@ void DanhSachTheDocGiaView::Run(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::
 			}
 		}
 	}
+}
+
+DeleteItemInListForm::DeleteItemInListForm() {
+	this->background = new ELEMENTS::Fill(HELPER::Coordinate(1305, 420), 450, 500);
+
+	this->title = new ELEMENTS::Button(HELPER::Coordinate(1305, 420), 450, 50);
+	this->title->SetPlaceholder("THE DOC GIA");
+
+	this->maThe = new ELEMENTS::Button(HELPER::Coordinate(1330, 500), 400, 60);
+	this->maThe->SetPlaceholder("Ma the");
+
+	this->hoTen = new ELEMENTS::Button(HELPER::Coordinate(1330, 590), 400, 60);
+	this->hoTen->SetPlaceholder("Ho va ten");
+
+	this->phai = new ELEMENTS::Button(HELPER::Coordinate(1330, 680), 400, 60);
+	this->phai->SetPlaceholder("Phai");
+
+	this->trangThai = new ELEMENTS::Button(HELPER::Coordinate(1330, 770), 400, 60);
+	this->trangThai->SetPlaceholder("Trang thai");
+
+	this->deleteBtn = new ELEMENTS::Button(HELPER::Coordinate(1455, 855), 150, 40);
+	this->deleteBtn->SetPlaceholder("DELETE");
+
+	this->search = new ELEMENTS::Button(HELPER::Coordinate(1455, 855), 150, 40);
+	this->search->SetPlaceholder("SEARCH");
+
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::BackgroundStyling(this->background);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::TitleStyling(this->title);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->maThe);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->hoTen);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->trangThai);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->phai);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->submit);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->search);
+}
+
+DeleteItemInListForm::~DeleteItemInListForm() {
+	delete this->background;
+	delete this->title;
+	delete this->maThe;
+	delete this->hoTen;
+	delete this->trangThai;
+	delete this->phai;
+	delete this->deleteBtn;
+	delete this->search;
+}
+
+void DeleteItemInListForm::Display(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController) {
+	this->background->Draw();
+	this->title->Display();
+	this->maThe->Display();
+	this->search->Display();
+	
+	//* MaThe input box logic
+	if (this->maThe->IsHover()) {
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->maThe);
+	}
+	else if (this->maThe->LeftMouseClicked()) {
+		InputController.Activate(this->maThe, this->maThe, 4, false, true, false);
+	}
+	else {
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxHoverProperties(this->maThe);
+	}
+
+	//* Search button logic
+	AVL_TREE::Pointer searchResult = nullptr;
+	if (this->search->IsHover()) {
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmutButtonHoverStyling(this->search);
+	}
+	else if (this->search->LeftMouseClicked()) {
+		bool checker = VALIDATOR::OnlyDigit(this->maThe->GetPlaceholder());
+		if (checker) {
+			searchResult = AVL_TREE::SearchByKey(danhSachTheDocGia, std::stoi(this->maThe->GetPlaceholder()));
+			if (searchResult != nullptr) {
+				searchResult->info.GetDanhSachMuonTra();
+
+				/*
+				todo: currently, i'm working on checking when will the deletion will be excecuted!
+				*/
+
+				this->hoTen->SetPlaceholder(searchResult->info.GetFullName());
+				this->phai->SetPlaceholder(searchResult->info.GetStringfyPhai());
+				this->trangThai->SetPlaceholder(searchResult->info.GetStringfyTrangThai());
+
+				this->hoTen->Display();
+				this->phai->Display();
+				this->trangThai->Display();
+				this->deleteBtn->Display();
+			}
+			else {
+				std::cerr << std::format("[ERROR] MA THE IS NOT EXIST!\n");
+			}
+		}
+		else {
+			std::cerr << std::format("[ERROR] INVALID SEARCH DATA!\n");
+		}
+	}
+	else {
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->search);
+	}
+}
+
+bool DeleteItemInListForm::SubmitForm(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController) {
+
+	//* Submit button
+	if (this->deleteBtn->IsHover()) {
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmutButtonHoverStyling(this->deleteBtn);
+	}
+	else if (this->deleteBtn->LeftMouseClicked()) {
+		
+	}
+	else {
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->deleteBtn);
+	}
+
+	return false;
 }
