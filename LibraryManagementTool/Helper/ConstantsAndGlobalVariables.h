@@ -10,6 +10,7 @@ namespace CONSTANTS {
 	inline extern const std::string WINDOW_TITLE = "LIBRARY MANAGEMENT TOOL";
 	inline extern const std::string THE_DOC_GIA_DB = "Databases/DOC_GIA_DB.txt";
 	inline extern const std::string DAU_SACH_DB = "Databases/DAU_SACH_DB.txt";
+	inline extern const std::string THE_DOC_GIA_INDEX = "Databases/DanhSachTheDocGiaIndex.txt";
 	inline extern const int BACKGROUND_COLOR = WHITE;
 	inline extern const int MAX_ROW_COUNT = 16;
 

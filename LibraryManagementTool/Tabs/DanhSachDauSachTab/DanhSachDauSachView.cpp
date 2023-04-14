@@ -10,8 +10,8 @@
 
 
 
-void DanhSachDauSachView::CreateDatasheetsFromDatabase(LINEAR_LIST::LinearList& danhSachDauSach, DATASHEET::Controler& controler) {
-	DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(CONSTANTS::DAU_SACH_DB, danhSachDauSach);
+void DanhSachDauSachView::CreateDatasheetsFromList(LINEAR_LIST::LinearList& danhSachDauSach, DATASHEET::Controler& controler) {
+	//DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(CONSTANTS::DAU_SACH_DB, danhSachDauSach);
 
 	int recordCount = danhSachDauSach.numberOfNode;
 	controler.datasheetCount = recordCount / (CONSTANTS::MAX_ROW_COUNT - 1) + (recordCount % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1);
@@ -68,7 +68,7 @@ DanhSachDauSachView::DanhSachDauSachView(LINEAR_LIST::LinearList& danhSachDauSac
 	this->controler = DATASHEET::Controler(
 		CONSTANTS::MAX_ROW_COUNT, DAU_SACH_PROPERTIES::PROPERTIES_COUNT, DAU_SACH_PROPERTIES::ROW_HEIGHT, datasheetTopLeft
 	);
-	this->CreateDatasheetsFromDatabase(danhSachDauSach, controler);
+	this->CreateDatasheetsFromList(danhSachDauSach, controler);
 
 	this->sheetChange[0] = ELEMENTS::Button(toLeftBtnTopLeft, 50, 30);
 	this->sheetChange[1] = ELEMENTS::Button(toRightBtnTopLeft, 50, 30);

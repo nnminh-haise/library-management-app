@@ -59,6 +59,8 @@ namespace DOUBLE_LINKED_LIST {
 	void Initialize(DOUBLE_LINKED_LIST::Controler& list);
 
 	bool IsEmpty(const Controler& list);
+
+	int Size(const Controler& list);
 }
 
 namespace THE_DOC_GIA {
@@ -155,4 +157,8 @@ namespace THE_DOC_GIA_MODULES {
 	bool TheDocGiaExtractor(std::string data, std::string seperator, THE_DOC_GIA::TheDocGia& returnData);
 
 	bool LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE::Pointer& tree);
+
+	bool UpdateListToDatabase(const std::string& filename, AVL_TREE::Pointer& tree);
+
+	int GetIndex(const std::string& filename, AVL_TREE::Pointer& tree);
 }

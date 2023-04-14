@@ -34,7 +34,7 @@ public:
 
 	~LandingView();
 
-	void Run();
+	void Run(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& dsDauSach);
 };
 
 

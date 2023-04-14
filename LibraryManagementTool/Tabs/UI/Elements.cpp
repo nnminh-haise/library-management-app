@@ -252,7 +252,7 @@ ELEMENTS::Button::Button() {
 	this->textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR;
 	this->isPointed = false;
 	this->placeholder = "BUTTON";
-	this->mode = false;
+	this->inputMode = false;
 }
 
 ELEMENTS::Button::Button(HELPER::Coordinate topLeft, int width, int height, int textColor, int fillcolor, int borderColor) {
@@ -263,6 +263,7 @@ ELEMENTS::Button::Button(HELPER::Coordinate topLeft, int width, int height, int 
 	this->textColor = textColor;
 	this->isPointed = false;
 	this->placeholder = "BUTTON";
+	this->inputMode = false;
 }
 
 ELEMENTS::Button::Button(HELPER::Coordinate topLeft, HELPER::Dimension dimension, int textColor, int fillcolor, int borderColor) {
@@ -273,6 +274,7 @@ ELEMENTS::Button::Button(HELPER::Coordinate topLeft, HELPER::Dimension dimension
 	this->textColor = textColor;
 	this->isPointed = false;
 	this->placeholder = "BUTTON";
+	this->inputMode = false;
 }
 
 ELEMENTS::Button::Button(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int textColor, int fillcolor, int borderColor) {
@@ -283,6 +285,7 @@ ELEMENTS::Button::Button(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRi
 	this->textColor = textColor;
 	this->isPointed = false;
 	this->placeholder = "BUTTON";
+	this->inputMode = false;
 }
 
 void ELEMENTS::Button::SetTopLeft(HELPER::Coordinate topLeft) {
@@ -372,6 +375,12 @@ void ELEMENTS::Button::Display() {
 	setcolor(this->textColor);
 	setbkcolor(this->fill.fillColor);
 	outtextxy(textPosition.x, textPosition.y, (char*)this->placeholder.c_str());
+	
+	if (this->inputMode) {
+		HELPER::Coordinate cursorPos{ textPosition };
+		cursorPos.x += textDimension.width;
+		bar(cursorPos.x, cursorPos.y, cursorPos.x + 3, cursorPos.y + textDimension.height);
+	}
 }
 
 bool ELEMENTS::Button::IsPointed() {

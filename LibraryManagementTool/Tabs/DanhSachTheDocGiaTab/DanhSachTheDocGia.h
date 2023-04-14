@@ -25,7 +25,11 @@ struct NewListItemForm {
 
 	NewListItemForm();
 
+	~NewListItemForm();
+
 	void Display();
+
+	bool SubmitForm(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController);
 };
 
 
@@ -40,11 +44,10 @@ private:
 	SearchField searchField;
 	NewListItemForm newItemForm;
 
-private:
-	void CreateDatasheetsFromDatabase(AVL_TREE::Pointer& danhSachThedocGia, DATASHEET::Controler& controler);
-
 public:
 	DanhSachTheDocGiaView(AVL_TREE::Pointer& danhSachTheDocGia);
 
-	void Run(ELEMENTS::InputModeController& InputController);
+	void CreateDatasheetsFromList(AVL_TREE::Pointer& danhSachThedocGia, DATASHEET::Controler* controller);
+
+	void Run(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController);
 };

@@ -71,6 +71,14 @@ bool DOUBLE_LINKED_LIST::IsEmpty(const Controler& list) {
 	return list.First == nullptr;
 }
 
+int DOUBLE_LINKED_LIST::Size(const Controler& list) {
+    int result = 0;
+    for (DOUBLE_LINKED_LIST::Pointer p = list.First; p != nullptr; p = p->left) {
+        ++result;
+    }
+    return result;
+}
+
 THE_DOC_GIA::TheDocGia::TheDocGia() {
 	this->MaThe = -1;
 	this->Ho = std::string();
@@ -558,5 +566,76 @@ bool THE_DOC_GIA_MODULES::LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_
     //std::cerr << std::format("performance : {}s\n", ((double)(endPoint - startPoint)) / CLOCKS_PER_SEC);
 
 	return processResult;
+}
+
+bool THE_DOC_GIA_MODULES::UpdateListToDatabase(const std::string& filename, AVL_TREE::Pointer& tree) {
+
+    std::filebuf databaseBuffer{};
+
+    if (!databaseBuffer.open(filename, std::ios::out)) {
+        std::cerr << std::format("[ERROR] Can not open file {}\n", filename);
+        return false;
+    }
+
+    std::ostream database(&databaseBuffer);
+
+    STACK::Stack stk;
+    STACK::Initialize(stk);
+
+    AVL_TREE::Pointer p = tree;
+
+    do {
+        while (p != nullptr) {
+            STACK::Push(stk, p);
+            p = p->left;
+        }
+
+        if (STACK::IsEmpty(stk) == false) {
+            p = STACK::Pop(stk);
+            
+            database << p->info.GetMaThe() << ", ";
+            database << p->info.GetHo() << ", ";
+            database << p->info.GetTen() << ", ";
+            database << (p->info.GetStringfyPhai() == "NAM" ? 0 : 1) << ", ";
+            database << (p->info.GetStringfyTrangThai() == "THE BI KHOA" ? 0 : 1) << ", ";
+
+            if (DOUBLE_LINKED_LIST::IsEmpty(p->info.GetDanhSachMuonTra())) {
+                database << 0;
+            }
+            else {
+                int listSize = DOUBLE_LINKED_LIST::Size(p->info.GetDanhSachMuonTra());
+                database << listSize;
+            }
+            database << "\n";
+
+            p = p->right;
+        }
+        else {
+            break;
+        }
+    } while (true);
+
+    databaseBuffer.close();
+    return true;
+}
+
+int THE_DOC_GIA_MODULES::GetIndex(const std::string& filename, AVL_TREE::Pointer& tree) {
+    std::filebuf databaseBuffer{};
+
+    if (!databaseBuffer.open(filename, std::ios::in)) {
+        std::cerr << std::format("[ERROR] Can not open file {}\n", filename);
+        return false;
+    }
+
+    int recordCount = 0;
+    AVL_TREE::CountNode(tree, recordCount);
+    std::istream database(&databaseBuffer);
+
+    for (int i = 0, tmp = 0; i < recordCount; ++i, database >> tmp);
+    std::string nextIndex{};
+    database >> nextIndex;
+
+    databaseBuffer.close();
+    return std::stoi(nextIndex);
 }
 

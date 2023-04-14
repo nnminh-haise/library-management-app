@@ -15,7 +15,7 @@ private:
 
 	void DatasheetChangeBTNProperties(ELEMENTS::Button& btn);
 
-	void CreateDatasheetsFromDatabase(LINEAR_LIST::LinearList& danhSachDauSach, DATASHEET::Controler& controler);
+	void CreateDatasheetsFromList(LINEAR_LIST::LinearList& danhSachDauSach, DATASHEET::Controler& controler);
 
 public:
 	DanhSachDauSachView(LINEAR_LIST::LinearList& danhSachDauSach);

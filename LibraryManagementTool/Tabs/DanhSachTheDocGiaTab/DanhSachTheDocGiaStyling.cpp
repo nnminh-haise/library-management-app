@@ -50,6 +50,12 @@ namespace DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING {
 		btn->SetTextColor(rgb(57, 62, 70));
 	}
 
+	void SubmutButtonHoverStyling(ELEMENTS::Button* btn) {
+		btn->SetFillColor(rgb(217, 248, 196));
+		btn->SetBorderColor(rgb(122, 168, 116));
+		btn->SetTextColor(rgb(26, 18, 11));
+	}
+
 	void InputBoxHoverProperties(ELEMENTS::Button* btn) {
 		btn->SetBorderColor(rgb(70, 73, 255));
 		btn->SetFillColor(rgb(234, 253, 252));

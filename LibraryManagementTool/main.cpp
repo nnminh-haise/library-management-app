@@ -19,8 +19,7 @@ int main() {
 
 	//* Run program main function
 	LandingView mainView(danhSachTheDocgia, danhSachDauSach);
-	mainView.Run();
-
+	mainView.Run(danhSachTheDocgia, danhSachDauSach);
 
 	return 0;
 }

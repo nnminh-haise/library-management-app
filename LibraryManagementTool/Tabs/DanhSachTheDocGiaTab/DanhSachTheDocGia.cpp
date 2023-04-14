@@ -64,7 +64,16 @@ NewListItemForm::NewListItemForm() {
 	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->ten);
 	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->phai);
 	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->submit);
+}
 
+NewListItemForm::~NewListItemForm() {
+	delete this->background;
+	delete this->title;
+	delete this->maThe;
+	delete this->ho;
+	delete this->ten;
+	delete this->phai;
+	delete this->submit;
 }
 
 void NewListItemForm::Display() {
@@ -77,18 +86,73 @@ void NewListItemForm::Display() {
 	this->submit->Display();
 }
 
-void DanhSachTheDocGiaView::CreateDatasheetsFromDatabase(AVL_TREE::Pointer& danhSachThedocGia, DATASHEET::Controler& controler) {
-	THE_DOC_GIA_MODULES::LoadDanhSachTheDocGiaFromDB(CONSTANTS::THE_DOC_GIA_DB, danhSachThedocGia);
+bool NewListItemForm::SubmitForm(AVL_TREE::Pointer& dsTheDocGia, ELEMENTS::InputModeController& InputController) {
+	ELEMENTS::Button* formInputField[3] = { this->ho, this->ten, this->phai };
+	int fieldCharacterLimit[3] = { 30, 15, 3 };
+
+	int nextIndex = THE_DOC_GIA_MODULES::GetIndex(CONSTANTS::THE_DOC_GIA_INDEX, dsTheDocGia);
+	this->maThe->SetPlaceholder(std::to_string(nextIndex));
+
+	for (int i = 0; i < 3; ++i) {
+		if (formInputField[i]->IsPointed() && formInputField[i]->LeftMouseClicked() == false) {
+			DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxHoverProperties(formInputField[i]);
+		}
+		else if (formInputField[i]->LeftMouseClicked()) {
+			InputController.Activate(formInputField[i], formInputField[i], fieldCharacterLimit[i], true, false, true);
+		}
+		else {
+			DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(formInputField[i]);
+		}
+	}
+
+	if (this->submit->IsHover()) {
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmutButtonHoverStyling(this->submit);
+	}
+	else if (this->submit->LeftMouseClicked()) {
+		THE_DOC_GIA::TheDocGia newItem;
+
+		newItem.SetMaThe(nextIndex);
+		newItem.SetHo(STR::Trim(this->ho->GetPlaceholder()));
+		newItem.SetTen(STR::Trim(this->ten->GetPlaceholder()));
+		newItem.SetPhai(this->phai->GetPlaceholder() == "NAM" ? THE_DOC_GIA::GioiTinh::NAM : THE_DOC_GIA::GioiTinh::NU);
+		newItem.SetTrangThai(THE_DOC_GIA::TrangThaiThe::THE_HOAT_DONG);
+		newItem.SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controler());
+		delay(100);
+
+		std::cerr << std::format("mathe: \"{}\"\n", newItem.GetMaThe());
+		std::cerr << std::format("ho: \"{}\"\n", newItem.GetHo());
+		std::cerr << std::format("ten: \"{}\"\n", newItem.GetTen());
+		std::cerr << std::format("phai: \"{}\"\n", newItem.GetStringfyPhai());
+		std::cerr << std::format("trangthai: \"{}\"\n", newItem.GetStringfyTrangThai());
+
+		bool res = AVL_TREE::Insert(dsTheDocGia, newItem);
+
+		std::cerr << std::format("res = {}\n", res);
+		delay(10000);
+
+		return true;
+	}
+	else {
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->submit);
+	}
+
+	return false;
+}
+
+void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSachThedocGia, DATASHEET::Controler* datasheetController) {
 
 	int recordCount = 0;
 	AVL_TREE::CountNode(danhSachThedocGia, recordCount);
-	controler.datasheetCount = recordCount / (CONSTANTS::MAX_ROW_COUNT - 1) + (recordCount % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1);
-	controler.sheets = new DATASHEET::Datasheet[controler.datasheetCount];
-	controler.activeSheet = 0;
+	datasheetController->datasheetCount = recordCount / (CONSTANTS::MAX_ROW_COUNT - 1) + (recordCount % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1);
+	datasheetController->sheets = new DATASHEET::Datasheet[datasheetController->datasheetCount];
+	datasheetController->activeSheet = 0;
 
-	for (int i = 0; i < controler.datasheetCount; ++i) {
-		controler.sheets[i] = DATASHEET::Datasheet(
-			controler.rowCount, controler.columnCount, controler.rowHeight, controler.topLeft,
+	for (int i = 0; i < datasheetController->datasheetCount; ++i) {
+		datasheetController->sheets[i] = DATASHEET::Datasheet(
+			datasheetController->rowCount,
+			datasheetController->columnCount,
+			datasheetController->rowHeight,
+			datasheetController->topLeft,
 			(std::string*)THE_DOC_GIA_PROPERTIES::LABEL_PLACEHOLDERS, (int*)THE_DOC_GIA_PROPERTIES::CHARACTER_LIMITS
 		);
 	}
@@ -114,7 +178,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromDatabase(AVL_TREE::Pointer& danh
 				++sheetIndicator;
 			}
 
-			std::string* data = new std::string[controler.columnCount];
+			std::string* data = new std::string[datasheetController->columnCount];
 			data[0] = std::to_string(rowIndicator);
 			data[1] = std::to_string(currentNode->info.GetMaThe());
 			data[2] = currentNode->info.GetHo();
@@ -123,7 +187,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromDatabase(AVL_TREE::Pointer& danh
 			data[5] = currentNode->info.GetStringfyTrangThai();
 			data[6] = "SACH DANG MUON";
 
-			controler.sheets[sheetIndicator].UpdateNewPlaceholder(data, rowIndicator % CONSTANTS::MAX_ROW_COUNT);
+			datasheetController->sheets[sheetIndicator].UpdateNewPlaceholder(data, rowIndicator % CONSTANTS::MAX_ROW_COUNT);
 
 			//---
 
@@ -151,7 +215,7 @@ DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_TREE::Pointer& danhSachTheDocGi
 		CONSTANTS::MAX_ROW_COUNT, THE_DOC_GIA_PROPERTIES::PROPERTIES_COUNT, 
 		THE_DOC_GIA_PROPERTIES::ROW_HEIGHT, datasheetTopLeft
 	);
-	this->CreateDatasheetsFromDatabase(danhSachTheDocGia, controler);
+	this->CreateDatasheetsFromList(danhSachTheDocGia, &this->controler);
 
 	this->sheetChange[0] = ELEMENTS::Button(toLeftBtnTopLeft, 50, 30);
 	this->sheetChange[1] = ELEMENTS::Button(toRightBtnTopLeft, 50, 30);
@@ -182,7 +246,7 @@ DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_TREE::Pointer& danhSachTheDocGi
 * Code in this method will be run many time.
 * Each time the program render a frame, this code will be run once, therefore the element's logic will be in here!
 */
-void DanhSachTheDocGiaView::Run(ELEMENTS::InputModeController& InputController) {
+void DanhSachTheDocGiaView::Run(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController) {
 	
 	//* Display datasheet
 	this->controler.Display();
@@ -206,20 +270,11 @@ void DanhSachTheDocGiaView::Run(ELEMENTS::InputModeController& InputController) 
 		case (0): {
 			//* Display form
 			this->newItemForm.Display();
+			bool formSubmitted = this->newItemForm.SubmitForm(danhSachTheDocGia, InputController);
+			std::cerr << std::format("form submitted: {}\n", formSubmitted);
 
-			ELEMENTS::Button* formInputField[3] = { this->newItemForm.ho, this->newItemForm.ten, this->newItemForm.phai };
-			int fieldCharacterLimit[3] = { 30, 15, 3 };
-
-			for (int i = 0; i < 3; ++i) {
-				if (formInputField[i]->IsPointed() && formInputField[i]->LeftMouseClicked() == false) {
-					DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxHoverProperties(formInputField[i]);
-				}
-				else if (formInputField[i]->LeftMouseClicked()) {
-					InputController.Activate(formInputField[i], formInputField[i], fieldCharacterLimit[i], true, false, true);
-				}
-				else {
-					DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(formInputField[i]);
-				}
+			if (formSubmitted) {
+				DanhSachTheDocGiaView::CreateDatasheetsFromList(danhSachTheDocGia, &this->controler);
 			}
 			break;
 		}

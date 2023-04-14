@@ -135,7 +135,7 @@ namespace ELEMENTS {
         std::string placeholder;
         bool isPointed;
         bool active;
-        bool mode;
+        bool inputMode;
 
     public:
         Button();

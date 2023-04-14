@@ -20,9 +20,11 @@ namespace DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING {
 
 	void InputBoxStyling(ELEMENTS::Button* btn);
 
+	void InputBoxHoverProperties(ELEMENTS::Button* btn);
+
 	void SubmitButtonStyling(ELEMENTS::Button* btn);
 
-	void InputBoxHoverProperties(ELEMENTS::Button* btn);
+	void SubmutButtonHoverStyling(ELEMENTS::Button* btn);
 }
 
 namespace DANH_SACH_THE_DOC_GIA_STYLING {

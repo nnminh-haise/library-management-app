@@ -61,6 +61,9 @@ void LandingView::ConstructTabs(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::Lin
 //* View Constructor function.
 LandingView::LandingView(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& dsDauSach) {
 
+	THE_DOC_GIA_MODULES::LoadDanhSachTheDocGiaFromDB(CONSTANTS::THE_DOC_GIA_DB, dsTheDocGia);
+	DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(CONSTANTS::DAU_SACH_DB, dsDauSach);
+
 	this->ConstructGraphicWindow();
 	this->graphicWindow->Activate();
 
@@ -69,7 +72,7 @@ LandingView::LandingView(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList
 }
 
 //* View Run function
-void LandingView::Run() {
+void LandingView::Run(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& dsDauSach) {
 
 	int currentTab = 0;
 	bool programStopFlag = false;
@@ -97,7 +100,7 @@ void LandingView::Run() {
 					this->dauSachView->Run();
 					break;
 				case (1):
-					this->theDocGiaView->Run(this->inpController);
+					this->theDocGiaView->Run(dsTheDocGia, this->inpController);
 					break;
 				case (2):
 					this->thongKeView->Run();
@@ -153,6 +156,9 @@ void LandingView::Run() {
 			char emptychr = getch();//take an empty char then do nothing
 		}
 	}
+
+	//* Update databse before closing the program
+	THE_DOC_GIA_MODULES::UpdateListToDatabase(CONSTANTS::THE_DOC_GIA_DB, dsTheDocGia);
 }
 
 //* View destructor
