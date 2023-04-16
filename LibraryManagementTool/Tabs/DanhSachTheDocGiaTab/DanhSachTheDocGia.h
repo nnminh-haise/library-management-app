@@ -40,7 +40,8 @@ struct DeleteItemInListForm {
 	ELEMENTS::Button* trangThai;
 	ELEMENTS::Button* phai;
 	ELEMENTS::Button* deleteBtn;
-	ELEMENTS::Button* search;
+	bool searchTargetFound;
+	AVL_TREE::Pointer searchResult;
 
 	DeleteItemInListForm();
 

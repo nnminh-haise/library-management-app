@@ -2,7 +2,7 @@
 #include "Helper.h"
 
 #include "../Graphics/graphics.h"
-#include "../Tabs/Elements.h"
+#include "../Tabs/UI/Elements.h"
 
 #include <iostream>
 #include <ctime>
@@ -189,7 +189,11 @@ int rgb(int r, int g, int b) {
     return COLOR(r, g, b);
 }
 
-bool VALIDATOR::OnlyDigit(std::string str) {
+bool VALIDATOR::OnlyDigit(const std::string& str) {
+    if (str.length() == 0) {
+        return false;
+    }
+
     for (const char& chr : str) {
         if (std::isdigit(chr) == false) {
             return false;

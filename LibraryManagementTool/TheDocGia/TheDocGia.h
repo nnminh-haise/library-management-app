@@ -61,6 +61,8 @@ namespace DOUBLE_LINKED_LIST {
 	bool IsEmpty(const Controler& list);
 
 	int Size(const Controler& list);
+
+	void ClearList(Controler& list);
 }
 
 namespace THE_DOC_GIA {
@@ -120,16 +122,23 @@ namespace THE_DOC_GIA {
 	};
 }
 
+namespace MUON_TRA_MODULES {
+	int CountBorrowedBooks(const DOUBLE_LINKED_LIST::Controler& list);
+}
+
 namespace AVL_TREE {
 	struct Node {
 		THE_DOC_GIA::TheDocGia info;
 		int balanceFactor;
+		int height;
 		Node* left;
 		Node* right;
 
 		Node();
 
 		int GetKey();
+
+		void SetKey(const int key);
 	};
 
 	typedef Node* Pointer;
@@ -155,6 +164,10 @@ namespace AVL_TREE {
 	bool Insert(Pointer& root, THE_DOC_GIA::TheDocGia info);
 
 	Pointer SearchByKey(const Pointer& root, const int& key);
+
+	Pointer GetMinValueNode(Pointer const& node);
+
+	Pointer RemoveNode(Pointer& node, const int& key);
 }
 
 namespace THE_DOC_GIA_MODULES {

@@ -79,6 +79,16 @@ int DOUBLE_LINKED_LIST::Size(const Controler& list) {
     return result;
 }
 
+void DOUBLE_LINKED_LIST::ClearList(Controler& list) {
+    DOUBLE_LINKED_LIST::Pointer p = list.First;
+    while (p != nullptr) {
+        DOUBLE_LINKED_LIST::Pointer deleteNode = p;
+        p = deleteNode->right;
+        delete deleteNode;
+    }
+    list.First = list.Last = nullptr;
+}
+
 THE_DOC_GIA::TheDocGia::TheDocGia() {
 	this->MaThe = -1;
 	this->Ho = std::string();
@@ -181,10 +191,15 @@ AVL_TREE::Node::Node() {
 	this->info = THE_DOC_GIA::TheDocGia();
 	this->balanceFactor = 0;
 	this->left = this->right = nullptr;
+    this->height = 0;
 }
 
 int AVL_TREE::Node::GetKey() {
     return this->info.GetMaThe();
+}
+
+void AVL_TREE::Node::SetKey(const int key) {
+    this->info.SetMaThe(key);
 }
 
 void AVL_TREE::Initialize(AVL_TREE::Pointer& node) {
@@ -475,6 +490,71 @@ AVL_TREE::Pointer AVL_TREE::SearchByKey(const AVL_TREE::Pointer& root, const int
     return p;
 }
 
+AVL_TREE::Pointer AVL_TREE::GetMinValueNode(AVL_TREE::Pointer const& node) {
+    if (node == nullptr || node->left == nullptr) {
+        return node;
+    }
+
+    return AVL_TREE::GetMinValueNode(node->left);
+}
+
+AVL_TREE::Pointer AVL_TREE::RemoveNode(AVL_TREE::Pointer& node, const int& key) {
+    if (node == nullptr) {
+        return node;
+    }
+
+    if (key < node->GetKey()) {
+        node->left = AVL_TREE::RemoveNode(node->left, key);
+    }
+    else if (key > node->GetKey()) {
+        node->right = AVL_TREE::RemoveNode(node->right, key);
+    }
+    else {
+        if (node->left == nullptr) {
+            AVL_TREE::Pointer temp = node->right;
+            delete node;
+            return temp;
+        }
+        else if (node->right == nullptr) {
+            AVL_TREE::Pointer temp = node->left;
+            delete node;
+            return temp;
+        }
+        AVL_TREE::Pointer temp = AVL_TREE::GetMinValueNode(node->right);
+        node->SetKey(temp->GetKey());
+        node->right = AVL_TREE::RemoveNode(node->right, temp->GetKey());
+    }
+
+    if (node == nullptr) {
+        return node;
+    }
+
+    node->height = 1 + max(
+        (node->left != nullptr ? node->left->height : 0),
+        (node->right != nullptr ? node->right->height : 0)
+    );
+
+    if (node->balanceFactor > 1 && node->left->balanceFactor >= 0) {
+        return AVL_TREE::RotateRight(node);
+    }
+
+    if (node->balanceFactor < -1 && node->right->balanceFactor <= 0) {
+        return AVL_TREE::RotateLeft(node);
+    }
+
+    if (node->balanceFactor > 1 && node->left->balanceFactor < 0) {
+        node->left = AVL_TREE::RotateLeft(node->left);
+        return AVL_TREE::RotateRight(node);
+    }
+
+    if (node->balanceFactor < -1 && node->right->balanceFactor > 0) {
+        node->right = AVL_TREE::RotateRight(node->right);
+        return AVL_TREE::RotateLeft(node);
+    }
+
+    return node;
+}
+
 /**
 * The function will extract the data string and return an object pointer.
 */
@@ -657,3 +737,12 @@ int THE_DOC_GIA_MODULES::GetIndex(const std::string& filename, AVL_TREE::Pointer
     return std::stoi(nextIndex);
 }
 
+int MUON_TRA_MODULES::CountBorrowedBooks(const DOUBLE_LINKED_LIST::Controler& list) {
+    int counter = 0;
+    for (DOUBLE_LINKED_LIST::Pointer p = list.First; p != nullptr; p = p->right) {
+        if (p->info.GetTrangThai() == MUON_TRA::TrangThaiMuonTra::SACH_DANG_MUON) {
+            ++counter;
+        }
+    }
+    return counter;
+}

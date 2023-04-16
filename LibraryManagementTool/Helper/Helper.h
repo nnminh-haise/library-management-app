@@ -72,5 +72,5 @@ namespace STR {
 }
 
 namespace VALIDATOR {
-    bool OnlyDigit(std::string str);
+    bool OnlyDigit(const std::string& str);
 }
