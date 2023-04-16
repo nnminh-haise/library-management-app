@@ -81,6 +81,17 @@ namespace DANH_SACH_THE_DOC_GIA_STYLING {
 		btn.SetTextColor(rgb(57, 62, 70));
 	}
 
+	void DatasheetLabelsButtonHoverStyling(ELEMENTS::Button* btn) {
+		btn->SetFillColor(rgb(116, 141, 166));
+		btn->SetTextColor(rgb(249, 249, 249));
+	}
+
+	void DatasheetLabelsButtonDefaultStyling(ELEMENTS::Button* btn) {
+		btn->SetFillColor(rgb(210, 218, 255));
+		btn->SetTextColor(rgb(25, 24, 37));
+		btn->SetBorderColor(rgb(25, 24, 37));
+	}
+
 	void DatasheetChangeButtonNHoverProperties(ELEMENTS::Button& btn) {
 		btn.SetFillColor(rgb(130, 170, 227));
 	}

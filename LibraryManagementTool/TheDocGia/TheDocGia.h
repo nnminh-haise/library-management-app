@@ -178,4 +178,6 @@ namespace THE_DOC_GIA_MODULES {
 	bool UpdateListToDatabase(const std::string& filename, AVL_TREE::Pointer& tree);
 
 	int GetIndex(const std::string& filename, AVL_TREE::Pointer& tree);
+
+	void SortByName(AVL_TREE::Pointer const& node, AVL_TREE::Pointer*& pointerArr, int& arrSize);
 }

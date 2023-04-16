@@ -80,6 +80,7 @@ private:
 	ELEMENTS::Button sheetChange[2];
 	int listManipulationButtonStatus;
 	ELEMENTS::Button listManipulateButton[3];
+	bool defaultOrder;
 
 	SearchField searchField;
 	NewListItemForm newItemForm;
@@ -90,6 +91,8 @@ public:
 	DanhSachTheDocGiaView(AVL_TREE::Pointer& danhSachTheDocGia);
 
 	void CreateDatasheetsFromList(AVL_TREE::Pointer& danhSachThedocGia, DATASHEET::Controler* controller);
+
+	void CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int arrSize, DATASHEET::Controler* controller);
 
 	void Run(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController);
 };

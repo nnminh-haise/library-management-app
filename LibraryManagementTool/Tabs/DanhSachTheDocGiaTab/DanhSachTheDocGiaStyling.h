@@ -37,4 +37,8 @@ namespace DANH_SACH_THE_DOC_GIA_STYLING {
 	void ListManipulateButtonHoverProperties(ELEMENTS::Button& btn);
 
 	void NewItemButtonActiveProperties(ELEMENTS::Button& btn);
+
+	void DatasheetLabelsButtonHoverStyling(ELEMENTS::Button* btn);
+
+	void DatasheetLabelsButtonDefaultStyling(ELEMENTS::Button* btn);
 }

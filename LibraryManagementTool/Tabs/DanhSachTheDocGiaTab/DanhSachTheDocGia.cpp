@@ -239,6 +239,164 @@ bool DeleteItemInListForm::SubmitForm(AVL_TREE::Pointer& danhSachTheDocGia, ELEM
 	return false;
 }
 
+EditItemInListForm::EditItemInListForm() {
+	this->background = new ELEMENTS::Fill(HELPER::Coordinate(1305, 420), 450, 500);
+
+	this->title = new ELEMENTS::Button(HELPER::Coordinate(1305, 420), 450, 50);
+	this->title->SetPlaceholder("THE DOC GIA");
+
+	this->maThe = new ELEMENTS::Button(HELPER::Coordinate(1330, 500), 400, 60);
+	this->maThe->SetPlaceholder("Ma the");
+
+	this->ho = new ELEMENTS::Button(HELPER::Coordinate(1330, 590), 400, 60);
+	this->ho->SetPlaceholder("Ho");
+
+	this->ten = new ELEMENTS::Button(HELPER::Coordinate(1330, 680), 400, 60);
+	this->ten->SetPlaceholder("Ten");
+
+	this->phai = new ELEMENTS::Button(HELPER::Coordinate(1330, 770), 145, 60);
+	this->phai->SetPlaceholder("Phai");
+
+	this->trangThai = new ELEMENTS::Button(HELPER::Coordinate(1500, 770), 230, 60);
+	this->trangThai->SetPlaceholder("Trang thai");
+
+	this->saveBtn = new ELEMENTS::Button(HELPER::Coordinate(1455, 855), 150, 40);
+	this->saveBtn->SetPlaceholder("SAVE");
+
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::BackgroundStyling(this->background);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::TitleStyling(this->title);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->maThe);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->ho);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->ten);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->trangThai);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->phai);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->saveBtn);
+	this->searchTargetFound = false;
+	this->searchResult = nullptr;
+}
+
+EditItemInListForm::~EditItemInListForm() {
+	delete this->background;
+	delete this->title;
+	delete this->maThe;
+	delete this->ho;
+	delete this->ten;
+	delete this->trangThai;
+	delete this->phai;
+	delete this->saveBtn;
+}
+
+void EditItemInListForm::Display(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController) {
+	this->searchTargetFound = false;
+
+	this->background->Draw();
+	this->title->Display();
+	this->maThe->Display();
+
+	if (this->maThe->IsHover()) {
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxHoverProperties(this->maThe);
+	}
+	else if (this->maThe->LeftMouseClicked()) {
+		InputController.Activate(this->maThe, this->maThe, 4, false, true, false);
+	}
+	else {
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->maThe);
+	}
+}
+
+bool EditItemInListForm::SubmitForm(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController) {
+
+	this->searchTargetFound = false;
+
+	bool checker = VALIDATOR::OnlyDigit(this->maThe->GetPlaceholder());
+	if (checker) {
+		this->searchResult = AVL_TREE::SearchByKey(danhSachTheDocGia, std::stoi(this->maThe->GetPlaceholder()));
+		if (this->searchResult != nullptr) {
+			this->searchTargetFound = true;
+
+			this->ho->Display();
+			this->ten->Display();
+			this->phai->Display();
+			this->trangThai->Display();
+			this->saveBtn->Display();
+
+			ELEMENTS::Button* inpField[4] = {
+				this->ho, this->ten, this->phai, this->trangThai
+			};
+
+			for (int i = 0; i < 4; ++i) {
+				if (inpField[i]->IsHover()) {
+					DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxHoverProperties(inpField[i]);
+				}
+				else if (inpField[i]->LeftMouseClicked()) {
+					switch (i) {
+					case (0):
+						InputController.Activate(inpField[i], inpField[i], 30, true, false, true);
+						break;
+					case (1):
+						InputController.Activate(inpField[i], inpField[i], 15, true, false, true);
+						break;
+					case (2):
+						InputController.Activate(inpField[i], inpField[i], 3, true, false, false);
+						break;
+					case (3):
+						InputController.Activate(inpField[i], inpField[i], 9, true, false, true);
+						break;
+					}
+				}
+				else {
+					DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(inpField[i]);
+				}
+			}
+		}
+		else {
+			std::cerr << std::format("[ERROR] MA THE IS NOT EXIST!\n");
+		}
+	}
+	else {
+		std::cerr << std::format("[ERROR] INVALID SEARCH DATA!\n");
+	}
+
+	//* Submit button
+	if (this->saveBtn->IsHover()) {
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmutButtonHoverStyling(this->saveBtn);
+	}
+	else if (this->saveBtn->LeftMouseClicked()) {
+		if (this->searchTargetFound == true) {
+
+			bool checker = true;
+
+			if (this->phai->GetPlaceholder() != "NAM" && this->phai->GetPlaceholder() != "NU") {
+				std::cerr << std::format("[ERROR] SAI DU LIEU O TRUONG PHAI\n");
+				checker = false;
+			}
+
+			if (this->trangThai->GetPlaceholder() != "HOAT DONG" && this->trangThai->GetPlaceholder() != "BI KHOA") {
+				std::cerr << std::format("[ERROR] SAI DU LIEU O TRUONG TRANG THAI\n");
+				checker = false;
+			}
+
+			if (checker) {
+				this->searchResult->info.SetHo(this->ho->GetPlaceholder());
+				this->searchResult->info.SetTen(this->ten->GetPlaceholder());
+				this->searchResult->info.SetPhai(
+					this->phai->GetPlaceholder() == "NAM" ? THE_DOC_GIA::GioiTinh::NAM : THE_DOC_GIA::GioiTinh::NU
+				);
+				this->searchResult->info.SetTrangThai(
+					this->trangThai->GetPlaceholder() == "BI KHOA" ? THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA : THE_DOC_GIA::TrangThaiThe::THE_HOAT_DONG
+				);
+
+				return true;
+			}
+		}
+	}
+	else {
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->saveBtn);
+	}
+
+	return false;
+}
+
 void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSachThedocGia, DATASHEET::Controler* datasheetController) {
 
 	int recordCount = 0;
@@ -299,6 +457,47 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 	} while (true);
 }
 
+void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int arrSize, DATASHEET::Controler* datasheetController) {
+	datasheetController->datasheetCount = arrSize / (CONSTANTS::MAX_ROW_COUNT - 1) + (arrSize % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1);
+	datasheetController->sheets = new DATASHEET::Datasheet[datasheetController->datasheetCount];
+	datasheetController->activeSheet = 0;
+
+	for (int i = 0; i < datasheetController->datasheetCount; ++i) {
+		datasheetController->sheets[i] = DATASHEET::Datasheet(
+			datasheetController->rowCount,
+			datasheetController->columnCount,
+			datasheetController->rowHeight,
+			datasheetController->topLeft,
+			(std::string*)THE_DOC_GIA_PROPERTIES::LABEL_PLACEHOLDERS, (int*)THE_DOC_GIA_PROPERTIES::CHARACTER_LIMITS
+		);
+	}
+
+	int rowIndicator = 0;
+	int sheetIndicator = -1;
+	for (int i = 0; i < arrSize; ++i) {
+
+		//* Logic stays here
+		++rowIndicator;
+		if (rowIndicator % CONSTANTS::MAX_ROW_COUNT == 1) {
+			++sheetIndicator;
+		}
+
+		std::string* data = new std::string[datasheetController->columnCount];
+		data[0] = std::to_string(rowIndicator);
+		data[1] = std::to_string(arr[i]->info.GetMaThe());
+		data[2] = arr[i]->info.GetHo();
+		data[3] = arr[i]->info.GetTen();
+		data[4] = arr[i]->info.GetStringfyPhai();
+		data[5] = arr[i]->info.GetStringfyTrangThai();
+		data[6] = "SACH DANG MUON";
+
+		datasheetController->sheets[sheetIndicator].UpdateNewPlaceholder(data, rowIndicator % CONSTANTS::MAX_ROW_COUNT);
+
+		//---
+	}
+
+}
+
 /**
 * Tab's constructor
 * 
@@ -306,6 +505,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 */
 DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_TREE::Pointer& danhSachTheDocGia) {
 	this->active = false;
+	this->defaultOrder = true;
 	
 	HELPER::Coordinate datasheetTopLeft(36, 120);
 	HELPER::Coordinate toLeftBtnTopLeft(36, 935);
@@ -315,7 +515,9 @@ DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_TREE::Pointer& danhSachTheDocGi
 		CONSTANTS::MAX_ROW_COUNT, THE_DOC_GIA_PROPERTIES::PROPERTIES_COUNT, 
 		THE_DOC_GIA_PROPERTIES::ROW_HEIGHT, datasheetTopLeft
 	);
-	this->CreateDatasheetsFromList(danhSachTheDocGia, &this->controler);
+	if (this->defaultOrder) {
+		this->CreateDatasheetsFromList(danhSachTheDocGia, &this->controler);
+	}
 
 	this->sheetChange[0] = ELEMENTS::Button(toLeftBtnTopLeft, 50, 30);
 	this->sheetChange[1] = ELEMENTS::Button(toRightBtnTopLeft, 50, 30);
@@ -454,167 +656,36 @@ void DanhSachTheDocGiaView::Run(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::
 			}
 		}
 	}
-}
 
-EditItemInListForm::EditItemInListForm() {
-	this->background = new ELEMENTS::Fill(HELPER::Coordinate(1305, 420), 450, 500);
-
-	this->title = new ELEMENTS::Button(HELPER::Coordinate(1305, 420), 450, 50);
-	this->title->SetPlaceholder("THE DOC GIA");
-
-	this->maThe = new ELEMENTS::Button(HELPER::Coordinate(1330, 500), 400, 60);
-	this->maThe->SetPlaceholder("Ma the");
-
-	this->ho = new ELEMENTS::Button(HELPER::Coordinate(1330, 590), 400, 60);
-	this->ho->SetPlaceholder("Ho");
-
-	this->ten = new ELEMENTS::Button(HELPER::Coordinate(1330, 680), 400, 60);
-	this->ten->SetPlaceholder("Ten");
-
-	this->phai = new ELEMENTS::Button(HELPER::Coordinate(1330, 770), 145, 60);
-	this->phai->SetPlaceholder("Phai");
-
-	this->trangThai = new ELEMENTS::Button(HELPER::Coordinate(1500, 770), 230, 60);
-	this->trangThai->SetPlaceholder("Trang thai");
-
-	this->saveBtn = new ELEMENTS::Button(HELPER::Coordinate(1455, 855), 150, 40);
-	this->saveBtn->SetPlaceholder("SAVE");
-
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::BackgroundStyling(this->background);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::TitleStyling(this->title);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->maThe);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->ho);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->ten);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->trangThai);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->phai);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->saveBtn);
-	this->searchTargetFound = false;
-	this->searchResult = nullptr;
-}
-
-EditItemInListForm::~EditItemInListForm() {
-	delete this->background;
-	delete this->title;
-	delete this->maThe;
-	delete this->ho;
-	delete this->ten;
-	delete this->trangThai;
-	delete this->phai;
-	delete this->saveBtn;
-}
-
-void EditItemInListForm::Display(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController) {
-	this->searchTargetFound = false;
-
-	this->background->Draw();
-	this->title->Display();
-	this->maThe->Display();
-	
-	if (this->maThe->IsHover()) {
-		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxHoverProperties(this->maThe);
+	//* Mathe label button
+	if (this->controler.sheets[this->controler.activeSheet].rows[0].labels[1].IsHover()) {
+		DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonHoverStyling(&this->controler.sheets[this->controler.activeSheet].rows[0].labels[1]);
 	}
-	else if (this->maThe->LeftMouseClicked()) {
-		InputController.Activate(this->maThe, this->maThe, 4, false, true, false);
+	else if (this->controler.sheets[this->controler.activeSheet].rows[0].labels[1].LeftMouseClicked()) {
+		this->controler.sheets[this->controler.activeSheet].rows[0].labels[1].SetFillColor(RED);
+		this->defaultOrder = true;
+		this->CreateDatasheetsFromList(danhSachTheDocGia, &this->controler);
 	}
 	else {
-		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->maThe);
+		DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonDefaultStyling(&this->controler.sheets[this->controler.activeSheet].rows[0].labels[1]);
+	}
+
+	//* Ten label button
+	if (this->controler.sheets[this->controler.activeSheet].rows[0].labels[3].IsHover()) {
+		DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonHoverStyling(&this->controler.sheets[this->controler.activeSheet].rows[0].labels[3]);
+	}
+	else if (this->controler.sheets[this->controler.activeSheet].rows[0].labels[3].LeftMouseClicked()) {
+		this->defaultOrder = false;
+		AVL_TREE::Pointer* pointerArr{};
+		int arrSize = 0;
+		THE_DOC_GIA_MODULES::SortByName(danhSachTheDocGia, pointerArr, arrSize);
+
+		DanhSachTheDocGiaView::CreateDatasheetsFromArr(pointerArr, arrSize, &this->controler);
+
+		delay(100);
+	}
+	else {
+		DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonDefaultStyling(&this->controler.sheets[this->controler.activeSheet].rows[0].labels[3]);
 	}
 }
 
-bool EditItemInListForm::SubmitForm(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController) {
-
-	this->searchTargetFound = false;
-
-	bool checker = VALIDATOR::OnlyDigit(this->maThe->GetPlaceholder());
-	if (checker) {
-		this->searchResult = AVL_TREE::SearchByKey(danhSachTheDocGia, std::stoi(this->maThe->GetPlaceholder()));
-		if (this->searchResult != nullptr) {
-			this->searchTargetFound = true;
-
-			/*this->ho->SetPlaceholder(this->searchResult->info.GetHo());
-			this->ten->SetPlaceholder(this->searchResult->info.GetTen());
-			this->phai->SetPlaceholder(this->searchResult->info.GetStringfyPhai());
-			this->trangThai->SetPlaceholder(this->searchResult->info.GetStringfyTrangThai());*/
-
-			this->ho->Display();
-			this->ten->Display();
-			this->phai->Display();
-			this->trangThai->Display();
-			this->saveBtn->Display();
-
-			ELEMENTS::Button* inpField[4] = {
-				this->ho, this->ten, this->phai, this->trangThai
-			};
-			
-			for (int i = 0; i < 4; ++i) {
-				if (inpField[i]->IsHover()) {
-					DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxHoverProperties(inpField[i]);
-				}
-				else if (inpField[i]->LeftMouseClicked()) {
-					switch (i) {
-						case (0):
-							InputController.Activate(inpField[i], inpField[i], 30, true, false, true);
-							break;
-						case (1):
-							InputController.Activate(inpField[i], inpField[i], 15, true, false, true);
-							break;
-						case (2):
-							InputController.Activate(inpField[i], inpField[i], 3, true, false, false);
-							break;
-						case (3):
-							InputController.Activate(inpField[i], inpField[i], 9, true, false, true);
-							break;
-					}
-				}
-				else {
-					DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(inpField[i]);
-				}
-			}
-		}
-		else {
-			std::cerr << std::format("[ERROR] MA THE IS NOT EXIST!\n");
-		}
-	}
-	else {
-		std::cerr << std::format("[ERROR] INVALID SEARCH DATA!\n");
-	}
-
-	//* Submit button
-	if (this->saveBtn->IsHover()) {
-		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmutButtonHoverStyling(this->saveBtn);
-	}
-	else if (this->saveBtn->LeftMouseClicked()) {
-		if (this->searchTargetFound == true) {
-			
-			bool checker = true;
-
-			if (this->phai->GetPlaceholder() != "NAM" && this->phai->GetPlaceholder() != "NU") {
-				std::cerr << std::format("[ERROR] SAI DU LIEU O TRUONG PHAI\n");
-				checker = false;
-			}
-
-			if (this->trangThai->GetPlaceholder() != "HOAT DONG" && this->trangThai->GetPlaceholder() != "BI KHOA") {
-				std::cerr << std::format("[ERROR] SAI DU LIEU O TRUONG TRANG THAI\n");
-				checker = false;
-			}
-
-			if (checker) {
-				this->searchResult->info.SetHo(this->ho->GetPlaceholder());
-				this->searchResult->info.SetTen(this->ten->GetPlaceholder());
-				this->searchResult->info.SetPhai(
-					this->phai->GetPlaceholder() == "NAM" ? THE_DOC_GIA::GioiTinh::NAM : THE_DOC_GIA::GioiTinh::NU
-				);
-				this->searchResult->info.SetTrangThai(
-					this->trangThai->GetPlaceholder() == "BI KHOA" ? THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA : THE_DOC_GIA::TrangThaiThe::THE_HOAT_DONG
-				);
-
-				return true;
-			}
-		}
-	}
-	else {
-		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->saveBtn);
-	}
-
-	return false;
-}

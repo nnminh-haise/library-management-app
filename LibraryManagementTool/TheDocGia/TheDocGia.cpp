@@ -737,6 +737,52 @@ int THE_DOC_GIA_MODULES::GetIndex(const std::string& filename, AVL_TREE::Pointer
     return std::stoi(nextIndex);
 }
 
+/*
+* The algorithm is that we first create an array contains the pointer of all the node of the tree.
+* Then we sort the array by comparing the value which the pointer pointed to and interchange the position of the element in the array
+* without changing the positon of the node of the tree.
+* 
+! Currently, Selection sort is used! Therefore the time complexcity if very high!
+*/
+void THE_DOC_GIA_MODULES::SortByName(AVL_TREE::Pointer const& node, AVL_TREE::Pointer*& pointerArr, int& arrSize) {
+    
+    //* If the array is empty at first, then create the array.
+    AVL_TREE::CountNode(node, arrSize);
+    pointerArr = new AVL_TREE::Pointer[arrSize];
+
+    //* Create an array containing the pointer.
+    STACK::Stack stk;
+    STACK::Initialize(stk);
+    AVL_TREE::Pointer p = node;
+    int index = 0;
+    do {
+        while (p != nullptr) {
+            STACK::Push(stk, p);
+            p = p->left;
+        }
+
+        if (STACK::IsEmpty(stk) == false) {
+            p = STACK::Pop(stk);
+            pointerArr[index++] = p;
+            p = p->right;
+        }
+        else {
+            break;
+        }
+    } while (true);
+
+    for (int i = 0; i < arrSize - 1; ++i) {
+        for (int j = i + 1; j < arrSize; ++j) {
+            const std::string& valueA = pointerArr[i]->info.GetTen() + pointerArr[i]->info.GetHo();
+            const std::string& valueB = pointerArr[j]->info.GetTen() + pointerArr[j]->info.GetHo();
+
+            if (valueA.compare(valueB) > 0) {
+                std::swap(pointerArr[i], pointerArr[j]);
+            }
+        }
+    }
+}
+
 int MUON_TRA_MODULES::CountBorrowedBooks(const DOUBLE_LINKED_LIST::Controler& list) {
     int counter = 0;
     for (DOUBLE_LINKED_LIST::Pointer p = list.First; p != nullptr; p = p->right) {
