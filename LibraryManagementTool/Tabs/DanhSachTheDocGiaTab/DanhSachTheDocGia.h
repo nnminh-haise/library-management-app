@@ -52,6 +52,27 @@ struct DeleteItemInListForm {
 	bool SubmitForm(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController);
 };
 
+struct EditItemInListForm {
+	ELEMENTS::Fill* background;
+	ELEMENTS::Button* title;
+	ELEMENTS::Button* maThe;
+	ELEMENTS::Button* ho;
+	ELEMENTS::Button* ten;
+	ELEMENTS::Button* trangThai;
+	ELEMENTS::Button* phai;
+	ELEMENTS::Button* saveBtn;
+	bool searchTargetFound;
+	AVL_TREE::Pointer searchResult;
+
+	EditItemInListForm();
+
+	~EditItemInListForm();
+
+	void Display(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController);
+
+	bool SubmitForm(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController);
+};
+
 class DanhSachTheDocGiaView {
 private:
 	bool active;
@@ -63,6 +84,7 @@ private:
 	SearchField searchField;
 	NewListItemForm newItemForm;
 	DeleteItemInListForm deleteItemForm;
+	EditItemInListForm editItemForm;
 
 public:
 	DanhSachTheDocGiaView(AVL_TREE::Pointer& danhSachTheDocGia);

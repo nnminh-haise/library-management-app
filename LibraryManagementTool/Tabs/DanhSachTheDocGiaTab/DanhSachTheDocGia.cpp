@@ -119,12 +119,6 @@ bool NewListItemForm::SubmitForm(AVL_TREE::Pointer& dsTheDocGia, ELEMENTS::Input
 		newItem.SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controler());
 		delay(100);
 
-		//std::cerr << std::format("mathe: \"{}\"\n", newItem.GetMaThe());
-		//std::cerr << std::format("ho: \"{}\"\n", newItem.GetHo());
-		//std::cerr << std::format("ten: \"{}\"\n", newItem.GetTen());
-		//std::cerr << std::format("phai: \"{}\"\n", newItem.GetStringfyPhai());
-		//std::cerr << std::format("trangthai: \"{}\"\n", newItem.GetStringfyTrangThai());
-
 		bool res = AVL_TREE::Insert(dsTheDocGia, newItem);
 
 		return true;
@@ -383,6 +377,11 @@ void DanhSachTheDocGiaView::Run(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::
 				break;
 			}
 			case (1): {
+				this->editItemForm.Display(danhSachTheDocGia, InputController);
+				bool confirmSave = this->editItemForm.SubmitForm(danhSachTheDocGia, InputController);
+				if (confirmSave) {
+					DanhSachTheDocGiaView::CreateDatasheetsFromList(danhSachTheDocGia, &this->controler);
+				}
 				break;
 			}
 			case (2): {
@@ -457,4 +456,165 @@ void DanhSachTheDocGiaView::Run(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::
 	}
 }
 
+EditItemInListForm::EditItemInListForm() {
+	this->background = new ELEMENTS::Fill(HELPER::Coordinate(1305, 420), 450, 500);
 
+	this->title = new ELEMENTS::Button(HELPER::Coordinate(1305, 420), 450, 50);
+	this->title->SetPlaceholder("THE DOC GIA");
+
+	this->maThe = new ELEMENTS::Button(HELPER::Coordinate(1330, 500), 400, 60);
+	this->maThe->SetPlaceholder("Ma the");
+
+	this->ho = new ELEMENTS::Button(HELPER::Coordinate(1330, 590), 400, 60);
+	this->ho->SetPlaceholder("Ho");
+
+	this->ten = new ELEMENTS::Button(HELPER::Coordinate(1330, 680), 400, 60);
+	this->ten->SetPlaceholder("Ten");
+
+	this->phai = new ELEMENTS::Button(HELPER::Coordinate(1330, 770), 145, 60);
+	this->phai->SetPlaceholder("Phai");
+
+	this->trangThai = new ELEMENTS::Button(HELPER::Coordinate(1500, 770), 230, 60);
+	this->trangThai->SetPlaceholder("Trang thai");
+
+	this->saveBtn = new ELEMENTS::Button(HELPER::Coordinate(1455, 855), 150, 40);
+	this->saveBtn->SetPlaceholder("SAVE");
+
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::BackgroundStyling(this->background);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::TitleStyling(this->title);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->maThe);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->ho);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->ten);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->trangThai);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->phai);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->saveBtn);
+	this->searchTargetFound = false;
+	this->searchResult = nullptr;
+}
+
+EditItemInListForm::~EditItemInListForm() {
+	delete this->background;
+	delete this->title;
+	delete this->maThe;
+	delete this->ho;
+	delete this->ten;
+	delete this->trangThai;
+	delete this->phai;
+	delete this->saveBtn;
+}
+
+void EditItemInListForm::Display(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController) {
+	this->searchTargetFound = false;
+
+	this->background->Draw();
+	this->title->Display();
+	this->maThe->Display();
+	
+	if (this->maThe->IsHover()) {
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxHoverProperties(this->maThe);
+	}
+	else if (this->maThe->LeftMouseClicked()) {
+		InputController.Activate(this->maThe, this->maThe, 4, false, true, false);
+	}
+	else {
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->maThe);
+	}
+}
+
+bool EditItemInListForm::SubmitForm(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController) {
+
+	this->searchTargetFound = false;
+
+	bool checker = VALIDATOR::OnlyDigit(this->maThe->GetPlaceholder());
+	if (checker) {
+		this->searchResult = AVL_TREE::SearchByKey(danhSachTheDocGia, std::stoi(this->maThe->GetPlaceholder()));
+		if (this->searchResult != nullptr) {
+			this->searchTargetFound = true;
+
+			/*this->ho->SetPlaceholder(this->searchResult->info.GetHo());
+			this->ten->SetPlaceholder(this->searchResult->info.GetTen());
+			this->phai->SetPlaceholder(this->searchResult->info.GetStringfyPhai());
+			this->trangThai->SetPlaceholder(this->searchResult->info.GetStringfyTrangThai());*/
+
+			this->ho->Display();
+			this->ten->Display();
+			this->phai->Display();
+			this->trangThai->Display();
+			this->saveBtn->Display();
+
+			ELEMENTS::Button* inpField[4] = {
+				this->ho, this->ten, this->phai, this->trangThai
+			};
+			
+			for (int i = 0; i < 4; ++i) {
+				if (inpField[i]->IsHover()) {
+					DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxHoverProperties(inpField[i]);
+				}
+				else if (inpField[i]->LeftMouseClicked()) {
+					switch (i) {
+						case (0):
+							InputController.Activate(inpField[i], inpField[i], 30, true, false, true);
+							break;
+						case (1):
+							InputController.Activate(inpField[i], inpField[i], 15, true, false, true);
+							break;
+						case (2):
+							InputController.Activate(inpField[i], inpField[i], 3, true, false, false);
+							break;
+						case (3):
+							InputController.Activate(inpField[i], inpField[i], 9, true, false, true);
+							break;
+					}
+				}
+				else {
+					DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(inpField[i]);
+				}
+			}
+		}
+		else {
+			std::cerr << std::format("[ERROR] MA THE IS NOT EXIST!\n");
+		}
+	}
+	else {
+		std::cerr << std::format("[ERROR] INVALID SEARCH DATA!\n");
+	}
+
+	//* Submit button
+	if (this->saveBtn->IsHover()) {
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmutButtonHoverStyling(this->saveBtn);
+	}
+	else if (this->saveBtn->LeftMouseClicked()) {
+		if (this->searchTargetFound == true) {
+			
+			bool checker = true;
+
+			if (this->phai->GetPlaceholder() != "NAM" && this->phai->GetPlaceholder() != "NU") {
+				std::cerr << std::format("[ERROR] SAI DU LIEU O TRUONG PHAI\n");
+				checker = false;
+			}
+
+			if (this->trangThai->GetPlaceholder() != "HOAT DONG" && this->trangThai->GetPlaceholder() != "BI KHOA") {
+				std::cerr << std::format("[ERROR] SAI DU LIEU O TRUONG TRANG THAI\n");
+				checker = false;
+			}
+
+			if (checker) {
+				this->searchResult->info.SetHo(this->ho->GetPlaceholder());
+				this->searchResult->info.SetTen(this->ten->GetPlaceholder());
+				this->searchResult->info.SetPhai(
+					this->phai->GetPlaceholder() == "NAM" ? THE_DOC_GIA::GioiTinh::NAM : THE_DOC_GIA::GioiTinh::NU
+				);
+				this->searchResult->info.SetTrangThai(
+					this->trangThai->GetPlaceholder() == "BI KHOA" ? THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA : THE_DOC_GIA::TrangThaiThe::THE_HOAT_DONG
+				);
+
+				return true;
+			}
+		}
+	}
+	else {
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->saveBtn);
+	}
+
+	return false;
+}
