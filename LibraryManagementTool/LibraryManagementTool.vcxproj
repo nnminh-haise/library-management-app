@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Tabs\UI\Datasheet.cpp" />
     <ClCompile Include="Tabs\UI\Button.cpp" />
     <ClCompile Include="Tabs\DanhSachDauSachTab\DanhSachDauSachStyling.cpp" />
     <ClCompile Include="Tabs\DanhSachTheDocGiaTab\DanhSachTheDocGiaStyling.cpp" />
@@ -147,6 +148,7 @@
     <ClCompile Include="TheDocGia\TheDocGia.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Tabs\UI\Datasheet.h" />
     <ClInclude Include="Tabs\UI\Button.h" />
     <ClInclude Include="Tabs\DanhSachDauSachTab\DanhSachDauSachStyling.h" />
     <ClInclude Include="Tabs\DanhSachTheDocGiaTab\DanhSachTheDocGiaStyling.h" />

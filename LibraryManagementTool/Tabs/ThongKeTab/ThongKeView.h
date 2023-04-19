@@ -6,6 +6,7 @@
 #include "../../TheDocGia/TheDocGia.h"
 #include "../../DauSach/DauSach.h"
 #include "../UI/Elements.h"
+#include "../UI/Datasheet.h"
 
 class ThongKeView {
 private:

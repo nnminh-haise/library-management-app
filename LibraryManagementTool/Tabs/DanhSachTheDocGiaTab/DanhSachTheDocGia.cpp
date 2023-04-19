@@ -399,18 +399,19 @@ bool EditItemInListForm::SubmitForm(AVL_TREE::Pointer& danhSachTheDocGia, ELEMEN
 
 void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSachThedocGia, DATASHEET::Controler* datasheetController) {
 
-	int recordCount = 0;
-	AVL_TREE::CountNode(danhSachThedocGia, recordCount);
-	datasheetController->datasheetCount = recordCount / (CONSTANTS::MAX_ROW_COUNT - 1) + (recordCount % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1);
-	datasheetController->sheets = new DATASHEET::Datasheet[datasheetController->datasheetCount];
-	datasheetController->activeSheet = 0;
+	int attributeCount = 0;
+	AVL_TREE::CountNode(danhSachThedocGia, attributeCount);
+	datasheetController->SetDatasheetCount(
+		attributeCount / (CONSTANTS::MAX_ROW_COUNT - 1) + (attributeCount % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
+	);
+	datasheetController->InitializeDatasheets();
 
-	for (int i = 0; i < datasheetController->datasheetCount; ++i) {
-		datasheetController->sheets[i] = DATASHEET::Datasheet(
-			datasheetController->rowCount,
-			datasheetController->columnCount,
-			datasheetController->rowHeight,
-			datasheetController->topLeft,
+	for (int i = 0; i < datasheetController->GetDatasheetCount(); ++i) {
+		(*datasheetController)[i] = DATASHEET::Datasheet(
+			datasheetController->GetRecordCount(),
+			datasheetController->GetAttributeCount(),
+			datasheetController->GetRowHeight(),
+			datasheetController->GetTopLeft(),
 			(std::string*)THE_DOC_GIA_PROPERTIES::LABEL_PLACEHOLDERS, (int*)THE_DOC_GIA_PROPERTIES::CHARACTER_LIMITS
 		);
 	}
@@ -436,7 +437,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 				++sheetIndicator;
 			}
 
-			std::string* data = new std::string[datasheetController->columnCount];
+			std::string* data = new std::string[datasheetController->GetAttributeCount()];
 			data[0] = std::to_string(rowIndicator);
 			data[1] = std::to_string(currentNode->info.GetMaThe());
 			data[2] = currentNode->info.GetHo();
@@ -445,7 +446,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 			data[5] = currentNode->info.GetStringfyTrangThai();
 			data[6] = "SACH DANG MUON";
 
-			datasheetController->sheets[sheetIndicator].UpdateNewPlaceholder(data, rowIndicator % CONSTANTS::MAX_ROW_COUNT);
+			(*datasheetController)[sheetIndicator].UpdateNewPlaceholder(data, rowIndicator % CONSTANTS::MAX_ROW_COUNT);
 
 			//---
 
@@ -458,16 +459,17 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 }
 
 void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int arrSize, DATASHEET::Controler* datasheetController) {
-	datasheetController->datasheetCount = arrSize / (CONSTANTS::MAX_ROW_COUNT - 1) + (arrSize % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1);
-	datasheetController->sheets = new DATASHEET::Datasheet[datasheetController->datasheetCount];
-	datasheetController->activeSheet = 0;
+	datasheetController->SetDatasheetCount(
+		arrSize / (CONSTANTS::MAX_ROW_COUNT - 1) + (arrSize % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
+	);
+	datasheetController->InitializeDatasheets();
 
-	for (int i = 0; i < datasheetController->datasheetCount; ++i) {
-		datasheetController->sheets[i] = DATASHEET::Datasheet(
-			datasheetController->rowCount,
-			datasheetController->columnCount,
-			datasheetController->rowHeight,
-			datasheetController->topLeft,
+	for (int i = 0; i < datasheetController->GetDatasheetCount(); ++i) {
+		(*datasheetController)[i] = DATASHEET::Datasheet(
+			datasheetController->GetRecordCount(),
+			datasheetController->GetAttributeCount(),
+			datasheetController->GetRowHeight(),
+			datasheetController->GetTopLeft(),
 			(std::string*)THE_DOC_GIA_PROPERTIES::LABEL_PLACEHOLDERS, (int*)THE_DOC_GIA_PROPERTIES::CHARACTER_LIMITS
 		);
 	}
@@ -482,7 +484,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int 
 			++sheetIndicator;
 		}
 
-		std::string* data = new std::string[datasheetController->columnCount];
+		std::string* data = new std::string[datasheetController->GetAttributeCount()];
 		data[0] = std::to_string(rowIndicator);
 		data[1] = std::to_string(arr[i]->info.GetMaThe());
 		data[2] = arr[i]->info.GetHo();
@@ -491,7 +493,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int 
 		data[5] = arr[i]->info.GetStringfyTrangThai();
 		data[6] = "SACH DANG MUON";
 
-		datasheetController->sheets[sheetIndicator].UpdateNewPlaceholder(data, rowIndicator % CONSTANTS::MAX_ROW_COUNT);
+		(*datasheetController)[sheetIndicator].UpdateNewPlaceholder(data, rowIndicator % CONSTANTS::MAX_ROW_COUNT);
 
 		//---
 	}
@@ -604,19 +606,19 @@ void DanhSachTheDocGiaView::Run(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::
 		}
 		else if (this->sheetChange[i].LeftMouseClicked()) {
 			if (i == 0) {
-				if (this->controler.activeSheet == 0) {
-					this->controler.activeSheet = this->controler.datasheetCount - 1;
+				if (this->controler.CurrentActiveDatasheet() == 0) {
+					this->controler.SetActiveDatasheet(this->controler.GetDatasheetCount() - 1);
 				}
 				else {
-					--this->controler.activeSheet;
+					this->controler.SetActiveDatasheet(this->controler.CurrentActiveDatasheet() - 1);
 				}
 			}
 			else {
-				if (this->controler.activeSheet == this->controler.datasheetCount - 1) {
-					this->controler.activeSheet = 0;
+				if (this->controler.CurrentActiveDatasheet() == this->controler.GetDatasheetCount() - 1) {
+					this->controler.SetActiveDatasheet(0);
 				}
 				else {
-					++this->controler.activeSheet;
+					this->controler.SetActiveDatasheet(this->controler.CurrentActiveDatasheet() + 1);
 				}
 			}
 			delay(100);
@@ -658,23 +660,23 @@ void DanhSachTheDocGiaView::Run(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::
 	}
 
 	//* Mathe label button
-	if (this->controler.sheets[this->controler.activeSheet].rows[0].labels[1].IsHover()) {
-		DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonHoverStyling(&this->controler.sheets[this->controler.activeSheet].rows[0].labels[1]);
+	if (this->controler[this->controler.CurrentActiveDatasheet()][0][1].IsHover()) {
+		DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonHoverStyling(&this->controler[this->controler.CurrentActiveDatasheet()][0][1]);
 	}
-	else if (this->controler.sheets[this->controler.activeSheet].rows[0].labels[1].LeftMouseClicked()) {
-		this->controler.sheets[this->controler.activeSheet].rows[0].labels[1].SetFillColor(RED);
+	else if (this->controler[this->controler.CurrentActiveDatasheet()][0][1].LeftMouseClicked()) {
+		this->controler[this->controler.CurrentActiveDatasheet()][0][1].SetFillColor(RED);
 		this->defaultOrder = true;
 		this->CreateDatasheetsFromList(danhSachTheDocGia, &this->controler);
 	}
 	else {
-		DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonDefaultStyling(&this->controler.sheets[this->controler.activeSheet].rows[0].labels[1]);
+		DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonDefaultStyling(&this->controler[this->controler.CurrentActiveDatasheet()][0][1]);
 	}
 
 	//* Ten label button
-	if (this->controler.sheets[this->controler.activeSheet].rows[0].labels[3].IsHover()) {
-		DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonHoverStyling(&this->controler.sheets[this->controler.activeSheet].rows[0].labels[3]);
+	if (this->controler[this->controler.CurrentActiveDatasheet()][0][3].IsHover()) {
+		DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonHoverStyling(&this->controler[this->controler.CurrentActiveDatasheet()][0][3]);
 	}
-	else if (this->controler.sheets[this->controler.activeSheet].rows[0].labels[3].LeftMouseClicked()) {
+	else if (this->controler[this->controler.CurrentActiveDatasheet()][0][3].LeftMouseClicked()) {
 		this->defaultOrder = false;
 		AVL_TREE::Pointer* pointerArr{};
 		int arrSize = 0;
@@ -685,7 +687,7 @@ void DanhSachTheDocGiaView::Run(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::
 		delay(100);
 	}
 	else {
-		DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonDefaultStyling(&this->controler.sheets[this->controler.activeSheet].rows[0].labels[3]);
+		DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonDefaultStyling(&this->controler[this->controler.CurrentActiveDatasheet()][0][3]);
 	}
 }
 

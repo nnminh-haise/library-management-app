@@ -303,14 +303,14 @@ bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LI
 
 	std::istream database(&databaseBuffer);
 	bool processResult = true;
-	int recordCount = 0;
+	int attributeCount = 0;
 	while (database) {
 		std::string line{};
 		std::getline(database, line);
 		DAU_SACH::DauSach* newDauSach = new DAU_SACH::DauSach;
 		bool result = DAU_SACH_MODULES::DauSachExtractor(line, ", ", newDauSach);
 		if (result) {
-			++recordCount;
+			++attributeCount;
 			//newDauSach->Log();
 			LINEAR_LIST::InsertLast(danhSachDauSach, newDauSach);
 		}

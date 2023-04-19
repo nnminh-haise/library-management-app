@@ -110,8 +110,7 @@ namespace ELEMENTS {
         bool RightMouseClicked();
     };
 
-
-    class InputModeController { //* Interface
+    class InputModeController {
     public:
         char inputKey;
         bool inputMode;
@@ -142,65 +141,3 @@ namespace ELEMENTS {
     };
 }
 
-namespace DATASHEET {
-    struct Row {
-        HELPER::Coordinate topLeft;
-        HELPER::Coordinate bottomRight;
-        int columnCount;
-        Button* labels;
-        std::string* labelPlaceholders;
-        int* characterLimits;
-        int rowHeight;
-
-        Row();
-
-        Row(int columnCount, HELPER::Coordinate topLeft, std::string* labelPlaceholders, int* characterLimits, int rowHeight);
-
-        void SetPlaceHolder(std::string* labelPlaceholders);
-
-        void Display();
-    };
-
-    struct Datasheet {
-        int rowCount;
-        int columnCount;
-        int rowHeight;
-        HELPER::Coordinate topLeft;
-        HELPER::Coordinate bottomRight;
-        std::string* labelPlaceholders;
-        int* characterLimits;
-        Row* rows;
-
-        void DefaultLabelsProperties(Row& tbx);
-
-        void DefaultDataFieldProperties(Row& tbx, int order);
-
-        Datasheet();
-
-        Datasheet(int rowCount, int columnCount, int rowHeight, HELPER::Coordinate topLeft, std::string* labelPlaceholders, int* characterLimits);
-
-        void UpdateNewPlaceholder(std::string* newPlaceholder, int rowIndicator);
-
-        void Display();
-    };
-
-    struct Controler {
-        int rowCount;
-        int columnCount;
-        int rowHeight;
-        HELPER::Coordinate topLeft;
-        int datasheetCount;
-        Datasheet* sheets;
-        int activeSheet;
-
-        Controler();
-
-        Controler(int rowCount, int columnCount, int rowHeight, HELPER::Coordinate topLeft);
-
-        ~Controler();
-
-        void UpdateActiveSheet(int indicator);
-
-        void Display();
-    };
-}

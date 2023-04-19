@@ -9,7 +9,7 @@
 #include <string>
 
 
-namespace DANH_SACH_DAU_SACH_TAB {
+namespace DAU_SACH_TAB {
 	SearchField::SearchField() {
 		this->background = new HELPER::Fill(HELPER::Coordinate(1405, 120), 350, 250);
 		this->title = new Button(HELPER::Coordinate(1405, 120), 350, 50);
@@ -33,129 +33,37 @@ namespace DANH_SACH_DAU_SACH_TAB {
 		this->inputSearchBox->Display();
 		this->searchStatusBox->Display();
 	}
-
-	// NewListItemForm::NewListItemForm() {
-	// 	this->background = new ELEMENTS::Fill(HELPER::Coordinate(1305, 420), 450, 500);
-
-	// 	this->title = new ELEMENTS::Button(HELPER::Coordinate(1305, 420), 450, 50);
-	// 	this->title->SetPlaceholder("THE DOC GIA");
-
-	// 	this->maThe = new ELEMENTS::Button(HELPER::Coordinate(1330, 500), 400, 60);
-	// 	this->maThe->SetPlaceholder("Ma the");
-
-	// 	this->ho = new ELEMENTS::Button(HELPER::Coordinate(1330, 590), 400, 60);
-	// 	this->ho->SetPlaceholder("Ho");
-
-	// 	this->ten = new ELEMENTS::Button(HELPER::Coordinate(1330, 680), 400, 60);
-	// 	this->ten->SetPlaceholder("Ten");
-
-	// 	this->phai = new ELEMENTS::Button(HELPER::Coordinate(1330, 770), 400, 60);
-	// 	this->phai->SetPlaceholder("Phai");
-
-	// 	this->submit = new ELEMENTS::Button(HELPER::Coordinate(1455, 855), 150, 40);
-	// 	this->submit->SetPlaceholder("SUBMIT");
-
-	// 	DANH_SACH_DAU_SACH_NEW_LIST_ITEM_FORM_STYLING::BackgroundStyling(this->background);
-	// 	DANH_SACH_DAU_SACH_NEW_LIST_ITEM_FORM_STYLING::TitleStyling(this->title);
-	// 	DANH_SACH_DAU_SACH_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->maThe);
-	// 	DANH_SACH_DAU_SACH_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->ho);
-	// 	DANH_SACH_DAU_SACH_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->ten);
-	// 	DANH_SACH_DAU_SACH_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->phai);
-	// 	DANH_SACH_DAU_SACH_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->submit);
-	// }
-
-	// NewListItemForm::~NewListItemForm() {
-	// 	delete this->background;
-	// 	delete this->title;
-	// 	delete this->maThe;
-	// 	delete this->ho;
-	// 	delete this->ten;
-	// 	delete this->phai;
-	// 	delete this->submit;
-	// }
-
-	// void NewListItemForm::Display() {
-	// 	this->background->Draw();
-	// 	this->title->Display();
-	// 	this->maThe->Display();
-	// 	this->ho->Display();
-	// 	this->ten->Display();
-	// 	this->phai->Display();
-	// 	this->submit->Display();
-	// }
-
-	// bool NewListItemForm::SubmitForm(LINEAR_LIST::LinearList& dsDauSach, ELEMENTS::InputModeController& InputController) {
-	// 	ELEMENTS::Button* formInputField[3] = { this->ho, this->ten, this->phai };
-	// 	int fieldCharacterLimit[3] = { 30, 15, 3 };
-
-	// 	int nextIndex = THE_DOC_GIA_MODULES::GetIndex(CONSTANTS::THE_DOC_GIA_INDEX, dsTheDocGia);
-	// 	this->maThe->SetPlaceholder(std::to_string(nextIndex));
-
-	// 	for (int i = 0; i < 3; ++i) {
-	// 		if (formInputField[i]->IsPointed() && formInputField[i]->LeftMouseClicked() == false) {
-	// 			DANH_SACH_DAU_SACH_NEW_LIST_ITEM_FORM_STYLING::InputBoxHoverProperties(formInputField[i]);
-	// 		}
-	// 		else if (formInputField[i]->LeftMouseClicked()) {
-	// 			InputController.Activate(formInputField[i], formInputField[i], fieldCharacterLimit[i], true, false, true);
-	// 		}
-	// 		else {
-	// 			DANH_SACH_DAU_SACH_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(formInputField[i]);
-	// 		}
-	// 	}
-
-	// 	if (this->submit->IsHover()) {
-	// 		DANH_SACH_DAU_SACH_NEW_LIST_ITEM_FORM_STYLING::SubmutButtonHoverStyling(this->submit);
-	// 	}
-	// 	else if (this->submit->LeftMouseClicked()) {
-	// 		THE_DOC_GIA::TheDocGia newItem;
-
-	// 		newItem.SetMaThe(nextIndex);
-	// 		newItem.SetHo(STR::Trim(this->ho->GetPlaceholder()));
-	// 		newItem.SetTen(STR::Trim(this->ten->GetPlaceholder()));
-	// 		newItem.SetPhai(this->phai->GetPlaceholder() == "NAM" ? THE_DOC_GIA::GioiTinh::NAM : THE_DOC_GIA::GioiTinh::NU);
-	// 		newItem.SetTrangThai(THE_DOC_GIA::TrangThaiThe::THE_HOAT_DONG);
-	// 		newItem.SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controler());
-	// 		delay(100);
-
-	// 		bool res = AVL_TREE::Insert(dsTheDocGia, newItem);
-
-	// 		return true;
-	// 	}
-	// 	else {
-	// 		DANH_SACH_DAU_SACH_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->submit);
-	// 	}
-
-	// 	return false;
-	// }
 }
 
 
 
-void DanhSachDauSachView::CreateDatasheetsFromList(LINEAR_LIST::LinearList& danhSachDauSach, DATASHEET::Controler& controler) {
+void DauSachTab::CreateDatasheetsFromList(LINEAR_LIST::LinearList& danhSachDauSach, DATASHEET::Controler& controler) {
 
-	int recordCount = danhSachDauSach.numberOfNode;
-	controler.datasheetCount = recordCount / (CONSTANTS::MAX_ROW_COUNT - 1) + (recordCount % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1);
-	controler.sheets = new DATASHEET::Datasheet[controler.datasheetCount];
-	controler.activeSheet = 0;
+	int attributeCount = danhSachDauSach.numberOfNode;
+	controler.SetDatasheetCount(
+		attributeCount / (CONSTANTS::MAX_ROW_COUNT - 1) + (attributeCount % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
+	);
+	controler.InitializeDatasheets();
 
-	for (int i = 0; i < controler.datasheetCount; ++i) {
-		controler.sheets[i] = DATASHEET::Datasheet(
-			controler.rowCount, controler.columnCount, controler.rowHeight, controler.topLeft,
+	for (int i = 0; i < controler.GetDatasheetCount(); ++i) {
+		controler[i] = DATASHEET::Datasheet(
+			controler.GetRecordCount(), controler.GetAttributeCount(), controler.GetRowHeight(), controler.GetTopLeft(),
 			(std::string*)DAU_SACH_PROPERTIES::LABEL_PLACEHOLDERS, (int*)DAU_SACH_PROPERTIES::CHARACTER_LIMITS
 		);
 	}
 
-	int rowIndicator = 0;
-	int sheetIndicator = -1;
+	int recordIndex = 0;
+	int sheetIndex = -1;
 
 	for (int i = 0; i < danhSachDauSach.numberOfNode; ++i) {
-		++rowIndicator;
-		if (rowIndicator % CONSTANTS::MAX_ROW_COUNT == 1) {
-			++sheetIndicator;
+		++recordIndex;
+		if (recordIndex > controler.GetRecordCount()) {
+			recordIndex = 1;
 		}
+		sheetIndex += (recordIndex % controler.GetRecordCount() == 1);
 
-		std::string* data = new std::string[controler.columnCount];
-		data[0] = std::to_string(rowIndicator);
+		std::string* data = new std::string[controler.GetAttributeCount()];
+		data[0] = std::to_string(recordIndex);
 		data[1] = danhSachDauSach.nodes[i]->GetISBN();
 		data[2] = danhSachDauSach.nodes[i]->GetTenSach();
 		data[3] = std::to_string(danhSachDauSach.nodes[i]->GetSoTrang());
@@ -164,22 +72,21 @@ void DanhSachDauSachView::CreateDatasheetsFromList(LINEAR_LIST::LinearList& danh
 		data[6] = danhSachDauSach.nodes[i]->GetTheLoai();
 		data[7] = "DANH MUC SACH";
 
-		controler.sheets[sheetIndicator].UpdateNewPlaceholder(data, rowIndicator % CONSTANTS::MAX_ROW_COUNT);
+		controler[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 	}
-	
 }
 
-void DanhSachDauSachView::DatasheetChangeBTNHover(Button& btn) {
+void DauSachTab::DatasheetChangeBTNHover(Button& btn) {
 	btn.SetFillColor(rgb(130, 170, 227));
 }
 
-void DanhSachDauSachView::DatasheetChangeBTNProperties(Button& btn) {
+void DauSachTab::DatasheetChangeBTNProperties(Button& btn) {
 	btn.SetFillColor(rgb(236, 242, 255));
 	btn.SetBorderColor(rgb(25, 24, 37));
 	btn.SetTextColor(rgb(25, 24, 37));
 }
 
-DanhSachDauSachView::DanhSachDauSachView(LINEAR_LIST::LinearList& danhSachDauSach) {
+DauSachTab::DauSachTab(LINEAR_LIST::LinearList& danhSachDauSach) {
 	this->active = false;
 	this->displaDatasheet = true;
 
@@ -218,7 +125,7 @@ DanhSachDauSachView::DanhSachDauSachView(LINEAR_LIST::LinearList& danhSachDauSac
 	}
 }
 
-void DanhSachDauSachView::Run() {
+void DauSachTab::Run() {
 
 	//* Displaying all the items
 	if (this->displaDatasheet) {
@@ -245,19 +152,19 @@ void DanhSachDauSachView::Run() {
 		else if (this->sheetChange[i].LeftMouseClicked()) {
 			
 			if (i == 0) {
-				if (this->controler.activeSheet == 0) {
-					this->controler.activeSheet = this->controler.datasheetCount - 1;
+				if (this->controler.CurrentActiveDatasheet() == 0) {
+					this->controler.SetActiveDatasheet(this->controler.GetDatasheetCount() - 1);
 				}
 				else {
-					--this->controler.activeSheet;
+					this->controler.SetActiveDatasheet(this->controler.CurrentActiveDatasheet() - 1);
 				}
 			}
 			else {
-				if (this->controler.activeSheet == this->controler.datasheetCount - 1) {
-					this->controler.activeSheet = 0;
+				if (this->controler.CurrentActiveDatasheet() == this->controler.GetDatasheetCount() - 1) {
+					this->controler.SetActiveDatasheet(0);
 				}
 				else {
-					++this->controler.activeSheet;
+					this->controler.SetActiveDatasheet(this->controler.CurrentActiveDatasheet() + 1);
 				}
 			}
 			delay(100);

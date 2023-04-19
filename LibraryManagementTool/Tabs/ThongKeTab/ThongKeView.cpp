@@ -5,15 +5,14 @@
 #include <format>
 
 void ThongKeView::CreateDatasheets(LINEAR_LIST::LinearList& danhSachDauSach, DATASHEET::Controler& controler) {
-	controler.datasheetCount = 1;
-	controler.sheets = new DATASHEET::Datasheet[controler.datasheetCount];
-	controler.activeSheet = 0;
+	controler.SetDatasheetCount(1);
+	controler.InitializeDatasheets();
 
 	std::string labelPlaceholder[] = {"STT", "ISBN", "TEN SACH", "THE LOAI", "TAC GIA", "SO SACH DA MUON"};
 	int characterLimit[] = { 2, 4, 30, 10, 20, 4 };
 
-	controler.sheets[0] = DATASHEET::Datasheet(
-		controler.rowCount, controler.columnCount, controler.rowHeight, controler.topLeft,
+	controler[0] = DATASHEET::Datasheet(
+		controler.GetRecordCount(), controler.GetAttributeCount(), controler.GetRowHeight(), controler.GetTopLeft(),
 		labelPlaceholder, characterLimit
 	);
 }

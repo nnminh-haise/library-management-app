@@ -53,7 +53,7 @@ void LandingView::ConstructNavigationBar() {
 }
 
 void LandingView::ConstructTabs(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& dsDauSach) {
-	this->dauSachView = new DanhSachDauSachView(dsDauSach);
+	this->dauSachView = new DauSachTab(dsDauSach);
 	this->theDocGiaView = new DanhSachTheDocGiaView(dsTheDocGia);
 	this->thongKeView = new ThongKeView(dsTheDocGia, dsDauSach);
 }

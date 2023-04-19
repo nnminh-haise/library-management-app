@@ -3,6 +3,7 @@
 #include "../../TheDocGia/TheDocGia.h"
 #include "../UI/Elements.h"
 #include "../UI/Button.h"
+#include "../UI/Datasheet.h"
 
 struct SearchField {
 	HELPER::Fill* background;

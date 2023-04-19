@@ -16,7 +16,7 @@ private:
 	Button* tabs;
 	ELEMENTS::CloseButton* closeBtn;
 
-	DanhSachDauSachView* dauSachView;
+	DauSachTab* dauSachView;
 	DanhSachTheDocGiaView* theDocGiaView;
 	ThongKeView* thongKeView;
 

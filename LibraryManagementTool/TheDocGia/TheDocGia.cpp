@@ -635,14 +635,14 @@ bool THE_DOC_GIA_MODULES::LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_
 
 	std::istream database(&databaseBuffer);
     bool processResult = true;
-    int recordCount = 0;
+    int attributeCount = 0;
 	while (database) {
         std::string line{};
 		std::getline(database, line);
         THE_DOC_GIA::TheDocGia newTheDocGia{};
 		bool result = THE_DOC_GIA_MODULES::TheDocGiaExtractor(line, ", ", newTheDocGia);
 		if (result) {
-            ++recordCount;
+            ++attributeCount;
             //newTheDocGia.Log();
 
             //* If the tree is empty, then directly insert to the tree
@@ -725,11 +725,11 @@ int THE_DOC_GIA_MODULES::GetIndex(const std::string& filename, AVL_TREE::Pointer
         return false;
     }
 
-    int recordCount = 0;
-    AVL_TREE::CountNode(tree, recordCount);
+    int attributeCount = 0;
+    AVL_TREE::CountNode(tree, attributeCount);
     std::istream database(&databaseBuffer);
 
-    for (int i = 0, tmp = 0; i < recordCount; ++i, database >> tmp);
+    for (int i = 0, tmp = 0; i < attributeCount; ++i, database >> tmp);
     std::string nextIndex{};
     database >> nextIndex;
 
