@@ -1,7 +1,7 @@
 
-#include "DanhSachTheDocGiaStyling.h"
+#include "DanhSachDauSachStyling.h"
 
-namespace DANH_SACH_THE_DOC_GIA_SEARCH_FIELD_STYLING {
+namespace DANH_SACH_DAU_SACH_SEARCH_FIELD_STYLING {
 	void BackgroundStyling(HELPER::Fill* background) {
 		background->fillColor = rgb(238, 238, 238);
 		background->borderColor = BLACK;
@@ -26,7 +26,7 @@ namespace DANH_SACH_THE_DOC_GIA_SEARCH_FIELD_STYLING {
 	}
 }
 
-namespace DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING {
+namespace DANH_SACH_DAU_SACH_NEW_LIST_ITEM_FORM_STYLING {
 	void BackgroundStyling(HELPER::Fill* background) {
 		background->fillColor = rgb(238, 238, 238);
 		background->borderColor = BLACK;
@@ -62,7 +62,7 @@ namespace DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING {
 	}
 }
 
-namespace DANH_SACH_THE_DOC_GIA_STYLING {
+namespace DANH_SACH_DAU_SACH_STYLING {
 	void ListManipulateButtonDefaultProperties(Button& btn) {
 		btn.SetFillColor(rgb(219, 223, 253));
 		btn.SetBorderColor(btn.GetFillColor());
@@ -79,26 +79,5 @@ namespace DANH_SACH_THE_DOC_GIA_STYLING {
 		btn.SetFillColor(rgb(130, 170, 227));
 		btn.SetBorderColor(rgb(57, 62, 70));
 		btn.SetTextColor(rgb(57, 62, 70));
-	}
-
-	void DatasheetLabelsButtonHoverStyling(Button* btn) {
-		btn->SetFillColor(rgb(116, 141, 166));
-		btn->SetTextColor(rgb(249, 249, 249));
-	}
-
-	void DatasheetLabelsButtonDefaultStyling(Button* btn) {
-		btn->SetFillColor(rgb(210, 218, 255));
-		btn->SetTextColor(rgb(25, 24, 37));
-		btn->SetBorderColor(rgb(25, 24, 37));
-	}
-
-	void DatasheetChangeButtonNHoverProperties(Button& btn) {
-		btn.SetFillColor(rgb(130, 170, 227));
-	}
-
-	void DefaultDatasheetChangeButtonProperties(Button& btn) {
-		btn.SetFillColor(rgb(236, 242, 255));
-		btn.SetBorderColor(rgb(25, 24, 37));
-		btn.SetTextColor(rgb(25, 24, 37));
 	}
 }

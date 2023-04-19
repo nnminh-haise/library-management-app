@@ -2,6 +2,7 @@
 
 #include "../../Helper/Helper.h"
 #include "../../Helper/ConstantsAndGlobalVariables.h"
+#include "Button.h"
 
 #include <string>
 
@@ -40,23 +41,7 @@ namespace ELEMENTS {
         Padding(int top, int bottom, int left, int right);
     };
 
-    struct Fill {
-        HELPER::Coordinate topLeft;
-        HELPER::Coordinate bottomRight;
-        HELPER::Dimension dimension;
-        int fillColor;
-        int borderColor;
 
-        Fill();
-
-        Fill(HELPER::Coordinate topLeft, int width, int height, int fillColor = WHITE, int borderColor = WHITE);
-
-        Fill(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int fillColor = WHITE, int borderColor = WHITE);
-
-        Fill(int left, int top, int right, int bottom, int fillColor = WHITE, int borderColor = WHITE);
-
-        void Draw();
-    };
 
     struct CircleFill {
         HELPER::Coordinate topLeft;
@@ -125,69 +110,6 @@ namespace ELEMENTS {
         bool RightMouseClicked();
     };
 
-    class Button {
-    private:
-        HELPER::Coordinate topLeft;
-        HELPER::Coordinate bottomRight;
-        HELPER::Dimension dimension;
-        Fill fill;
-        int textColor;
-        std::string placeholder;
-        bool isPointed;
-        bool active;
-        bool inputMode;
-
-    public:
-        Button();
-
-        Button(HELPER::Coordinate topLeft, int with, int height, int textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR, int fillcolor = BUTTON_DEFAULT_PROPERTIES::FILL_COLOR, int borderColor = BUTTON_DEFAULT_PROPERTIES::BORDER_COLOR);
-
-        Button(HELPER::Coordinate topLeft, HELPER::Dimension dimension, int textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR, int fillcolor = BUTTON_DEFAULT_PROPERTIES::FILL_COLOR, int borderColor = BUTTON_DEFAULT_PROPERTIES::BORDER_COLOR);
-
-        Button(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR, int fillcolor = BUTTON_DEFAULT_PROPERTIES::FILL_COLOR, int borderColor = BUTTON_DEFAULT_PROPERTIES::BORDER_COLOR);
-
-        void SetTopLeft(HELPER::Coordinate topLeft);
-
-        HELPER::Coordinate GetTopLeft();
-
-        void SetDimension(HELPER::Dimension newDimension);
-
-        HELPER::Dimension GetDimension();
-
-        bool UpdateWithNewTopLeft();
-
-        HELPER::Coordinate GetBottomRight();
-
-        void SetFillColor(int color);
-
-        int GetFillColor();
-
-        void SetTextColor(int color);
-
-        int GetTextColor();
-
-        void SetBorderColor(int color);
-
-        int GetBorderColor();
-
-        void SetPlaceholder(std::string placeholder);
-
-        std::string GetPlaceholder();
-
-        void SetStatus(bool status);
-
-        bool GetStatus();
-
-        void Display();
-
-        bool IsPointed();
-
-        bool IsHover();
-
-        bool LeftMouseClicked();
-
-        bool RightMouseClicked();
-    };
 
     class InputModeController { //* Interface
     public:
@@ -197,8 +119,8 @@ namespace ELEMENTS {
         int characterCount;
         int characterLimit;
         std::string inputString;
-        ELEMENTS::Button* currentTextBox;
-        ELEMENTS::Button* outputTextBox;
+        Button* currentTextBox;
+        Button* outputTextBox;
 
         bool acceptNum;
         bool acceptAlpha;
@@ -206,7 +128,7 @@ namespace ELEMENTS {
 
         InputModeController();
 
-        void Activate(ELEMENTS::Button* inputTextBox, ELEMENTS::Button* outputTextBox, int characterLimit, bool acceptAlpha, bool acceptNum, bool acceptSpace);
+        void Activate(Button* inputTextBox, Button* outputTextBox, int characterLimit, bool acceptAlpha, bool acceptNum, bool acceptSpace);
 
         void Deactivate();
 
@@ -225,7 +147,7 @@ namespace DATASHEET {
         HELPER::Coordinate topLeft;
         HELPER::Coordinate bottomRight;
         int columnCount;
-        ELEMENTS::Button* labels;
+        Button* labels;
         std::string* labelPlaceholders;
         int* characterLimits;
         int rowHeight;

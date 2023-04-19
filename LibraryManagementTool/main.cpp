@@ -21,6 +21,10 @@ int main() {
 	LandingView mainView(danhSachTheDocgia, danhSachDauSach);
 	mainView.Run(danhSachTheDocgia, danhSachDauSach);
 
+	//test();
+
+	
+
 	return 0;
 }
 

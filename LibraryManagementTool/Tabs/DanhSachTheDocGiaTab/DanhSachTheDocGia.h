@@ -2,12 +2,13 @@
 
 #include "../../TheDocGia/TheDocGia.h"
 #include "../UI/Elements.h"
+#include "../UI/Button.h"
 
 struct SearchField {
-	ELEMENTS::Fill* background;
-	ELEMENTS::Button* title;
-	ELEMENTS::Button* inputSearchBox;
-	ELEMENTS::Button* searchStatusBox;
+	HELPER::Fill* background;
+	Button* title;
+	Button* inputSearchBox;
+	Button* searchStatusBox;
 
 	SearchField();
 
@@ -15,13 +16,13 @@ struct SearchField {
 };
 
 struct NewListItemForm {
-	ELEMENTS::Fill* background;
-	ELEMENTS::Button* title;
-	ELEMENTS::Button* maThe;
-	ELEMENTS::Button* ho;
-	ELEMENTS::Button* ten;
-	ELEMENTS::Button* phai;
-	ELEMENTS::Button* submit;
+	HELPER::Fill* background;
+	Button* title;
+	Button* maThe;
+	Button* ho;
+	Button* ten;
+	Button* phai;
+	Button* submit;
 
 	NewListItemForm();
 
@@ -33,13 +34,13 @@ struct NewListItemForm {
 };
 
 struct DeleteItemInListForm {
-	ELEMENTS::Fill* background;
-	ELEMENTS::Button* title;
-	ELEMENTS::Button* maThe;
-	ELEMENTS::Button* hoTen;
-	ELEMENTS::Button* trangThai;
-	ELEMENTS::Button* phai;
-	ELEMENTS::Button* deleteBtn;
+	HELPER::Fill* background;
+	Button* title;
+	Button* maThe;
+	Button* hoTen;
+	Button* trangThai;
+	Button* phai;
+	Button* deleteBtn;
 	bool searchTargetFound;
 	AVL_TREE::Pointer searchResult;
 
@@ -53,14 +54,14 @@ struct DeleteItemInListForm {
 };
 
 struct EditItemInListForm {
-	ELEMENTS::Fill* background;
-	ELEMENTS::Button* title;
-	ELEMENTS::Button* maThe;
-	ELEMENTS::Button* ho;
-	ELEMENTS::Button* ten;
-	ELEMENTS::Button* trangThai;
-	ELEMENTS::Button* phai;
-	ELEMENTS::Button* saveBtn;
+	HELPER::Fill* background;
+	Button* title;
+	Button* maThe;
+	Button* ho;
+	Button* ten;
+	Button* trangThai;
+	Button* phai;
+	Button* saveBtn;
 	bool searchTargetFound;
 	AVL_TREE::Pointer searchResult;
 
@@ -77,9 +78,9 @@ class DanhSachTheDocGiaView {
 private:
 	bool active;
 	DATASHEET::Controler controler;
-	ELEMENTS::Button sheetChange[2];
+	Button sheetChange[2];
 	int listManipulationButtonStatus;
-	ELEMENTS::Button listManipulateButton[3];
+	Button listManipulateButton[3];
 	bool defaultOrder;
 
 	SearchField searchField;
@@ -88,11 +89,11 @@ private:
 	EditItemInListForm editItemForm;
 
 public:
-	DanhSachTheDocGiaView(AVL_TREE::Pointer& danhSachTheDocGia);
-
 	void CreateDatasheetsFromList(AVL_TREE::Pointer& danhSachThedocGia, DATASHEET::Controler* controller);
 
 	void CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int arrSize, DATASHEET::Controler* controller);
+
+	DanhSachTheDocGiaView(AVL_TREE::Pointer& danhSachTheDocGia);
 
 	void Run(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController);
 };

@@ -13,14 +13,14 @@
 
 
 SearchField::SearchField() {
-	this->background = new ELEMENTS::Fill(HELPER::Coordinate(1305, 120), 450, 250);
-	this->title = new ELEMENTS::Button(HELPER::Coordinate(1305, 120), 450, 50);
+	this->background = new HELPER::Fill(HELPER::Coordinate(1305, 120), 450, 250);
+	this->title = new Button(HELPER::Coordinate(1305, 120), 450, 50);
 	this->title->SetPlaceholder("SEARCH");
 
-	this->inputSearchBox = new ELEMENTS::Button(HELPER::Coordinate(1330, 200), 400, 70);
+	this->inputSearchBox = new Button(HELPER::Coordinate(1330, 200), 400, 70);
 	this->inputSearchBox->SetPlaceholder("Type here to search");
 
-	this->searchStatusBox = new ELEMENTS::Button(HELPER::Coordinate(1330, 295), 400, 50);
+	this->searchStatusBox = new Button(HELPER::Coordinate(1330, 295), 400, 50);
 	this->searchStatusBox->SetPlaceholder("Result:");
 }
 
@@ -37,24 +37,24 @@ void SearchField::Display() {
 }
 
 NewListItemForm::NewListItemForm() {
-	this->background = new ELEMENTS::Fill(HELPER::Coordinate(1305, 420), 450, 500);
+	this->background = new HELPER::Fill(HELPER::Coordinate(1305, 420), 450, 500);
 
-	this->title = new ELEMENTS::Button(HELPER::Coordinate(1305, 420), 450, 50);
+	this->title = new Button(HELPER::Coordinate(1305, 420), 450, 50);
 	this->title->SetPlaceholder("THE DOC GIA");
 
-	this->maThe = new ELEMENTS::Button(HELPER::Coordinate(1330, 500), 400, 60);
+	this->maThe = new Button(HELPER::Coordinate(1330, 500), 400, 60);
 	this->maThe->SetPlaceholder("Ma the");
 
-	this->ho = new ELEMENTS::Button(HELPER::Coordinate(1330, 590), 400, 60);
+	this->ho = new Button(HELPER::Coordinate(1330, 590), 400, 60);
 	this->ho->SetPlaceholder("Ho");
 
-	this->ten = new ELEMENTS::Button(HELPER::Coordinate(1330, 680), 400, 60);
+	this->ten = new Button(HELPER::Coordinate(1330, 680), 400, 60);
 	this->ten->SetPlaceholder("Ten");
 
-	this->phai = new ELEMENTS::Button(HELPER::Coordinate(1330, 770), 400, 60);
+	this->phai = new Button(HELPER::Coordinate(1330, 770), 400, 60);
 	this->phai->SetPlaceholder("Phai");
 
-	this->submit = new ELEMENTS::Button(HELPER::Coordinate(1455, 855), 150, 40);
+	this->submit = new Button(HELPER::Coordinate(1455, 855), 150, 40);
 	this->submit->SetPlaceholder("SUBMIT");
 
 	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::BackgroundStyling(this->background);
@@ -87,7 +87,7 @@ void NewListItemForm::Display() {
 }
 
 bool NewListItemForm::SubmitForm(AVL_TREE::Pointer& dsTheDocGia, ELEMENTS::InputModeController& InputController) {
-	ELEMENTS::Button* formInputField[3] = { this->ho, this->ten, this->phai };
+	Button* formInputField[3] = { this->ho, this->ten, this->phai };
 	int fieldCharacterLimit[3] = { 30, 15, 3 };
 
 	int nextIndex = THE_DOC_GIA_MODULES::GetIndex(CONSTANTS::THE_DOC_GIA_INDEX, dsTheDocGia);
@@ -131,24 +131,24 @@ bool NewListItemForm::SubmitForm(AVL_TREE::Pointer& dsTheDocGia, ELEMENTS::Input
 }
 
 DeleteItemInListForm::DeleteItemInListForm() {
-	this->background = new ELEMENTS::Fill(HELPER::Coordinate(1305, 420), 450, 500);
+	this->background = new HELPER::Fill(HELPER::Coordinate(1305, 420), 450, 500);
 
-	this->title = new ELEMENTS::Button(HELPER::Coordinate(1305, 420), 450, 50);
+	this->title = new Button(HELPER::Coordinate(1305, 420), 450, 50);
 	this->title->SetPlaceholder("THE DOC GIA");
 
-	this->maThe = new ELEMENTS::Button(HELPER::Coordinate(1330, 500), 400, 60);
+	this->maThe = new Button(HELPER::Coordinate(1330, 500), 400, 60);
 	this->maThe->SetPlaceholder("Ma the");
 
-	this->hoTen = new ELEMENTS::Button(HELPER::Coordinate(1330, 590), 400, 60);
+	this->hoTen = new Button(HELPER::Coordinate(1330, 590), 400, 60);
 	this->hoTen->SetPlaceholder("Ho va ten");
 
-	this->phai = new ELEMENTS::Button(HELPER::Coordinate(1330, 680), 400, 60);
+	this->phai = new Button(HELPER::Coordinate(1330, 680), 400, 60);
 	this->phai->SetPlaceholder("Phai");
 
-	this->trangThai = new ELEMENTS::Button(HELPER::Coordinate(1330, 770), 400, 60);
+	this->trangThai = new Button(HELPER::Coordinate(1330, 770), 400, 60);
 	this->trangThai->SetPlaceholder("Trang thai");
 
-	this->deleteBtn = new ELEMENTS::Button(HELPER::Coordinate(1455, 855), 150, 40);
+	this->deleteBtn = new Button(HELPER::Coordinate(1455, 855), 150, 40);
 	this->deleteBtn->SetPlaceholder("DELETE");
 
 	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::BackgroundStyling(this->background);
@@ -240,27 +240,27 @@ bool DeleteItemInListForm::SubmitForm(AVL_TREE::Pointer& danhSachTheDocGia, ELEM
 }
 
 EditItemInListForm::EditItemInListForm() {
-	this->background = new ELEMENTS::Fill(HELPER::Coordinate(1305, 420), 450, 500);
+	this->background = new HELPER::Fill(HELPER::Coordinate(1305, 420), 450, 500);
 
-	this->title = new ELEMENTS::Button(HELPER::Coordinate(1305, 420), 450, 50);
+	this->title = new Button(HELPER::Coordinate(1305, 420), 450, 50);
 	this->title->SetPlaceholder("THE DOC GIA");
 
-	this->maThe = new ELEMENTS::Button(HELPER::Coordinate(1330, 500), 400, 60);
+	this->maThe = new Button(HELPER::Coordinate(1330, 500), 400, 60);
 	this->maThe->SetPlaceholder("Ma the");
 
-	this->ho = new ELEMENTS::Button(HELPER::Coordinate(1330, 590), 400, 60);
+	this->ho = new Button(HELPER::Coordinate(1330, 590), 400, 60);
 	this->ho->SetPlaceholder("Ho");
 
-	this->ten = new ELEMENTS::Button(HELPER::Coordinate(1330, 680), 400, 60);
+	this->ten = new Button(HELPER::Coordinate(1330, 680), 400, 60);
 	this->ten->SetPlaceholder("Ten");
 
-	this->phai = new ELEMENTS::Button(HELPER::Coordinate(1330, 770), 145, 60);
+	this->phai = new Button(HELPER::Coordinate(1330, 770), 145, 60);
 	this->phai->SetPlaceholder("Phai");
 
-	this->trangThai = new ELEMENTS::Button(HELPER::Coordinate(1500, 770), 230, 60);
+	this->trangThai = new Button(HELPER::Coordinate(1500, 770), 230, 60);
 	this->trangThai->SetPlaceholder("Trang thai");
 
-	this->saveBtn = new ELEMENTS::Button(HELPER::Coordinate(1455, 855), 150, 40);
+	this->saveBtn = new Button(HELPER::Coordinate(1455, 855), 150, 40);
 	this->saveBtn->SetPlaceholder("SAVE");
 
 	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::BackgroundStyling(this->background);
@@ -320,7 +320,7 @@ bool EditItemInListForm::SubmitForm(AVL_TREE::Pointer& danhSachTheDocGia, ELEMEN
 			this->trangThai->Display();
 			this->saveBtn->Display();
 
-			ELEMENTS::Button* inpField[4] = {
+			Button* inpField[4] = {
 				this->ho, this->ten, this->phai, this->trangThai
 			};
 
@@ -519,8 +519,8 @@ DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_TREE::Pointer& danhSachTheDocGi
 		this->CreateDatasheetsFromList(danhSachTheDocGia, &this->controler);
 	}
 
-	this->sheetChange[0] = ELEMENTS::Button(toLeftBtnTopLeft, 50, 30);
-	this->sheetChange[1] = ELEMENTS::Button(toRightBtnTopLeft, 50, 30);
+	this->sheetChange[0] = Button(toLeftBtnTopLeft, 50, 30);
+	this->sheetChange[1] = Button(toRightBtnTopLeft, 50, 30);
 	this->sheetChange[0].SetPlaceholder("<");
 	this->sheetChange[1].SetPlaceholder(">");
 	for (int i = 0; i < 2; ++i) {
@@ -536,7 +536,7 @@ DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_TREE::Pointer& danhSachTheDocGi
 		HELPER::Coordinate(750, 940)
 	};
 	for (int i = 0; i < 3; ++i) {
-		this->listManipulateButton[i] = ELEMENTS::Button(listManipulateButtonCoordinate[i], 150, 30);
+		this->listManipulateButton[i] = Button(listManipulateButtonCoordinate[i], 150, 30);
 		this->listManipulateButton[i].SetPlaceholder(listManipulateButtonPlaceholders[i]);
 		DANH_SACH_THE_DOC_GIA_STYLING::ListManipulateButtonDefaultProperties(this->listManipulateButton[i]);
 	}

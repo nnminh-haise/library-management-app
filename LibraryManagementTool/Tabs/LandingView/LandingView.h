@@ -11,9 +11,9 @@
 class LandingView {
 private:
 	ELEMENTS::Window* graphicWindow;
-	ELEMENTS::Fill* navigationBarBackground;
-	ELEMENTS::Button* programTitle;
-	ELEMENTS::Button* tabs;
+	HELPER::Fill* navigationBarBackground;
+	Button* programTitle;
+	Button* tabs;
 	ELEMENTS::CloseButton* closeBtn;
 
 	DanhSachDauSachView* dauSachView;

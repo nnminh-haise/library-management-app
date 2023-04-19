@@ -102,6 +102,44 @@ void HELPER::Rectangle::Log() {
     std::clog << std::format("C({}, {}); D({}, {});\n", this->bottomLeft.x, this->bottomLeft.y, this->bottomRight.x, this->bottomRight.y);
 }
 
+HELPER::Fill::Fill() :
+    topLeft(HELPER::Coordinate()), bottomRight(HELPER::Coordinate()), dimension(HELPER::Dimension()),
+    fillColor(WHITE), borderColor(WHITE) {
+}
+
+HELPER::Fill::Fill(HELPER::Coordinate topLeft, int width, int height, int fillColor, int borderColor) {
+    this->topLeft = topLeft;
+    this->dimension.width = width;
+    this->dimension.height = height;
+    this->bottomRight = HELPER::Coordinate(topLeft.x + width, topLeft.y + height);
+    this->fillColor = fillColor;
+    this->borderColor = borderColor;
+}
+
+HELPER::Fill::Fill(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int fillColor, int borderColor) {
+    this->topLeft = topLeft;
+    this->bottomRight = bottomRight;
+    this->dimension.width = this->bottomRight.x - this->topLeft.x;
+    this->dimension.height - this->bottomRight.y - this->topLeft.x;
+    this->fillColor = fillColor;
+    this->borderColor = borderColor;
+}
+
+HELPER::Fill::Fill(int left, int top, int right, int bottom, int fillColor, int borderColor) {
+    this->topLeft = { left, top };
+    this->bottomRight = { right, bottom };
+    this->dimension = { this->bottomRight.x - this->topLeft.x, this->bottomRight.y - this->topLeft.y };
+    this->fillColor = fillColor;
+    this->borderColor = borderColor;
+}
+
+void HELPER::Fill::Draw() {
+    setfillstyle(SOLID_FILL, this->fillColor);
+    setcolor(borderColor);
+    bar(this->topLeft.x, this->topLeft.y, this->bottomRight.x, this->bottomRight.y);
+    rectangle(this->topLeft.x, this->topLeft.y, this->bottomRight.x, this->bottomRight.y);
+}
+
 HELPER::Coordinate HELPER::GetCurrentMouseCoordinate() {
     return {mousex(), mousey()};
 }

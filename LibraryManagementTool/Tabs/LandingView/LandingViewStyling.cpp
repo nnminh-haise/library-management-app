@@ -5,23 +5,23 @@ namespace LANDING_VIEW_STYLING {
 		win->backgroundColor = WHITE;
 	}
 
-	void DefaultTabButtonProperties(ELEMENTS::Button& button) {
+	void DefaultTabButtonProperties(Button& button) {
 		button.SetFillColor(rgb(87, 108, 188));
 		button.SetBorderColor(BLACK);
 		button.SetTextColor(WHITE);
 	}
 
-	void CurrentActiveTabButtonProperties(ELEMENTS::Button& button) {
+	void CurrentActiveTabButtonProperties(Button& button) {
 		button.SetFillColor(rgb(210, 218, 255));
 		button.SetTextColor(BLACK);
 	}
 
-	void CurrentButtonHoverProperties(ELEMENTS::Button& button) {
+	void CurrentButtonHoverProperties(Button& button) {
 		button.SetFillColor(rgb(83, 127, 231));
 		button.SetTextColor(rgb(233, 248, 249));
 	}
 
-	void ProgramTitleProperties(ELEMENTS::Button* btn) {
+	void ProgramTitleProperties(Button* btn) {
 		btn->SetFillColor(rgb(236, 242, 255));
 		btn->SetBorderColor(btn->GetFillColor());
 		btn->SetTextColor(rgb(46, 56, 64));

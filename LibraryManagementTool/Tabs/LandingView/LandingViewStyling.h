@@ -6,13 +6,13 @@ namespace LANDING_VIEW_STYLING {
 
 	void GraphicalWindowDefaultProperties(ELEMENTS::Window*& win);
 
-	void DefaultTabButtonProperties(ELEMENTS::Button& button);
+	void DefaultTabButtonProperties(Button& button);
 
-	void CurrentActiveTabButtonProperties(ELEMENTS::Button& button);
+	void CurrentActiveTabButtonProperties(Button& button);
 
-	void CurrentButtonHoverProperties(ELEMENTS::Button& button);
+	void CurrentButtonHoverProperties(Button& button);
 
-	void ProgramTitleProperties(ELEMENTS::Button* btn);
+	void ProgramTitleProperties(Button* btn);
 
 	void DefaultCloseButtonProperties(ELEMENTS::CloseButton* btn);
 

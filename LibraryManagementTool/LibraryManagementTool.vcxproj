@@ -131,6 +131,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Tabs\UI\Button.cpp" />
+    <ClCompile Include="Tabs\DanhSachDauSachTab\DanhSachDauSachStyling.cpp" />
     <ClCompile Include="Tabs\DanhSachTheDocGiaTab\DanhSachTheDocGiaStyling.cpp" />
     <ClCompile Include="DataStructures\Stack.cpp" />
     <ClCompile Include="Tabs\LandingView\LandingViewStyling.cpp" />
@@ -145,6 +147,8 @@
     <ClCompile Include="TheDocGia\TheDocGia.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Tabs\UI\Button.h" />
+    <ClInclude Include="Tabs\DanhSachDauSachTab\DanhSachDauSachStyling.h" />
     <ClInclude Include="Tabs\DanhSachTheDocGiaTab\DanhSachTheDocGiaStyling.h" />
     <ClInclude Include="DataStructures\Stack.h" />
     <ClInclude Include="Graphics\graphics.h" />

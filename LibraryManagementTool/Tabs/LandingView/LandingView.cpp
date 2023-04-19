@@ -17,14 +17,14 @@ void LandingView::ConstructGraphicWindow() {
 void LandingView::ConstructNavigationBar() {
 
 	//* Create a background for the navigation bar
-	this->navigationBarBackground = new ELEMENTS::Fill (
+	this->navigationBarBackground = new HELPER::Fill (
 		HELPER::Coordinate(0, 0),
 		CONSTANTS::WINDOW_DIMENSION.width, 100, //* Background dimension
 		rgb(11, 36, 71), //* Background color
 		rgb(11, 36, 71)  //* Border color
 	);
 
-	this->programTitle = new ELEMENTS::Button{ //* Initiallize Title button
+	this->programTitle = new Button{ //* Initiallize Title button
 		HELPER::Coordinate(36, 25), HELPER::Dimension(440, 50)
 	};
 	LANDING_VIEW_STYLING::ProgramTitleProperties(this->programTitle); //* Apply styling for the button
@@ -39,9 +39,9 @@ void LandingView::ConstructNavigationBar() {
 		HELPER::Coordinate(980, 25),
 		HELPER::Coordinate(1320, 25)
 	};
-	this->tabs = new ELEMENTS::Button[3]; //* Initialize tabs
+	this->tabs = new Button[3]; //* Initialize tabs
 	for (int i = 0; i < 3; ++i) { //* Assign coordinates and dimension to the tabs
-		this->tabs[i] = ELEMENTS::Button(tabCoordinates[i], tabDimension);
+		this->tabs[i] = Button(tabCoordinates[i], tabDimension);
 		this->tabs[i].SetPlaceholder(tabPlaceholders[i]);
 		LANDING_VIEW_STYLING::DefaultTabButtonProperties(this->tabs[i]); //* Assign the styling to the object
 	}

@@ -58,6 +58,24 @@ namespace HELPER {
         void Log();
     };
 
+    struct Fill {
+        Coordinate topLeft;
+        Coordinate bottomRight;
+        Dimension dimension;
+        int fillColor;
+        int borderColor;
+
+        Fill();
+
+        Fill(Coordinate topLeft, int width, int height, int fillColor = WHITE, int borderColor = WHITE);
+
+        Fill(Coordinate topLeft, Coordinate bottomRight, int fillColor = WHITE, int borderColor = WHITE);
+
+        Fill(int left, int top, int right, int bottom, int fillColor = WHITE, int borderColor = WHITE);
+
+        void Draw();
+    };
+
     Coordinate GetCurrentMouseCoordinate();
 
     void GetKey();

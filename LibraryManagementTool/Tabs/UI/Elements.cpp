@@ -50,46 +50,6 @@ ELEMENTS::Padding::Padding(int top, int bottom, int left, int right):
 
 //---
 
-ELEMENTS::Fill::Fill():
-	topLeft(HELPER::Coordinate()), bottomRight(HELPER::Coordinate()), dimension(HELPER::Dimension()),
-	fillColor(WHITE), borderColor(WHITE) {
-}
-
-ELEMENTS::Fill::Fill(HELPER::Coordinate topLeft, int width, int height, int fillColor, int borderColor) {
-	this->topLeft = topLeft;
-	this->dimension.width = width;
-	this->dimension.height = height;
-	this->bottomRight = HELPER::Coordinate(topLeft.x + width, topLeft.y + height);
-	this->fillColor = fillColor;
-	this->borderColor = borderColor;
-}
-
-ELEMENTS::Fill::Fill(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int fillColor, int borderColor) {
-	this->topLeft = topLeft;
-	this->bottomRight = bottomRight;
-	this->dimension.width = this->bottomRight.x - this->topLeft.x;
-	this->dimension.height - this->bottomRight.y - this->topLeft.x;
-	this->fillColor = fillColor;
-	this->borderColor = borderColor;
-}
-
-ELEMENTS::Fill::Fill(int left, int top, int right, int bottom, int fillColor, int borderColor) {
-	this->topLeft = { left, top };
-	this->bottomRight = { right, bottom };
-	this->dimension = { this->bottomRight.x - this->topLeft.x, this->bottomRight.y - this->topLeft.y };
-	this->fillColor = fillColor;
-	this->borderColor = borderColor;
-}
-
-void ELEMENTS::Fill::Draw() {
-	setfillstyle(SOLID_FILL, this->fillColor);
-	setcolor(borderColor);
-	bar(this->topLeft.x, this->topLeft.y, this->bottomRight.x, this->bottomRight.y);
-	rectangle(this->topLeft.x, this->topLeft.y, this->bottomRight.x, this->bottomRight.y);
-}
-
-//---
-
 ELEMENTS::CircleFill::CircleFill() :
 	topLeft(HELPER::Coordinate()), bottomRight(HELPER::Coordinate()), dimension(HELPER::Dimension()),
 	fillColor(WHITE), borderColor(WHITE) {
@@ -245,174 +205,6 @@ bool ELEMENTS::CloseButton::RightMouseClicked() {
 
 //---
 
-ELEMENTS::Button::Button() {
-	this->topLeft = this->bottomRight = HELPER::Coordinate();
-	this->fill = ELEMENTS::Fill();
-	this->dimension = HELPER::Dimension();
-	this->textColor = BUTTON_DEFAULT_PROPERTIES::TEXT_COLOR;
-	this->isPointed = false;
-	this->placeholder = "BUTTON";
-	this->inputMode = false;
-}
-
-ELEMENTS::Button::Button(HELPER::Coordinate topLeft, int width, int height, int textColor, int fillcolor, int borderColor) {
-	this->topLeft = topLeft;
-	this->dimension = { width, height };
-	this->bottomRight = HELPER::Coordinate(topLeft.x + width, topLeft.y + height);
-	this->fill = ELEMENTS::Fill(this->topLeft, this->bottomRight, fillcolor, borderColor);
-	this->textColor = textColor;
-	this->isPointed = false;
-	this->placeholder = "BUTTON";
-	this->inputMode = false;
-}
-
-ELEMENTS::Button::Button(HELPER::Coordinate topLeft, HELPER::Dimension dimension, int textColor, int fillcolor, int borderColor) {
-	this->topLeft = topLeft;
-	this->dimension = dimension;
-	this->bottomRight = HELPER::Coordinate(topLeft.x + this->dimension.width, topLeft.y + this->dimension.height);
-	this->fill = ELEMENTS::Fill(this->topLeft, this->bottomRight, fillcolor, borderColor);
-	this->textColor = textColor;
-	this->isPointed = false;
-	this->placeholder = "BUTTON";
-	this->inputMode = false;
-}
-
-ELEMENTS::Button::Button(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int textColor, int fillcolor, int borderColor) {
-	this->topLeft = topLeft;
-	this->bottomRight = bottomRight;
-	this->dimension = {this->bottomRight.x - this->topLeft.x, this->bottomRight.y - this->topLeft.y};
-	this->fill = ELEMENTS::Fill(this->topLeft, this->bottomRight, fillcolor, borderColor);
-	this->textColor = textColor;
-	this->isPointed = false;
-	this->placeholder = "BUTTON";
-	this->inputMode = false;
-}
-
-void ELEMENTS::Button::SetTopLeft(HELPER::Coordinate topLeft) {
-	this->topLeft = topLeft;
-	this->fill.topLeft = topLeft;
-}
-
-HELPER::Coordinate ELEMENTS::Button::GetTopLeft() {
-	return this->topLeft;
-}
-
-void ELEMENTS::Button::SetDimension(HELPER::Dimension newDimension) {
-	this->dimension = newDimension;
-	this->fill.dimension = newDimension;
-}
-
-HELPER::Dimension ELEMENTS::Button::GetDimension() {
-	return this->fill.dimension;
-}
-
-bool ELEMENTS::Button::UpdateWithNewTopLeft() {
-	if (this->dimension.width == 0 && this->dimension.height == 0) {
-		return false;
-	}
-
-	this->bottomRight.x = this->topLeft.x + this->dimension.width;
-	this->bottomRight.y = this->topLeft.y + this->dimension.height;
-	this->fill.bottomRight.x = this->topLeft.x + this->dimension.width;
-	this->fill.bottomRight.y = this->topLeft.y + this->dimension.height;
-	return true;
-}
-
-HELPER::Coordinate ELEMENTS::Button::GetBottomRight() {
-	return this->bottomRight;
-}
-
-void ELEMENTS::Button::SetFillColor(int color) {
-	this->fill.fillColor = color;
-}
-
-int ELEMENTS::Button::GetFillColor() {
-	return this->fill.fillColor;
-}
-
-void ELEMENTS::Button::SetTextColor(int color) {
-	this->textColor = color;
-}
-
-int ELEMENTS::Button::GetTextColor() {
-	return this->textColor;
-}
-
-void ELEMENTS::Button::SetBorderColor(int color) {
-	this->fill.borderColor = color;
-}
-
-int ELEMENTS::Button::GetBorderColor() {
-	return this->fill.borderColor;
-}
-
-void ELEMENTS::Button::SetPlaceholder(std::string placeholder) {
-	this->placeholder = placeholder;
-}
-
-std::string ELEMENTS::Button::GetPlaceholder() {
-	return this->placeholder;
-}
-
-void ELEMENTS::Button::SetStatus(bool status) {
-	this->active = status;
-}
-
-bool ELEMENTS::Button::GetStatus() {
-	return this->active;
-}
-
-void ELEMENTS::Button::Display() {
-	HELPER::Dimension textDimension(
-		textwidth((char*)this->placeholder.c_str()),
-		textheight((char*)this->placeholder.c_str())
-	);
-	HELPER::Coordinate textPosition(
-		this->topLeft.x + (this->dimension.width / 2 - textDimension.width / 2), 
-		this->topLeft.y + (this->dimension.height / 2 - textDimension.height / 2)
-	);
-	this->fill.Draw();
-	setcolor(this->textColor);
-	setbkcolor(this->fill.fillColor);
-	outtextxy(textPosition.x, textPosition.y, (char*)this->placeholder.c_str());
-	
-	if (this->inputMode) {
-		HELPER::Coordinate cursorPos{ textPosition };
-		cursorPos.x += textDimension.width;
-		bar(cursorPos.x, cursorPos.y, cursorPos.x + 3, cursorPos.y + textDimension.height);
-	}
-}
-
-bool ELEMENTS::Button::IsPointed() {
-	HELPER::Coordinate currentMouse(HELPER::GetCurrentMouseCoordinate());
-	if (this->topLeft.x <= currentMouse.x && this->topLeft.y <= currentMouse.y &&
-		this->bottomRight.x >= currentMouse.x && this->bottomRight.y >= currentMouse.y) {
-		this->isPointed = true;
-		return true;
-	}
-	return false;
-}
-
-bool ELEMENTS::Button::IsHover() {
-	return this->IsPointed() && this->LeftMouseClicked() == false && this->RightMouseClicked() == false;
-}
-
-bool ELEMENTS::Button::LeftMouseClicked() {
-	if (this->IsPointed() && GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
-		return true;
-	}
-	return false;
-}
-
-bool ELEMENTS::Button::RightMouseClicked() {
-	if (this->IsPointed() && GetAsyncKeyState(VK_RBUTTON) & 0x8000) {
-		return true;
-	}
-	return false;
-}
-
-//---
-
 ELEMENTS::InputModeController::InputModeController() {
 	this->inputMode = false;
 	this->acceptKey = false;
@@ -424,7 +216,7 @@ ELEMENTS::InputModeController::InputModeController() {
 	this->inputString = "";
 }
 
-void ELEMENTS::InputModeController::Activate(ELEMENTS::Button* inputTextBox, ELEMENTS::Button* outputTextBox, int characterLimit, bool acceptAlpha, bool acceptNum, bool acceptSpace) {
+void ELEMENTS::InputModeController::Activate(Button* inputTextBox, Button* outputTextBox, int characterLimit, bool acceptAlpha, bool acceptNum, bool acceptSpace) {
 	this->inputMode = true;
 	this->acceptKey = true;
 	this->characterCount = 0;
@@ -523,7 +315,7 @@ DATASHEET::Row::Row(int columnCount, HELPER::Coordinate topLeft, std::string* la
 	this->rowHeight = rowHeight;
 
 	ELEMENTS::Padding padding(10);
-	this->labels = new ELEMENTS::Button[this->columnCount];
+	this->labels = new Button[this->columnCount];
 	HELPER::Dimension boxDimension;
 	for (int i = 0; i < this->columnCount; ++i) {
 		boxDimension.width = max(textwidth((char*)this->labelPlaceholders[i].c_str()), textwidth((char*)"W") * this->characterLimits[i]) + padding.left + padding.right;
