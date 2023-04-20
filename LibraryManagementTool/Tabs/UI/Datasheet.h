@@ -67,7 +67,7 @@ namespace DATASHEET {
         void Destructor();
     };
 
-    class Controler {
+    class Controller {
     private:
         int recordCount;
         int attributeCount;
@@ -76,13 +76,18 @@ namespace DATASHEET {
         HELPER::Coordinate topLeft;
         int datasheetCount;
         Datasheet* sheets;
+        Button datasheetChangeButton[2];
+
+        void DatasheetChangeBTNHover(Button& btn);
+
+        void DatasheetChangeBTNProperties(Button& btn);
 
     public:
-        Controler();
+        Controller();
 
-        Controler(int recordCount, int attributeCount, int rowHeight, HELPER::Coordinate topLeft);
+        Controller(int recordCount, int attributeCount, int rowHeight, HELPER::Coordinate topLeft);
 
-        ~Controler();
+        ~Controller();
 
         Datasheet& operator[] (int index);
 
@@ -105,6 +110,8 @@ namespace DATASHEET {
         HELPER::Coordinate GetTopLeft();
 
         void UpdateActiveSheet(int indicator);
+
+        void DatasheetChangeButtonUpdate();
 
         void Display();
     };

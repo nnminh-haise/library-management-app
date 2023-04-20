@@ -26,6 +26,8 @@ namespace SACH {
 
 		TrangThaiSach GetTrangThai();
 
+		std::string GetStringfyTrangThai();
+
 		void SetViTri(std::string ViTri);
 
 		std::string GetViTri();
@@ -44,18 +46,20 @@ namespace LINKED_LIST {
 
 	typedef Node* Pointer;
 
-	struct Controler {
-		unsigned int total; //* The size of the linked list.
+	struct Controller {
+		unsigned int total;
 		unsigned int borrowed;
 		unsigned int sold;
 		Pointer first;
 	};
 
-	void Initialize(Controler& controller);
+	void Initialize(Controller& controller);
 
-	bool IsEmpty(const Controler& controller);
+	bool IsEmpty(const Controller& controller);
 
-	void InsertItemLast(Controler& controller, SACH::Sach item);
+	int Size(const Controller& controller);
+
+	void InsertItemLast(Controller& controller, SACH::Sach item);
 }
 
 namespace DAU_SACH {
@@ -67,12 +71,12 @@ namespace DAU_SACH {
 		std::string TacGia;
 		int NamXuatBan;
 		std::string TheLoai;
-		LINKED_LIST::Controler DanhMucSach;
+		LINKED_LIST::Controller DanhMucSach;
 
 	public:
 		DauSach();
 
-		DauSach(std::string ISBN, std::string TenSach, int SoTrang, std::string TacGia, int NamXuatBan, std::string TheLoai, LINKED_LIST::Controler DanhMucSach);
+		DauSach(std::string ISBN, std::string TenSach, int SoTrang, std::string TacGia, int NamXuatBan, std::string TheLoai, LINKED_LIST::Controller DanhMucSach);
 
 		void SetISBN(std::string ISBN);
 
@@ -98,9 +102,9 @@ namespace DAU_SACH {
 
 		std::string GetTheLoai();
 
-		void SetDanhMucSach(LINKED_LIST::Controler DanhMucSach);
+		void SetDanhMucSach(LINKED_LIST::Controller DanhMucSach);
 
-		LINKED_LIST::Controler GetDanhMucSach();
+		LINKED_LIST::Controller GetDanhMucSach();
 
 		void Log();
 	};
@@ -133,4 +137,6 @@ namespace DAU_SACH_MODULES {
 	bool DauSachExtractor(std::string data, std::string seperator, DAU_SACH::DauSach* returnData);
 
 	bool LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LIST::LinearList& danhSachDauSach);
+
+	bool UpdateListToDatabase(const std::string& filename, const LINEAR_LIST::LinearList& dsDauSach);
 }

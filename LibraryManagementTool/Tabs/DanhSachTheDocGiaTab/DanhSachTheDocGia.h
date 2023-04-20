@@ -78,8 +78,7 @@ struct EditItemInListForm {
 class DanhSachTheDocGiaView {
 private:
 	bool active;
-	DATASHEET::Controler controler;
-	Button sheetChange[2];
+	DATASHEET::Controller controler;
 	int listManipulationButtonStatus;
 	Button listManipulateButton[3];
 	bool defaultOrder;
@@ -90,9 +89,9 @@ private:
 	EditItemInListForm editItemForm;
 
 public:
-	void CreateDatasheetsFromList(AVL_TREE::Pointer& danhSachThedocGia, DATASHEET::Controler* controller);
+	void CreateDatasheetsFromList(AVL_TREE::Pointer& danhSachThedocGia, DATASHEET::Controller* controller);
 
-	void CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int arrSize, DATASHEET::Controler* controller);
+	void CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int arrSize, DATASHEET::Controller* controller);
 
 	DanhSachTheDocGiaView(AVL_TREE::Pointer& danhSachTheDocGia);
 

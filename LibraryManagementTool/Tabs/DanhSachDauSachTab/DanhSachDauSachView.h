@@ -23,18 +23,16 @@ class DauSachTab {
 private:
 	bool active;
 	bool displaDatasheet;
-	DATASHEET::Controler controler;
-	Button sheetChange[2];
+	DATASHEET::Controller controler;
 	Button listManipulateButtons[3];
 
 	DAU_SACH_TAB::SearchField searchField;
 
 private:
-	void DatasheetChangeBTNHover(Button& btn);
+	void SortList(LINEAR_LIST::LinearList& dsDauSach);
 
-	void DatasheetChangeBTNProperties(Button& btn);
 
-	void CreateDatasheetsFromList(LINEAR_LIST::LinearList& danhSachDauSach, DATASHEET::Controler& controler);
+	void CreateDatasheetsFromList(LINEAR_LIST::LinearList& danhSachDauSach, DATASHEET::Controller& controler);
 
 public:
 	DauSachTab(LINEAR_LIST::LinearList& danhSachDauSach);

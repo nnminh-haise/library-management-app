@@ -11,10 +11,10 @@
 class ThongKeView {
 private:
 	bool active;
-	DATASHEET::Controler controler;
+	DATASHEET::Controller controler;
 
 private:
-	void CreateDatasheets(LINEAR_LIST::LinearList& danhSachDauSach, DATASHEET::Controler& controler);
+	void CreateDatasheets(LINEAR_LIST::LinearList& danhSachDauSach, DATASHEET::Controller& controler);
 
 public:
 

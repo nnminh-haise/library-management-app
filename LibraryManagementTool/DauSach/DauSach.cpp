@@ -33,6 +33,18 @@ SACH::TrangThaiSach SACH::Sach::GetTrangThai() {
 	return this->TrangThai;
 }
 
+std::string SACH::Sach::GetStringfyTrangThai() {
+	switch (this->TrangThai) {
+		case(SACH::TrangThaiSach::CHO_MUON_DUOC):
+			return "CHO MUON DUOC";
+		case(SACH::TrangThaiSach::DA_CO_DOC_GIA_MUON):
+			return "DA CO DOC GIA MUON";
+		case(SACH::TrangThaiSach::DA_THANH_LY):
+			return "DA THANH LY";
+	}
+	return std::string();
+}
+
 void SACH::Sach::SetViTri(std::string ViTri) {
 	this->ViTri = ViTri;
 }
@@ -47,15 +59,24 @@ LINKED_LIST::Node::Node() : info(SACH::Sach()), next(nullptr) {
 LINKED_LIST::Node::Node(SACH::Sach info, LINKED_LIST::Node* next) : info(info), next(next) {
 }
 
-void LINKED_LIST::Initialize(LINKED_LIST::Controler& controller) {
+void LINKED_LIST::Initialize(LINKED_LIST::Controller& controller) {
 	controller.first = nullptr;
 }
 
-bool LINKED_LIST::IsEmpty(const LINKED_LIST::Controler& controller) {
+bool LINKED_LIST::IsEmpty(const LINKED_LIST::Controller& controller) {
 	return controller.first == nullptr;
 }
 
-void LINKED_LIST::InsertItemLast(LINKED_LIST::Controler& controller, SACH::Sach item) {
+int LINKED_LIST::Size(const Controller& controller) {
+	int counter = 0;
+	for (LINKED_LIST::Pointer p = controller.first; p != nullptr; p = p->next) {
+		++counter;
+	}
+
+	return counter;
+}
+
+void LINKED_LIST::InsertItemLast(LINKED_LIST::Controller& controller, SACH::Sach item) {
 	LINKED_LIST::Pointer newNode = new Node(item, nullptr);
 
 	++controller.total;
@@ -87,7 +108,7 @@ DAU_SACH::DauSach::DauSach() {
 	this->DanhMucSach.first = nullptr;
 }
 
-DAU_SACH::DauSach::DauSach(std::string ISBN, std::string TenSach, int SoTrang, std::string TacGia, int NamXuatBan, std::string TheLoai, LINKED_LIST::Controler DanhMucSach) {
+DAU_SACH::DauSach::DauSach(std::string ISBN, std::string TenSach, int SoTrang, std::string TacGia, int NamXuatBan, std::string TheLoai, LINKED_LIST::Controller DanhMucSach) {
 	this->ISBN = ISBN;
 	this->TenSach = TenSach;
 	this->SoTrang = SoTrang;
@@ -145,11 +166,11 @@ std::string DAU_SACH::DauSach::GetTheLoai() {
 	return this->TheLoai;
 }
 
-void DAU_SACH::DauSach::SetDanhMucSach(LINKED_LIST::Controler DanhMucSach) {
+void DAU_SACH::DauSach::SetDanhMucSach(LINKED_LIST::Controller DanhMucSach) {
 	this->DanhMucSach = DanhMucSach;
 }
 
-LINKED_LIST::Controler DAU_SACH::DauSach::GetDanhMucSach() {
+LINKED_LIST::Controller DAU_SACH::DauSach::GetDanhMucSach() {
 	return this->DanhMucSach;
 }
 
@@ -272,13 +293,13 @@ bool DAU_SACH_MODULES::DauSachExtractor(std::string data, std::string seperator,
 	}
 
 	if (data.length() == 0) {
-		returnData->SetDanhMucSach(LINKED_LIST::Controler());
+		returnData->SetDanhMucSach(LINKED_LIST::Controller());
 		return true;
 	}
 
 	int danhMucSachCount = std::stoi(data);
 	if (danhMucSachCount == 0) {
-		returnData->SetDanhMucSach(LINKED_LIST::Controler());
+		returnData->SetDanhMucSach(LINKED_LIST::Controller());
 	}
 	else {
 		/**
@@ -322,4 +343,42 @@ bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LI
 	//std::cerr << std::format("performance : {}s\n", ((double)(endPoint - startPoint)) / CLOCKS_PER_SEC);
 
 	return processResult;
+}
+
+bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const LINEAR_LIST::LinearList& dsDauSach) {
+	std::filebuf databaseBuffer{};
+
+	if (!databaseBuffer.open(filename, std::ios::out)) {
+		std::cerr << std::format("[ERROR] Can not open file {}\n", filename);
+		return false;
+	}
+
+	std::ostream database(&databaseBuffer);
+
+	for (int i = 0; i < dsDauSach.numberOfNode; ++i) {
+		database << dsDauSach.nodes[i]->GetISBN() << ", ";
+		database << dsDauSach.nodes[i]->GetTenSach() << ", ";
+		database << dsDauSach.nodes[i]->GetSoTrang() << ", ";
+		database << dsDauSach.nodes[i]->GetTacGia() << ", ";
+		database << dsDauSach.nodes[i]->GetNamXuatBan() << ", ";
+		database << dsDauSach.nodes[i]->GetTheLoai() << ", ";
+
+		LINKED_LIST::Controller danhMucSach = dsDauSach.nodes[i]->GetDanhMucSach();
+		
+		if (LINKED_LIST::IsEmpty(danhMucSach)) {
+			database << 0 << "\n";
+		}
+		else {
+			int danhMucSachSize = LINKED_LIST::Size(danhMucSach);
+			database << danhMucSachSize << "\n";
+			for (LINKED_LIST::Pointer p = danhMucSach.first; p != nullptr; p = p->next) {
+				database << p->info.GetMaSach() << ", ";
+				database << p->info.GetStringfyTrangThai() << ", ";
+				database << p->info.GetViTri() << "\n";
+			}
+		}
+	}
+
+	databaseBuffer.close();
+	return true;
 }

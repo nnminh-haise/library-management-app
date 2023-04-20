@@ -59,19 +59,19 @@ DOUBLE_LINKED_LIST::Node::Node() {
 	this->left = this->right = nullptr;
 }
 
-DOUBLE_LINKED_LIST::Controler::Controler() {
+DOUBLE_LINKED_LIST::Controller::Controller() {
 	this->First = this->Last = nullptr;
 }
 
-void DOUBLE_LINKED_LIST::Initialize(Controler& list) {
+void DOUBLE_LINKED_LIST::Initialize(Controller& list) {
 	list.First = list.Last = nullptr;
 }
 
-bool DOUBLE_LINKED_LIST::IsEmpty(const Controler& list) {
+bool DOUBLE_LINKED_LIST::IsEmpty(const Controller& list) {
 	return list.First == nullptr;
 }
 
-int DOUBLE_LINKED_LIST::Size(const Controler& list) {
+int DOUBLE_LINKED_LIST::Size(const Controller& list) {
     int result = 0;
     for (DOUBLE_LINKED_LIST::Pointer p = list.First; p != nullptr; p = p->left) {
         ++result;
@@ -79,7 +79,7 @@ int DOUBLE_LINKED_LIST::Size(const Controler& list) {
     return result;
 }
 
-void DOUBLE_LINKED_LIST::ClearList(Controler& list) {
+void DOUBLE_LINKED_LIST::ClearList(Controller& list) {
     DOUBLE_LINKED_LIST::Pointer p = list.First;
     while (p != nullptr) {
         DOUBLE_LINKED_LIST::Pointer deleteNode = p;
@@ -95,10 +95,10 @@ THE_DOC_GIA::TheDocGia::TheDocGia() {
 	this->Ten = std::string();
 	this->Phai = THE_DOC_GIA::GioiTinh::NAM;
 	this->TrangThai = THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA;
-	this->DanhSachMuonTra = DOUBLE_LINKED_LIST::Controler();
+	this->DanhSachMuonTra = DOUBLE_LINKED_LIST::Controller();
 }
 
-THE_DOC_GIA::TheDocGia::TheDocGia(int MaThe, std::string Ho, std::string Ten, THE_DOC_GIA::GioiTinh Phai, THE_DOC_GIA::TrangThaiThe TrangThai, DOUBLE_LINKED_LIST::Controler DanhSachMuonTra) {
+THE_DOC_GIA::TheDocGia::TheDocGia(int MaThe, std::string Ho, std::string Ten, THE_DOC_GIA::GioiTinh Phai, THE_DOC_GIA::TrangThaiThe TrangThai, DOUBLE_LINKED_LIST::Controller DanhSachMuonTra) {
 	this->MaThe = MaThe;
 	this->Ho = Ho;
 	this->Ten = Ten;
@@ -159,11 +159,11 @@ std::string THE_DOC_GIA::TheDocGia::GetStringfyTrangThai() {
     return (this->TrangThai == THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA ? "BI KHOA" : "HOAT DONG");
 }
 
-void THE_DOC_GIA::TheDocGia::SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controler DanhSachMuonTra) {
+void THE_DOC_GIA::TheDocGia::SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controller DanhSachMuonTra) {
 	this->DanhSachMuonTra = DanhSachMuonTra;
 }
 
-DOUBLE_LINKED_LIST::Controler THE_DOC_GIA::TheDocGia::GetDanhSachMuonTra() {
+DOUBLE_LINKED_LIST::Controller THE_DOC_GIA::TheDocGia::GetDanhSachMuonTra() {
 	return this->DanhSachMuonTra;
 }
 
@@ -598,13 +598,13 @@ bool THE_DOC_GIA_MODULES::TheDocGiaExtractor(std::string data, std::string separ
 	}
 
 	if (data.length() == 0) {
-        returnData.SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controler());
+        returnData.SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controller());
 		return true;
 	}
 
 	int muonTraCount = std::stoi(data);
 	if (muonTraCount == 0) {
-        returnData.SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controler());
+        returnData.SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controller());
 	}
 	else {
 		/**
@@ -783,7 +783,7 @@ void THE_DOC_GIA_MODULES::SortByName(AVL_TREE::Pointer const& node, AVL_TREE::Po
     }
 }
 
-int MUON_TRA_MODULES::CountBorrowedBooks(const DOUBLE_LINKED_LIST::Controler& list) {
+int MUON_TRA_MODULES::CountBorrowedBooks(const DOUBLE_LINKED_LIST::Controller& list) {
     int counter = 0;
     for (DOUBLE_LINKED_LIST::Pointer p = list.First; p != nullptr; p = p->right) {
         if (p->info.GetTrangThai() == MUON_TRA::TrangThaiMuonTra::SACH_DANG_MUON) {

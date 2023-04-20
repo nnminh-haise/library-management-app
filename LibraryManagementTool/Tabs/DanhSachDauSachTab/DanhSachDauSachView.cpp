@@ -37,8 +37,7 @@ namespace DAU_SACH_TAB {
 
 
 
-void DauSachTab::CreateDatasheetsFromList(LINEAR_LIST::LinearList& danhSachDauSach, DATASHEET::Controler& controler) {
-
+void DauSachTab::CreateDatasheetsFromList(LINEAR_LIST::LinearList& danhSachDauSach, DATASHEET::Controller& controler) {
 	int attributeCount = danhSachDauSach.numberOfNode;
 	controler.SetDatasheetCount(
 		attributeCount / (CONSTANTS::MAX_ROW_COUNT - 1) + (attributeCount % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
@@ -56,14 +55,17 @@ void DauSachTab::CreateDatasheetsFromList(LINEAR_LIST::LinearList& danhSachDauSa
 	int sheetIndex = -1;
 
 	for (int i = 0; i < danhSachDauSach.numberOfNode; ++i) {
+
 		++recordIndex;
-		if (recordIndex > controler.GetRecordCount()) {
+		if (recordIndex > controler.GetRecordCount() - 1) {
 			recordIndex = 1;
 		}
-		sheetIndex += (recordIndex % controler.GetRecordCount() == 1);
+		if (recordIndex % (controler.GetRecordCount() - 1) == 1) {
+			sheetIndex += 1;
+		}
 
 		std::string* data = new std::string[controler.GetAttributeCount()];
-		data[0] = std::to_string(recordIndex);
+		data[0] = std::to_string(i + 1);
 		data[1] = danhSachDauSach.nodes[i]->GetISBN();
 		data[2] = danhSachDauSach.nodes[i]->GetTenSach();
 		data[3] = std::to_string(danhSachDauSach.nodes[i]->GetSoTrang());
@@ -76,14 +78,17 @@ void DauSachTab::CreateDatasheetsFromList(LINEAR_LIST::LinearList& danhSachDauSa
 	}
 }
 
-void DauSachTab::DatasheetChangeBTNHover(Button& btn) {
-	btn.SetFillColor(rgb(130, 170, 227));
-}
+void DauSachTab::SortList(LINEAR_LIST::LinearList& dsDauSach) {
+	for (int i = 0; i < dsDauSach.numberOfNode - 1; ++i) {
+		for (int j = i + 1; j < dsDauSach.numberOfNode; ++j) {
+			const std::string& valueA = dsDauSach.nodes[i]->GetTenSach();
+			const std::string& valueB = dsDauSach.nodes[j]->GetTenSach();
 
-void DauSachTab::DatasheetChangeBTNProperties(Button& btn) {
-	btn.SetFillColor(rgb(236, 242, 255));
-	btn.SetBorderColor(rgb(25, 24, 37));
-	btn.SetTextColor(rgb(25, 24, 37));
+			if (valueA.compare(valueB) > 0) {
+				std::swap(dsDauSach.nodes[i], dsDauSach.nodes[j]);
+			}
+		}
+	}
 }
 
 DauSachTab::DauSachTab(LINEAR_LIST::LinearList& danhSachDauSach) {
@@ -91,21 +96,11 @@ DauSachTab::DauSachTab(LINEAR_LIST::LinearList& danhSachDauSach) {
 	this->displaDatasheet = true;
 
 	HELPER::Coordinate datasheetTopLeft(36, 120);
-	HELPER::Coordinate toLeftBtnTopLeft(36, 940);
-	HELPER::Coordinate toRightBtnTopLeft(86, 940);
 
-	this->controler = DATASHEET::Controler(
+	this->controler = DATASHEET::Controller(
 		CONSTANTS::MAX_ROW_COUNT, DAU_SACH_PROPERTIES::PROPERTIES_COUNT, DAU_SACH_PROPERTIES::ROW_HEIGHT, datasheetTopLeft
 	);
 	this->CreateDatasheetsFromList(danhSachDauSach, controler);
-
-	this->sheetChange[0] = Button(toLeftBtnTopLeft, 50, 30);
-	this->sheetChange[1] = Button(toRightBtnTopLeft, 50, 30);
-	this->sheetChange[0].SetPlaceholder("<");
-	this->sheetChange[1].SetPlaceholder(">");
-	for (int i = 0; i < 2; ++i) {
-		this->DatasheetChangeBTNProperties(this->sheetChange[i]);
-	}
 
 	/*
 	 * Creating Button for adding or editting or removing item of the list
@@ -130,10 +125,7 @@ void DauSachTab::Run() {
 	//* Displaying all the items
 	if (this->displaDatasheet) {
 		this->controler.Display();
-	}
-
-	for (int i = 0; i < 2; ++i) {
-		this->sheetChange[i].Display();
+		this->controler.DatasheetChangeButtonUpdate();
 	}
 
 	for (int i = 0; i < 3; ++i) {
@@ -142,43 +134,10 @@ void DauSachTab::Run() {
 
 	this->searchField.Display();
 
-	//---
-
-	//* Elements changes logic
-	for (int i = 0; i < 2; ++i) {
-		if (this->sheetChange[i].IsPointed() && this->sheetChange[i].LeftMouseClicked() == false) {
-			this->DatasheetChangeBTNHover(this->sheetChange[i]);
-		}
-		else if (this->sheetChange[i].LeftMouseClicked()) {
-			
-			if (i == 0) {
-				if (this->controler.CurrentActiveDatasheet() == 0) {
-					this->controler.SetActiveDatasheet(this->controler.GetDatasheetCount() - 1);
-				}
-				else {
-					this->controler.SetActiveDatasheet(this->controler.CurrentActiveDatasheet() - 1);
-				}
-			}
-			else {
-				if (this->controler.CurrentActiveDatasheet() == this->controler.GetDatasheetCount() - 1) {
-					this->controler.SetActiveDatasheet(0);
-				}
-				else {
-					this->controler.SetActiveDatasheet(this->controler.CurrentActiveDatasheet() + 1);
-				}
-			}
-			delay(100);
-		}
-		else {
-			this->DatasheetChangeBTNProperties(this->sheetChange[i]);
-		}
-	}
 
 	//* List manipulate button logic
 	for (int i = 0; i < 3; ++i) {
 		Button& currentBtn = this->listManipulateButtons[i];
-		
-		std::cerr << currentBtn.NotYetClicked() << "\n";
 
 		if (currentBtn.IsHover()) {
 			DANH_SACH_DAU_SACH_STYLING::ListManipulateButtonHoverProperties(currentBtn);

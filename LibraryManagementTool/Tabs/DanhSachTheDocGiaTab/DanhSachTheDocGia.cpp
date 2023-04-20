@@ -116,7 +116,7 @@ bool NewListItemForm::SubmitForm(AVL_TREE::Pointer& dsTheDocGia, ELEMENTS::Input
 		newItem.SetTen(STR::Trim(this->ten->GetPlaceholder()));
 		newItem.SetPhai(this->phai->GetPlaceholder() == "NAM" ? THE_DOC_GIA::GioiTinh::NAM : THE_DOC_GIA::GioiTinh::NU);
 		newItem.SetTrangThai(THE_DOC_GIA::TrangThaiThe::THE_HOAT_DONG);
-		newItem.SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controler());
+		newItem.SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controller());
 		delay(100);
 
 		bool res = AVL_TREE::Insert(dsTheDocGia, newItem);
@@ -397,7 +397,7 @@ bool EditItemInListForm::SubmitForm(AVL_TREE::Pointer& danhSachTheDocGia, ELEMEN
 	return false;
 }
 
-void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSachThedocGia, DATASHEET::Controler* datasheetController) {
+void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSachThedocGia, DATASHEET::Controller* datasheetController) {
 
 	int attributeCount = 0;
 	AVL_TREE::CountNode(danhSachThedocGia, attributeCount);
@@ -419,8 +419,9 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 	STACK::Stack stk;
 	STACK::Initialize(stk);
 	AVL_TREE::Pointer currentNode = danhSachThedocGia;
-	int rowIndicator = 0;
-	int sheetIndicator = -1;
+	int recordIndex = 0;
+	int sheetIndex = -1;
+	int order = 0;
 
 	do {
 		while (currentNode != nullptr) {
@@ -432,13 +433,16 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 			currentNode = STACK::Pop(stk);
 			
 			//* Logic stays here
-			++rowIndicator;
-			if (rowIndicator % CONSTANTS::MAX_ROW_COUNT == 1) {
-				++sheetIndicator;
+			++recordIndex;
+			if (recordIndex > controler.GetRecordCount() - 1) {
+				recordIndex = 1;
+			}
+			if (recordIndex % (controler.GetRecordCount() - 1) == 1) {
+				sheetIndex += 1;
 			}
 
 			std::string* data = new std::string[datasheetController->GetAttributeCount()];
-			data[0] = std::to_string(rowIndicator);
+			data[0] = std::to_string(++order);
 			data[1] = std::to_string(currentNode->info.GetMaThe());
 			data[2] = currentNode->info.GetHo();
 			data[3] = currentNode->info.GetTen();
@@ -446,7 +450,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 			data[5] = currentNode->info.GetStringfyTrangThai();
 			data[6] = "SACH DANG MUON";
 
-			(*datasheetController)[sheetIndicator].UpdateNewPlaceholder(data, rowIndicator % CONSTANTS::MAX_ROW_COUNT);
+			(*datasheetController)[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 
 			//---
 
@@ -458,7 +462,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 	} while (true);
 }
 
-void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int arrSize, DATASHEET::Controler* datasheetController) {
+void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int arrSize, DATASHEET::Controller* datasheetController) {
 	datasheetController->SetDatasheetCount(
 		arrSize / (CONSTANTS::MAX_ROW_COUNT - 1) + (arrSize % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
 	);
@@ -474,18 +478,22 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int 
 		);
 	}
 
-	int rowIndicator = 0;
-	int sheetIndicator = -1;
+	int recordIndex = 0;
+	int sheetIndex = -1;
+
 	for (int i = 0; i < arrSize; ++i) {
 
 		//* Logic stays here
-		++rowIndicator;
-		if (rowIndicator % CONSTANTS::MAX_ROW_COUNT == 1) {
-			++sheetIndicator;
+		++recordIndex;
+		if (recordIndex > controler.GetRecordCount() - 1) {
+			recordIndex = 1;
+		}
+		if (recordIndex % (controler.GetRecordCount() - 1) == 1) {
+			sheetIndex += 1;
 		}
 
 		std::string* data = new std::string[datasheetController->GetAttributeCount()];
-		data[0] = std::to_string(rowIndicator);
+		data[0] = std::to_string(i + 1);
 		data[1] = std::to_string(arr[i]->info.GetMaThe());
 		data[2] = arr[i]->info.GetHo();
 		data[3] = arr[i]->info.GetTen();
@@ -493,7 +501,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int 
 		data[5] = arr[i]->info.GetStringfyTrangThai();
 		data[6] = "SACH DANG MUON";
 
-		(*datasheetController)[sheetIndicator].UpdateNewPlaceholder(data, rowIndicator % CONSTANTS::MAX_ROW_COUNT);
+		(*datasheetController)[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 
 		//---
 	}
@@ -513,20 +521,12 @@ DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_TREE::Pointer& danhSachTheDocGi
 	HELPER::Coordinate toLeftBtnTopLeft(36, 935);
 	HELPER::Coordinate toRightBtnTopLeft(86, 935);
 
-	this->controler = DATASHEET::Controler(
+	this->controler = DATASHEET::Controller(
 		CONSTANTS::MAX_ROW_COUNT, THE_DOC_GIA_PROPERTIES::PROPERTIES_COUNT, 
 		THE_DOC_GIA_PROPERTIES::ROW_HEIGHT, datasheetTopLeft
 	);
 	if (this->defaultOrder) {
 		this->CreateDatasheetsFromList(danhSachTheDocGia, &this->controler);
-	}
-
-	this->sheetChange[0] = Button(toLeftBtnTopLeft, 50, 30);
-	this->sheetChange[1] = Button(toRightBtnTopLeft, 50, 30);
-	this->sheetChange[0].SetPlaceholder("<");
-	this->sheetChange[1].SetPlaceholder(">");
-	for (int i = 0; i < 2; ++i) {
-		DANH_SACH_THE_DOC_GIA_STYLING::DefaultDatasheetChangeButtonProperties(this->sheetChange[i]);
 	}
 
 	//* List manipulation buttons
@@ -554,11 +554,7 @@ void DanhSachTheDocGiaView::Run(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::
 	
 	//* Display datasheet
 	this->controler.Display();
-	
-	//* Display datasheet page move button
-	for (int i = 0; i < 2; ++i) {
-		this->sheetChange[i].Display();
-	}
+	this->controler.DatasheetChangeButtonUpdate();
 
 	//* Display function button
 	for (int i = 0; i < 3; ++i) {
@@ -596,35 +592,6 @@ void DanhSachTheDocGiaView::Run(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::
 				}
 				break;
 			}
-		}
-	}
-
-	//* Sheet's changes button logic
-	for (int i = 0; i < 2; ++i) {
-		if (this->sheetChange[i].IsPointed() && this->sheetChange[i].LeftMouseClicked() == false) {
-			DANH_SACH_THE_DOC_GIA_STYLING::DatasheetChangeButtonNHoverProperties(this->sheetChange[i]);
-		}
-		else if (this->sheetChange[i].LeftMouseClicked()) {
-			if (i == 0) {
-				if (this->controler.CurrentActiveDatasheet() == 0) {
-					this->controler.SetActiveDatasheet(this->controler.GetDatasheetCount() - 1);
-				}
-				else {
-					this->controler.SetActiveDatasheet(this->controler.CurrentActiveDatasheet() - 1);
-				}
-			}
-			else {
-				if (this->controler.CurrentActiveDatasheet() == this->controler.GetDatasheetCount() - 1) {
-					this->controler.SetActiveDatasheet(0);
-				}
-				else {
-					this->controler.SetActiveDatasheet(this->controler.CurrentActiveDatasheet() + 1);
-				}
-			}
-			delay(100);
-		}
-		else {
-			DANH_SACH_THE_DOC_GIA_STYLING::DefaultDatasheetChangeButtonProperties(this->sheetChange[i]);
 		}
 	}
 

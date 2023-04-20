@@ -49,20 +49,20 @@ namespace DOUBLE_LINKED_LIST {
 
 	typedef Node* Pointer;
 
-	struct Controler {
+	struct Controller {
 		Pointer First;
 		Pointer Last;
 
-		Controler();
+		Controller();
 	};
 
-	void Initialize(DOUBLE_LINKED_LIST::Controler& list);
+	void Initialize(DOUBLE_LINKED_LIST::Controller& list);
 
-	bool IsEmpty(const Controler& list);
+	bool IsEmpty(const Controller& list);
 
-	int Size(const Controler& list);
+	int Size(const Controller& list);
 
-	void ClearList(Controler& list);
+	void ClearList(Controller& list);
 }
 
 namespace THE_DOC_GIA {
@@ -81,12 +81,12 @@ namespace THE_DOC_GIA {
 		std::string Ten;
 		GioiTinh Phai;
 		TrangThaiThe TrangThai;
-		DOUBLE_LINKED_LIST::Controler DanhSachMuonTra;
+		DOUBLE_LINKED_LIST::Controller DanhSachMuonTra;
 
 	public:
 		TheDocGia();
 
-		TheDocGia(int MaThe, std::string Ho, std::string Ten, GioiTinh Phai, TrangThaiThe TrangThai, DOUBLE_LINKED_LIST::Controler DanhSachMuonTra);
+		TheDocGia(int MaThe, std::string Ho, std::string Ten, GioiTinh Phai, TrangThaiThe TrangThai, DOUBLE_LINKED_LIST::Controller DanhSachMuonTra);
 
 		void SetMaThe(int MaThe);
 
@@ -114,16 +114,16 @@ namespace THE_DOC_GIA {
 
 		std::string GetStringfyTrangThai();
 
-		void SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controler DanhSachMuonTra);
+		void SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controller DanhSachMuonTra);
 
-		DOUBLE_LINKED_LIST::Controler GetDanhSachMuonTra();
+		DOUBLE_LINKED_LIST::Controller GetDanhSachMuonTra();
 
 		void Log();
 	};
 }
 
 namespace MUON_TRA_MODULES {
-	int CountBorrowedBooks(const DOUBLE_LINKED_LIST::Controler& list);
+	int CountBorrowedBooks(const DOUBLE_LINKED_LIST::Controller& list);
 }
 
 namespace AVL_TREE {

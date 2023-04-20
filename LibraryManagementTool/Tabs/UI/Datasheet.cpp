@@ -186,7 +186,17 @@ namespace DATASHEET {
 		delete[this->recordCount] this->records;
 	}
 
-	Controler::Controler() {
+	void Controller::DatasheetChangeBTNHover(Button& btn) {
+		btn.SetFillColor(rgb(130, 170, 227));
+	}
+
+	void Controller::DatasheetChangeBTNProperties(Button& btn) {
+		btn.SetFillColor(rgb(236, 242, 255));
+		btn.SetBorderColor(rgb(25, 24, 37));
+		btn.SetTextColor(rgb(25, 24, 37));
+	}
+
+	Controller::Controller() {
 		this->datasheetCount = 0;
 		this->sheets = nullptr;
 		this->activeSheet = -1;
@@ -195,7 +205,7 @@ namespace DATASHEET {
 		this->rowHeight = 0;
 	}
 
-	Controler::Controler(int recordCount, int attributeCount, int rowHeight, HELPER::Coordinate topLeft) {
+	Controller::Controller(int recordCount, int attributeCount, int rowHeight, HELPER::Coordinate topLeft) {
 		this->recordCount = recordCount;
 		this->attributeCount = attributeCount;
 		this->rowHeight = rowHeight;
@@ -204,9 +214,21 @@ namespace DATASHEET {
 		this->datasheetCount = 0;
 		this->sheets = nullptr;
 		this->activeSheet = -1;
+
+		HELPER::Coordinate buttonCoordinates[] = {
+			HELPER::Coordinate(36, 940),
+			HELPER::Coordinate(86, 940)
+		};
+		std::string placeholder[] = { "<", ">" };
+
+		for (int i = 0; i < 2; ++i) {
+			this->datasheetChangeButton[i] = Button(buttonCoordinates[i], 50, 30);
+			this->datasheetChangeButton[i].SetPlaceholder(placeholder[i]);
+			this->DatasheetChangeBTNProperties(this->datasheetChangeButton[i]);
+		}
 	}
 
-	Controler::~Controler() {
+	Controller::~Controller() {
 		for (int i = 0; i < this->datasheetCount; ++i) {
 			for (int j = 0; j < this->sheets[i].GetRecordCount(); ++j) {
 				this->sheets[i][j].Destructor();
@@ -216,7 +238,7 @@ namespace DATASHEET {
 		delete[this->datasheetCount] this->sheets;
 	}
 
-	Datasheet& Controler::operator[](int index) {
+	Datasheet& Controller::operator[](int index) {
 		if (index < 0 || index >= this->datasheetCount) {
 			std::cerr << "[ERROR] Datasheet controller index violation!\n";
 			exit(1);
@@ -225,53 +247,72 @@ namespace DATASHEET {
 		return this->sheets[index];
 	}
 
-	void Controler::InitializeDatasheets() {
+	void Controller::InitializeDatasheets() {
 		this->sheets = new DATASHEET::Datasheet[this->datasheetCount];
 		this->activeSheet = 0;
 	}
 
-	void Controler::SetDatasheetCount(int amount) {
+	void Controller::SetDatasheetCount(int amount) {
 		this->datasheetCount = amount;
 	}
 
-	int Controler::GetDatasheetCount() {
+	int Controller::GetDatasheetCount() {
 		return this->datasheetCount;
 	}
 
-	int Controler::GetAttributeCount() {
+	int Controller::GetAttributeCount() {
 		return this->attributeCount;
 	}
 
-	int Controler::GetRecordCount() {
+	int Controller::GetRecordCount() {
 		return this->recordCount;
 	}
 
-	int Controler::GetRowHeight() {
+	int Controller::GetRowHeight() {
 		return this->rowHeight;
 	}
 
-	int Controler::CurrentActiveDatasheet() {
+	int Controller::CurrentActiveDatasheet() {
 		return this->activeSheet;
 	}
 
-	void Controler::SetActiveDatasheet(int index) {
+	void Controller::SetActiveDatasheet(int index) {
 		this->activeSheet = index;
 	}
 
-	HELPER::Coordinate Controler::GetTopLeft() {
+	HELPER::Coordinate Controller::GetTopLeft() {
 		return this->topLeft;
 	}
 
-	void Controler::UpdateActiveSheet(int indicator) {
+	void Controller::UpdateActiveSheet(int indicator) {
 		if (indicator < 0 || indicator >= this->datasheetCount) {
 			return;
 		}
 		this->activeSheet = indicator;
 	}
 
-	void Controler::Display() {
-		//std::cerr << std::format("[INFO] CURRENT ACTIVE SHEET: {}\n", this->activeSheet);
+	void Controller::DatasheetChangeButtonUpdate() {
+		int movement[2] = { -1, +1 };
+		for (int i = 0; i < 2; ++i) {
+			if (this->datasheetChangeButton[i].IsHover()) {
+				this->DatasheetChangeBTNHover(this->datasheetChangeButton[i]);
+			}
+			else if (this->datasheetChangeButton[i].LeftMouseClicked()) {
+				this->activeSheet = (this->activeSheet + movement[i] + this->datasheetCount) % this->datasheetCount;
+				delay(100);
+			}
+			else {
+				this->DatasheetChangeBTNProperties(this->datasheetChangeButton[i]);
+			}
+		}
+	}
+
+	void Controller::Display() {
 		this->sheets[this->activeSheet].Display();
+
+		for (int i = 0; i < 2; ++i) {
+			this->datasheetChangeButton[i].Display();
+		}
 	}
 
 }

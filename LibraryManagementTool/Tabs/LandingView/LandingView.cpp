@@ -159,6 +159,7 @@ void LandingView::Run(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& d
 
 	//* Update databse before closing the program
 	THE_DOC_GIA_MODULES::UpdateListToDatabase(CONSTANTS::THE_DOC_GIA_DB, dsTheDocGia);
+	DAU_SACH_MODULES::UpdateListToDatabase(CONSTANTS::DAU_SACH_DB, dsDauSach);
 }
 
 //* View destructor
