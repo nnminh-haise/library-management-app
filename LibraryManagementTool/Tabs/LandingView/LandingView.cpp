@@ -52,12 +52,6 @@ void LandingView::ConstructNavigationBar() {
 	LANDING_VIEW_STYLING::DefaultCloseButtonProperties(this->closeBtn); //* Assign the styling to the object
 }
 
-void LandingView::ConstructTabs(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& dsDauSach) {
-	this->dauSachView = new DauSachTab(dsDauSach);
-	this->theDocGiaView = new DanhSachTheDocGiaView(dsTheDocGia);
-	this->thongKeView = new ThongKeView(dsTheDocGia, dsDauSach);
-}
-
 //* View Constructor function.
 LandingView::LandingView(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& dsDauSach) {
 
@@ -68,7 +62,10 @@ LandingView::LandingView(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList
 	this->graphicWindow->Activate();
 
 	this->ConstructNavigationBar();
-	this->ConstructTabs(dsTheDocGia, dsDauSach);
+
+	this->dauSachView = new DauSachTab(&dsDauSach, &this->inpController);
+	this->theDocGiaView = new DanhSachTheDocGiaView(dsTheDocGia);
+	this->thongKeView = new ThongKeView(dsTheDocGia, dsDauSach);
 }
 
 //* View Run function
@@ -82,7 +79,6 @@ void LandingView::Run(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& d
 
 			//* Draw elements begin below
 			setactivepage(1 - getactivepage());
-
 
 			//* Draw elements
 			this->graphicWindow->RenderBackground();

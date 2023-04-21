@@ -27,8 +27,6 @@ private:
 
 	void ConstructNavigationBar();
 
-	void ConstructTabs(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& dsDauSach);
-
 public:
 	LandingView(AVL_TREE::Pointer& danhSachTheDocGia, LINEAR_LIST::LinearList& danhSachDauSach);
 

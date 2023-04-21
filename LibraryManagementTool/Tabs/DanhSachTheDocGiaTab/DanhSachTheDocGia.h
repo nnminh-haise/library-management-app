@@ -78,7 +78,7 @@ struct EditItemInListForm {
 class DanhSachTheDocGiaView {
 private:
 	bool active;
-	DATASHEET::Controller controler;
+	DATASHEET::Controller datasheetController;
 	int listManipulationButtonStatus;
 	Button listManipulateButton[3];
 	bool defaultOrder;

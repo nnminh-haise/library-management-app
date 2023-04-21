@@ -244,6 +244,25 @@ bool LINEAR_LIST::InsertLast(LinearList& list, DAU_SACH::DauSach* item) {
 	return false;
 }
 
+bool LINEAR_LIST::InsertOrder(LinearList& list, DAU_SACH::DauSach*& item) {
+	int index = 0;
+
+	if (LINEAR_LIST::IsFull(list)) {
+		return false;
+	}
+
+	for (; index < list.numberOfNode && item->GetTenSach().compare(list.nodes[index]->GetTenSach()) >= 0; ++index);
+
+	for (int i = list.numberOfNode; i >= index; --i) {
+		list.nodes[i] = list.nodes[i - 1];
+	}
+
+	list.nodes[index - 1] = item;
+	list.numberOfNode++;
+
+	return true;
+}
+
 void LINEAR_LIST::Traversal(const LinearList& list) {
 	for (int i = 0; i < list.numberOfNode; ++i) {
 		list.nodes[i]->Log();

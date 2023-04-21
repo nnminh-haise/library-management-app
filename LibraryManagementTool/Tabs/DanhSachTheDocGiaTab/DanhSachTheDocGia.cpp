@@ -434,10 +434,10 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 			
 			//* Logic stays here
 			++recordIndex;
-			if (recordIndex > controler.GetRecordCount() - 1) {
+			if (recordIndex > datasheetController->GetRecordCount() - 1) {
 				recordIndex = 1;
 			}
-			if (recordIndex % (controler.GetRecordCount() - 1) == 1) {
+			if (recordIndex % (datasheetController->GetRecordCount() - 1) == 1) {
 				sheetIndex += 1;
 			}
 
@@ -485,10 +485,10 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int 
 
 		//* Logic stays here
 		++recordIndex;
-		if (recordIndex > controler.GetRecordCount() - 1) {
+		if (recordIndex > datasheetController->GetRecordCount() - 1) {
 			recordIndex = 1;
 		}
-		if (recordIndex % (controler.GetRecordCount() - 1) == 1) {
+		if (recordIndex % (datasheetController->GetRecordCount() - 1) == 1) {
 			sheetIndex += 1;
 		}
 
@@ -521,12 +521,12 @@ DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_TREE::Pointer& danhSachTheDocGi
 	HELPER::Coordinate toLeftBtnTopLeft(36, 935);
 	HELPER::Coordinate toRightBtnTopLeft(86, 935);
 
-	this->controler = DATASHEET::Controller(
+	this->datasheetController = DATASHEET::Controller(
 		CONSTANTS::MAX_ROW_COUNT, THE_DOC_GIA_PROPERTIES::PROPERTIES_COUNT, 
 		THE_DOC_GIA_PROPERTIES::ROW_HEIGHT, datasheetTopLeft
 	);
 	if (this->defaultOrder) {
-		this->CreateDatasheetsFromList(danhSachTheDocGia, &this->controler);
+		this->CreateDatasheetsFromList(danhSachTheDocGia, &this->datasheetController);
 	}
 
 	//* List manipulation buttons
@@ -553,8 +553,8 @@ DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_TREE::Pointer& danhSachTheDocGi
 void DanhSachTheDocGiaView::Run(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController) {
 	
 	//* Display datasheet
-	this->controler.Display();
-	this->controler.DatasheetChangeButtonUpdate();
+	this->datasheetController.Display();
+	this->datasheetController.DatasheetChangeButtonUpdate();
 
 	//* Display function button
 	for (int i = 0; i < 3; ++i) {
@@ -572,7 +572,7 @@ void DanhSachTheDocGiaView::Run(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::
 				this->newItemForm.Display();
 				bool formSubmitted = this->newItemForm.SubmitForm(danhSachTheDocGia, InputController);
 				if (formSubmitted) {
-					DanhSachTheDocGiaView::CreateDatasheetsFromList(danhSachTheDocGia, &this->controler);
+					DanhSachTheDocGiaView::CreateDatasheetsFromList(danhSachTheDocGia, &this->datasheetController);
 				}
 				break;
 			}
@@ -580,7 +580,7 @@ void DanhSachTheDocGiaView::Run(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::
 				this->editItemForm.Display(danhSachTheDocGia, InputController);
 				bool confirmSave = this->editItemForm.SubmitForm(danhSachTheDocGia, InputController);
 				if (confirmSave) {
-					DanhSachTheDocGiaView::CreateDatasheetsFromList(danhSachTheDocGia, &this->controler);
+					DanhSachTheDocGiaView::CreateDatasheetsFromList(danhSachTheDocGia, &this->datasheetController);
 				}
 				break;
 			}
@@ -588,7 +588,7 @@ void DanhSachTheDocGiaView::Run(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::
 				this->deleteItemForm.Display(danhSachTheDocGia, InputController);
 				bool confirmDelete = this->deleteItemForm.SubmitForm(danhSachTheDocGia, InputController);
 				if (confirmDelete) {
-					DanhSachTheDocGiaView::CreateDatasheetsFromList(danhSachTheDocGia, &this->controler);
+					DanhSachTheDocGiaView::CreateDatasheetsFromList(danhSachTheDocGia, &this->datasheetController);
 				}
 				break;
 			}
@@ -627,34 +627,34 @@ void DanhSachTheDocGiaView::Run(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::
 	}
 
 	//* Mathe label button
-	if (this->controler[this->controler.CurrentActiveDatasheet()][0][1].IsHover()) {
-		DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonHoverStyling(&this->controler[this->controler.CurrentActiveDatasheet()][0][1]);
+	if (this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][1].IsHover()) {
+		DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonHoverStyling(&this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][1]);
 	}
-	else if (this->controler[this->controler.CurrentActiveDatasheet()][0][1].LeftMouseClicked()) {
-		this->controler[this->controler.CurrentActiveDatasheet()][0][1].SetFillColor(RED);
+	else if (this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][1].LeftMouseClicked()) {
+		this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][1].SetFillColor(RED);
 		this->defaultOrder = true;
-		this->CreateDatasheetsFromList(danhSachTheDocGia, &this->controler);
+		this->CreateDatasheetsFromList(danhSachTheDocGia, &this->datasheetController);
 	}
 	else {
-		DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonDefaultStyling(&this->controler[this->controler.CurrentActiveDatasheet()][0][1]);
+		DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonDefaultStyling(&this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][1]);
 	}
 
 	//* Ten label button
-	if (this->controler[this->controler.CurrentActiveDatasheet()][0][3].IsHover()) {
-		DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonHoverStyling(&this->controler[this->controler.CurrentActiveDatasheet()][0][3]);
+	if (this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][3].IsHover()) {
+		DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonHoverStyling(&this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][3]);
 	}
-	else if (this->controler[this->controler.CurrentActiveDatasheet()][0][3].LeftMouseClicked()) {
+	else if (this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][3].LeftMouseClicked()) {
 		this->defaultOrder = false;
 		AVL_TREE::Pointer* pointerArr{};
 		int arrSize = 0;
 		THE_DOC_GIA_MODULES::SortByName(danhSachTheDocGia, pointerArr, arrSize);
 
-		DanhSachTheDocGiaView::CreateDatasheetsFromArr(pointerArr, arrSize, &this->controler);
+		DanhSachTheDocGiaView::CreateDatasheetsFromArr(pointerArr, arrSize, &this->datasheetController);
 
 		delay(100);
 	}
 	else {
-		DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonDefaultStyling(&this->controler[this->controler.CurrentActiveDatasheet()][0][3]);
+		DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonDefaultStyling(&this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][3]);
 	}
 }
 

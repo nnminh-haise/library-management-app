@@ -130,6 +130,8 @@ namespace LINEAR_LIST {
 
 	bool InsertLast(LinearList& list, DAU_SACH::DauSach* item);
 
+	bool InsertOrder(LinearList& list, DAU_SACH::DauSach*& item);
+
 	void Traversal(const LinearList& list);
 }
 
