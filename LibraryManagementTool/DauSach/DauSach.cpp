@@ -1,4 +1,5 @@
 #include "DauSach.h"
+#include "../Helper/Helper.h"
 
 #include <string>
 #include <iostream>
@@ -76,7 +77,25 @@ int LINKED_LIST::Size(const Controller& controller) {
 	return counter;
 }
 
-void LINKED_LIST::InsertItemLast(LINKED_LIST::Controller& controller, SACH::Sach item) {
+void LINKED_LIST::InsertFirst(Controller& controller, SACH::Sach item) {
+	LINKED_LIST::Pointer newNode = new LINKED_LIST::Node(item, nullptr);
+	controller.first = newNode;
+
+	controller.total++;
+	if (item.GetTrangThai() == SACH::DA_CO_DOC_GIA_MUON) {
+		controller.borrowed++;
+	}
+	else if (item.GetTrangThai() == SACH::DA_THANH_LY) {
+		controller.sold++;
+	}
+}
+
+void LINKED_LIST::InsertLast(LINKED_LIST::Controller& controller, SACH::Sach item) {
+	if (LINKED_LIST::IsEmpty(controller)) {
+		LINKED_LIST::InsertFirst(controller, item);
+		return;
+	}
+
 	LINKED_LIST::Pointer newNode = new Node(item, nullptr);
 
 	++controller.total;
@@ -87,14 +106,9 @@ void LINKED_LIST::InsertItemLast(LINKED_LIST::Controller& controller, SACH::Sach
 		++controller.sold;
 	}
 
-	if (LINKED_LIST::IsEmpty(controller)) {
-		controller.first = newNode;
-	}
-	else {
-		LINKED_LIST::Pointer Last = controller.first;
-		for (; Last->next != nullptr; Last = Last->next);
-		Last->next = newNode;
-	}
+	LINKED_LIST::Pointer Last = controller.first;
+	for (; Last->next != nullptr; Last = Last->next);
+	Last->next = newNode;
 }
 
 
@@ -207,15 +221,25 @@ bool LINEAR_LIST::IsFull(const LinearList& list) {
 	return list.numberOfNode == MAX_SIZE;
 }
 
+bool LINEAR_LIST::InsertFirst(LinearList& list, DAU_SACH::DauSach* item) {
+	if (LINEAR_LIST::IsFull(list)) {
+		return false;
+	}
+
+	list.nodes[0] = item;
+	list.numberOfNode = 1;
+	return true;
+}
+
 bool LINEAR_LIST::InsertItem(LINEAR_LIST::LinearList& list, DAU_SACH::DauSach* item, int position) {
 	if (LINEAR_LIST::IsFull(list)) {
 		std::cerr << std::format("[ERROR] LIST IS FULL CANNOT INSERT NEW ELEMENT!\nSUGGEST CREATE A NEW LIST WITH BIGGER SIZE!\n");
-		return false;
+		exit(1);
 	}
 
 	if (position < 0 || position >= list.numberOfNode) {
 		std::cerr << std::format("[ERROR] POSITION OUT OF RANGE! INSERT POSITION MUST IN RANGE 0 TO {}\n", LINEAR_LIST::MAX_SIZE - 1);
-		return false;
+		exit(1);
 	}
 
 	//* Shift all item from position + 1 to the right by 1.
@@ -235,7 +259,7 @@ bool LINEAR_LIST::InsertItem(LINEAR_LIST::LinearList& list, DAU_SACH::DauSach* i
 bool LINEAR_LIST::InsertLast(LinearList& list, DAU_SACH::DauSach* item) {
 	if (LINEAR_LIST::IsFull(list)) {
 		std::cerr << std::format("[ERROR] DANH SACH DAU SACH IS FULL!\n");
-		return false;
+		exit(1);
 	}
 
 	list.nodes[list.numberOfNode] = item;
@@ -244,21 +268,20 @@ bool LINEAR_LIST::InsertLast(LinearList& list, DAU_SACH::DauSach* item) {
 	return false;
 }
 
-bool LINEAR_LIST::InsertOrder(LinearList& list, DAU_SACH::DauSach*& item) {
-	int index = 0;
-
+bool LINEAR_LIST::InsertOrder(LinearList& list, DAU_SACH::DauSach* item) {
 	if (LINEAR_LIST::IsFull(list)) {
-		return false;
+		exit(1);
 	}
 
+	int index = 0;
 	for (; index < list.numberOfNode && item->GetTenSach().compare(list.nodes[index]->GetTenSach()) >= 0; ++index);
 
-	for (int i = list.numberOfNode; i >= index; --i) {
+	for (int i = list.numberOfNode; i > index; --i) {
 		list.nodes[i] = list.nodes[i - 1];
 	}
 
-	list.nodes[index - 1] = item;
 	list.numberOfNode++;
+	list.nodes[index] = item;
 
 	return true;
 }
@@ -269,102 +292,117 @@ void LINEAR_LIST::Traversal(const LinearList& list) {
 	}
 }
 
-bool DAU_SACH_MODULES::DauSachExtractor(std::string data, std::string seperator, DAU_SACH::DauSach* returnData) {
-	if (data.length() == 0) {
-		return false;
-	}
-
-	int indicator = 0;
-	size_t pos = 0;
-
-	while ((pos = data.find(seperator)) != std::string::npos) {
-		std::string extractedData = data.substr(0, pos);
-		if (extractedData.length() == 0) {
-			continue;
-		}
-
-		switch (indicator++) {
-		case (0): {
-			returnData->SetISBN(extractedData);
-			break;
-		}
-		case (1): {
-			returnData->SetTenSach(extractedData);
-			break;
-		}
-		case (2): {
-			returnData->SetSoTrang(std::stoi(extractedData));
-			break;
-		}
-		case (3): {
-			returnData->SetTacGia(extractedData);
-			break;
-		}
-		case (4): {
-			returnData->SetNamXuatBan(std::stoi(extractedData));
-			break;
-		}
-		case (5): {
-			returnData->SetTheLoai(extractedData);
-		}
-		}
-		data.erase(0, pos + seperator.length());
-	}
-
-	if (data.length() == 0) {
-		returnData->SetDanhMucSach(LINKED_LIST::Controller());
-		return true;
-	}
-
-	int danhMucSachCount = std::stoi(data);
-	if (danhMucSachCount == 0) {
-		returnData->SetDanhMucSach(LINKED_LIST::Controller());
-	}
-	else {
-		/**
-		* Currently this session is for LOADING @DanhSachMuonTra from file based database.
-		* todo: update database and write these code.
-		*/
-	}
-
-	return true;
-}
-
 bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LIST::LinearList& danhSachDauSach) {
-
-	//time_t startPoint = time(0);
-
+	LINEAR_LIST::Initialize(danhSachDauSach);
+	
 	std::filebuf databaseBuffer{};
 
 	if (!databaseBuffer.open(filename, std::ios::in)) {
 		std::cerr << std::format("[ERROR] Can not open file {}\n", filename);
-		return false;
+		exit(0);
 	}
 
 	std::istream database(&databaseBuffer);
-	bool processResult = true;
-	int attributeCount = 0;
 	while (database) {
-		std::string line{};
-		std::getline(database, line);
-		DAU_SACH::DauSach* newDauSach = new DAU_SACH::DauSach;
-		bool result = DAU_SACH_MODULES::DauSachExtractor(line, ", ", newDauSach);
-		if (result) {
-			++attributeCount;
-			//newDauSach->Log();
-			LINEAR_LIST::InsertLast(danhSachDauSach, newDauSach);
+		std::string titleData{};
+		std::getline(database, titleData);
+
+		if (titleData.length() == 0) {
+			continue;
+		}
+
+		std::string* data = nullptr;
+		int dataCount = 0;
+		STR::Extract(titleData, ", ", data, dataCount);
+
+		DAU_SACH::DauSach* newTitle = new DAU_SACH::DauSach;
+
+		for (int i = 0; i < dataCount; ++i) {
+			switch (i) {
+				case (0): {
+					newTitle->SetISBN(data[i]);
+					break;
+				}
+				case (1): {
+					newTitle->SetTenSach(data[i]);
+					break;
+				}
+				case (2): {
+					newTitle->SetSoTrang(std::stoi(data[i]));
+					break;
+				}
+				case (3): {
+					newTitle->SetTacGia(data[i]);
+					break;
+				}
+				case (4): {
+					newTitle->SetNamXuatBan(std::stoi(data[i]));
+					break;
+				}
+				case (5): {
+					newTitle->SetTheLoai(data[i]);
+					break;
+				}
+				case (6): {
+					int bookListSize = std::stoi(data[i]);
+					if (bookListSize == 0) {
+						newTitle->SetDanhMucSach(LINKED_LIST::Controller());
+					}
+					else {
+						LINKED_LIST::Controller newBookList;
+						LINKED_LIST::Initialize(newBookList);
+
+						while (database && bookListSize--) {
+							SACH::Sach newBook{};
+
+							std::string bookData{};
+							std::getline(database, bookData);
+
+							if (bookData.length() == 0) {
+								std::cerr << std::format("[ERROR] Empty book list data in database!\n");
+								exit(1);
+							}
+
+							std::string* bookItems = nullptr;
+							int itemCount = 0;
+							STR::Extract(bookData, ", ", bookItems, itemCount);
+
+							newBook.SetMaSach(bookItems[0]);
+							if (bookItems[1] == "CHO MUON DUOC") {
+								newBook.SetTrangThai(SACH::CHO_MUON_DUOC);
+							}
+							else if (bookItems[1] == "DA CO DOC GIA MUON") {
+								newBook.SetTrangThai(SACH::DA_CO_DOC_GIA_MUON);
+							}
+							else {
+								newBook.SetTrangThai(SACH::DA_THANH_LY);
+							}
+							newBook.SetViTri(bookItems[2]);
+
+							LINKED_LIST::InsertLast(newBookList, newBook);
+						}
+
+						newTitle->SetDanhMucSach(newBookList);
+					}
+					break;
+				}
+			}
+		}
+
+		if (LINEAR_LIST::IsEmpty(danhSachDauSach)) {
+			LINEAR_LIST::InsertFirst(danhSachDauSach, newTitle);
+		}
+		else {
+			LINEAR_LIST::InsertOrder(danhSachDauSach, newTitle);
 		}
 	}
+
 	databaseBuffer.close();
 
-	//time_t endPoint = time(0);
-	//std::cerr << std::format("Record count: {}\n", recordCount);
-	//std::cerr << std::format("performance : {}s\n", ((double)(endPoint - startPoint)) / CLOCKS_PER_SEC);
-
-	return processResult;
+	return true;
 }
 
-bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const LINEAR_LIST::LinearList& dsDauSach) {
+bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const LINEAR_LIST::LinearList& titleList) {
 	std::filebuf databaseBuffer{};
 
 	if (!databaseBuffer.open(filename, std::ios::out)) {
@@ -374,15 +412,15 @@ bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const L
 
 	std::ostream database(&databaseBuffer);
 
-	for (int i = 0; i < dsDauSach.numberOfNode; ++i) {
-		database << dsDauSach.nodes[i]->GetISBN() << ", ";
-		database << dsDauSach.nodes[i]->GetTenSach() << ", ";
-		database << dsDauSach.nodes[i]->GetSoTrang() << ", ";
-		database << dsDauSach.nodes[i]->GetTacGia() << ", ";
-		database << dsDauSach.nodes[i]->GetNamXuatBan() << ", ";
-		database << dsDauSach.nodes[i]->GetTheLoai() << ", ";
+	for (int i = 0; i < titleList.numberOfNode; ++i) {
+		database << titleList.nodes[i]->GetISBN() << ", ";
+		database << titleList.nodes[i]->GetTenSach() << ", ";
+		database << titleList.nodes[i]->GetSoTrang() << ", ";
+		database << titleList.nodes[i]->GetTacGia() << ", ";
+		database << titleList.nodes[i]->GetNamXuatBan() << ", ";
+		database << titleList.nodes[i]->GetTheLoai() << ", ";
 
-		LINKED_LIST::Controller danhMucSach = dsDauSach.nodes[i]->GetDanhMucSach();
+		LINKED_LIST::Controller danhMucSach = titleList.nodes[i]->GetDanhMucSach();
 		
 		if (LINKED_LIST::IsEmpty(danhMucSach)) {
 			database << 0 << "\n";

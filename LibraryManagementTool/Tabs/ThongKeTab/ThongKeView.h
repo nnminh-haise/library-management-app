@@ -18,7 +18,7 @@ private:
 
 public:
 
-	ThongKeView(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& dsDauSach);
+	ThongKeView(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& titleList);
 
 	void Run();
 };

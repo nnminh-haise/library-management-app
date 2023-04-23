@@ -87,6 +87,8 @@ int rgb(int r, int g, int b);
 
 namespace STR {
     std::string Trim(std::string target);
+
+    void Extract(std::string source, const std::string& seperator, std::string*& result, int& size);
 }
 
 namespace VALIDATOR {

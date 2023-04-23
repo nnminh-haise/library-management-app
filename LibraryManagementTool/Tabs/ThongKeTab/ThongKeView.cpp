@@ -17,14 +17,14 @@ void ThongKeView::CreateDatasheets(LINEAR_LIST::LinearList& danhSachDauSach, DAT
 	);
 }
 
-ThongKeView::ThongKeView(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& dsDauSach) {
+ThongKeView::ThongKeView(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& titleList) {
 	this->active = false;
 	HELPER::Coordinate datasheetTopLeft(36, 120);
 
 	this->datasheetController = DATASHEET::Controller(
 		11, 6, DAU_SACH_PROPERTIES::ROW_HEIGHT, datasheetTopLeft
 	);
-	this->CreateDatasheets(dsDauSach, datasheetController);
+	this->CreateDatasheets(titleList, datasheetController);
 
 }
 

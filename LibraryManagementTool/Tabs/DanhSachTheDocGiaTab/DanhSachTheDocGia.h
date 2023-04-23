@@ -23,7 +23,7 @@ struct NewListItemForm {
 	Button* ho;
 	Button* ten;
 	Button* phai;
-	Button* submit;
+	Button* createDanhMucSach;
 
 	NewListItemForm();
 

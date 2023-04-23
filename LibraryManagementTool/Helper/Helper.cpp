@@ -223,8 +223,33 @@ std::string STR::Trim(std::string target) {
     return target;
 }
 
-int rgb(int r, int g, int b) {
-    return COLOR(r, g, b);
+void STR::Extract(std::string source, const std::string& separator, std::string*& result, int& size) {
+    if (source.length() == 0) {
+        result = nullptr;
+        size = 0;
+        return;
+    }
+
+    size_t position = 0;
+    int count = 0;
+    while ((position = source.find(separator, position)) != std::string::npos) {
+        ++count;
+        position += separator.length();
+    }
+    size = count + 1;
+
+    int index = 0;
+    position = 0;
+    result = new std::string[size];
+    while ((position = source.find(separator)) != std::string::npos) {
+        result[index++] = source.substr(0, position);
+        source.erase(0, position + separator.length());
+    }
+    result[index] = source;
+}
+
+int rgb(int red, int green, int blue) {
+    return COLOR(red, green, blue);
 }
 
 bool VALIDATOR::OnlyDigit(const std::string& str) {

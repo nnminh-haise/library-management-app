@@ -15,7 +15,9 @@ namespace DAU_SACH_TAB {
 	 * The second one is the datasheet's controller.
 	 * Function returns no value.
 	*/
-	void CreateDatasheetsFromList(LINEAR_LIST::LinearList* dsDauSach, DATASHEET::Controller& datasheetController);
+	void CreateDatasheetsFromList(LINEAR_LIST::LinearList* titleList, DATASHEET::Controller& datasheetController);
+
+	void CreateDatasheetsWithSortedCategory(DAU_SACH::DauSach** sortedList, int listSize, DATASHEET::Controller& datasheetController);
 
 	/*
 	 * This is a graphical field, with the main purpose is for searching the data on the datasheet.
@@ -74,7 +76,7 @@ namespace DAU_SACH_TAB {
 
 		void Initialize(int amount, std::string ISBN);
 
-		void SachAddFieldOnUpdate(LINEAR_LIST::LinearList& dsDauSach, ELEMENTS::InputModeController& InputController);
+		void SachAddFieldOnUpdate(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController);
 
 		void IndexChangeButtonOnAction();
 
@@ -94,30 +96,54 @@ namespace DAU_SACH_TAB {
 		bool onDisplay;
 		bool sachAddFieldDisplay;
 		HELPER::Fill background;
+		HELPER::Fill backdrop;
 		Button title;
-		Button submit;
+		Button createDanhMucSach;
 		Button inputField[7];
 		Button goBackButton;
+		Button submit;
 
 		SachAddFieldController sachAddFieldController;
 
 		ItemAddField();
 
-		bool ItemAddFieldOnUpdate(LINEAR_LIST::LinearList& dsDauSach, ELEMENTS::InputModeController& InputController);
+		bool ItemAddFieldOnUpdate(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController);
 
-		void Display(LINEAR_LIST::LinearList& dsDauSach, ELEMENTS::InputModeController& InputController);
+		void Display(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController);
 
 		bool GoBackButtonOnAction();
 	};
 }
 
+namespace CATEGORY_LINKED_LIST {
+	struct Node {
+		std::string info;
+		Node* next;
+
+		Node(std::string info, Node* next);
+	};
+	typedef Node* Pointer;
+
+	void Initialzie(Pointer& First);
+
+	bool IsEmpty(const Pointer& First);
+
+	void InsertFirst(Pointer& First, std::string info);
+
+	void InsertOrder(Pointer& First, std::string info);
+
+	void Traversal(const Pointer& First);
+}
+
+
 class DauSachTab {
 private:
 	bool active;
 	bool datasheetDisplayFlag;
-	LINEAR_LIST::LinearList* dsDauSach;
 	DATASHEET::Controller datasheetController;
 	ELEMENTS::InputModeController* inputController;
+	LINEAR_LIST::LinearList* titleList;
+	DAU_SACH::DauSach** titleListSortedByCategory;
 	Button listManipulateButtons[3];
 
 private:
@@ -127,6 +153,10 @@ private:
 
 public:
 	DauSachTab(LINEAR_LIST::LinearList* danhSachDauSach, ELEMENTS::InputModeController* InputController);
+
+	void Destructor();
+
+	void SortByCategory();
 
 	void Run();
 };

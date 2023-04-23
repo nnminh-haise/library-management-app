@@ -59,7 +59,9 @@ namespace LINKED_LIST {
 
 	int Size(const Controller& controller);
 
-	void InsertItemLast(Controller& controller, SACH::Sach item);
+	void InsertFirst(Controller& controller, SACH::Sach item);
+
+	void InsertLast(Controller& controller, SACH::Sach item);
 }
 
 namespace DAU_SACH {
@@ -126,19 +128,19 @@ namespace LINEAR_LIST {
 
 	bool IsFull(const LinearList& list);
 
+	bool InsertFirst(LinearList& list, DAU_SACH::DauSach* item);
+
 	bool InsertItem(LinearList& list, DAU_SACH::DauSach* item, int position);
 
 	bool InsertLast(LinearList& list, DAU_SACH::DauSach* item);
 
-	bool InsertOrder(LinearList& list, DAU_SACH::DauSach*& item);
+	bool InsertOrder(LinearList& list, DAU_SACH::DauSach* item);
 
 	void Traversal(const LinearList& list);
 }
 
 namespace DAU_SACH_MODULES {
-	bool DauSachExtractor(std::string data, std::string seperator, DAU_SACH::DauSach* returnData);
-
 	bool LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LIST::LinearList& danhSachDauSach);
 
-	bool UpdateListToDatabase(const std::string& filename, const LINEAR_LIST::LinearList& dsDauSach);
+	bool UpdateListToDatabase(const std::string& filename, const LINEAR_LIST::LinearList& titleList);
 }

@@ -54,8 +54,8 @@ NewListItemForm::NewListItemForm() {
 	this->phai = new Button(HELPER::Coordinate(1330, 770), 400, 60);
 	this->phai->SetPlaceholder("Phai");
 
-	this->submit = new Button(HELPER::Coordinate(1455, 855), 150, 40);
-	this->submit->SetPlaceholder("SUBMIT");
+	this->createDanhMucSach = new Button(HELPER::Coordinate(1455, 855), 150, 40);
+	this->createDanhMucSach->SetPlaceholder("SUBMIT");
 
 	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::BackgroundStyling(this->background);
 	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::TitleStyling(this->title);
@@ -63,7 +63,7 @@ NewListItemForm::NewListItemForm() {
 	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->ho);
 	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->ten);
 	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->phai);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->submit);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->createDanhMucSach);
 }
 
 NewListItemForm::~NewListItemForm() {
@@ -73,7 +73,7 @@ NewListItemForm::~NewListItemForm() {
 	delete this->ho;
 	delete this->ten;
 	delete this->phai;
-	delete this->submit;
+	delete this->createDanhMucSach;
 }
 
 void NewListItemForm::Display() {
@@ -83,7 +83,7 @@ void NewListItemForm::Display() {
 	this->ho->Display();
 	this->ten->Display();
 	this->phai->Display();
-	this->submit->Display();
+	this->createDanhMucSach->Display();
 }
 
 bool NewListItemForm::SubmitForm(AVL_TREE::Pointer& dsTheDocGia, ELEMENTS::InputModeController& InputController) {
@@ -105,10 +105,10 @@ bool NewListItemForm::SubmitForm(AVL_TREE::Pointer& dsTheDocGia, ELEMENTS::Input
 		}
 	}
 
-	if (this->submit->IsHover()) {
-		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmutButtonHoverStyling(this->submit);
+	if (this->createDanhMucSach->IsHover()) {
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmutButtonHoverStyling(this->createDanhMucSach);
 	}
-	else if (this->submit->LeftMouseClicked()) {
+	else if (this->createDanhMucSach->LeftMouseClicked()) {
 		THE_DOC_GIA::TheDocGia newItem;
 
 		newItem.SetMaThe(nextIndex);
@@ -124,7 +124,7 @@ bool NewListItemForm::SubmitForm(AVL_TREE::Pointer& dsTheDocGia, ELEMENTS::Input
 		return true;
 	}
 	else {
-		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->submit);
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->createDanhMucSach);
 	}
 
 	return false;

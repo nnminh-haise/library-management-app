@@ -53,23 +53,23 @@ void LandingView::ConstructNavigationBar() {
 }
 
 //* View Constructor function.
-LandingView::LandingView(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& dsDauSach) {
+LandingView::LandingView(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& titleList) {
 
 	THE_DOC_GIA_MODULES::LoadDanhSachTheDocGiaFromDB(CONSTANTS::THE_DOC_GIA_DB, dsTheDocGia);
-	DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(CONSTANTS::DAU_SACH_DB, dsDauSach);
+	DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(CONSTANTS::DAU_SACH_DB, titleList);
 
 	this->ConstructGraphicWindow();
 	this->graphicWindow->Activate();
 
 	this->ConstructNavigationBar();
 
-	this->dauSachView = new DauSachTab(&dsDauSach, &this->inpController);
+	this->dauSachView = new DauSachTab(&titleList, &this->inpController);
 	this->theDocGiaView = new DanhSachTheDocGiaView(dsTheDocGia);
-	this->thongKeView = new ThongKeView(dsTheDocGia, dsDauSach);
+	this->thongKeView = new ThongKeView(dsTheDocGia, titleList);
 }
 
 //* View Run function
-void LandingView::Run(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& dsDauSach) {
+void LandingView::Run(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& titleList) {
 
 	int currentTab = 0;
 	bool programStopFlag = false;
@@ -155,7 +155,7 @@ void LandingView::Run(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& d
 
 	//* Update databse before closing the program
 	THE_DOC_GIA_MODULES::UpdateListToDatabase(CONSTANTS::THE_DOC_GIA_DB, dsTheDocGia);
-	DAU_SACH_MODULES::UpdateListToDatabase(CONSTANTS::DAU_SACH_DB, dsDauSach);
+	DAU_SACH_MODULES::UpdateListToDatabase(CONSTANTS::DAU_SACH_DB, titleList);
 }
 
 //* View destructor

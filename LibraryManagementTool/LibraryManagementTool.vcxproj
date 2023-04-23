@@ -170,6 +170,11 @@
     <Library Include="Graphics\graphics.lib" />
     <Library Include="Graphics\libbgi.a" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Databases\DanhSachTheDocGiaIndex.txt" />
+    <Text Include="Databases\DAU_SACH_DB.txt" />
+    <Text Include="Databases\DOC_GIA_DB.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
