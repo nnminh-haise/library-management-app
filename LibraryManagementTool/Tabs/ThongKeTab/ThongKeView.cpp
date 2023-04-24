@@ -12,7 +12,10 @@ void ThongKeView::CreateDatasheets(LINEAR_LIST::LinearList& danhSachDauSach, DAT
 	int characterLimit[] = { 2, 4, 30, 10, 20, 4 };
 
 	datasheetController[0] = DATASHEET::Datasheet(
-		datasheetController.GetRecordCount(), datasheetController.GetAttributeCount(), datasheetController.GetRowHeight(), datasheetController.GetTopLeft(),
+		datasheetController.GetRecordCount(), 
+		datasheetController.GetAttributeCount(), 
+		datasheetController.GetRowHeight(), 
+		datasheetController.GetTopLeft(),
 		labelPlaceholder, characterLimit
 	);
 }

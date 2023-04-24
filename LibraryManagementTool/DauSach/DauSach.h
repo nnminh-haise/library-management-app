@@ -137,6 +137,8 @@ namespace LINEAR_LIST {
 	bool InsertOrder(LinearList& list, DAU_SACH::DauSach* item);
 
 	void Traversal(const LinearList& list);
+
+	DAU_SACH::DauSach* SearchByName(const LinearList& list, const std::string& titleName);
 }
 
 namespace DAU_SACH_MODULES {

@@ -24,8 +24,12 @@ namespace DAU_SACH_TAB {
 
 		for (int i = 0; i < controler.GetDatasheetCount(); ++i) {
 			controler[i] = DATASHEET::Datasheet(
-				controler.GetRecordCount(), controler.GetAttributeCount(), controler.GetRowHeight(), controler.GetTopLeft(),
-				(std::string*)DAU_SACH_PROPERTIES::LABEL_PLACEHOLDERS, (int*)DAU_SACH_PROPERTIES::CHARACTER_LIMITS
+				controler.GetRecordCount(), 
+				controler.GetAttributeCount(), 
+				controler.GetRowHeight(), 
+				controler.GetTopLeft(),
+				(std::string*)DAU_SACH_PROPERTIES::LABEL_PLACEHOLDERS, 
+				(int*)DAU_SACH_PROPERTIES::CHARACTER_LIMITS
 			);
 		}
 
@@ -103,6 +107,9 @@ namespace DAU_SACH_TAB {
 	* Search field
 	*/
 	SearchField::SearchField() {
+		this->active = false;
+		this->searchFound = false;
+
 		this->background = new HELPER::Fill(HELPER::Coordinate(1405, 120), 350, 250);
 		this->title = new Button(HELPER::Coordinate(1405, 120), 350, 50);
 		this->title->SetPlaceholder("SEARCH");
@@ -111,10 +118,39 @@ namespace DAU_SACH_TAB {
 		this->inputSearchBox->SetPlaceholder("Type here to search");
 
 		this->searchStatusBox = new Button(HELPER::Coordinate(1430, 295), 300, 50);
-		this->searchStatusBox->SetPlaceholder("Result:");
+		this->searchStatusBox->SetPlaceholder("Result: NOT FOUND!");
+	}
+
+	void SearchField::Activate() {
+		this->active = true;
+	}
+
+	void SearchField::Deactivate() {
+		this->active = false;
+	}
+
+	bool SearchField::DisplayStatus() {
+		return this->active;
+	}
+
+	void SearchField::OnAction(ELEMENTS::InputModeController* inputController) {
+		if (this->inputSearchBox->IsHover()) {
+			this->inputSearchBox->SetFillColor(rgb(246, 241, 241));
+		}
+		else if (this->inputSearchBox->LeftMouseClicked()) {
+			this->searchFound = false;
+			inputController->Activate(this->inputSearchBox, this->inputSearchBox, 30, true, true, true);
+		}
+		else {
+			DANH_SACH_DAU_SACH_SEARCH_FIELD_STYLING::SearchBoxStyling(this->inputSearchBox);
+		}
 	}
 
 	void SearchField::Display() {
+		if (this->active == false) {
+			return;
+		}
+
 		DANH_SACH_DAU_SACH_SEARCH_FIELD_STYLING::BackgroundStyling(this->background);
 		DANH_SACH_DAU_SACH_SEARCH_FIELD_STYLING::TitleStyling(this->title);
 		DANH_SACH_DAU_SACH_SEARCH_FIELD_STYLING::SearchBoxStyling(this->inputSearchBox);
@@ -130,7 +166,7 @@ namespace DAU_SACH_TAB {
 	* Sach add filed constructor
 	*/
 	SachAddField::SachAddField() {
-		this->onDisplay = false;
+		this->active = false;
 
 		this->background = HELPER::Fill(
 			HELPER::Coordinate(670, 121), 300, 617,
@@ -168,7 +204,23 @@ namespace DAU_SACH_TAB {
 		this->savebtn.SetPlaceholder("NEXT");
 	}
 
+	void SachAddField::Activate() {
+		this->active = true;
+	}
+
+	void SachAddField::Deactivate() {
+		this->active = false;
+	}
+
+	bool SachAddField::DisplayStatus() {
+		return this->active;
+	}
+
 	void SachAddField::Display() {
+		if (this->active == false) {
+			return;
+		}
+
 		this->background.Draw();
 		this->title.Display();
 		for (int i = 0; i < 5; ++i) {
@@ -181,6 +233,8 @@ namespace DAU_SACH_TAB {
 	* Sach add field controller constructor
 	*/
 	SachAddFieldController::SachAddFieldController() {
+		this->active = false;
+		
 		this->items = nullptr;
 		this->activeField = -1;
 		this->itemsCount = 0;
@@ -216,6 +270,10 @@ namespace DAU_SACH_TAB {
 	}
 
 	void SachAddFieldController::SachAddFieldOnUpdate(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& inputController) {
+		if (this->active == false) {
+			return;
+		}
+
 		for (int i = 2; i < 5; ++i) {
 			if (this->items[this->activeField].inputField[i].IsHover()) {
 				this->items[this->activeField].inputField[i].SetFillColor(rgb(233, 248, 249));
@@ -254,6 +312,10 @@ namespace DAU_SACH_TAB {
 	}
 
 	void SachAddFieldController::IndexChangeButtonOnAction() {
+		if (this->active == false) {
+			return;
+		}
+
 		int movement[2] = { -1, +1 };
 		for (int i = 0; i < 2; ++i) {
 			if (this->indexChangeButtons[i].IsHover()) {
@@ -269,7 +331,24 @@ namespace DAU_SACH_TAB {
 		}
 	}
 
+	void SachAddFieldController::Activate() {
+		this->active = true;
+	}
+
+	void SachAddFieldController::Deactivate() {
+		this->active = false;
+	}
+
+	bool SachAddFieldController::DisplayStatus() {
+		return this->active;
+	}
+
 	void SachAddFieldController::Display() {
+		if (this->active == false) {
+			return;
+		}
+		
+		this->items[this->activeField].Activate();
 		this->items[this->activeField].Display();
 
 		for (int i = 0; i < 2; ++i) {
@@ -281,7 +360,7 @@ namespace DAU_SACH_TAB {
 	* Add new item to list
 	*/
 	ItemAddField::ItemAddField() {
-		this->onDisplay = false;
+		this->active = false;
 		this->sachAddFieldDisplay = false;
 
 		this->background = HELPER::Fill(
@@ -333,13 +412,17 @@ namespace DAU_SACH_TAB {
 		this->submit.SetPlaceholder("CREATE TITLE");
 
 		this->goBackButton = Button(
-			HELPER::Coordinate(36, 921), 70, 50,
+			HELPER::Coordinate(36, 942), 70, 40,
 			rgb(24, 18, 43), rgb(236, 242, 255), rgb(24, 18, 43)
 		);
 		this->goBackButton.SetPlaceholder("<");
 	}
 
 	bool ItemAddField::ItemAddFieldOnUpdate(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController) {
+		if (this->active == false) {
+			return false;
+		}
+
 		for (int i = 0; i < 7; ++i) {
 			if (this->inputField[i].IsHover()) {
 				this->inputField[i].SetBorderColor(rgb(83, 127, 231));
@@ -384,7 +467,7 @@ namespace DAU_SACH_TAB {
 			delay(100);
 
 			if (VALIDATOR::OnlyDigit(this->inputField[6].GetPlaceholder()) && std::stoi(this->inputField[6].GetPlaceholder()) > 0) {
-				this->sachAddFieldDisplay = true;
+				this->sachAddFieldController.Activate();
 				this->sachAddFieldController.Initialize(std::stoi(this->inputField[6].GetPlaceholder()), this->inputField[0].GetPlaceholder());
 			}
 			else {
@@ -442,7 +525,23 @@ namespace DAU_SACH_TAB {
 		return false;
 	}
 
+	void ItemAddField::Activate() {
+		this->active = true;
+	}
+
+	void ItemAddField::Deactivate() {
+		this->active = false;
+	}
+
+	bool ItemAddField::DisplayStatus() {
+		return this->active;
+	}
+
 	void ItemAddField::Display(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController) {
+		if (this->active == false) {
+			return;
+		}
+
 		this->backdrop.Draw();
 		this->background.Draw();
 		this->title.Display();
@@ -453,7 +552,7 @@ namespace DAU_SACH_TAB {
 		this->submit.Display();
 		this->goBackButton.Display();
 
-		if (this->sachAddFieldDisplay) {
+		if (this->sachAddFieldController.DisplayStatus() == true) {
 			this->sachAddFieldController.Display();
 			this->sachAddFieldController.IndexChangeButtonOnAction();
 			this->sachAddFieldController.SachAddFieldOnUpdate(titleList, InputController);
@@ -461,15 +560,174 @@ namespace DAU_SACH_TAB {
 	}
 
 	bool ItemAddField::GoBackButtonOnAction() {
+		if (this->active == false) {
+			return false;
+		}
+
 		if (this->goBackButton.IsHover()) {
 			this->goBackButton.SetFillColor(rgb(130, 170, 227));
 		}
 		else if (this->goBackButton.LeftMouseClicked()) {
-			this->onDisplay = false;
+			delay(100);
+			this->active = false;
+			this->sachAddFieldController.Deactivate();
 			return true;
 		}
 		else {
-			this->goBackButton.SetFillColor(rgb(236, 242, 255)
+			this->goBackButton.SetFillColor(rgb(236, 242, 255));
+		}
+		return false;
+	}
+
+	TitleDetailDisplayField::TitleDetailDisplayField() {
+		this->active = false;
+
+		this->targetedTitle = nullptr;
+
+		this->background = HELPER::Fill(HELPER::Coordinate(1105, 120), 650, 700, rgb(238, 238, 238), BLACK);
+
+		this->title = Button(
+			HELPER::Coordinate(1105, 120), HELPER::Dimension(650, 80),
+			WHITE, //* text color
+			rgb(87, 108, 188), //* Background color
+			BLACK //* Border color
+		);
+
+		HELPER::Coordinate titleDetailsCoordinates[] = {
+			HELPER::Coordinate(1130, 232),
+			HELPER::Coordinate(1130, 314),
+			HELPER::Coordinate(1130, 397),
+			HELPER::Coordinate(1130, 480),
+			HELPER::Coordinate(1130, 563),
+		};
+		for (int i = 0; i < 5; ++i) {
+			this->titleDetails[i] = Button(
+				titleDetailsCoordinates[i], HELPER::Dimension(600, 60),
+				BLACK, //* Text color
+				WHITE, //* Fill color
+				BLACK  //* Border color
+			);
+		}
+
+		this->goBackBtn = Button(
+			HELPER::Coordinate(1685, 930), 70, 40,
+			rgb(24, 18, 43), rgb(236, 242, 255), rgb(24, 18, 43)
+		);
+		this->goBackBtn.SetPlaceholder("<");
+
+		this->bookListDatasheetController = DATASHEET::Controller(
+			16, 4, 50, HELPER::Coordinate(36, 120)
+		);
+	}
+
+	void TitleDetailDisplayField::Destructor() {
+		this->bookListDatasheetController = DATASHEET::Controller();
+	}
+
+	void TitleDetailDisplayField::Initialize(DAU_SACH::DauSach* title) {
+		this->targetedTitle = title;
+
+		this->title.SetPlaceholder(this->targetedTitle->GetTenSach());
+
+		this->titleDetails[0].SetPlaceholder(std::format("ISBN: {}", this->targetedTitle->GetISBN()));
+		this->titleDetails[1].SetPlaceholder(std::format("Category: {}", this->targetedTitle->GetTheLoai()));
+		this->titleDetails[2].SetPlaceholder(std::format("Author: {}", this->targetedTitle->GetTacGia()));
+		this->titleDetails[3].SetPlaceholder(std::format("Page number: {}", std::to_string(this->targetedTitle->GetSoTrang())));
+		this->titleDetails[4].SetPlaceholder(std::format("Public: {}", std::to_string(this->targetedTitle->GetNamXuatBan())));
+
+		this->CreateBookListDatasheet();
+	}
+
+	void TitleDetailDisplayField::CreateBookListDatasheet() {
+		std::string labels[] = { "STT", "MA SACH", "TRANG THAI", "VI TRI" };
+		int chrLimits[] = { 3, 8, 18, 20 };
+		
+		int listSize = LINKED_LIST::Size(this->targetedTitle->GetDanhMucSach());
+
+		this->bookListDatasheetController.SetDatasheetCount(
+			max(1, listSize / (CONSTANTS::MAX_ROW_COUNT - 1) + (listSize % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1))
+		);
+		this->bookListDatasheetController.InitializeDatasheets();
+
+		for (int i = 0; i < this->bookListDatasheetController.GetDatasheetCount(); ++i) {
+			this->bookListDatasheetController[i] = DATASHEET::Datasheet(
+				this->bookListDatasheetController.GetRecordCount(),
+				this->bookListDatasheetController.GetAttributeCount(),
+				this->bookListDatasheetController.GetRowHeight(),
+				this->bookListDatasheetController.GetTopLeft(),
+				labels, chrLimits
+			);
+		}
+
+		if (listSize == 0) {
+			return;
+		}
+
+		int recordIndex = 0;
+		int sheetIndex = -1;
+		int order = 0;
+		for (LINKED_LIST::Pointer p = this->targetedTitle->GetDanhMucSach().first; p != nullptr; p = p->next) {
+			++recordIndex;
+			if (recordIndex > this->bookListDatasheetController.GetRecordCount() - 1) {
+				recordIndex = 1;
+			}
+			if (recordIndex % (this->bookListDatasheetController.GetRecordCount() - 1) == 1) {
+				sheetIndex += 1;
+			}
+
+			std::string* data = new std::string[this->bookListDatasheetController.GetAttributeCount()];
+			data[0] = std::to_string(++order);
+			data[1] = p->info.GetMaSach();
+			data[2] = p->info.GetStringfyTrangThai();
+			data[3] = p->info.GetViTri();
+
+			this->bookListDatasheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
+		}
+	}
+
+	void TitleDetailDisplayField::Activate() {
+		this->active = true;
+	}
+
+	void TitleDetailDisplayField::Deactivate() {
+		this->active = false;
+	}
+
+	bool TitleDetailDisplayField::DisplayStatus() {
+		return this->active;
+	}
+	
+	void TitleDetailDisplayField::Display() {
+		if (this->active == false) {
+			return;
+		}
+
+		this->background.Draw();
+		this->title.Display();
+		for (int i = 0; i < 5; ++i) {
+			this->titleDetails[i].Display();
+		}
+
+		this->bookListDatasheetController.Display();
+
+		this->goBackBtn.Display();
+	}
+
+	bool TitleDetailDisplayField::GoBackButtonOnAction() {
+		if (this->active == false) {
+			return true;
+		}
+
+		if (this->goBackBtn.IsHover()) {
+			this->goBackBtn.SetFillColor(rgb(130, 170, 227));
+		}
+		else if (this->goBackBtn.LeftMouseClicked()) {
+			delay(100);
+			this->active = false;
+			return true;
+		}
+		else {
+			this->goBackBtn.SetFillColor(rgb(236, 242, 255)
 			);
 		}
 		return false;
@@ -559,6 +817,7 @@ DauSachTab::DauSachTab(LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeCo
 
 	//* Create datasheet form the list
 	DAU_SACH_TAB::CreateDatasheetsFromList(this->titleList, this->datasheetController);
+	this->datasheetController.ActivateDatasheets(); //* Activate datasheet by default.
 
 	//* Creating Button for adding or editting or removing item of the list
 	HELPER::Coordinate listManipulateButtonCoordinates[] = {
@@ -569,9 +828,9 @@ DauSachTab::DauSachTab(LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeCo
 	HELPER::Dimension listManipulateButtonDimension(150, 30);
 	std::string listManipulateButtonPlaceholders[] = {"NEW", "EDIT", "REMOVE"};
 	for (int i = 0; i < 3; ++i) {
-		this->listManipulateButtons[i] = Button(listManipulateButtonCoordinates[i], listManipulateButtonDimension);
-		this->listManipulateButtons[i].SetPlaceholder(listManipulateButtonPlaceholders[i]);
-		DANH_SACH_DAU_SACH_STYLING::ListManipulateButtonDefaultProperties(this->listManipulateButtons[i]);
+		this->functionalButtons[i] = Button(listManipulateButtonCoordinates[i], listManipulateButtonDimension);
+		this->functionalButtons[i].SetPlaceholder(listManipulateButtonPlaceholders[i]);
+		DANH_SACH_DAU_SACH_STYLING::ListManipulateButtonDefaultProperties(this->functionalButtons[i]);
 	}
 }
 
@@ -579,7 +838,6 @@ void DauSachTab::Destructor() {
 	delete[] this->titleListSortedByCategory;
 	delete this->inputController;
 	delete this->titleList;
-	
 }
 
 void DauSachTab::SortByCategory() {
@@ -623,72 +881,136 @@ void DauSachTab::SortByCategory() {
 
 void DauSachTab::Run() {
 
-	//* Displaying all the basic items
-	if (this->datasheetDisplayFlag == true) {
+	/**
+	 * * The tab will displays the Titles's datasheets by default.
+	 * * Follow up with the avalable function such as CREATE/UPDATE/DELETE to the Titles database.
+	 * * There will be a Search session for users to search for the needed title by searching by it's name.
+	 * * User can press the datasheet's label in order to sort the items by the corresponding label.
+	 * 
+	 * ! Currently, the datasheets are sorted by the title's names and can be sorted by the title's category.
+	*/
+	if (this->datasheetController.DisplayStatus() == true) {
+
+		//* Display datasheets
 		this->datasheetController.Display();
 		this->datasheetController.DatasheetChangeButtonUpdate();
 
+		//* Display functional buttons
 		for (int i = 0; i < 3; ++i) {
-			this->listManipulateButtons[i].Display();
+			this->functionalButtons[i].Display();
 		}
 
+		//* Display search field
+		this->searchField.Activate();
 		this->searchField.Display();
-	}
+		this->searchField.OnAction(this->inputController);
+		DAU_SACH::DauSach* searchResult = LINEAR_LIST::SearchByName(*this->titleList, this->searchField.inputSearchBox->GetPlaceholder());
+		
+		//* Title search logic
+		if (searchResult != nullptr) {
+			this->searchField.searchStatusBox->SetPlaceholder("SHOW DETAILS");
+			this->searchField.searchStatusBox->SetFillColor(rgb(97, 177, 90));
+			this->searchField.searchStatusBox->SetBorderColor(rgb(182, 227, 136));
+			this->searchField.searchStatusBox->SetTextColor(WHITE);
+			this->searchField.searchStatusBox->Display();
 
-	//* Sort by name (default option)
-	Button& titleButtonLabel = this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][2];
-	if (titleButtonLabel.IsHover()) {
-		titleButtonLabel.SetFillColor(rgb(83, 127, 231));
-		titleButtonLabel.SetTextColor(rgb(233, 248, 249));
-	}
-	else if (titleButtonLabel.LeftMouseClicked()) {
-		delay(100);
-		DAU_SACH_TAB::CreateDatasheetsFromList(this->titleList, this->datasheetController);
-	}
-	else {
-		titleButtonLabel.SetFillColor(rgb(210, 218, 255));
-		titleButtonLabel.SetTextColor(BLACK);
-	}
+			//* Shor detail button logic
+			if (this->searchField.searchStatusBox->IsHover()) {
+				this->searchField.searchStatusBox->SetFillColor(rgb(199, 242, 164));
+			}
+			else if (this->searchField.searchStatusBox->LeftMouseClicked()) {
+				this->searchField.targetDetails.Activate();
+				this->searchField.targetDetails.Initialize(searchResult);
+			}
+			else {
+				this->searchField.searchStatusBox->SetFillColor(rgb(97, 177, 90));
+			}
+		}
+		else {
+			this->searchField.targetDetails.Deactivate();
+			this->datasheetController.ActivateDatasheets();
+			DANH_SACH_DAU_SACH_SEARCH_FIELD_STYLING::StatusBoxStyling(this->searchField.searchStatusBox);
+		}
 
-	//* Sort by category logic
-	Button& categoryButtonLabel = this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][6];
-	if (categoryButtonLabel.IsHover()) {
-		categoryButtonLabel.SetFillColor(rgb(83, 127, 231));
-		categoryButtonLabel.SetTextColor(rgb(233, 248, 249));
-	}
-	else if (categoryButtonLabel.LeftMouseClicked()) {
-		delay(100);
-		this->SortByCategory();
-		DAU_SACH_TAB::CreateDatasheetsWithSortedCategory(this->titleListSortedByCategory, this->titleList->numberOfNode, this->datasheetController);
-	}
-	else {
-		categoryButtonLabel.SetFillColor(rgb(210, 218, 255));
-		categoryButtonLabel.SetTextColor(BLACK);
-	}
-
-	//* Displaying the ADD function.
-	if (this->itemAddField.onDisplay) {
-		this->itemAddField.Display(*this->titleList, *this->inputController);
-		this->datasheetDisplayFlag = this->itemAddField.GoBackButtonOnAction();
-		bool regenerateDatasheet = this->itemAddField.ItemAddFieldOnUpdate(*this->titleList, *this->inputController);
-		if (regenerateDatasheet) {
+		//* Sort by name (default option)
+		Button& titleLabelButton = this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][2];
+		if (titleLabelButton.IsHover()) {
+			titleLabelButton.SetFillColor(rgb(83, 127, 231));
+			titleLabelButton.SetTextColor(rgb(233, 248, 249));
+		}
+		else if (titleLabelButton.LeftMouseClicked()) {
+			delay(100);
 			DAU_SACH_TAB::CreateDatasheetsFromList(this->titleList, this->datasheetController);
 		}
-	}
-
-	//* ADD/EDIT/REMOVE functions - List manipulate button logic
-	for (int i = 0; i < 3; ++i) {
-		Button& currentBtn = this->listManipulateButtons[i];
-
-		if (currentBtn.IsHover()) {
-			DANH_SACH_DAU_SACH_STYLING::ListManipulateButtonHoverProperties(currentBtn);
+		else {
+			titleLabelButton.SetFillColor(rgb(210, 218, 255));
+			titleLabelButton.SetTextColor(BLACK);
 		}
-		else if (currentBtn.LeftMouseClicked()) {
-			switch (i) {
+
+		//* Sort by category logic
+		Button& categoryLabelButton = this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][6];
+		if (categoryLabelButton.IsHover()) {
+			categoryLabelButton.SetFillColor(rgb(83, 127, 231));
+			categoryLabelButton.SetTextColor(rgb(233, 248, 249));
+		}
+		else if (categoryLabelButton.LeftMouseClicked()) {
+			delay(100);
+			this->SortByCategory();
+			DAU_SACH_TAB::CreateDatasheetsWithSortedCategory(this->titleListSortedByCategory, this->titleList->numberOfNode, this->datasheetController);
+		}
+		else {
+			categoryLabelButton.SetFillColor(rgb(210, 218, 255));
+			categoryLabelButton.SetTextColor(BLACK);
+		}
+
+		/**
+		 * * Book list on action logic
+		 * * When hovering the mouse on the title's name, change the pointing button's fill color.
+		 * * When pressed at the title's name button, display the title's details.
+		 * 
+		 * ! Currently, the UI design of this function is not very good!
+		*/
+		for (int i = 1; i < this->datasheetController.GetRecordCount(); ++i) {
+			Button& titleNameButton = this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][i][2];
+
+			if (titleNameButton.IsHover()) {
+				titleNameButton.SetFillColor(rgb(244, 249, 249));
+			}
+			else if (titleNameButton.LeftMouseClicked()) {
 				delay(100);
+				this->datasheetController.DeactivateDatasheets();
+				this->titleDetailField.Activate();
+				this->titleDetailField.Initialize(
+					this->titleList->nodes[this->datasheetController.CurrentActiveDatasheet() * 15 + i - 1]
+				);
+			}
+			else {
+				if (i % 2 != 0) {
+					titleNameButton.SetFillColor(rgb(255, 251, 245));
+				}
+				else {
+					titleNameButton.SetFillColor(rgb(238, 238, 238));
+				}
+			}
+		}
+
+		/**
+		 * * Functional buttons on action logic
+		 * * When hovering the mouse on the functional buttons, highlight the corresponding button by changing the fill color.
+		 * * Pressed at each button will activate the corresponding function.
+		*/
+		for (int i = 0; i < 3; ++i) {
+			Button& currentBtn = this->functionalButtons[i];
+
+			if (currentBtn.IsHover()) {
+				DANH_SACH_DAU_SACH_STYLING::ListManipulateButtonHoverProperties(currentBtn);
+			}
+			else if (currentBtn.LeftMouseClicked()) {
+				switch (i) {
+					delay(100);
 				case (0):
-					this->datasheetDisplayFlag = false;
-					this->itemAddField.onDisplay = true;
+					this->datasheetController.DeactivateDatasheets();
+					this->itemAddField.Activate();
 					break;
 				case (1):
 					std::cerr << "edit item!\n";
@@ -696,10 +1018,53 @@ void DauSachTab::Run() {
 				case (2):
 					std::cerr << "remove item!\n";
 					break;
+				}
+			}
+			else {
+				DANH_SACH_DAU_SACH_STYLING::ListManipulateButtonDefaultProperties(currentBtn);
 			}
 		}
-		else {
-			DANH_SACH_DAU_SACH_STYLING::ListManipulateButtonDefaultProperties(currentBtn);
+	}
+
+	//* Displaying founded search target
+	if (this->searchField.targetDetails.DisplayStatus()) {
+		this->datasheetController.DeactivateDatasheets();
+		this->searchField.targetDetails.Display();
+
+		if (this->searchField.targetDetails.GoBackButtonOnAction()) {
+			this->datasheetController.ActivateDatasheets();
+			this->searchField.targetDetails.Deactivate();
+			this->searchField.inputSearchBox->SetPlaceholder("Type here to search");
+			this->searchField.searchStatusBox->SetPlaceholder("Result: NOT FOUND!");
+			DANH_SACH_DAU_SACH_SEARCH_FIELD_STYLING::StatusBoxStyling(this->searchField.searchStatusBox);
 		}
 	}
+
+	//* Displaying title's details field
+	if (this->titleDetailField.DisplayStatus() == true) {
+		this->titleDetailField.Display();
+		if (this->titleDetailField.GoBackButtonOnAction() == true) {
+			this->datasheetController.ActivateDatasheets();
+		}
+		else {
+			this->datasheetController.DeactivateDatasheets();
+		}
+	}
+
+	//* Displaying the ADD function.
+	if (this->itemAddField.DisplayStatus() == true) {
+		this->itemAddField.Display(*this->titleList, *this->inputController);
+
+		if (this->itemAddField.GoBackButtonOnAction()) {
+			this->itemAddField.Deactivate();
+			this->datasheetController.ActivateDatasheets();
+		}
+
+		bool regenerateDatasheet = this->itemAddField.ItemAddFieldOnUpdate(*this->titleList, *this->inputController);
+		if (regenerateDatasheet) {
+			DAU_SACH_TAB::CreateDatasheetsFromList(this->titleList, this->datasheetController);
+		}
+	}
+
+
 }

@@ -292,6 +292,20 @@ void LINEAR_LIST::Traversal(const LinearList& list) {
 	}
 }
 
+DAU_SACH::DauSach* LINEAR_LIST::SearchByName(const LinearList& list, const std::string& titleName) {
+	if (LINEAR_LIST::IsEmpty(list)) {
+		return nullptr;
+	}
+
+	for (int i = 0; i < list.numberOfNode; ++i) {
+		if (titleName.compare(list.nodes[i]->GetTenSach()) == 0) {
+			return list.nodes[i];
+		}
+	}
+
+	return nullptr;
+}
+
 bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LIST::LinearList& danhSachDauSach) {
 	LINEAR_LIST::Initialize(danhSachDauSach);
 	

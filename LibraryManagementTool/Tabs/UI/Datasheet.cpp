@@ -203,6 +203,7 @@ namespace DATASHEET {
 		this->attributeCount = 0;
 		this->recordCount = 0;
 		this->rowHeight = 0;
+		this->active = false;
 	}
 
 	Controller::Controller(int recordCount, int attributeCount, int rowHeight, HELPER::Coordinate topLeft) {
@@ -210,6 +211,7 @@ namespace DATASHEET {
 		this->attributeCount = attributeCount;
 		this->rowHeight = rowHeight;
 		this->topLeft = topLeft;
+		this->active = true;
 
 		this->datasheetCount = 0;
 		this->sheets = nullptr;
@@ -236,6 +238,14 @@ namespace DATASHEET {
 			this->sheets[i].Destructor();
 		}
 		delete[this->datasheetCount] this->sheets;
+	}
+
+	void Controller::ActivateDatasheets() {
+		this->active = true;
+	}
+
+	void Controller::DeactivateDatasheets() {
+		this->active = false;
 	}
 
 	Datasheet& Controller::operator[](int index) {
@@ -284,6 +294,11 @@ namespace DATASHEET {
 		return this->topLeft;
 	}
 
+	void Controller::SetDatasheetChangeButtonTopLeft(HELPER::Coordinate topLeft) {
+		this->datasheetChangeButton[0].SetTopLeft(topLeft);
+		this->datasheetChangeButton[1].SetTopLeft(HELPER::Coordinate(topLeft.x + 50, topLeft.y));
+	}
+
 	void Controller::UpdateActiveSheet(int indicator) {
 		if (indicator < 0 || indicator >= this->datasheetCount) {
 			return;
@@ -292,6 +307,10 @@ namespace DATASHEET {
 	}
 
 	void Controller::DatasheetChangeButtonUpdate() {
+		if (this->active == false) {
+			return;
+		}
+
 		int movement[2] = { -1, +1 };
 		for (int i = 0; i < 2; ++i) {
 			if (this->datasheetChangeButton[i].IsHover()) {
@@ -307,7 +326,19 @@ namespace DATASHEET {
 		}
 	}
 
+	bool Controller::DisplayStatus() {
+		return this->active;
+	}
+
 	void Controller::Display() {
+		if (this->active == false) {
+			return;
+		}
+
+		if (this->datasheetCount <= 0) {
+			return;
+		}
+
 		this->sheets[this->activeSheet].Display();
 
 		for (int i = 0; i < 2; ++i) {

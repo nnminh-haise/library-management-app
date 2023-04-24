@@ -20,25 +20,6 @@ namespace DAU_SACH_TAB {
 	void CreateDatasheetsWithSortedCategory(DAU_SACH::DauSach** sortedList, int listSize, DATASHEET::Controller& datasheetController);
 
 	/*
-	 * This is a graphical field, with the main purpose is for searching the data on the datasheet.
-	 * 
-	 * Struct gets initialzied as soon as there is any initialization of the related object happends.
-	 * You can draw out the search field with @Display method.
-	
-	! The logic behind the struct is not written yet!
-	*/
-	struct SearchField {
-		HELPER::Fill* background;
-		Button* title;
-		Button* inputSearchBox;
-		Button* searchStatusBox;
-
-		SearchField();
-
-		void Display();
-	};
-
-	/*
 	 * This is a graphical field, represented as a form, with the main purpose is for adding new item into the list.
 	 * Users have to input the data into the correct field and submit the form in order to save the data into the list.
 	 * 
@@ -46,13 +27,19 @@ namespace DAU_SACH_TAB {
 	 * You can draw out the form with @Display method.
 	*/
 	struct SachAddField {
-		bool onDisplay;
+		bool active;
 		HELPER::Fill background;
 		Button title;
 		Button savebtn;
 		Button inputField[5];
 
 		SachAddField();
+
+		void Activate();
+
+		void Deactivate();
+
+		bool DisplayStatus();
 
 		void Display();
 	};
@@ -65,6 +52,7 @@ namespace DAU_SACH_TAB {
 	 * You can draw one current form with @Display method.
 	*/
 	struct SachAddFieldController {
+		bool active;
 		SachAddField* items;
 		int itemsCount;
 		int activeField;
@@ -80,6 +68,12 @@ namespace DAU_SACH_TAB {
 
 		void IndexChangeButtonOnAction();
 
+		void Activate();
+
+		void Deactivate();
+
+		bool DisplayStatus();
+
 		void Display();
 	};
 
@@ -93,7 +87,7 @@ namespace DAU_SACH_TAB {
 	 * You can draw the form with @Display method.
 	*/
 	struct ItemAddField {
-		bool onDisplay;
+		bool active;
 		bool sachAddFieldDisplay;
 		HELPER::Fill background;
 		HELPER::Fill backdrop;
@@ -109,9 +103,78 @@ namespace DAU_SACH_TAB {
 
 		bool ItemAddFieldOnUpdate(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController);
 
+		void Activate();
+
+		void Deactivate();
+
+		bool DisplayStatus();
+
 		void Display(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController);
 
 		bool GoBackButtonOnAction();
+	};
+
+	/**
+	 * * This is a grphical field, with the main purpose is displaying the detail infomations of one targeted title.
+	 * * The title's name, ISBN, author, page number, public year will be shown and a list of the corresponding books will be shown
+	 * * as a set of datasheets
+	*/
+	struct TitleDetailDisplayField {
+		bool active;
+		DAU_SACH::DauSach* targetedTitle;
+		HELPER::Fill background;
+		Button title;
+		Button titleDetails[5];
+		Button goBackBtn;
+		DATASHEET::Controller bookListDatasheetController;
+
+		TitleDetailDisplayField();
+
+		void Destructor();
+
+		void Initialize(DAU_SACH::DauSach* title);
+
+		void CreateBookListDatasheet();
+
+		void Activate();
+
+		void Deactivate();
+
+		bool DisplayStatus();
+
+		void Display();
+
+		bool GoBackButtonOnAction();
+	};
+
+	/*
+	 * This is a graphical field, with the main purpose is for searching the data on the datasheet.
+	 *
+	 * Struct gets initialzied as soon as there is any initialization of the related object happends.
+	 * You can draw out the search field with @Display method.
+
+	! The logic behind the struct is not written yet!
+	*/
+	struct SearchField {
+		bool active;
+		bool searchFound;
+		HELPER::Fill* background;
+		Button* title;
+		Button* inputSearchBox;
+		Button* searchStatusBox;
+		TitleDetailDisplayField targetDetails;
+
+		SearchField();
+
+		void Activate();
+
+		void Deactivate();
+
+		bool DisplayStatus();
+
+		void OnAction(ELEMENTS::InputModeController* InputController);
+
+		void Display();
 	};
 }
 
@@ -144,12 +207,14 @@ private:
 	ELEMENTS::InputModeController* inputController;
 	LINEAR_LIST::LinearList* titleList;
 	DAU_SACH::DauSach** titleListSortedByCategory;
-	Button listManipulateButtons[3];
+	Button functionalButtons[3];
 
 private:
 	DAU_SACH_TAB::SearchField searchField;
 
 	DAU_SACH_TAB::ItemAddField itemAddField;
+
+	DAU_SACH_TAB::TitleDetailDisplayField titleDetailField;
 
 public:
 	DauSachTab(LINEAR_LIST::LinearList* danhSachDauSach, ELEMENTS::InputModeController* InputController);

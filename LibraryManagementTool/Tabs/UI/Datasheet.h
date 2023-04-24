@@ -69,6 +69,7 @@ namespace DATASHEET {
 
     class Controller {
     private:
+        bool active;
         int recordCount;
         int attributeCount;
         int rowHeight;
@@ -88,6 +89,10 @@ namespace DATASHEET {
         Controller(int recordCount, int attributeCount, int rowHeight, HELPER::Coordinate topLeft);
 
         ~Controller();
+
+        void ActivateDatasheets();
+
+        void DeactivateDatasheets();
 
         Datasheet& operator[] (int index);
 
@@ -109,9 +114,13 @@ namespace DATASHEET {
 
         HELPER::Coordinate GetTopLeft();
 
+        void SetDatasheetChangeButtonTopLeft(HELPER::Coordinate topLeft);
+
         void UpdateActiveSheet(int indicator);
 
         void DatasheetChangeButtonUpdate();
+
+        bool DisplayStatus();
 
         void Display();
     };
