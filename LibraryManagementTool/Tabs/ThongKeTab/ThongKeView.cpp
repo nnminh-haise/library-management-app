@@ -8,7 +8,7 @@ void ThongKeView::CreateDatasheets(LINEAR_LIST::LinearList& danhSachDauSach, DAT
 	datasheetController.SetDatasheetCount(1);
 	datasheetController.InitializeDatasheets();
 
-	std::string labelPlaceholder[] = {"STT", "ISBN", "TEN SACH", "THE LOAI", "TAC GIA", "SO SACH DA MUON"};
+	std::string labelPlaceholder[] = {"STT", "isbn", "TEN BOOK", "THE LOAI", "TAC GIA", "SO BOOK DA MUON"};
 	int characterLimit[] = { 2, 4, 30, 10, 20, 4 };
 
 	datasheetController[0] = DATASHEET::Datasheet(

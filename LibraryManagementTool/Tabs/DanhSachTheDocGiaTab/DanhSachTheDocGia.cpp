@@ -115,7 +115,7 @@ bool NewListItemForm::SubmitForm(AVL_TREE::Pointer& dsTheDocGia, ELEMENTS::Input
 		newItem.SetHo(STR::Trim(this->ho->GetPlaceholder()));
 		newItem.SetTen(STR::Trim(this->ten->GetPlaceholder()));
 		newItem.SetPhai(this->phai->GetPlaceholder() == "NAM" ? THE_DOC_GIA::GioiTinh::NAM : THE_DOC_GIA::GioiTinh::NU);
-		newItem.SetTrangThai(THE_DOC_GIA::TrangThaiThe::THE_HOAT_DONG);
+		newItem.SetStatus(THE_DOC_GIA::TrangThaiThe::THE_HOAT_DONG);
 		newItem.SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controller());
 		delay(100);
 
@@ -195,7 +195,7 @@ void DeleteItemInListForm::Display(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENT
 		if (this->searchResult != nullptr) {
 			int currentBorrowedBooksCount = MUON_TRA_MODULES::CountBorrowedBooks(this->searchResult->info.GetDanhSachMuonTra());
 			if (currentBorrowedBooksCount != 0) {
-				std::cerr << std::format("[ERROR] DOC GIA DANG MUON SACH! KHONG THE XOA DOC GIA!\n");
+				std::cerr << std::format("[ERROR] DOC GIA DANG MUON BOOK! KHONG THE XOA DOC GIA!\n");
 			}
 			else {
 				this->searchTargetFound = true;
@@ -203,7 +203,7 @@ void DeleteItemInListForm::Display(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENT
 
 			this->hoTen->SetPlaceholder(this->searchResult->info.GetFullName());
 			this->phai->SetPlaceholder(this->searchResult->info.GetStringfyPhai());
-			this->trangThai->SetPlaceholder(this->searchResult->info.GetStringfyTrangThai());
+			this->trangThai->SetPlaceholder(this->searchResult->info.StringfyStatus());
 
 			this->hoTen->Display();
 			this->phai->Display();
@@ -382,7 +382,7 @@ bool EditItemInListForm::SubmitForm(AVL_TREE::Pointer& danhSachTheDocGia, ELEMEN
 				this->searchResult->info.SetPhai(
 					this->phai->GetPlaceholder() == "NAM" ? THE_DOC_GIA::GioiTinh::NAM : THE_DOC_GIA::GioiTinh::NU
 				);
-				this->searchResult->info.SetTrangThai(
+				this->searchResult->info.SetStatus(
 					this->trangThai->GetPlaceholder() == "BI KHOA" ? THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA : THE_DOC_GIA::TrangThaiThe::THE_HOAT_DONG
 				);
 
@@ -447,8 +447,8 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 			data[2] = currentNode->info.GetHo();
 			data[3] = currentNode->info.GetTen();
 			data[4] = currentNode->info.GetStringfyPhai();
-			data[5] = currentNode->info.GetStringfyTrangThai();
-			data[6] = "SACH DANG MUON";
+			data[5] = currentNode->info.StringfyStatus();
+			data[6] = "BOOK DANG MUON";
 
 			(*datasheetController)[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 
@@ -498,8 +498,8 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int 
 		data[2] = arr[i]->info.GetHo();
 		data[3] = arr[i]->info.GetTen();
 		data[4] = arr[i]->info.GetStringfyPhai();
-		data[5] = arr[i]->info.GetStringfyTrangThai();
-		data[6] = "SACH DANG MUON";
+		data[5] = arr[i]->info.StringfyStatus();
+		data[6] = "BOOK DANG MUON";
 
 		(*datasheetController)[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 

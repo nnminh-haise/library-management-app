@@ -6,33 +6,45 @@
 #include "../DanhSachTheDocGiaTab/DanhSachTheDocGia.h"
 #include "../DanhSachDauSachTab/DanhSachDauSachView.h"
 #include "../ThongKeTab/ThongKeView.h"
-#include "LandingViewStyling.h"
 
 class LandingView {
-private:
-	ELEMENTS::Window* graphicWindow;
-	HELPER::Fill* navigationBarBackground;
-	Button* programTitle;
-	Button* tabs;
-	ELEMENTS::CloseButton* closeBtn;
-
-	DauSachTab* dauSachView;
-	DanhSachTheDocGiaView* theDocGiaView;
-	ThongKeView* thongKeView;
-
-	ELEMENTS::InputModeController inpController;
-
 private:
 	void ConstructGraphicWindow();
 
 	void ConstructNavigationBar();
 
+	void TabsOnUpdate();
+
+	void CloseButtonOnUpdate();
+
 public:
-	LandingView(AVL_TREE::Pointer& danhSachTheDocGia, LINEAR_LIST::LinearList& danhSachDauSach);
+	LandingView(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList);
 
 	~LandingView();
 
-	void Run(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& titleList);
+	void Run();
+
+private:
+	//* Internal storage's pointer
+	AVL_TREE::Pointer* readerList;
+	LINEAR_LIST::LinearList* titleList;
+
+	//* Tabs
+	DauSachTab* dauSachView;
+	DanhSachTheDocGiaView* theDocGiaView;
+	ThongKeView* thongKeView;
+
+	//* Landing view elements
+	ELEMENTS::Window* graphicWindow;
+	HELPER::Fill* navigationBarBackground;
+	Button* programTitle;
+	Button* tabs;
+	ELEMENTS::CloseButton* closeBtn;
+	bool programStopFlag;
+	int currentTab;
+	
+	//* Core
+	ELEMENTS::InputModeController inpController;
 };
 
 

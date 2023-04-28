@@ -6,25 +6,16 @@
 
 //* Program's entrance
 int main() {
+	AVL_TREE::Pointer readerList;
+	AVL_TREE::Initialize(readerList);
 
-	/**
-	* Internal storage declaration.
-	* @danhSachTheDocgia: AVL Tree
-	*/
-	AVL_TREE::Pointer danhSachTheDocgia;
-	AVL_TREE::Initialize(danhSachTheDocgia);
-
-	LINEAR_LIST::LinearList danhSachDauSach;
-	LINEAR_LIST::Initialize(danhSachDauSach);
+	LINEAR_LIST::LinearList titleList;
+	LINEAR_LIST::Initialize(titleList);
 
 	//* Run program main function
-	LandingView mainView(danhSachTheDocgia, danhSachDauSach);
-	mainView.Run(danhSachTheDocgia, danhSachDauSach);
-
-	//test();
-
+	LandingView mainView(&readerList, &titleList);
+	mainView.Run();
 	
-
 	return 0;
 }
 

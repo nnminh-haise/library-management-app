@@ -2,46 +2,44 @@
 
 #include <string>
 
-namespace SACH {
-	enum TrangThaiSach {
-		CHO_MUON_DUOC, DA_CO_DOC_GIA_MUON, DA_THANH_LY
-	};
+namespace BOOK {
+	enum Status { AVAILABLE, UNAVAILABLE, SOLD };
 
-	class Sach {
-	private:
-		std::string MaSach;
-		TrangThaiSach TrangThai;
-		std::string ViTri;
-
+	class Book {
 	public:
-		Sach();
+		Book();
 
-		Sach(std::string MaSach, TrangThaiSach TrangThai, std::string ViTri);
+		Book(std::string id, Status status, std::string description);
 
-		void SetMaSach(std::string MaSach);
+		void SetID(std::string id);
 
-		std::string GetMaSach();
+		std::string GetID();
 
-		void SetTrangThai(TrangThaiSach TrangThai);
+		void SetStatus(Status status);
 
-		TrangThaiSach GetTrangThai();
+		Status GetStatus();
 
-		std::string GetStringfyTrangThai();
+		std::string StringfyStatus();
 
-		void SetViTri(std::string ViTri);
+		void SetDescription(std::string description);
 
-		std::string GetViTri();
+		std::string GetDescription();
+
+	private:
+		std::string id;
+		Status status;
+		std::string description;
 	};
 }
 
 namespace LINKED_LIST {
 	struct Node {
-		SACH::Sach info;
+		BOOK::Book info;
 		Node* next;
 
 		Node();
 
-		Node(SACH::Sach info, Node* next);
+		Node(BOOK::Book info, Node* next);
 	};
 
 	typedef Node* Pointer;
@@ -59,54 +57,57 @@ namespace LINKED_LIST {
 
 	int Size(const Controller& controller);
 
-	void InsertFirst(Controller& controller, SACH::Sach item);
+	void InsertFirst(Controller& controller, BOOK::Book item);
 
-	void InsertLast(Controller& controller, SACH::Sach item);
+	void InsertLast(Controller& controller, BOOK::Book item);
+
+	bool DeleteAt(Controller& controller, BOOK::Book item);
 }
 
-namespace DAU_SACH {
-	class DauSach {
+namespace BOOK_TITLE {
+
+	class BookTitle {
 	private:
-		std::string ISBN;
-		std::string TenSach;
-		int SoTrang;
-		std::string TacGia;
-		int NamXuatBan;
-		std::string TheLoai;
-		LINKED_LIST::Controller DanhMucSach;
+		std::string isbn;
+		std::string title;
+		int pageCount;
+		std::string author;
+		int publiationYear;
+		std::string category;
+		LINKED_LIST::Controller catalogue;
 
 	public:
-		DauSach();
+		BookTitle();
 
-		DauSach(std::string ISBN, std::string TenSach, int SoTrang, std::string TacGia, int NamXuatBan, std::string TheLoai, LINKED_LIST::Controller DanhMucSach);
+		BookTitle(std::string isbn, std::string title, int pageCount, std::string author, int publiationYear, std::string category, LINKED_LIST::Controller catalogue);
 
-		void SetISBN(std::string ISBN);
+		void SetISBN(std::string isbn);
 
 		std::string GetISBN();
 
-		void SetTenSach(std::string TenSach);
+		void SetTitle(std::string title);
 
-		std::string GetTenSach();
+		std::string GetTitle();
 
-		void SetSoTrang(int sotrang);
+		void SetPageCount(int sotrang);
 
-		int GetSoTrang();
+		int GetPageCount();
 		
-		void SetTacGia(std::string TacGia);
+		void SetAuthor(std::string author);
 
-		std::string GetTacGia();
+		std::string GetAuthor();
 
-		void SetNamXuatBan(int NamXuatBan);
+		void SetPublicationYear(int publiationYear);
 
-		int GetNamXuatBan();
+		int GetPublicationYear();
 
-		void SetTheLoai(std::string TheLoai);
+		void SetCategory(std::string category);
 
-		std::string GetTheLoai();
+		std::string GetCategory();
 
-		void SetDanhMucSach(LINKED_LIST::Controller DanhMucSach);
+		void SetCatalogue(LINKED_LIST::Controller catalogue);
 
-		LINKED_LIST::Controller GetDanhMucSach();
+		LINKED_LIST::Controller GetCatalogue();
 
 		void Log();
 	};
@@ -117,7 +118,7 @@ namespace LINEAR_LIST {
 
 	struct LinearList {
 		unsigned int numberOfNode;
-		DAU_SACH::DauSach* nodes[MAX_SIZE];
+		BOOK_TITLE::BookTitle* nodes[MAX_SIZE];
 
 		LinearList();
 	};
@@ -128,17 +129,17 @@ namespace LINEAR_LIST {
 
 	bool IsFull(const LinearList& list);
 
-	bool InsertFirst(LinearList& list, DAU_SACH::DauSach* item);
+	bool InsertFirst(LinearList& list, BOOK_TITLE::BookTitle* item);
 
-	bool InsertItem(LinearList& list, DAU_SACH::DauSach* item, int position);
+	bool InsertItem(LinearList& list, BOOK_TITLE::BookTitle* item, int position);
 
-	bool InsertLast(LinearList& list, DAU_SACH::DauSach* item);
+	bool InsertLast(LinearList& list, BOOK_TITLE::BookTitle* item);
 
-	bool InsertOrder(LinearList& list, DAU_SACH::DauSach* item);
+	bool InsertOrder(LinearList& list, BOOK_TITLE::BookTitle* item);
 
 	void Traversal(const LinearList& list);
 
-	DAU_SACH::DauSach* SearchByName(const LinearList& list, const std::string& titleName);
+	BOOK_TITLE::BookTitle* SearchByName(const LinearList& list, const std::string& titleName);
 }
 
 namespace DAU_SACH_MODULES {

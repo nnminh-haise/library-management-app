@@ -253,7 +253,7 @@ bool ELEMENTS::InputModeController::InInputMode() {
 }
 
 bool ELEMENTS::InputModeController::KeyValidation(const char& chr) {
-	if (this->acceptSpace == false && chr == ELEMENTS::SpecialKey::SPACE) {
+	if (this->acceptSpace == false && chr == ELEMENTS::Keyboard::SPACE) {
 		return false;
 	}
 
@@ -269,7 +269,7 @@ bool ELEMENTS::InputModeController::KeyValidation(const char& chr) {
 }
 
 void ELEMENTS::InputModeController::ActionOnKey(const char& chr) {
-	if (chr == ELEMENTS::SpecialKey::ENTER || chr == ELEMENTS::SpecialKey::ESCAPE) {
+	if (chr == ELEMENTS::Keyboard::ENTER || chr == ELEMENTS::Keyboard::ESCAPE) {
 		if (this->outputTextBox != nullptr) {
 			this->outputTextBox->SetPlaceholder(this->inputString);
 		}
@@ -281,10 +281,10 @@ void ELEMENTS::InputModeController::ActionOnKey(const char& chr) {
 	else if (this->inputString.length() != 0 && this->inputString[this->inputString.length() - 1] == ' ' && chr == ' ') {
 		return;
 	}
-	else if (this->inputString.length() == 0 && chr == ELEMENTS::SpecialKey::BACKSPACE) {
+	else if (this->inputString.length() == 0 && chr == ELEMENTS::Keyboard::BACKSPACE) {
 		return;
 	}
-	else if (chr == ELEMENTS::SpecialKey::BACKSPACE) {
+	else if (chr == ELEMENTS::Keyboard::BACKSPACE) {
 		this->inputString.pop_back();
 		this->characterCount--;
 		this->currentTextBox->SetPlaceholder(this->inputString);

@@ -49,18 +49,18 @@ namespace DAU_SACH_TAB {
 			std::string* data = new std::string[controler.GetAttributeCount()];
 			data[0] = std::to_string(i + 1);
 			data[1] = titleList->nodes[i]->GetISBN();
-			data[2] = titleList->nodes[i]->GetTenSach();
-			data[3] = std::to_string(titleList->nodes[i]->GetSoTrang());
-			data[4] = titleList->nodes[i]->GetTacGia();
-			data[5] = std::to_string(titleList->nodes[i]->GetNamXuatBan());
-			data[6] = titleList->nodes[i]->GetTheLoai();
-			data[7] = "DANH MUC SACH";
+			data[2] = titleList->nodes[i]->GetTitle();
+			data[3] = std::to_string(titleList->nodes[i]->GetPageCount());
+			data[4] = titleList->nodes[i]->GetAuthor();
+			data[5] = std::to_string(titleList->nodes[i]->GetPublicationYear());
+			data[6] = titleList->nodes[i]->GetCategory();
+			data[7] = "DANH MUC BOOK";
 
 			controler[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 		}
 	}
 
-	void CreateDatasheetsWithSortedCategory(DAU_SACH::DauSach** sortedList, int listSize, DATASHEET::Controller& datasheetController) {
+	void CreateDatasheetsWithSortedCategory(BOOK_TITLE::BookTitle** sortedList, int listSize, DATASHEET::Controller& datasheetController) {
 		datasheetController.SetDatasheetCount(
 			listSize / (CONSTANTS::MAX_ROW_COUNT - 1) + (listSize % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
 		);
@@ -92,12 +92,12 @@ namespace DAU_SACH_TAB {
 			std::string* data = new std::string[datasheetController.GetAttributeCount()];
 			data[0] = std::to_string(i + 1);
 			data[1] = sortedList[i]->GetISBN();
-			data[2] = sortedList[i]->GetTenSach();
-			data[3] = std::to_string(sortedList[i]->GetSoTrang());
-			data[4] = sortedList[i]->GetTacGia();
-			data[5] = std::to_string(sortedList[i]->GetNamXuatBan());
-			data[6] = sortedList[i]->GetTheLoai();
-			data[7] = "DANH MUC SACH";
+			data[2] = sortedList[i]->GetTitle();
+			data[3] = std::to_string(sortedList[i]->GetPageCount());
+			data[4] = sortedList[i]->GetAuthor();
+			data[5] = std::to_string(sortedList[i]->GetPublicationYear());
+			data[6] = sortedList[i]->GetCategory();
+			data[7] = "DANH MUC BOOK";
 
 			datasheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 		}
@@ -163,7 +163,7 @@ namespace DAU_SACH_TAB {
 	}
 
 	/**
-	* Sach add filed constructor
+	* Book add filed constructor
 	*/
 	SachAddField::SachAddField() {
 		this->active = false;
@@ -174,7 +174,7 @@ namespace DAU_SACH_TAB {
 		);
 
 		this->title = Button(HELPER::Coordinate(670, 121), 300, 50);
-		this->title.SetPlaceholder("SACH");
+		this->title.SetPlaceholder("BOOK");
 		this->title.SetFillColor(rgb(87, 108, 188));
 		this->title.SetBorderColor(rgb(24, 18, 43));
 		this->title.SetTextColor(rgb(239, 245, 245));
@@ -230,7 +230,7 @@ namespace DAU_SACH_TAB {
 	}
 
 	/**
-	* Sach add field controller constructor
+	* Book add field controller constructor
 	*/
 	SachAddFieldController::SachAddFieldController() {
 		this->active = false;
@@ -258,13 +258,13 @@ namespace DAU_SACH_TAB {
 		delete[this->itemsCount] this->items;
 	}
 
-	void SachAddFieldController::Initialize(int amount, std::string ISBN) {
+	void SachAddFieldController::Initialize(int amount, std::string isbn) {
 		this->itemsCount = amount;
 		this->items = new DAU_SACH_TAB::SachAddField[amount];
 		this->activeField = 0;
 
 		for (int i = 1; i <= amount; ++i) {
-			this->items[i - 1].inputField[0].SetPlaceholder(ISBN + std::to_string(i));
+			this->items[i - 1].inputField[0].SetPlaceholder(isbn + std::to_string(i));
 			this->items[i - 1].inputField[1].SetPlaceholder("CHO MUON DUOC");
 		}
 	}
@@ -374,7 +374,7 @@ namespace DAU_SACH_TAB {
 		);
 
 		this->title = Button(HELPER::Coordinate(36, 120), 600, 50);
-		this->title.SetPlaceholder("DAU SACH");
+		this->title.SetPlaceholder("DAU BOOK");
 		this->title.SetFillColor(rgb(87, 108, 188));
 		this->title.SetBorderColor(rgb(24, 18, 43));
 		this->title.SetTextColor(rgb(239, 245, 245));
@@ -389,7 +389,7 @@ namespace DAU_SACH_TAB {
 			HELPER::Coordinate(61, 692)
 		};
 		std::string inputFiledPlaceholders[7] = {
-			"ISBN", "Ten sach", "So trang", "Tac gia", "Nam xuat ban", "The loai", "Kich thuoc danh muc sach"
+			"isbn", "Ten sach", "So trang", "Tac gia", "Nam xuat ban", "The loai", "Kich thuoc danh muc sach"
 		};
 		for (int i = 0; i < 7; ++i) {
 			this->inputField[i] = Button(inputFieldCoordinates[i], 550, 60);
@@ -409,7 +409,7 @@ namespace DAU_SACH_TAB {
 			HELPER::Coordinate(428, 842), 250, 60,
 			rgb(24, 18, 43), rgb(145, 216, 228), rgb(24, 18, 43)
 		);
-		this->submit.SetPlaceholder("CREATE TITLE");
+		this->submit.SetPlaceholder("CREATE BOOK_TITLE");
 
 		this->goBackButton = Button(
 			HELPER::Coordinate(36, 942), 70, 40,
@@ -484,33 +484,33 @@ namespace DAU_SACH_TAB {
 		}
 		else if (this->submit.LeftMouseClicked()) {
 			delay(100);
-			DAU_SACH::DauSach* newTitle = new DAU_SACH::DauSach;
+			BOOK_TITLE::BookTitle* newTitle = new BOOK_TITLE::BookTitle;
 
 			newTitle->SetISBN(this->inputField[0].GetPlaceholder());
-			newTitle->SetTenSach(this->inputField[1].GetPlaceholder());
-			newTitle->SetSoTrang(std::stoi(this->inputField[2].GetPlaceholder()));
-			newTitle->SetTacGia(this->inputField[3].GetPlaceholder());
-			newTitle->SetNamXuatBan(std::stoi(this->inputField[4].GetPlaceholder()));
-			newTitle->SetTheLoai(this->inputField[5].GetPlaceholder());
+			newTitle->SetTitle(this->inputField[1].GetPlaceholder());
+			newTitle->SetPageCount(std::stoi(this->inputField[2].GetPlaceholder()));
+			newTitle->SetAuthor(this->inputField[3].GetPlaceholder());
+			newTitle->SetPublicationYear(std::stoi(this->inputField[4].GetPlaceholder()));
+			newTitle->SetCategory(this->inputField[5].GetPlaceholder());
 
 			if (std::stoi(this->inputField[6].GetPlaceholder()) == 0) {
-				newTitle->SetDanhMucSach(LINKED_LIST::Controller());
+				newTitle->SetCatalogue(LINKED_LIST::Controller());
 			}
 			else {
 				LINKED_LIST::Controller newBookList;
 				LINKED_LIST::Initialize(newBookList);
 				for (int i = 0; i < this->sachAddFieldController.itemsCount; ++i) {
-					SACH::Sach newBook;
-					newBook.SetMaSach(this->sachAddFieldController.items[i].inputField[0].GetPlaceholder());
-					newBook.SetTrangThai(SACH::TrangThaiSach::CHO_MUON_DUOC);
-					newBook.SetViTri(std::format("HANG {} COT {} TU {}", 
+					BOOK::Book newBook;
+					newBook.SetID(this->sachAddFieldController.items[i].inputField[0].GetPlaceholder());
+					newBook.SetStatus(BOOK::Status::AVAILABLE);
+					newBook.SetDescription(std::format("HANG {} COT {} TU {}", 
 						this->sachAddFieldController.items[i].inputField[2].GetPlaceholder(),
 						this->sachAddFieldController.items[i].inputField[3].GetPlaceholder(),
 						this->sachAddFieldController.items[i].inputField[4].GetPlaceholder()
 					));
 					LINKED_LIST::InsertLast(newBookList, newBook);
 				}
-				newTitle->SetDanhMucSach(newBookList);
+				newTitle->SetCatalogue(newBookList);
 			}
 
 			LINEAR_LIST::InsertOrder(titleList, newTitle);
@@ -618,31 +618,40 @@ namespace DAU_SACH_TAB {
 		this->bookListDatasheetController = DATASHEET::Controller(
 			16, 4, 50, HELPER::Coordinate(36, 120)
 		);
+
+		this->deleteBookBtn = Button(
+			HELPER::Coordinate(229, 945), 150, 40,
+			rgb(57, 62, 70),
+			rgb(219, 223, 253),
+			rgb(219, 223, 253)
+		);
+		this->deleteBookBtn.SetPlaceholder("DELETE");
+		this->deleteBook = nullptr;
 	}
 
 	void TitleDetailDisplayField::Destructor() {
 		this->bookListDatasheetController = DATASHEET::Controller();
 	}
 
-	void TitleDetailDisplayField::Initialize(DAU_SACH::DauSach* title) {
+	void TitleDetailDisplayField::Initialize(BOOK_TITLE::BookTitle* title) {
 		this->targetedTitle = title;
 
-		this->title.SetPlaceholder(this->targetedTitle->GetTenSach());
+		this->title.SetPlaceholder(this->targetedTitle->GetTitle());
 
-		this->titleDetails[0].SetPlaceholder(std::format("ISBN: {}", this->targetedTitle->GetISBN()));
-		this->titleDetails[1].SetPlaceholder(std::format("Category: {}", this->targetedTitle->GetTheLoai()));
-		this->titleDetails[2].SetPlaceholder(std::format("Author: {}", this->targetedTitle->GetTacGia()));
-		this->titleDetails[3].SetPlaceholder(std::format("Page number: {}", std::to_string(this->targetedTitle->GetSoTrang())));
-		this->titleDetails[4].SetPlaceholder(std::format("Public: {}", std::to_string(this->targetedTitle->GetNamXuatBan())));
+		this->titleDetails[0].SetPlaceholder(std::format("isbn: {}", this->targetedTitle->GetISBN()));
+		this->titleDetails[1].SetPlaceholder(std::format("Category: {}", this->targetedTitle->GetCategory()));
+		this->titleDetails[2].SetPlaceholder(std::format("Author: {}", this->targetedTitle->GetAuthor()));
+		this->titleDetails[3].SetPlaceholder(std::format("Page number: {}", std::to_string(this->targetedTitle->GetPageCount())));
+		this->titleDetails[4].SetPlaceholder(std::format("Public: {}", std::to_string(this->targetedTitle->GetPublicationYear())));
 
 		this->CreateBookListDatasheet();
 	}
 
 	void TitleDetailDisplayField::CreateBookListDatasheet() {
-		std::string labels[] = { "STT", "MA SACH", "TRANG THAI", "VI TRI" };
+		std::string labels[] = { "STT", "MA BOOK", "TRANG THAI", "VI TRI" };
 		int chrLimits[] = { 3, 8, 18, 20 };
 		
-		int listSize = LINKED_LIST::Size(this->targetedTitle->GetDanhMucSach());
+		int listSize = LINKED_LIST::Size(this->targetedTitle->GetCatalogue());
 
 		this->bookListDatasheetController.SetDatasheetCount(
 			max(1, listSize / (CONSTANTS::MAX_ROW_COUNT - 1) + (listSize % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1))
@@ -666,7 +675,7 @@ namespace DAU_SACH_TAB {
 		int recordIndex = 0;
 		int sheetIndex = -1;
 		int order = 0;
-		for (LINKED_LIST::Pointer p = this->targetedTitle->GetDanhMucSach().first; p != nullptr; p = p->next) {
+		for (LINKED_LIST::Pointer p = this->targetedTitle->GetCatalogue().first; p != nullptr; p = p->next) {
 			++recordIndex;
 			if (recordIndex > this->bookListDatasheetController.GetRecordCount() - 1) {
 				recordIndex = 1;
@@ -677,9 +686,9 @@ namespace DAU_SACH_TAB {
 
 			std::string* data = new std::string[this->bookListDatasheetController.GetAttributeCount()];
 			data[0] = std::to_string(++order);
-			data[1] = p->info.GetMaSach();
-			data[2] = p->info.GetStringfyTrangThai();
-			data[3] = p->info.GetViTri();
+			data[1] = p->info.GetID();
+			data[2] = p->info.StringfyStatus();
+			data[3] = p->info.GetDescription();
 
 			this->bookListDatasheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 		}
@@ -710,7 +719,92 @@ namespace DAU_SACH_TAB {
 
 		this->bookListDatasheetController.Display();
 
+		if (this->deleteBookBtn.IsActive() == true) {
+			this->deleteBookBtn.Display();
+
+			if (this->deleteBookBtn.IsHover()) {
+				this->deleteBookBtn.SetFillColor(rgb(155, 163, 235));
+				this->deleteBookBtn.SetBorderColor(rgb(36, 47, 155));
+				this->deleteBookBtn.SetTextColor(rgb(234, 253, 252));
+			}
+			else if (this->deleteBookBtn.LeftMouseClicked()) {
+				//todo: LINKED_LIST::DeleteAt function is not working!
+				
+				LINKED_LIST::Controller buffer = this->targetedTitle->GetCatalogue();
+				if (LINKED_LIST::DeleteAt(buffer, this->deleteBook->info)) {
+					std::cerr << "delete!\n";
+					this->targetedTitle->SetCatalogue(buffer);
+					this->CreateBookListDatasheet();
+				}
+				else {
+					std::cerr << "not delete\n";
+				}
+			}
+			else {
+				this->deleteBookBtn.SetFillColor(rgb(219, 223, 253));
+				this->deleteBookBtn.SetBorderColor(rgb(219, 223, 253));
+				this->deleteBookBtn.SetTextColor(rgb(57, 62, 70));
+			}
+		}
+
 		this->goBackBtn.Display();
+	}
+
+	void TitleDetailDisplayField::DeleteBookButtonOnAction() {
+		if (this->bookListDatasheetController.GetDatasheetCount() == 0) {
+			return;
+		}
+
+		for (int i = 1; i < this->bookListDatasheetController.GetRecordCount(); ++i) {	
+			Button& bookIdButton = this->bookListDatasheetController[this->bookListDatasheetController.CurrentActiveDatasheet()][i][1];
+
+			if (bookIdButton.IsHover()) {
+				bookIdButton.SetFillColor(rgb(244, 249, 249));
+			}
+			else if (bookIdButton.LeftMouseClicked()) {
+				delay(100);
+				for (LINKED_LIST::Pointer p = this->targetedTitle->GetCatalogue().first; p != nullptr; p = p->next) {
+					if (p->info.GetID().compare(bookIdButton.GetPlaceholder()) == 0) {
+						this->deleteBook = p;
+						break;
+					}
+				}
+				this->deleteBookBtn.Deactivate();
+			}
+			else {
+				if (i % 2 != 0) {
+					bookIdButton.SetFillColor(rgb(255, 251, 245));
+				}
+				else {
+					bookIdButton.SetFillColor(rgb(238, 238, 238));
+				}
+			}
+		}
+
+		if (this->deleteBookBtn.IsHover()) {
+			this->deleteBookBtn.SetFillColor(rgb(155, 163, 235));
+			this->deleteBookBtn.SetBorderColor(rgb(36, 47, 155));
+			this->deleteBookBtn.SetTextColor(rgb(234, 253, 252));
+		}
+		else if (this->deleteBookBtn.LeftMouseClicked()) {
+			delay(100);
+		}
+		else {
+			this->deleteBookBtn.SetFillColor(rgb(219, 223, 253));
+			this->deleteBookBtn.SetBorderColor(this->deleteBookBtn.GetFillColor());
+			this->deleteBookBtn.SetTextColor(rgb(57, 62, 70));
+		}
+	}
+
+	void TitleDetailDisplayField::ResetDeleteBookButton() {
+		this->deleteBookBtn = Button(
+			HELPER::Coordinate(229, 945), 150, 40,
+			rgb(57, 62, 70),
+			rgb(219, 223, 253),
+			rgb(219, 223, 253)
+		);
+		this->deleteBookBtn.SetPlaceholder("DELETE");
+		this->deleteBook = nullptr;
 	}
 
 	bool TitleDetailDisplayField::GoBackButtonOnAction() {
@@ -844,36 +938,36 @@ void DauSachTab::SortByCategory() {
 	CATEGORY_LINKED_LIST::Pointer categories;
 	CATEGORY_LINKED_LIST::Initialzie(categories);
 
-	CATEGORY_LINKED_LIST::InsertFirst(categories, this->titleList->nodes[0]->GetTheLoai());
+	CATEGORY_LINKED_LIST::InsertFirst(categories, this->titleList->nodes[0]->GetCategory());
 	bool flag = true;
 	int categoryCount = 1;
 	for (int i = 1; i < this->titleList->numberOfNode; ++i) {
 		flag = true;
 		for (int j = 0; j < i; ++j) {
-			if (this->titleList->nodes[j]->GetTheLoai().compare(this->titleList->nodes[i]->GetTheLoai()) == 0) {
+			if (this->titleList->nodes[j]->GetCategory().compare(this->titleList->nodes[i]->GetCategory()) == 0) {
 				flag = false;
 				break;
 			}
 		}
 
 		if (flag) {
-			CATEGORY_LINKED_LIST::InsertOrder(categories, this->titleList->nodes[i]->GetTheLoai());
+			CATEGORY_LINKED_LIST::InsertOrder(categories, this->titleList->nodes[i]->GetCategory());
 			++categoryCount;
 		}
 	}
 
-	this->titleListSortedByCategory = new DAU_SACH::DauSach* [this->titleList->numberOfNode];
+	this->titleListSortedByCategory = new BOOK_TITLE::BookTitle* [this->titleList->numberOfNode];
 	int index = 0;
 	for (CATEGORY_LINKED_LIST::Pointer p = categories; p != nullptr; p = p->next) {
 		for (int i = 0; i < this->titleList->numberOfNode; ++i) {
-			if (this->titleList->nodes[i]->GetTheLoai().compare(p->info) == 0) {
+			if (this->titleList->nodes[i]->GetCategory().compare(p->info) == 0) {
 				this->titleListSortedByCategory[index++] = this->titleList->nodes[i];
 			}
 		}
 	}
 
 	//for (int i = 0; i < this->titleList->numberOfNode; ++i) {
-	//	std::cerr << this->titleListSortedByCategory[i]->GetTenSach() << " - " << this->titleListSortedByCategory[i]->GetTheLoai() << "\n";
+	//	std::cerr << this->titleListSortedByCategory[i]->GetTitle() << " - " << this->titleListSortedByCategory[i]->GetCategory() << "\n";
 	//}
 
 	delete categories;
@@ -904,7 +998,7 @@ void DauSachTab::Run() {
 		this->searchField.Activate();
 		this->searchField.Display();
 		this->searchField.OnAction(this->inputController);
-		DAU_SACH::DauSach* searchResult = LINEAR_LIST::SearchByName(*this->titleList, this->searchField.inputSearchBox->GetPlaceholder());
+		BOOK_TITLE::BookTitle* searchResult = LINEAR_LIST::SearchByName(*this->titleList, this->searchField.inputSearchBox->GetPlaceholder());
 		
 		//* Title search logic
 		if (searchResult != nullptr) {
@@ -1030,6 +1124,7 @@ void DauSachTab::Run() {
 	if (this->searchField.targetDetails.DisplayStatus()) {
 		this->datasheetController.DeactivateDatasheets();
 		this->searchField.targetDetails.Display();
+		this->searchField.targetDetails.DeleteBookButtonOnAction();
 
 		if (this->searchField.targetDetails.GoBackButtonOnAction()) {
 			this->datasheetController.ActivateDatasheets();

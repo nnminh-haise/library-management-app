@@ -17,7 +17,11 @@ namespace DAU_SACH_TAB {
 	*/
 	void CreateDatasheetsFromList(LINEAR_LIST::LinearList* titleList, DATASHEET::Controller& datasheetController);
 
-	void CreateDatasheetsWithSortedCategory(DAU_SACH::DauSach** sortedList, int listSize, DATASHEET::Controller& datasheetController);
+	/**
+	 * * Function creates datasheets from a sortedList.
+	 * * The datasheets then stored inside the datasheet's controller.
+	*/
+	void CreateDatasheetsWithSortedCategory(BOOK_TITLE::BookTitle** sortedList, int listSize, DATASHEET::Controller& datasheetController);
 
 	/*
 	 * This is a graphical field, represented as a form, with the main purpose is for adding new item into the list.
@@ -46,7 +50,7 @@ namespace DAU_SACH_TAB {
 
 	/*
 	 * This is a controller for the @SachAddField. There will be many form of @SachAddField. Therefore the main purpose of this controller
-	 * is to manage and simplfied the posible task when interact with many form. The number of form is equal to the number of @DanhMucSach.
+	 * is to manage and simplfied the posible task when interact with many form. The number of form is equal to the number of @catalogue.
 	 * 
 	 * Struct gets initialzied as soon as there is any initialization of the related object happends.
 	 * You can draw one current form with @Display method.
@@ -62,7 +66,7 @@ namespace DAU_SACH_TAB {
 
 		~SachAddFieldController();
 
-		void Initialize(int amount, std::string ISBN);
+		void Initialize(int amount, std::string isbn);
 
 		void SachAddFieldOnUpdate(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController);
 
@@ -116,23 +120,25 @@ namespace DAU_SACH_TAB {
 
 	/**
 	 * * This is a grphical field, with the main purpose is displaying the detail infomations of one targeted title.
-	 * * The title's name, ISBN, author, page number, public year will be shown and a list of the corresponding books will be shown
+	 * * The title's name, isbn, author, page number, public year will be shown and a list of the corresponding books will be shown
 	 * * as a set of datasheets
 	*/
 	struct TitleDetailDisplayField {
 		bool active;
-		DAU_SACH::DauSach* targetedTitle;
+		BOOK_TITLE::BookTitle* targetedTitle;
 		HELPER::Fill background;
 		Button title;
 		Button titleDetails[5];
 		Button goBackBtn;
 		DATASHEET::Controller bookListDatasheetController;
+		Button deleteBookBtn;
+		LINKED_LIST::Pointer deleteBook;
 
 		TitleDetailDisplayField();
 
 		void Destructor();
 
-		void Initialize(DAU_SACH::DauSach* title);
+		void Initialize(BOOK_TITLE::BookTitle* title);
 
 		void CreateBookListDatasheet();
 
@@ -143,6 +149,10 @@ namespace DAU_SACH_TAB {
 		bool DisplayStatus();
 
 		void Display();
+
+		void DeleteBookButtonOnAction();
+
+		void ResetDeleteBookButton();
 
 		bool GoBackButtonOnAction();
 	};
@@ -178,6 +188,10 @@ namespace DAU_SACH_TAB {
 	};
 }
 
+/**
+ * * Linked list data structure for storing title's category.
+ * * Each element of the list is a node with a std::string info.
+*/
 namespace CATEGORY_LINKED_LIST {
 	struct Node {
 		std::string info;
@@ -206,7 +220,7 @@ private:
 	DATASHEET::Controller datasheetController;
 	ELEMENTS::InputModeController* inputController;
 	LINEAR_LIST::LinearList* titleList;
-	DAU_SACH::DauSach** titleListSortedByCategory;
+	BOOK_TITLE::BookTitle** titleListSortedByCategory;
 	Button functionalButtons[3];
 
 private:

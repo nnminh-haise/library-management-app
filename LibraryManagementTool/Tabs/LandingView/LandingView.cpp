@@ -10,72 +10,110 @@
 
 
 void LandingView::ConstructGraphicWindow() {
-	this->graphicWindow = new ELEMENTS::Window { CONSTANTS::WINDOW_DIMENSION, CONSTANTS::WINDOW_TITLE };
-	LANDING_VIEW_STYLING::GraphicalWindowDefaultProperties(this->graphicWindow);
+	this->graphicWindow = new ELEMENTS::Window { WINDOW_PROPERTIES::DIMENSION, WINDOW_PROPERTIES::TITLE };
+	this->graphicWindow->backgroundColor = WHITE;
 }
 
 void LandingView::ConstructNavigationBar() {
 
-	//* Create a background for the navigation bar
 	this->navigationBarBackground = new HELPER::Fill (
-		HELPER::Coordinate(0, 0),
-		CONSTANTS::WINDOW_DIMENSION.width, 100, //* Background dimension
-		rgb(11, 36, 71), //* Background color
-		rgb(11, 36, 71)  //* Border color
+		NAVIGATION_BAR_PROPERTIES::COORDINATE, 
+		NAVIGATION_BAR_PROPERTIES::DIMENSION.width, NAVIGATION_BAR_PROPERTIES::DIMENSION.height,
+		NAVIGATION_BAR_PROPERTIES::FILL_COLOR, NAVIGATION_BAR_PROPERTIES::BORDER_COLOR
 	);
 
-	this->programTitle = new Button{ //* Initiallize Title button
-		HELPER::Coordinate(36, 25), HELPER::Dimension(440, 50)
+	this->programTitle = new Button{
+		NAVIGATION_BAR_PROPERTIES::PROGRAM_TITLE_COORDINATE, NAVIGATION_BAR_PROPERTIES::PROGRAM_TITLE_DIMENSION
 	};
-	LANDING_VIEW_STYLING::ProgramTitleProperties(this->programTitle); //* Apply styling for the button
-	this->programTitle->SetPlaceholder("Q U A N   L I   T H U   V I E N"); //* Assign the title for the button
+	this->programTitle->SetFillColor(NAVIGATION_BAR_PROPERTIES::PROGRAM_TITLE_FILL_COLOR);
+	this->programTitle->SetBorderColor(NAVIGATION_BAR_PROPERTIES::PROGRAM_TITLE_BORDER_COLOR);
+	this->programTitle->SetTextColor(NAVIGATION_BAR_PROPERTIES::PROGRAM_TITLE_TEXT_COLOR);
+	this->programTitle->SetPlaceholder(NAVIGATION_BAR_PROPERTIES::PROGRAM_TITLE_PLACEHOLDER);
 
-	std::string tabPlaceholders[3] { //* Tab's title
-		"DANH SACH DAU SACH", "DANH SACH THE DOC GIA", "THONG KE"
-	};
-	HELPER::Dimension tabDimension { 300, 50 }; //* Tab's Dimension
-	HELPER::Coordinate tabCoordinates[3] { //* Tab's Coordinates
-		HELPER::Coordinate(640, 25),
-		HELPER::Coordinate(980, 25),
-		HELPER::Coordinate(1320, 25)
-	};
-	this->tabs = new Button[3]; //* Initialize tabs
-	for (int i = 0; i < 3; ++i) { //* Assign coordinates and dimension to the tabs
-		this->tabs[i] = Button(tabCoordinates[i], tabDimension);
-		this->tabs[i].SetPlaceholder(tabPlaceholders[i]);
-		LANDING_VIEW_STYLING::DefaultTabButtonProperties(this->tabs[i]); //* Assign the styling to the object
+	this->tabs = new Button[3];
+	for (int i = 0; i < 3; ++i) {
+		this->tabs[i] = Button(
+			NAVIGATION_BAR_PROPERTIES::TAB_COORDINATE[i], NAVIGATION_BAR_PROPERTIES::TAB_DIMENSION
+		);
+		this->tabs[i].SetPlaceholder(NAVIGATION_BAR_PROPERTIES::TAB_PLACEHOLDER[i]);
+		this->tabs[i].SetFillColor(NAVIGATION_BAR_PROPERTIES::TAB_DEFAULT_FILL_COLOR);
+		this->tabs[i].SetBorderColor(NAVIGATION_BAR_PROPERTIES::TAB_DEFAULT_BORDER_COLOR);
+		this->tabs[i].SetTextColor(NAVIGATION_BAR_PROPERTIES::TAB_DEFAULT_TEXT_COLOR);
 	}
+	this->tabs[this->currentTab].SetFillColor(NAVIGATION_BAR_PROPERTIES::TAB_ACTIVE_FILL_COLOR);
+	this->tabs[this->currentTab].SetBorderColor(NAVIGATION_BAR_PROPERTIES::TAB_ACTIVE_BORDER_COLOR);
+	this->tabs[this->currentTab].SetTextColor(NAVIGATION_BAR_PROPERTIES::TAB_ACTIVE_TEXT_COLOR);
 
-	this->closeBtn = new ELEMENTS::CloseButton( //* Initialize the close button
-		HELPER::Coordinate(1705, 25), 50, 50
+	this->closeBtn = new ELEMENTS::CloseButton(
+		NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_COORDINATE, 
+		NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_DIMENSION.width,
+		NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_DIMENSION.height
 	);
-	LANDING_VIEW_STYLING::DefaultCloseButtonProperties(this->closeBtn); //* Assign the styling to the object
+	this->closeBtn->SetPlaceholder(NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_PLACEHOLDER);
+	this->closeBtn->SetFillColor(NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_DEFAULT_FILL_COLOR);
+	this->closeBtn->SetBorderColor(NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_DEFAULT_BORDER_COLOR);
+}
+
+void LandingView::TabsOnUpdate() {
+	for (int i = 0; i < 3; ++i) {
+		if (i != this->currentTab) {
+			if (this->tabs[i].IsHover()) {
+				this->tabs[i].SetFillColor(NAVIGATION_BAR_PROPERTIES::TAB_HOVER_FILL_COLOR);
+				this->tabs[i].SetBorderColor(NAVIGATION_BAR_PROPERTIES::TAB_HOVER_BORDER_COLOR);
+				this->tabs[i].SetTextColor(NAVIGATION_BAR_PROPERTIES::TAB_HOVER_TEXT_COLOR);
+			}
+			else if (this->tabs[i].LeftMouseClicked()) {
+				this->currentTab = i;
+			}
+			else {
+				this->tabs[i].SetFillColor(NAVIGATION_BAR_PROPERTIES::TAB_DEFAULT_FILL_COLOR);
+				this->tabs[i].SetBorderColor(NAVIGATION_BAR_PROPERTIES::TAB_DEFAULT_BORDER_COLOR);
+				this->tabs[i].SetTextColor(NAVIGATION_BAR_PROPERTIES::TAB_DEFAULT_TEXT_COLOR);
+			}
+		}
+	}
+}
+
+void LandingView::CloseButtonOnUpdate() {
+	if (this->closeBtn->IsPointed() && this->closeBtn->LeftMouseClicked() == false) {
+		this->closeBtn->SetFillColor(NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_HOVER_FILL_COLOR);
+	}
+	else if (closeBtn->LeftMouseClicked()) {
+		this->programStopFlag = true;
+	}
+	else {
+		this->closeBtn->SetFillColor(NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_DEFAULT_FILL_COLOR);
+		this->closeBtn->SetBorderColor(NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_DEFAULT_BORDER_COLOR);
+	}
 }
 
 //* View Constructor function.
-LandingView::LandingView(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& titleList) {
+LandingView::LandingView(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList) {
+	this->currentTab = 0;
+	this->programStopFlag = false;
 
-	THE_DOC_GIA_MODULES::LoadDanhSachTheDocGiaFromDB(CONSTANTS::THE_DOC_GIA_DB, dsTheDocGia);
-	DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(CONSTANTS::DAU_SACH_DB, titleList);
+	this->readerList = readerList;
+	this->titleList = titleList;
+
+	THE_DOC_GIA_MODULES::LoadDanhSachTheDocGiaFromDB(CONSTANTS::THE_DOC_GIA_DB, *this->readerList);
+	DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(CONSTANTS::DAU_SACH_DB, *this->titleList);
 
 	this->ConstructGraphicWindow();
 	this->graphicWindow->Activate();
 
 	this->ConstructNavigationBar();
 
-	this->dauSachView = new DauSachTab(&titleList, &this->inpController);
-	this->theDocGiaView = new DanhSachTheDocGiaView(dsTheDocGia);
-	this->thongKeView = new ThongKeView(dsTheDocGia, titleList);
+	this->dauSachView = new DauSachTab(this->titleList, &this->inpController);
+	this->theDocGiaView = new DanhSachTheDocGiaView(*this->readerList);
+	this->thongKeView = new ThongKeView(*this->readerList, *this->titleList);
 }
 
 //* View Run function
-void LandingView::Run(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& titleList) {
+void LandingView::Run() {
 
-	int currentTab = 0;
-	bool programStopFlag = false;
-	while (programStopFlag == false) {
+	while (this->programStopFlag == false) {
 
-		while (!kbhit() && programStopFlag == false) {
+		while (!kbhit() && this->programStopFlag == false) {
 
 			//* Draw elements begin below
 			setactivepage(1 - getactivepage());
@@ -84,54 +122,26 @@ void LandingView::Run(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& t
 			this->graphicWindow->RenderBackground();
 			this->navigationBarBackground->Draw();
 			this->programTitle->Display();
-
+			
 			for (int i = 0; i < 3; ++i) {
-				LANDING_VIEW_STYLING::CurrentActiveTabButtonProperties(this->tabs[currentTab]);
 				this->tabs[i].Display();
 			}
 			this->closeBtn->Display();
 
-			switch (currentTab) {
+			switch (this->currentTab) {
 				case (0):
 					this->dauSachView->Run();
 					break;
 				case (1):
-					this->theDocGiaView->Run(dsTheDocGia, this->inpController);
+					this->theDocGiaView->Run(*this->readerList, this->inpController);
 					break;
 				case (2):
 					this->thongKeView->Run();
 					break;
 			}
 
-			/**
-			* The code below here will evaluate what will happened at the end of each frame.
-			* The code should update each elements if necessary or stay the same at the frame before.
-			* The code should be clear and simple but yet efficient!
-			*/
-			for (int i = 0; i < 3; ++i) {
-				if (i != currentTab) {
-					if (this->tabs[i].IsHover()) {
-						LANDING_VIEW_STYLING::CurrentButtonHoverProperties(this->tabs[i]);
-					}
-					else if (this->tabs[i].LeftMouseClicked()) {
-						currentTab = i;
-					}
-					else {
-						LANDING_VIEW_STYLING::DefaultTabButtonProperties(this->tabs[i]);
-					}
-				}
-			}
-
-			if (this->closeBtn->IsPointed() && this->closeBtn->LeftMouseClicked() == false) {
-				LANDING_VIEW_STYLING::CloseButtonHover(this->closeBtn);
-			}
-			else if (closeBtn->LeftMouseClicked()) {
-				programStopFlag = true;
-			}
-			else {
-				LANDING_VIEW_STYLING::DefaultCloseButtonProperties(this->closeBtn);
-			}
-
+			this->TabsOnUpdate();
+			this->CloseButtonOnUpdate();
 
 			setvisualpage(getactivepage());
 			//* Draw elements end above
@@ -154,8 +164,8 @@ void LandingView::Run(AVL_TREE::Pointer& dsTheDocGia, LINEAR_LIST::LinearList& t
 	}
 
 	//* Update databse before closing the program
-	THE_DOC_GIA_MODULES::UpdateListToDatabase(CONSTANTS::THE_DOC_GIA_DB, dsTheDocGia);
-	DAU_SACH_MODULES::UpdateListToDatabase(CONSTANTS::DAU_SACH_DB, titleList);
+	THE_DOC_GIA_MODULES::UpdateListToDatabase(CONSTANTS::THE_DOC_GIA_DB, *this->readerList);
+	DAU_SACH_MODULES::UpdateListToDatabase(CONSTANTS::DAU_SACH_DB, *this->titleList);
 }
 
 //* View destructor

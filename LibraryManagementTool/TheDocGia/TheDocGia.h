@@ -10,19 +10,19 @@ namespace MUON_TRA {
 
 	class MuonTra {
 	private:
-		std::string MaSach;
+		std::string id;
 		HELPER::Date NgayMuon;
 		HELPER::Date NgayTra;
-		TrangThaiMuonTra TrangThai;
+		TrangThaiMuonTra status;
 
 	public:
 		MuonTra();
 
-		MuonTra(std::string MaSach, HELPER::Date NgayMuon, HELPER::Date NgayTra, TrangThaiMuonTra TrangThai);
+		MuonTra(std::string id, HELPER::Date NgayMuon, HELPER::Date NgayTra, TrangThaiMuonTra status);
 
-		void SetMaSach(std::string MaSach);
+		void SetID(std::string id);
 
-		std::string GetMaSach();
+		std::string GetID();
 
 		void SetNgayMuon(HELPER::Date NgayMuon);
 
@@ -32,9 +32,9 @@ namespace MUON_TRA {
 
 		HELPER::Date GetNgayTra();
 
-		void SetTrangThai(TrangThaiMuonTra TrangThai);
+		void SetStatus(TrangThaiMuonTra status);
 
-		TrangThaiMuonTra GetTrangThai();
+		TrangThaiMuonTra GetStatus();
 	};
 }
 
@@ -80,13 +80,13 @@ namespace THE_DOC_GIA {
 		std::string Ho;
 		std::string Ten;
 		GioiTinh Phai;
-		TrangThaiThe TrangThai;
+		TrangThaiThe status;
 		DOUBLE_LINKED_LIST::Controller DanhSachMuonTra;
 
 	public:
 		TheDocGia();
 
-		TheDocGia(int MaThe, std::string Ho, std::string Ten, GioiTinh Phai, TrangThaiThe TrangThai, DOUBLE_LINKED_LIST::Controller DanhSachMuonTra);
+		TheDocGia(int MaThe, std::string Ho, std::string Ten, GioiTinh Phai, TrangThaiThe status, DOUBLE_LINKED_LIST::Controller DanhSachMuonTra);
 
 		void SetMaThe(int MaThe);
 
@@ -108,11 +108,11 @@ namespace THE_DOC_GIA {
 
 		std::string GetStringfyPhai();
 
-		void SetTrangThai(TrangThaiThe TrangThai);
+		void SetStatus(TrangThaiThe status);
 
-		TrangThaiThe GetTrangThai();
+		TrangThaiThe GetStatus();
 
-		std::string GetStringfyTrangThai();
+		std::string StringfyStatus();
 
 		void SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controller DanhSachMuonTra);
 

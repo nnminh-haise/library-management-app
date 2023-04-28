@@ -38,19 +38,6 @@ Button::Button(HELPER::Coordinate topLeft, HELPER::Dimension dimension, int text
 	this->leftClicked = false;
 }
 
-Button::Button(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int textColor, int fillcolor, int borderColor) {
-	this->topLeft = topLeft;
-	this->bottomRight = bottomRight;
-	this->dimension = { this->bottomRight.x - this->topLeft.x, this->bottomRight.y - this->topLeft.y };
-	this->fill = HELPER::Fill(this->topLeft, this->bottomRight, fillcolor, borderColor);
-	this->textColor = textColor;
-	this->isPointed = false;
-	this->placeholder = "BUTTON";
-	this->inputMode = false;
-	this->clickedCount = 0;
-	this->leftClicked = false;
-}
-
 void Button::SetTopLeft(HELPER::Coordinate topLeft) {
 	this->topLeft = topLeft;
 	this->fill.topLeft = topLeft;
@@ -117,12 +104,16 @@ std::string Button::GetPlaceholder() {
 	return this->placeholder;
 }
 
-void Button::SetStatus(bool status) {
-	this->active = status;
+void Button::Activate() {
+	this->active = true;
 }
 
-bool Button::GetStatus() {
-	return this->active;
+void Button::Deactivate() {
+	this->active = false;
+}
+
+bool Button::IsActive() {
+	return this->active == true;
 }
 
 void Button::Display() {
@@ -162,34 +153,10 @@ bool Button::LeftMouseClicked() {
 	return false;
 }
 
-int Button::GetClickCount() {
-	return this->clickedCount;
-}
-
-void Button::ResetClickCount() {
-	this->clickedCount = 0;
-}
-
-bool Button::NotYetClicked() {
-	return this->leftClicked == false;
-}
-
-void Button::IncreaseClickCount(int amount) {
-	this->clickedCount += amount;
-}
-
-void Button::DecreaseClickCount(int amount) {
-	this->clickedCount -= amount;
-}
-
 bool Button::RightMouseClicked() {
 	if (this->IsPointed() && GetAsyncKeyState(VK_RBUTTON) & 0x8000) {
 		this->clickedCount += 1;
 		return true;
 	}
 	return false;
-}
-
-void Button::SetClickCount(int amount) {
-	this->clickedCount = amount;
 }

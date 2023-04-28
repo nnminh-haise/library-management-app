@@ -154,7 +154,7 @@ void HELPER::GetKey() {
 
     char inputKey = -1;
 
-    while (inputKey != ELEMENTS::SpecialKey::ESCAPE) {
+    while (inputKey != ELEMENTS::Keyboard::ESCAPE) {
         while (!kbhit()) {
             
             setbkcolor(WHITE);
@@ -184,7 +184,7 @@ void HELPER::ShowColorPallet() {
     bar(0, 0, 1000, 500);
 
     char inputKey{};
-    while (inputKey != ELEMENTS::SpecialKey::ESCAPE) {
+    while (inputKey != ELEMENTS::Keyboard::ESCAPE) {
         moveto(20, 20);
         outtext((char*)"BGI COLOR PALLET");
 

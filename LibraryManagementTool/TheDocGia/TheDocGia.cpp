@@ -9,25 +9,25 @@
 #include <ctime>
 
 MUON_TRA::MuonTra::MuonTra() {
-	this->MaSach = std::string();
+	this->id = std::string();
 	this->NgayMuon = HELPER::Date();
 	this->NgayTra = HELPER::Date();
-	this->TrangThai = MUON_TRA::TrangThaiMuonTra::SACH_BI_MAT;
+	this->status = MUON_TRA::TrangThaiMuonTra::SACH_BI_MAT;
 }
 
-MUON_TRA::MuonTra::MuonTra(std::string MaSach, HELPER::Date NgayMuon, HELPER::Date NgayTra, MUON_TRA::TrangThaiMuonTra TrangThai) {
-	this->MaSach = MaSach;
+MUON_TRA::MuonTra::MuonTra(std::string id, HELPER::Date NgayMuon, HELPER::Date NgayTra, MUON_TRA::TrangThaiMuonTra status) {
+	this->id = id;
 	this->NgayMuon = NgayMuon;
 	this->NgayTra = NgayTra;
-	this->TrangThai = TrangThai;
+	this->status = status;
 }
 
-void MUON_TRA::MuonTra::SetMaSach(std::string MaSach) {
-	this->MaSach = MaSach;
+void MUON_TRA::MuonTra::SetID(std::string id) {
+	this->id = id;
 }
 
-std::string MUON_TRA::MuonTra::GetMaSach() {
-	return this->MaSach;
+std::string MUON_TRA::MuonTra::GetID() {
+	return this->id;
 }
 
 void MUON_TRA::MuonTra::SetNgayMuon(HELPER::Date NgayMuon) {
@@ -46,12 +46,12 @@ HELPER::Date MUON_TRA::MuonTra::GetNgayTra() {
 	return this->NgayTra;
 }
 
-void MUON_TRA::MuonTra::SetTrangThai(MUON_TRA::TrangThaiMuonTra TrangThai) {
-	this->TrangThai = TrangThai;
+void MUON_TRA::MuonTra::SetStatus(MUON_TRA::TrangThaiMuonTra status) {
+	this->status = status;
 }
 
-MUON_TRA::TrangThaiMuonTra MUON_TRA::MuonTra::GetTrangThai() {
-	return this->TrangThai;
+MUON_TRA::TrangThaiMuonTra MUON_TRA::MuonTra::GetStatus() {
+	return this->status;
 }
 
 DOUBLE_LINKED_LIST::Node::Node() {
@@ -94,16 +94,16 @@ THE_DOC_GIA::TheDocGia::TheDocGia() {
 	this->Ho = std::string();
 	this->Ten = std::string();
 	this->Phai = THE_DOC_GIA::GioiTinh::NAM;
-	this->TrangThai = THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA;
+	this->status = THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA;
 	this->DanhSachMuonTra = DOUBLE_LINKED_LIST::Controller();
 }
 
-THE_DOC_GIA::TheDocGia::TheDocGia(int MaThe, std::string Ho, std::string Ten, THE_DOC_GIA::GioiTinh Phai, THE_DOC_GIA::TrangThaiThe TrangThai, DOUBLE_LINKED_LIST::Controller DanhSachMuonTra) {
+THE_DOC_GIA::TheDocGia::TheDocGia(int MaThe, std::string Ho, std::string Ten, THE_DOC_GIA::GioiTinh Phai, THE_DOC_GIA::TrangThaiThe status, DOUBLE_LINKED_LIST::Controller DanhSachMuonTra) {
 	this->MaThe = MaThe;
 	this->Ho = Ho;
 	this->Ten = Ten;
 	this->Phai = Phai;
-	this->TrangThai = TrangThai;
+	this->status = status;
 	this->DanhSachMuonTra = DanhSachMuonTra;
 }
 
@@ -147,16 +147,16 @@ std::string THE_DOC_GIA::TheDocGia::GetStringfyPhai() {
     return (this->Phai == THE_DOC_GIA::GioiTinh::NAM ? "NAM" : "NU");
 }
 
-void THE_DOC_GIA::TheDocGia::SetTrangThai(THE_DOC_GIA::TrangThaiThe TrangThai) {
-	this->TrangThai = TrangThai;
+void THE_DOC_GIA::TheDocGia::SetStatus(THE_DOC_GIA::TrangThaiThe status) {
+	this->status = status;
 }
 
-THE_DOC_GIA::TrangThaiThe THE_DOC_GIA::TheDocGia::GetTrangThai() {
-	return this->TrangThai;
+THE_DOC_GIA::TrangThaiThe THE_DOC_GIA::TheDocGia::GetStatus() {
+	return this->status;
 }
 
-std::string THE_DOC_GIA::TheDocGia::GetStringfyTrangThai() {
-    return (this->TrangThai == THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA ? "BI KHOA" : "HOAT DONG");
+std::string THE_DOC_GIA::TheDocGia::StringfyStatus() {
+    return (this->status == THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA ? "BI KHOA" : "HOAT DONG");
 }
 
 void THE_DOC_GIA::TheDocGia::SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controller DanhSachMuonTra) {
@@ -173,7 +173,7 @@ void THE_DOC_GIA::TheDocGia::Log() {
 	std::cerr << std::format("Ho        : {}\n", this->Ho);
 	std::cerr << std::format("Ten       : {}\n", this->Ten);
 	std::cerr << std::format("Phai      : {}\n", this->Phai == THE_DOC_GIA::GioiTinh::NAM ? "Nam" : "Nu");
-	std::cerr << std::format("Trang thai: {}\n", this->TrangThai == THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA ? "Bi khoa" : "Hoat dong");
+	std::cerr << std::format("Trang thai: {}\n", this->status == THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA ? "Bi khoa" : "Hoat dong");
 	if (DOUBLE_LINKED_LIST::IsEmpty(this->DanhSachMuonTra)) {
 		std::cerr << std::format("Doc gia chua muon sach!\n");
 	}
@@ -590,7 +590,7 @@ bool THE_DOC_GIA_MODULES::TheDocGiaExtractor(std::string data, std::string separ
 			break;
 		}
 		case (4): {
-            returnData.SetTrangThai(extractedData == "0" ? THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA : THE_DOC_GIA::TrangThaiThe::THE_HOAT_DONG);
+            returnData.SetStatus(extractedData == "0" ? THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA : THE_DOC_GIA::TrangThaiThe::THE_HOAT_DONG);
 			break;
 		}
 		}
@@ -695,7 +695,7 @@ bool THE_DOC_GIA_MODULES::UpdateListToDatabase(const std::string& filename, AVL_
             database << p->info.GetHo() << ", ";
             database << p->info.GetTen() << ", ";
             database << (p->info.GetStringfyPhai() == "NAM" ? 0 : 1) << ", ";
-            database << (p->info.GetStringfyTrangThai() == "THE BI KHOA" ? 0 : 1) << ", ";
+            database << (p->info.StringfyStatus() == "THE BI KHOA" ? 0 : 1) << ", ";
 
             if (DOUBLE_LINKED_LIST::IsEmpty(p->info.GetDanhSachMuonTra())) {
                 database << 0;
@@ -786,7 +786,7 @@ void THE_DOC_GIA_MODULES::SortByName(AVL_TREE::Pointer const& node, AVL_TREE::Po
 int MUON_TRA_MODULES::CountBorrowedBooks(const DOUBLE_LINKED_LIST::Controller& list) {
     int counter = 0;
     for (DOUBLE_LINKED_LIST::Pointer p = list.First; p != nullptr; p = p->right) {
-        if (p->info.GetTrangThai() == MUON_TRA::TrangThaiMuonTra::SACH_DANG_MUON) {
+        if (p->info.GetStatus() == MUON_TRA::TrangThaiMuonTra::SACH_DANG_MUON) {
             ++counter;
         }
     }

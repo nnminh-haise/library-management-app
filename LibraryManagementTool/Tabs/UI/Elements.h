@@ -7,21 +7,12 @@
 #include <string>
 
 namespace ELEMENTS {
-    enum Align {
-        LEFT, CENTER, RIGHT, TOP, MIDDLE, BOTTOM
-    };
-
-    enum SpecialKey {
+    enum Keyboard {
         ENTER = 13, BACKSPACE = 8, SPACE = 32, ESCAPE = 27,
         UP_ARROW = 72, DOWN_ARROW = 80, LEFT_ARROW = 75, RIGHT_ARROW = 77
     };
 
     struct Window {
-        HELPER::Dimension dimension;
-        std::string title;
-        bool active;
-        int backgroundColor;
-
         Window(const HELPER::Dimension& dimension, const std::string& title);
 
         int Activate();
@@ -29,16 +20,21 @@ namespace ELEMENTS {
         void RenderBackground();
 
         void Deactivate();
+        
+        HELPER::Dimension dimension;
+        std::string title;
+        bool active;
+        int backgroundColor;
     };
 
     struct Padding {
-        int top, bottom, left, right;
-
         Padding();
 
         Padding(int all);
 
         Padding(int top, int bottom, int left, int right);
+
+        int top, bottom, left, right;
     };
 
 
@@ -112,19 +108,6 @@ namespace ELEMENTS {
 
     class InputModeController {
     public:
-        char inputKey;
-        bool inputMode;
-        bool acceptKey;
-        int characterCount;
-        int characterLimit;
-        std::string inputString;
-        Button* currentTextBox;
-        Button* outputTextBox;
-
-        bool acceptNum;
-        bool acceptAlpha;
-        bool acceptSpace;
-
         InputModeController();
 
         void Activate(Button* inputTextBox, Button* outputTextBox, int characterLimit, bool acceptAlpha, bool acceptNum, bool acceptSpace);
@@ -138,6 +121,20 @@ namespace ELEMENTS {
         bool KeyValidation(const char& chr);
 
         void ActionOnKey(const char& chr);
+
+    public:
+        char inputKey;
+        bool inputMode;
+        bool acceptKey;
+        int characterCount;
+        int characterLimit;
+        std::string inputString;
+        Button* currentTextBox;
+        Button* outputTextBox;
+
+        bool acceptNum;
+        bool acceptAlpha;
+        bool acceptSpace;
     };
 }
 

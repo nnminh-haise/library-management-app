@@ -3,27 +3,12 @@
 #include "../../Helper/Helper.h"
 
 class Button {
-private:
-    HELPER::Coordinate topLeft;
-    HELPER::Coordinate bottomRight;
-    HELPER::Dimension dimension;
-    HELPER::Fill fill;
-    int textColor;
-    std::string placeholder;
-    bool isPointed;
-    bool active;
-    bool inputMode;
-    int clickedCount;
-    bool leftClicked;
-
 public:
     Button();
 
     Button(HELPER::Coordinate topLeft, int with, int height, int textColor = BLACK, int fillcolor = WHITE, int borderColor = BLACK);
 
     Button(HELPER::Coordinate topLeft, HELPER::Dimension dimension, int textColor = BLACK, int fillcolor = WHITE, int borderColor = BLACK);
-
-    Button(HELPER::Coordinate topLeft, HELPER::Coordinate bottomRight, int textColor = BLACK, int fillcolor = WHITE, int borderColor = BLACK);
 
     void SetTopLeft(HELPER::Coordinate topLeft);
 
@@ -53,9 +38,11 @@ public:
 
     std::string GetPlaceholder();
 
-    void SetStatus(bool status);
+    void Activate();
 
-    bool GetStatus();
+    void Deactivate();
+
+    bool IsActive();
 
     void Display();
 
@@ -67,15 +54,16 @@ public:
 
     bool RightMouseClicked();
 
-    void SetClickCount(int amount);
-
-    int GetClickCount();
-
-    void ResetClickCount();
-
-    bool NotYetClicked();
-
-    void IncreaseClickCount(int amount = 1);
-
-    void DecreaseClickCount(int amount = 1);
+private:
+    std::string placeholder;
+    HELPER::Coordinate topLeft;
+    HELPER::Coordinate bottomRight;
+    HELPER::Dimension dimension;
+    HELPER::Fill fill;
+    int textColor;
+    bool isPointed;
+    bool active;
+    bool inputMode;
+    int clickedCount;
+    bool leftClicked;
 };

@@ -45,9 +45,6 @@
     <ClCompile Include="Tabs\ThongKeTab\ThongKeView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tabs\LandingView\LandingViewStyling.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Tabs\DanhSachTheDocGiaTab\DanhSachTheDocGiaStyling.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -96,9 +93,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\winbgim.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tabs\LandingView\LandingViewStyling.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tabs\DanhSachTheDocGiaTab\DanhSachTheDocGiaStyling.h">
