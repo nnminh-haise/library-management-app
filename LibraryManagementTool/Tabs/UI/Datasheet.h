@@ -35,7 +35,7 @@ namespace DATASHEET {
 
         int LeftMouseClicked();
 
-        void Destructor();
+        //void Destructor();
     };
 
     class Datasheet {
@@ -64,7 +64,7 @@ namespace DATASHEET {
 
         void Display();
 
-        void Destructor();
+        //void Destructor();
     };
 
     class Controller {
@@ -88,7 +88,7 @@ namespace DATASHEET {
 
         Controller(int recordCount, int attributeCount, int rowHeight, HELPER::Coordinate topLeft);
 
-        ~Controller();
+        //~Controller();
 
         void ActivateDatasheets();
 

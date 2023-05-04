@@ -85,9 +85,9 @@ namespace DATASHEET {
 		return -1;
 	}
 
-	void Row::Destructor() {
-		delete[this->attributeCount] this->items;
-	}
+	//void Row::Destructor() {
+	//	delete[this->attributeCount] this->items;
+	//}
 
 	void Datasheet::DefaultLabelsProperties(Row& field) {
 		for (int i = 0; i < field.GetItemCount(); ++i) {
@@ -182,9 +182,10 @@ namespace DATASHEET {
 		}
 	}
 
-	void Datasheet::Destructor() {
-		delete[this->recordCount] this->records;
-	}
+	//! TODO: Destructor is having a bug!
+	//void Datasheet::Destructor() {
+	//	delete[this->recordCount] this->records;
+	//}
 
 	void Controller::DatasheetChangeBTNHover(Button& btn) {
 		btn.SetFillColor(rgb(130, 170, 227));
@@ -230,15 +231,15 @@ namespace DATASHEET {
 		}
 	}
 
-	Controller::~Controller() {
-		for (int i = 0; i < this->datasheetCount; ++i) {
-			for (int j = 0; j < this->sheets[i].GetRecordCount(); ++j) {
-				this->sheets[i][j].Destructor();
-			}
-			this->sheets[i].Destructor();
-		}
-		delete[this->datasheetCount] this->sheets;
-	}
+	//Controller::~Controller() {
+	//	for (int i = 0; i < this->datasheetCount; ++i) {
+	//		for (int j = 0; j < this->sheets[i].GetRecordCount(); ++j) {
+	//			this->sheets[i][j].Destructor();
+	//		}
+	//		this->sheets[i].Destructor();
+	//	}
+	//	delete[this->datasheetCount] this->sheets;
+	//}
 
 	void Controller::ActivateDatasheets() {
 		this->active = true;
@@ -330,18 +331,22 @@ namespace DATASHEET {
 		return this->active;
 	}
 
-	void Controller::Display() {
-		if (this->active == false) {
+	void Controller::Display()
+	{
+		if (this->active == false) 
+		{
 			return;
 		}
 
-		if (this->datasheetCount <= 0) {
+		if (this->datasheetCount <= 0) 
+		{
 			return;
 		}
 
 		this->sheets[this->activeSheet].Display();
 
-		for (int i = 0; i < 2; ++i) {
+		for (int i = 0; i < 2; ++i)
+		{
 			this->datasheetChangeButton[i].Display();
 		}
 	}

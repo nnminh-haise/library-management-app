@@ -104,7 +104,7 @@ LandingView::LandingView(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList*
 	this->ConstructNavigationBar();
 
 	this->dauSachView = new DauSachTab(this->titleList, &this->inpController);
-	this->theDocGiaView = new DanhSachTheDocGiaView(*this->readerList);
+	this->theDocGiaView = new DanhSachTheDocGiaView(this->readerList, this->titleList, &this->inpController);
 	this->thongKeView = new ThongKeView(*this->readerList, *this->titleList);
 }
 
@@ -133,7 +133,7 @@ void LandingView::Run() {
 					this->dauSachView->Run();
 					break;
 				case (1):
-					this->theDocGiaView->Run(*this->readerList, this->inpController);
+					this->theDocGiaView->Run();
 					break;
 				case (2):
 					this->thongKeView->Run();
