@@ -639,16 +639,9 @@ READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail(LINEAR_LIST::LinearLi
 
 void READER_TAB_MEMBERS::ReaderIndeptDetail::UpdateReader(READER::Reader* reader)
 {
+	this->InitializeFunctionalButton();
+
 	this->reader = reader;
-
-	for (DOUBLE_LINKED_LIST::Pointer p = this->reader->GetBorrowedBooks().First; p != nullptr; p = p->right)
-	{
-		std::cout << p->info.GetID() << "\n";
-		std::cout << p->info.GetBorrowDate().Stringfy() << "\n";
-		std::cout << p->info.GetReturnDate().Stringfy() << "\n";
-		std::cout << p->info.StringfyStatus() << "\n";
-	}
-
 	this->readerInfo.UpdateReaderInfo(this->reader);
 
 	this->borrowedBooksDatassheetController = DATASHEET::Controller(
@@ -668,6 +661,12 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::Display()
 	this->titlesDatasheetController.DatasheetChangeButtonUpdate();
 
 	this->borrowedBooksDatassheetController.Display(false);
+
+	this->borrowBookButton.Display();
+	this->BorrowButtonOnAction();
+
+	this->returnBookButton.Display();
+	this->ReturnButtonOnAction();
 
 	this->readerInfo.Display();
 	this->goBackButton.Display();
@@ -694,6 +693,39 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::GoBackButtonOnAction()
 	return false;
 }
 
+void READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowButtonOnAction()
+{
+	if (this->borrowBookButton.IsHover())
+	{
+		this->ApplyHoverStyleForFunctionalButton(this->borrowBookButton);
+	}
+	else if (this->borrowBookButton.LeftMouseClicked())
+	{
+		delay(100);
+		this->BorrowBook();
+	}
+	else
+	{
+		this->ApplyDefaultStyleForFunctionalButton(this->borrowBookButton);
+	}
+}
+
+void READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnButtonOnAction()
+{
+	if (this->returnBookButton.IsHover())
+	{
+		this->ApplyHoverStyleForFunctionalButton(this->returnBookButton);
+	}
+	else if (this->returnBookButton.LeftMouseClicked())
+	{
+		delay(100);
+	}
+	else
+	{
+		this->ApplyDefaultStyleForFunctionalButton(this->returnBookButton);
+	}
+}
+
 void READER_TAB_MEMBERS::ReaderIndeptDetail::Activate()
 {
 	this->titlesDatasheetController.ActivateDatasheets();
@@ -711,6 +743,11 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::Deactivate()
 bool READER_TAB_MEMBERS::ReaderIndeptDetail::IsActive()
 {
 	return this->active == true;
+}
+
+void READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
+{
+	std::cout << "borrowing book\n";
 }
 
 void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateTitlesDatasheet()
@@ -773,9 +810,6 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateBorrowBooksDatasheet()
 	this->borrowedBooksDatassheetController.SetDatasheetCount(1);
 	this->borrowedBooksDatassheetController.InitializeDatasheets();
 
-	std::cout << "reader id: " << this->reader->GetID() << "\n";
-	std::cout << "datasheet count: " << this->borrowedBooksDatassheetController.GetDatasheetCount() << "\n";
-
 	for (int i = 0; i < this->borrowedBooksDatassheetController.GetDatasheetCount(); ++i)
 	{
 		this->borrowedBooksDatassheetController[i] = DATASHEET::Datasheet(
@@ -818,6 +852,30 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateBorrowBooksDatasheet()
 
 		this->borrowedBooksDatassheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 	}
+}
+
+void READER_TAB_MEMBERS::ReaderIndeptDetail::InitializeFunctionalButton()
+{
+	this->borrowBookButton = Button(HELPER::Coordinate(1106, 334), 150, 50);
+	this->borrowBookButton.SetPlaceholder("BORROW BOOK");
+	this->ApplyDefaultStyleForFunctionalButton(this->borrowBookButton);
+	this->returnBookButton = Button(HELPER::Coordinate(1296, 334), 150, 50);
+	this->returnBookButton.SetPlaceholder("RETURN BOOK");
+	this->ApplyDefaultStyleForFunctionalButton(this->returnBookButton);
+}
+
+void READER_TAB_MEMBERS::ReaderIndeptDetail::ApplyDefaultStyleForFunctionalButton(Button& button)
+{
+	button.SetFillColor(rgb(236, 242, 255));
+	button.SetBorderColor(BLACK);
+	button.SetTextColor(BLACK);
+}
+
+void READER_TAB_MEMBERS::ReaderIndeptDetail::ApplyHoverStyleForFunctionalButton(Button& button)
+{
+	button.SetFillColor(rgb(130, 170, 227));
+	button.SetBorderColor(BLACK);
+	button.SetTextColor(WHITE);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------

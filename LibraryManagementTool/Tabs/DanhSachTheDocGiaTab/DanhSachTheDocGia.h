@@ -138,6 +138,10 @@ namespace READER_TAB_MEMBERS
 
 		bool GoBackButtonOnAction();
 
+		void BorrowButtonOnAction();
+
+		void ReturnButtonOnAction();
+
 		void Activate();
 
 		void Deactivate();
@@ -145,9 +149,18 @@ namespace READER_TAB_MEMBERS
 		bool IsActive();
 
 	private:
+		void BorrowBook();
+
 		void CreateTitlesDatasheet();
 
 		void CreateBorrowBooksDatasheet();
+
+		void InitializeFunctionalButton();
+
+	private:
+		void ApplyDefaultStyleForFunctionalButton(Button& button);
+
+		void ApplyHoverStyleForFunctionalButton(Button& button);
 
 	private:
 		bool active;
@@ -157,7 +170,8 @@ namespace READER_TAB_MEMBERS
 		DATASHEET::Controller titlesDatasheetController;
 		DATASHEET::Controller borrowedBooksDatassheetController;
 
-		Button functionalButtons[2];
+		Button borrowBookButton;
+		Button returnBookButton;
 		Button goBackButton;
 
 		ReaderInfo readerInfo;
