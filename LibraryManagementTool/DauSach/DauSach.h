@@ -2,7 +2,8 @@
 
 #include <string>
 
-namespace BOOK {
+namespace BOOK 
+{
 	enum Status { AVAILABLE, UNAVAILABLE, SOLD };
 
 	class Book {
@@ -32,7 +33,8 @@ namespace BOOK {
 	};
 }
 
-namespace LINKED_LIST {
+namespace LINKED_LIST 
+{
 	struct Node {
 		BOOK::Book info;
 		Node* next;
@@ -44,7 +46,8 @@ namespace LINKED_LIST {
 
 	typedef Node* Pointer;
 
-	struct Controller {
+	struct Controller 
+	{
 		unsigned int total;
 		unsigned int borrowed;
 		unsigned int sold;
@@ -64,9 +67,10 @@ namespace LINKED_LIST {
 	bool DeleteAt(Controller& controller, BOOK::Book item);
 }
 
-namespace BOOK_TITLE {
-
-	class BookTitle {
+namespace BOOK_TITLE 
+{
+	class BookTitle 
+	{
 	private:
 		std::string isbn;
 		std::string title;
@@ -113,7 +117,8 @@ namespace BOOK_TITLE {
 	};
 }
 
-namespace LINEAR_LIST {
+namespace LINEAR_LIST 
+{
 	const unsigned int MAX_SIZE = 10000;
 
 	struct LinearList {

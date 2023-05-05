@@ -115,7 +115,7 @@ namespace READER_TAB_MEMBERS
 	{
 		ReaderInfo();
 
-		void UpdateReaderInfo(THE_DOC_GIA::TheDocGia* reader);
+		void UpdateReaderInfo(READER::Reader* reader);
 
 		void Display();
 
@@ -130,9 +130,9 @@ namespace READER_TAB_MEMBERS
 	public:
 		ReaderIndeptDetail();
 
-		ReaderIndeptDetail(LINEAR_LIST::LinearList* titleList, THE_DOC_GIA::TheDocGia* reader);
+		ReaderIndeptDetail(LINEAR_LIST::LinearList* titleList, READER::Reader* reader);
 
-		void UpdateReader(THE_DOC_GIA::TheDocGia* reader);
+		void UpdateReader(READER::Reader* reader);
 
 		void Display();
 
@@ -152,7 +152,7 @@ namespace READER_TAB_MEMBERS
 	private:
 		bool active;
 		LINEAR_LIST::LinearList* titleList;
-		THE_DOC_GIA::TheDocGia* reader;
+		READER::Reader* reader;
 
 		DATASHEET::Controller titlesDatasheetController;
 		DATASHEET::Controller borrowedBooksDatassheetController;

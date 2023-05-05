@@ -127,8 +127,8 @@ int READER_TAB_MEMBERS::SearchField::SearchReaderAlgorithm()
 			
 			//* Search logic here
 			searchValue = this->searchBox.GetPlaceholder();
-			fullName = p->info.GetHo() + p->info.GetTen();
-			readerID = p->info.GetMaThe();
+			fullName = p->info.GetFirstName() + p->info.GetLastName();
+			readerID = p->info.GetID();
 
 			if (readerID.find(searchValue) != std::string::npos) {
 				this->searchResult = p;
@@ -185,13 +185,13 @@ READER_TAB_MEMBERS::NewListItemForm::NewListItemForm() {
 	this->maThe->SetPlaceholder("Ma the");
 
 	this->ho = new Button(HELPER::Coordinate(1330, 590), 400, 60);
-	this->ho->SetPlaceholder("Ho");
+	this->ho->SetPlaceholder("firstName");
 
 	this->ten = new Button(HELPER::Coordinate(1330, 680), 400, 60);
-	this->ten->SetPlaceholder("Ten");
+	this->ten->SetPlaceholder("lastName");
 
 	this->phai = new Button(HELPER::Coordinate(1330, 770), 400, 60);
-	this->phai->SetPlaceholder("Phai");
+	this->phai->SetPlaceholder("sex");
 
 	this->createDanhMucSach = new Button(HELPER::Coordinate(1455, 855), 150, 40);
 	this->createDanhMucSach->SetPlaceholder("SUBMIT");
@@ -229,7 +229,7 @@ bool READER_TAB_MEMBERS::NewListItemForm::SubmitForm(AVL_TREE::Pointer& dsTheDoc
 	Button* formInputField[3] = { this->ho, this->ten, this->phai };
 	int fieldCharacterLimit[3] = { 30, 15, 3 };
 
-	int nextIndex = THE_DOC_GIA_MODULES::GetIndex(CONSTANTS::THE_DOC_GIA_INDEX, dsTheDocGia);
+	int nextIndex = READER_MODULES::GetIndex(CONSTANTS::THE_DOC_GIA_INDEX, dsTheDocGia);
 	this->maThe->SetPlaceholder(std::to_string(nextIndex));
 
 	for (int i = 0; i < 3; ++i) {
@@ -251,14 +251,14 @@ bool READER_TAB_MEMBERS::NewListItemForm::SubmitForm(AVL_TREE::Pointer& dsTheDoc
 	else if (this->createDanhMucSach->LeftMouseClicked()) {
 		delay(100);
 
-		THE_DOC_GIA::TheDocGia newItem;
+		READER::Reader newItem;
 
-		newItem.SetMaThe(nextIndex);
-		newItem.SetHo(STR::Trim(this->ho->GetPlaceholder()));
-		newItem.SetTen(STR::Trim(this->ten->GetPlaceholder()));
-		newItem.SetPhai(this->phai->GetPlaceholder() == "NAM" ? THE_DOC_GIA::GioiTinh::NAM : THE_DOC_GIA::GioiTinh::NU);
-		newItem.SetStatus(THE_DOC_GIA::TrangThaiThe::THE_HOAT_DONG);
-		newItem.SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controller());
+		newItem.SetID(nextIndex);
+		newItem.SetFirstName(STR::Trim(this->ho->GetPlaceholder()));
+		newItem.SetLastName(STR::Trim(this->ten->GetPlaceholder()));
+		newItem.SetSex(this->phai->GetPlaceholder() == "MALE" ? READER::Sex::MALE : READER::Sex::FEMALE);
+		newItem.SetStatus(READER::ReaderStatus::ACTIVE);
+		newItem.SetBorrowedBooks(DOUBLE_LINKED_LIST::Controller());
 		delay(100);
 
 		bool res = AVL_TREE::Insert(dsTheDocGia, newItem);
@@ -283,10 +283,10 @@ READER_TAB_MEMBERS::DeleteItemInListForm::DeleteItemInListForm() {
 	this->maThe->SetPlaceholder("Ma the");
 
 	this->hoTen = new Button(HELPER::Coordinate(1330, 590), 400, 60);
-	this->hoTen->SetPlaceholder("Ho va ten");
+	this->hoTen->SetPlaceholder("firstName va ten");
 
 	this->phai = new Button(HELPER::Coordinate(1330, 680), 400, 60);
-	this->phai->SetPlaceholder("Phai");
+	this->phai->SetPlaceholder("sex");
 
 	this->trangThai = new Button(HELPER::Coordinate(1330, 770), 400, 60);
 	this->trangThai->SetPlaceholder("Trang thai");
@@ -321,7 +321,7 @@ void READER_TAB_MEMBERS::DeleteItemInListForm::Display(AVL_TREE::Pointer& danhSa
 	this->title->Display();
 	this->maThe->Display();
 
-	//* MaThe input box logic
+	//* id input box logic
 	if (this->maThe->IsHover()) {
 		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->maThe);
 	}
@@ -338,7 +338,7 @@ void READER_TAB_MEMBERS::DeleteItemInListForm::Display(AVL_TREE::Pointer& danhSa
 	if (checker) {
 		this->searchResult = AVL_TREE::SearchByKey(danhSachTheDocGia, std::stoi(this->maThe->GetPlaceholder()));
 		if (this->searchResult != nullptr) {
-			int currentBorrowedBooksCount = MUON_TRA_MODULES::CountBorrowedBooks(this->searchResult->info.GetDanhSachMuonTra());
+			int currentBorrowedBooksCount = BOOK_CIRCULATION_MODULES::CountBorrowedBooks(this->searchResult->info.GetBorrowedBooks());
 			if (currentBorrowedBooksCount != 0) {
 				std::cerr << std::format("[ERROR] DOC GIA DANG MUON BOOK! KHONG THE XOA DOC GIA!\n");
 			}
@@ -347,7 +347,7 @@ void READER_TAB_MEMBERS::DeleteItemInListForm::Display(AVL_TREE::Pointer& danhSa
 			}
 
 			this->hoTen->SetPlaceholder(this->searchResult->info.GetFullName());
-			this->phai->SetPlaceholder(this->searchResult->info.GetStringfyPhai());
+			this->phai->SetPlaceholder(this->searchResult->info.StringfySex());
 			this->trangThai->SetPlaceholder(this->searchResult->info.StringfyStatus());
 
 			this->hoTen->Display();
@@ -396,13 +396,13 @@ READER_TAB_MEMBERS::EditItemInListForm::EditItemInListForm() {
 	this->maThe->SetPlaceholder("Ma the");
 
 	this->ho = new Button(HELPER::Coordinate(1330, 590), 400, 60);
-	this->ho->SetPlaceholder("Ho");
+	this->ho->SetPlaceholder("firstName");
 
 	this->ten = new Button(HELPER::Coordinate(1330, 680), 400, 60);
-	this->ten->SetPlaceholder("Ten");
+	this->ten->SetPlaceholder("lastName");
 
 	this->phai = new Button(HELPER::Coordinate(1330, 770), 145, 60);
-	this->phai->SetPlaceholder("Phai");
+	this->phai->SetPlaceholder("sex");
 
 	this->trangThai = new Button(HELPER::Coordinate(1500, 770), 230, 60);
 	this->trangThai->SetPlaceholder("Trang thai");
@@ -516,7 +516,7 @@ bool READER_TAB_MEMBERS::EditItemInListForm::SubmitForm(AVL_TREE::Pointer& danhS
 
 			bool checker = true;
 
-			if (this->phai->GetPlaceholder() != "NAM" && this->phai->GetPlaceholder() != "NU") {
+			if (this->phai->GetPlaceholder() != "MALE" && this->phai->GetPlaceholder() != "FEMALE") {
 				std::cerr << std::format("[ERROR] SAI DU LIEU O TRUONG PHAI\n");
 				checker = false;
 			}
@@ -527,13 +527,13 @@ bool READER_TAB_MEMBERS::EditItemInListForm::SubmitForm(AVL_TREE::Pointer& danhS
 			}
 
 			if (checker) {
-				this->searchResult->info.SetHo(this->ho->GetPlaceholder());
-				this->searchResult->info.SetTen(this->ten->GetPlaceholder());
-				this->searchResult->info.SetPhai(
-					this->phai->GetPlaceholder() == "NAM" ? THE_DOC_GIA::GioiTinh::NAM : THE_DOC_GIA::GioiTinh::NU
+				this->searchResult->info.SetFirstName(this->ho->GetPlaceholder());
+				this->searchResult->info.SetLastName(this->ten->GetPlaceholder());
+				this->searchResult->info.SetSex(
+					this->phai->GetPlaceholder() == "MALE" ? READER::Sex::MALE : READER::Sex::FEMALE
 				);
 				this->searchResult->info.SetStatus(
-					this->trangThai->GetPlaceholder() == "BI KHOA" ? THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA : THE_DOC_GIA::TrangThaiThe::THE_HOAT_DONG
+					this->trangThai->GetPlaceholder() == "BI KHOA" ? READER::ReaderStatus::BANNED : READER::ReaderStatus::ACTIVE
 				);
 
 				return true;
@@ -586,10 +586,10 @@ READER_TAB_MEMBERS::ReaderInfo::ReaderInfo()
 
 }
 
-void READER_TAB_MEMBERS::ReaderInfo::UpdateReaderInfo(THE_DOC_GIA::TheDocGia* reader)
+void READER_TAB_MEMBERS::ReaderInfo::UpdateReaderInfo(READER::Reader* reader)
 {
 	this->readerFullname.SetPlaceholder(reader->GetFullName());
-	this->readerId.SetPlaceholder(std::to_string(reader->GetMaThe()));
+	this->readerId.SetPlaceholder(std::to_string(reader->GetID()));
 	this->readerStatus.SetPlaceholder(reader->StringfyStatus());
 }
 
@@ -608,7 +608,7 @@ READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail()
 	this->titleList = nullptr;
 }
 
-READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail(LINEAR_LIST::LinearList* titleList, THE_DOC_GIA::TheDocGia* reader)
+READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail(LINEAR_LIST::LinearList* titleList, READER::Reader* reader)
 {
 	this->titleList = titleList;
 	this->reader = reader;
@@ -634,7 +634,7 @@ READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail(LINEAR_LIST::LinearLi
 	this->goBackButton.SetPlaceholder("<");
 }
 
-void READER_TAB_MEMBERS::ReaderIndeptDetail::UpdateReader(THE_DOC_GIA::TheDocGia* reader)
+void READER_TAB_MEMBERS::ReaderIndeptDetail::UpdateReader(READER::Reader* reader)
 {
 	this->reader = reader;
 	this->readerInfo.UpdateReaderInfo(this->reader);
@@ -742,7 +742,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateTitlesDatasheet()
 
 void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateBorrowBooksDatasheet()
 {
-	for (DOUBLE_LINKED_LIST::Pointer p = this->reader->GetDanhSachMuonTra().First; p != nullptr; p = p->right) 
+	for (DOUBLE_LINKED_LIST::Pointer p = this->reader->GetBorrowedBooks().First; p != nullptr; p = p->right) 
 	{
 		std::cout << p->info.GetID() << "\n";
 	}
@@ -796,10 +796,10 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 
 			std::string* data = new std::string[datasheetController->GetAttributeCount()];
 			data[0] = std::to_string(++order);
-			data[1] = std::to_string(currentNode->info.GetMaThe());
-			data[2] = currentNode->info.GetHo();
-			data[3] = currentNode->info.GetTen();
-			data[4] = currentNode->info.GetStringfyPhai();
+			data[1] = std::to_string(currentNode->info.GetID());
+			data[2] = currentNode->info.GetFirstName();
+			data[3] = currentNode->info.GetLastName();
+			data[4] = currentNode->info.StringfySex();
 			data[5] = currentNode->info.StringfyStatus();
 			data[6] = "BOOK DANG MUON";
 
@@ -847,10 +847,10 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int 
 
 		std::string* data = new std::string[datasheetController->GetAttributeCount()];
 		data[0] = std::to_string(i + 1);
-		data[1] = std::to_string(arr[i]->info.GetMaThe());
-		data[2] = arr[i]->info.GetHo();
-		data[3] = arr[i]->info.GetTen();
-		data[4] = arr[i]->info.GetStringfyPhai();
+		data[1] = std::to_string(arr[i]->info.GetID());
+		data[2] = arr[i]->info.GetFirstName();
+		data[3] = arr[i]->info.GetLastName();
+		data[4] = arr[i]->info.StringfySex();
 		data[5] = arr[i]->info.StringfyStatus();
 		data[6] = "BOOK DANG MUON";
 
@@ -1021,7 +1021,7 @@ void DanhSachTheDocGiaView::Run()
 			DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonDefaultStyling(&this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][1]);
 		}
 
-		//* Ten label button
+		//* lastName label button
 		if (this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][3].IsHover()) {
 			DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonHoverStyling(&this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][3]);
 		}
@@ -1031,7 +1031,7 @@ void DanhSachTheDocGiaView::Run()
 			this->defaultOrder = false;
 			AVL_TREE::Pointer* pointerArr{};
 			int arrSize = 0;
-			THE_DOC_GIA_MODULES::SortByName(*this->readerList, pointerArr, arrSize);
+			READER_MODULES::SortByName(*this->readerList, pointerArr, arrSize);
 
 			DanhSachTheDocGiaView::CreateDatasheetsFromArr(pointerArr, arrSize, &this->datasheetController);
 

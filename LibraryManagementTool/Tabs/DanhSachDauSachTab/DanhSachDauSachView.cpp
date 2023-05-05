@@ -389,7 +389,7 @@ namespace DAU_SACH_TAB {
 			HELPER::Coordinate(61, 692)
 		};
 		std::string inputFiledPlaceholders[7] = {
-			"isbn", "Ten sach", "So trang", "Tac gia", "Nam xuat ban", "The loai", "Kich thuoc danh muc sach"
+			"isbn", "lastName sach", "So trang", "Tac gia", "Nam xuat ban", "The loai", "Kich thuoc danh muc sach"
 		};
 		for (int i = 0; i < 7; ++i) {
 			this->inputField[i] = Button(inputFieldCoordinates[i], 550, 60);

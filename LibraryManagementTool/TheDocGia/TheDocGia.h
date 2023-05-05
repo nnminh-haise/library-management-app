@@ -3,57 +3,60 @@
 #include <string>
 #include "../Helper/Helper.h"
 
-namespace MUON_TRA {
-	enum TrangThaiMuonTra {
-		SACH_DANG_MUON, SACH_DA_TRA, SACH_BI_MAT
-	};
+namespace BOOK_CIRCULATION 
+{
+	enum CirculationStatus { BORROWED, RETURNED, LOSTED };
 
-	class MuonTra {
-	private:
-		std::string id;
-		HELPER::Date NgayMuon;
-		HELPER::Date NgayTra;
-		TrangThaiMuonTra status;
-
+	class BookCirculation 
+	{
 	public:
-		MuonTra();
+		BookCirculation();
 
-		MuonTra(std::string id, HELPER::Date NgayMuon, HELPER::Date NgayTra, TrangThaiMuonTra status);
+		BookCirculation(std::string id, HELPER::Date borrowDate, HELPER::Date returnDate, CirculationStatus status);
 
 		void SetID(std::string id);
 
 		std::string GetID();
 
-		void SetNgayMuon(HELPER::Date NgayMuon);
+		void SetBorrowDate(HELPER::Date borrowDate);
 
-		HELPER::Date GetNgayMuon();
+		HELPER::Date GetBorrowDate();
 
-		void SetNgayTra(HELPER::Date NgayTra);
+		void SetReturnDate(HELPER::Date returnDate);
 
-		HELPER::Date GetNgayTra();
+		HELPER::Date GetReturnDate();
 
-		void SetStatus(TrangThaiMuonTra status);
+		void SetStatus(CirculationStatus status);
 
-		TrangThaiMuonTra GetStatus();
+		CirculationStatus GetStatus();
+
+	private:
+		std::string id;
+		HELPER::Date borrowDate;
+		HELPER::Date returnDate;
+		CirculationStatus status;
 	};
 }
 
-namespace DOUBLE_LINKED_LIST {
-	struct Node {
-		MUON_TRA::MuonTra info;
+namespace DOUBLE_LINKED_LIST 
+{
+	struct Node 
+	{
+		Node();
+
+		BOOK_CIRCULATION::BookCirculation info;
 		Node* left;
 		Node* right;
-
-		Node();
 	};
 
 	typedef Node* Pointer;
 
-	struct Controller {
+	struct Controller 
+	{
+		Controller();
+
 		Pointer First;
 		Pointer Last;
-
-		Controller();
 	};
 
 	void Initialize(DOUBLE_LINKED_LIST::Controller& list);
@@ -65,70 +68,70 @@ namespace DOUBLE_LINKED_LIST {
 	void ClearList(Controller& list);
 }
 
-namespace THE_DOC_GIA {
-	enum GioiTinh {
-		NAM, NU
-	};
-
-	enum TrangThaiThe {
-		THE_BI_KHOA, THE_HOAT_DONG
-	};
-
-	class TheDocGia {
-	private:
-		int MaThe;
-		std::string Ho;
-		std::string Ten;
-		GioiTinh Phai;
-		TrangThaiThe status;
-		DOUBLE_LINKED_LIST::Controller DanhSachMuonTra;
-
-	public:
-		TheDocGia();
-
-		TheDocGia(int MaThe, std::string Ho, std::string Ten, GioiTinh Phai, TrangThaiThe status, DOUBLE_LINKED_LIST::Controller DanhSachMuonTra);
-
-		void SetMaThe(int MaThe);
-
-		int GetMaThe();
-
-		void SetHo(std::string Ho);
-
-		std::string GetHo();
-
-		void SetTen(std::string Ten);
-
-		std::string GetTen();
-
-		void SetPhai(GioiTinh Phai);
-
-		GioiTinh GetPhai();
-
-		std::string GetFullName();
-
-		std::string GetStringfyPhai();
-
-		void SetStatus(TrangThaiThe status);
-
-		TrangThaiThe GetStatus();
-
-		std::string StringfyStatus();
-
-		void SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controller DanhSachMuonTra);
-
-		DOUBLE_LINKED_LIST::Controller GetDanhSachMuonTra();
-
-		void Log();
-	};
-}
-
-namespace MUON_TRA_MODULES {
+namespace BOOK_CIRCULATION_MODULES {
 	int CountBorrowedBooks(const DOUBLE_LINKED_LIST::Controller& list);
 }
 
-namespace AVL_TREE {
-	struct Node {
-		THE_DOC_GIA::TheDocGia info;
+namespace READER 
+{
+	enum Sex { MALE, FEMALE };
+
+	enum ReaderStatus { BANNED, ACTIVE };
+
+	class Reader 
+	{
+	public:
+		Reader();
+
+		Reader(int id, std::string firstName, std::string lastName, Sex sex, ReaderStatus status, DOUBLE_LINKED_LIST::Controller borrowedBooks);
+
+		void SetID(int id);
+
+		int GetID();
+
+		void SetFirstName(std::string firstName);
+
+		std::string GetFirstName();
+
+		void SetLastName(std::string lastName);
+
+		std::string GetLastName();
+
+		void SetSex(Sex sex);
+
+		Sex GetSex();
+
+		std::string GetFullName();
+
+		std::string StringfySex();
+
+		void SetStatus(ReaderStatus status);
+
+		ReaderStatus GetStatus();
+
+		std::string StringfyStatus();
+
+		void SetBorrowedBooks(DOUBLE_LINKED_LIST::Controller borrowedBooks);
+
+		DOUBLE_LINKED_LIST::Controller GetBorrowedBooks();
+
+		void Log();
+
+	private:
+		int id;
+		std::string firstName;
+		std::string lastName;
+		Sex sex;
+		ReaderStatus status;
+		DOUBLE_LINKED_LIST::Controller borrowedBooks;
+	};
+}
+
+namespace AVL_TREE 
+{
+	struct Node 
+	{
+		READER::Reader info;
 		int balanceFactor;
 		int height;
 		Node* left;
@@ -161,7 +164,7 @@ namespace AVL_TREE {
 
 	Pointer RotateRight(Pointer root);
 
-	bool Insert(Pointer& root, THE_DOC_GIA::TheDocGia info);
+	bool Insert(Pointer& root, READER::Reader info);
 
 	Pointer SearchByKey(const Pointer& root, const int& key);
 
@@ -170,8 +173,9 @@ namespace AVL_TREE {
 	Pointer RemoveNode(Pointer& node, const int& key);
 }
 
-namespace THE_DOC_GIA_MODULES {
-	bool TheDocGiaExtractor(std::string data, std::string seperator, THE_DOC_GIA::TheDocGia& returnData);
+namespace READER_MODULES 
+{
+	bool TheDocGiaExtractor(std::string data, std::string seperator, READER::Reader& returnData);
 
 	bool LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE::Pointer& tree);
 

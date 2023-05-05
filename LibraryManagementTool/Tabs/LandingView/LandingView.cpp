@@ -95,7 +95,7 @@ LandingView::LandingView(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList*
 	this->readerList = readerList;
 	this->titleList = titleList;
 
-	THE_DOC_GIA_MODULES::LoadDanhSachTheDocGiaFromDB(CONSTANTS::THE_DOC_GIA_DB, *this->readerList);
+	READER_MODULES::LoadDanhSachTheDocGiaFromDB(CONSTANTS::THE_DOC_GIA_DB, *this->readerList);
 	DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(CONSTANTS::DAU_SACH_DB, *this->titleList);
 
 	this->ConstructGraphicWindow();
@@ -164,7 +164,7 @@ void LandingView::Run() {
 	}
 
 	//* Update databse before closing the program
-	THE_DOC_GIA_MODULES::UpdateListToDatabase(CONSTANTS::THE_DOC_GIA_DB, *this->readerList);
+	READER_MODULES::UpdateListToDatabase(CONSTANTS::THE_DOC_GIA_DB, *this->readerList);
 	DAU_SACH_MODULES::UpdateListToDatabase(CONSTANTS::DAU_SACH_DB, *this->titleList);
 }
 

@@ -8,54 +8,54 @@
 #include <format>
 #include <ctime>
 
-MUON_TRA::MuonTra::MuonTra() {
+BOOK_CIRCULATION::BookCirculation::BookCirculation() {
 	this->id = std::string();
-	this->NgayMuon = HELPER::Date();
-	this->NgayTra = HELPER::Date();
-	this->status = MUON_TRA::TrangThaiMuonTra::SACH_BI_MAT;
+	this->borrowDate = HELPER::Date();
+	this->returnDate = HELPER::Date();
+	this->status = BOOK_CIRCULATION::CirculationStatus::LOSTED;
 }
 
-MUON_TRA::MuonTra::MuonTra(std::string id, HELPER::Date NgayMuon, HELPER::Date NgayTra, MUON_TRA::TrangThaiMuonTra status) {
+BOOK_CIRCULATION::BookCirculation::BookCirculation(std::string id, HELPER::Date NgayMuon, HELPER::Date NgayTra, BOOK_CIRCULATION::CirculationStatus status) {
 	this->id = id;
-	this->NgayMuon = NgayMuon;
-	this->NgayTra = NgayTra;
+	this->borrowDate = NgayMuon;
+	this->returnDate = NgayTra;
 	this->status = status;
 }
 
-void MUON_TRA::MuonTra::SetID(std::string id) {
+void BOOK_CIRCULATION::BookCirculation::SetID(std::string id) {
 	this->id = id;
 }
 
-std::string MUON_TRA::MuonTra::GetID() {
+std::string BOOK_CIRCULATION::BookCirculation::GetID() {
 	return this->id;
 }
 
-void MUON_TRA::MuonTra::SetNgayMuon(HELPER::Date NgayMuon) {
-	this->NgayMuon = NgayMuon;
+void BOOK_CIRCULATION::BookCirculation::SetBorrowDate(HELPER::Date NgayMuon) {
+	this->borrowDate = NgayMuon;
 }
 
-HELPER::Date MUON_TRA::MuonTra::GetNgayMuon() {
-	return this->NgayMuon;
+HELPER::Date BOOK_CIRCULATION::BookCirculation::GetBorrowDate() {
+	return this->borrowDate;
 }
 
-void MUON_TRA::MuonTra::SetNgayTra(HELPER::Date NgayTra) {
-	this->NgayTra = NgayTra;
+void BOOK_CIRCULATION::BookCirculation::SetReturnDate(HELPER::Date NgayTra) {
+	this->returnDate = NgayTra;
 }
 
-HELPER::Date MUON_TRA::MuonTra::GetNgayTra() {
-	return this->NgayTra;
+HELPER::Date BOOK_CIRCULATION::BookCirculation::GetReturnDate() {
+	return this->returnDate;
 }
 
-void MUON_TRA::MuonTra::SetStatus(MUON_TRA::TrangThaiMuonTra status) {
+void BOOK_CIRCULATION::BookCirculation::SetStatus(BOOK_CIRCULATION::CirculationStatus status) {
 	this->status = status;
 }
 
-MUON_TRA::TrangThaiMuonTra MUON_TRA::MuonTra::GetStatus() {
+BOOK_CIRCULATION::CirculationStatus BOOK_CIRCULATION::BookCirculation::GetStatus() {
 	return this->status;
 }
 
 DOUBLE_LINKED_LIST::Node::Node() {
-	this->info = MUON_TRA::MuonTra();
+	this->info = BOOK_CIRCULATION::BookCirculation();
 	this->left = this->right = nullptr;
 }
 
@@ -89,92 +89,92 @@ void DOUBLE_LINKED_LIST::ClearList(Controller& list) {
     list.First = list.Last = nullptr;
 }
 
-THE_DOC_GIA::TheDocGia::TheDocGia() {
-	this->MaThe = -1;
-	this->Ho = std::string();
-	this->Ten = std::string();
-	this->Phai = THE_DOC_GIA::GioiTinh::NAM;
-	this->status = THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA;
-	this->DanhSachMuonTra = DOUBLE_LINKED_LIST::Controller();
+READER::Reader::Reader() {
+	this->id = -1;
+	this->firstName = std::string();
+	this->lastName = std::string();
+	this->sex = READER::Sex::MALE;
+	this->status = READER::ReaderStatus::BANNED;
+	this->borrowedBooks = DOUBLE_LINKED_LIST::Controller();
 }
 
-THE_DOC_GIA::TheDocGia::TheDocGia(int MaThe, std::string Ho, std::string Ten, THE_DOC_GIA::GioiTinh Phai, THE_DOC_GIA::TrangThaiThe status, DOUBLE_LINKED_LIST::Controller DanhSachMuonTra) {
-	this->MaThe = MaThe;
-	this->Ho = Ho;
-	this->Ten = Ten;
-	this->Phai = Phai;
+READER::Reader::Reader(int MaThe, std::string Ho, std::string Ten, READER::Sex Phai, READER::ReaderStatus status, DOUBLE_LINKED_LIST::Controller DanhSachMuonTra) {
+	this->id = MaThe;
+	this->firstName = Ho;
+	this->lastName = Ten;
+	this->sex = Phai;
 	this->status = status;
-	this->DanhSachMuonTra = DanhSachMuonTra;
+	this->borrowedBooks = DanhSachMuonTra;
 }
 
-void THE_DOC_GIA::TheDocGia::SetMaThe(int MaThe) {
-	this->MaThe = MaThe;
+void READER::Reader::SetID(int MaThe) {
+	this->id = MaThe;
 }
 
-int THE_DOC_GIA::TheDocGia::GetMaThe() {
-	return this->MaThe;
+int READER::Reader::GetID() {
+	return this->id;
 }
 
-void THE_DOC_GIA::TheDocGia::SetHo(std::string Ho) {
-	this->Ho = Ho;
+void READER::Reader::SetFirstName(std::string Ho) {
+	this->firstName = Ho;
 }
 
-std::string THE_DOC_GIA::TheDocGia::GetHo() {
-	return this->Ho;
+std::string READER::Reader::GetFirstName() {
+	return this->firstName;
 }
 
-void THE_DOC_GIA::TheDocGia::SetTen(std::string Ten) {
-	this->Ten = Ten;
+void READER::Reader::SetLastName(std::string Ten) {
+	this->lastName = Ten;
 }
 
-std::string THE_DOC_GIA::TheDocGia::GetTen() {
-	return this->Ten;
+std::string READER::Reader::GetLastName() {
+	return this->lastName;
 }
 
-void THE_DOC_GIA::TheDocGia::SetPhai(THE_DOC_GIA::GioiTinh Phai) {
-	this->Phai = Phai;
+void READER::Reader::SetSex(READER::Sex Phai) {
+	this->sex = Phai;
 }
 
-THE_DOC_GIA::GioiTinh THE_DOC_GIA::TheDocGia::GetPhai() {
-	return this->Phai;
+READER::Sex READER::Reader::GetSex() {
+	return this->sex;
 }
 
-std::string THE_DOC_GIA::TheDocGia::GetFullName() {
-    return this->Ho + " " + this->Ten;
+std::string READER::Reader::GetFullName() {
+    return this->firstName + " " + this->lastName;
 }
 
-std::string THE_DOC_GIA::TheDocGia::GetStringfyPhai() {
-    return (this->Phai == THE_DOC_GIA::GioiTinh::NAM ? "NAM" : "NU");
+std::string READER::Reader::StringfySex() {
+    return (this->sex == READER::Sex::MALE ? "MALE" : "FEMALE");
 }
 
-void THE_DOC_GIA::TheDocGia::SetStatus(THE_DOC_GIA::TrangThaiThe status) {
+void READER::Reader::SetStatus(READER::ReaderStatus status) {
 	this->status = status;
 }
 
-THE_DOC_GIA::TrangThaiThe THE_DOC_GIA::TheDocGia::GetStatus() {
+READER::ReaderStatus READER::Reader::GetStatus() {
 	return this->status;
 }
 
-std::string THE_DOC_GIA::TheDocGia::StringfyStatus() {
-    return (this->status == THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA ? "BI KHOA" : "HOAT DONG");
+std::string READER::Reader::StringfyStatus() {
+    return (this->status == READER::ReaderStatus::BANNED ? "BI KHOA" : "HOAT DONG");
 }
 
-void THE_DOC_GIA::TheDocGia::SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controller DanhSachMuonTra) {
-	this->DanhSachMuonTra = DanhSachMuonTra;
+void READER::Reader::SetBorrowedBooks(DOUBLE_LINKED_LIST::Controller DanhSachMuonTra) {
+	this->borrowedBooks = DanhSachMuonTra;
 }
 
-DOUBLE_LINKED_LIST::Controller THE_DOC_GIA::TheDocGia::GetDanhSachMuonTra() {
-	return this->DanhSachMuonTra;
+DOUBLE_LINKED_LIST::Controller READER::Reader::GetBorrowedBooks() {
+	return this->borrowedBooks;
 }
 
-void THE_DOC_GIA::TheDocGia::Log() {
+void READER::Reader::Log() {
 	std::cerr << std::format("_____ THE DOC GIA _____\n");
-	std::cerr << std::format("Ma the    : {}\n", this->MaThe);
-	std::cerr << std::format("Ho        : {}\n", this->Ho);
-	std::cerr << std::format("Ten       : {}\n", this->Ten);
-	std::cerr << std::format("Phai      : {}\n", this->Phai == THE_DOC_GIA::GioiTinh::NAM ? "Nam" : "Nu");
-	std::cerr << std::format("Trang thai: {}\n", this->status == THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA ? "Bi khoa" : "Hoat dong");
-	if (DOUBLE_LINKED_LIST::IsEmpty(this->DanhSachMuonTra)) {
+	std::cerr << std::format("Ma the    : {}\n", this->id);
+	std::cerr << std::format("firstName        : {}\n", this->firstName);
+	std::cerr << std::format("lastName       : {}\n", this->lastName);
+	std::cerr << std::format("sex      : {}\n", this->sex == READER::Sex::MALE ? "Nam" : "Nu");
+	std::cerr << std::format("Trang thai: {}\n", this->status == READER::ReaderStatus::BANNED ? "Bi khoa" : "Hoat dong");
+	if (DOUBLE_LINKED_LIST::IsEmpty(this->borrowedBooks)) {
 		std::cerr << std::format("Doc gia chua muon sach!\n");
 	}
 	else {
@@ -188,18 +188,18 @@ void THE_DOC_GIA::TheDocGia::Log() {
 */
 
 AVL_TREE::Node::Node() {
-	this->info = THE_DOC_GIA::TheDocGia();
+	this->info = READER::Reader();
 	this->balanceFactor = 0;
 	this->left = this->right = nullptr;
     this->height = 0;
 }
 
 int AVL_TREE::Node::GetKey() {
-    return this->info.GetMaThe();
+    return this->info.GetID();
 }
 
 void AVL_TREE::Node::SetKey(const int key) {
-    this->info.SetMaThe(key);
+    this->info.SetID(key);
 }
 
 void AVL_TREE::Initialize(AVL_TREE::Pointer& node) {
@@ -212,7 +212,7 @@ bool AVL_TREE::IsEmpty(AVL_TREE::Pointer const& node) {
 
 void AVL_TREE::PreOrderTraversal(AVL_TREE::Pointer const& node) {
 	if (node != nullptr) {
-		std::cerr << node->info.GetMaThe() << " ";
+		std::cerr << node->info.GetID() << " ";
 		AVL_TREE::PreOrderTraversal(node->left);
 		AVL_TREE::PreOrderTraversal(node->right);
 	}
@@ -221,7 +221,7 @@ void AVL_TREE::PreOrderTraversal(AVL_TREE::Pointer const& node) {
 void AVL_TREE::InOrderTraversal(AVL_TREE::Pointer const& node) {
 	if (node != nullptr) {
 		AVL_TREE::InOrderTraversal(node->left);
-		std::cerr << node->info.GetMaThe() << " ";
+		std::cerr << node->info.GetID() << " ";
 		AVL_TREE::InOrderTraversal(node->right);
 	}
 }
@@ -230,7 +230,7 @@ void AVL_TREE::PostOrderTraversal(AVL_TREE::Pointer const& node) {
 	if (node != nullptr) {
 		AVL_TREE::InOrderTraversal(node->left);
 		AVL_TREE::InOrderTraversal(node->right);
-		std::cerr << node->info.GetMaThe() << " ";
+		std::cerr << node->info.GetID() << " ";
 	}
 }
 
@@ -303,7 +303,7 @@ AVL_TREE::Pointer AVL_TREE::RotateRight(AVL_TREE::Pointer root) {
 /**
  * This method is written in the non-recursive way!
 */
-bool AVL_TREE::Insert(AVL_TREE::Pointer& root, THE_DOC_GIA::TheDocGia info) {
+bool AVL_TREE::Insert(AVL_TREE::Pointer& root, READER::Reader info) {
 
     /*
      * currentNode represent the node which is being manipulated.
@@ -330,12 +330,12 @@ bool AVL_TREE::Insert(AVL_TREE::Pointer& root, THE_DOC_GIA::TheDocGia info) {
     while (currentNode != nullptr) {
 
         //* If the parameterized key is similar with the currentNode's key, then the parameterized key is not valid.
-        if (info.GetMaThe() == currentNode->GetKey()) {
+        if (info.GetID() == currentNode->GetKey()) {
             return false;
         }
 
         //* If the parameterized key is smaller than the currentNode's key, then we move to the left child tree of the currentNode.
-        if (info.GetMaThe() < currentNode->GetKey()) {
+        if (info.GetID() < currentNode->GetKey()) {
             currentNodeChild = currentNode->left;
         }
         //* Otherwise we move to the right child tree of the currentNode.
@@ -362,7 +362,7 @@ bool AVL_TREE::Insert(AVL_TREE::Pointer& root, THE_DOC_GIA::TheDocGia info) {
     currentNodeChild = new AVL_TREE::Node;
     currentNodeChild->info = info;
     currentNodeChild->left = currentNodeChild->right = nullptr;
-    if (info.GetMaThe() < currentNodeParent->GetKey()) {
+    if (info.GetID() < currentNodeParent->GetKey()) {
         currentNodeParent->left = currentNodeChild;
     }
     else {
@@ -373,7 +373,7 @@ bool AVL_TREE::Insert(AVL_TREE::Pointer& root, THE_DOC_GIA::TheDocGia info) {
      * We modify the balance factor of all the node between the imbalanced node and the currentNodeChild.
      * If they were to the left, then all the balance factor of them are 1 and -1 in the otherhand.
     */
-    if (info.GetMaThe() < imbalancedNode->GetKey()) {
+    if (info.GetID() < imbalancedNode->GetKey()) {
         currentNode = imbalancedNode->left;
     }
     else {
@@ -382,7 +382,7 @@ bool AVL_TREE::Insert(AVL_TREE::Pointer& root, THE_DOC_GIA::TheDocGia info) {
     imbalancedNodeChild = currentNode;
 
     while (currentNode != currentNodeChild) {
-        if (info.GetMaThe() < currentNode->GetKey()) {
+        if (info.GetID() < currentNode->GetKey()) {
             currentNode->balanceFactor = 1;
             currentNode = currentNode->left;
         }
@@ -395,7 +395,7 @@ bool AVL_TREE::Insert(AVL_TREE::Pointer& root, THE_DOC_GIA::TheDocGia info) {
     /*
      * Detecting the imbalanced direction, which means that the tree is left heavy or right heavy.
     */
-    if (info.GetMaThe() < imbalancedNode->GetKey()) {
+    if (info.GetID() < imbalancedNode->GetKey()) {
         imbalancedFactor = 1; //* Left heavy
     }
     else {
@@ -558,7 +558,7 @@ AVL_TREE::Pointer AVL_TREE::RemoveNode(AVL_TREE::Pointer& node, const int& key) 
 /**
 * The function will extract the data string and return an object pointer.
 */
-bool THE_DOC_GIA_MODULES::TheDocGiaExtractor(std::string data, std::string separator, THE_DOC_GIA::TheDocGia& returnData) {
+bool READER_MODULES::TheDocGiaExtractor(std::string data, std::string separator, READER::Reader& returnData) {
 	if (data.length() == 0) {
 		return false;
 	}
@@ -574,23 +574,23 @@ bool THE_DOC_GIA_MODULES::TheDocGiaExtractor(std::string data, std::string separ
 
 		switch (indicator++) {
 		case (0): {
-            returnData.SetMaThe(std::stoi(extractedData));
+            returnData.SetID(std::stoi(extractedData));
 			break;
 		}
 		case (1): {
-            returnData.SetHo(extractedData);
+            returnData.SetFirstName(extractedData);
 			break;
 		}
 		case (2): {
-            returnData.SetTen(extractedData);
+            returnData.SetLastName(extractedData);
 			break;
 		}
 		case (3): {
-            returnData.SetPhai(extractedData == "0" ? THE_DOC_GIA::GioiTinh::NAM : THE_DOC_GIA::GioiTinh::NU);
+            returnData.SetSex(extractedData == "0" ? READER::Sex::MALE : READER::Sex::FEMALE);
 			break;
 		}
 		case (4): {
-            returnData.SetStatus(extractedData == "0" ? THE_DOC_GIA::TrangThaiThe::THE_BI_KHOA : THE_DOC_GIA::TrangThaiThe::THE_HOAT_DONG);
+            returnData.SetStatus(extractedData == "0" ? READER::ReaderStatus::BANNED : READER::ReaderStatus::ACTIVE);
 			break;
 		}
 		}
@@ -598,17 +598,17 @@ bool THE_DOC_GIA_MODULES::TheDocGiaExtractor(std::string data, std::string separ
 	}
 
 	if (data.length() == 0) {
-        returnData.SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controller());
+        returnData.SetBorrowedBooks(DOUBLE_LINKED_LIST::Controller());
 		return true;
 	}
 
 	int muonTraCount = std::stoi(data);
 	if (muonTraCount == 0) {
-        returnData.SetDanhSachMuonTra(DOUBLE_LINKED_LIST::Controller());
+        returnData.SetBorrowedBooks(DOUBLE_LINKED_LIST::Controller());
 	}
 	else {
 		/**
-        * Currently this session is for LOADING @DanhSachMuonTra from file based database.
+        * Currently this session is for LOADING @borrowedBooks from file based database.
         * todo: update database and write these code.
         */
 	}
@@ -622,7 +622,7 @@ bool THE_DOC_GIA_MODULES::TheDocGiaExtractor(std::string data, std::string separ
 * 1. Create a file buffer reader.
 * 2. Filter out the case where we cannot open the file!
 */
-bool THE_DOC_GIA_MODULES::LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE::Pointer& tree) {
+bool READER_MODULES::LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE::Pointer& tree) {
 
     //time_t startPoint = time(0);
 
@@ -639,8 +639,8 @@ bool THE_DOC_GIA_MODULES::LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_
 	while (database) {
         std::string line{};
 		std::getline(database, line);
-        THE_DOC_GIA::TheDocGia newTheDocGia{};
-		bool result = THE_DOC_GIA_MODULES::TheDocGiaExtractor(line, ", ", newTheDocGia);
+        READER::Reader newTheDocGia{};
+		bool result = READER_MODULES::TheDocGiaExtractor(line, ", ", newTheDocGia);
 		if (result) {
             ++attributeCount;
             //newTheDocGia.Log();
@@ -666,7 +666,7 @@ bool THE_DOC_GIA_MODULES::LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_
 	return processResult;
 }
 
-bool THE_DOC_GIA_MODULES::UpdateListToDatabase(const std::string& filename, AVL_TREE::Pointer& tree) {
+bool READER_MODULES::UpdateListToDatabase(const std::string& filename, AVL_TREE::Pointer& tree) {
 
     std::filebuf databaseBuffer{};
 
@@ -691,17 +691,17 @@ bool THE_DOC_GIA_MODULES::UpdateListToDatabase(const std::string& filename, AVL_
         if (STACK::IsEmpty(stk) == false) {
             p = STACK::Pop(stk);
             
-            database << p->info.GetMaThe() << ", ";
-            database << p->info.GetHo() << ", ";
-            database << p->info.GetTen() << ", ";
-            database << (p->info.GetStringfyPhai() == "NAM" ? 0 : 1) << ", ";
+            database << p->info.GetID() << ", ";
+            database << p->info.GetFirstName() << ", ";
+            database << p->info.GetLastName() << ", ";
+            database << (p->info.StringfySex() == "MALE" ? 0 : 1) << ", ";
             database << (p->info.StringfyStatus() == "THE BI KHOA" ? 0 : 1) << ", ";
 
-            if (DOUBLE_LINKED_LIST::IsEmpty(p->info.GetDanhSachMuonTra())) {
+            if (DOUBLE_LINKED_LIST::IsEmpty(p->info.GetBorrowedBooks())) {
                 database << 0;
             }
             else {
-                int listSize = DOUBLE_LINKED_LIST::Size(p->info.GetDanhSachMuonTra());
+                int listSize = DOUBLE_LINKED_LIST::Size(p->info.GetBorrowedBooks());
                 database << listSize;
             }
             database << "\n";
@@ -717,7 +717,7 @@ bool THE_DOC_GIA_MODULES::UpdateListToDatabase(const std::string& filename, AVL_
     return true;
 }
 
-int THE_DOC_GIA_MODULES::GetIndex(const std::string& filename, AVL_TREE::Pointer& tree) {
+int READER_MODULES::GetIndex(const std::string& filename, AVL_TREE::Pointer& tree) {
     std::filebuf databaseBuffer{};
 
     if (!databaseBuffer.open(filename, std::ios::in)) {
@@ -744,7 +744,7 @@ int THE_DOC_GIA_MODULES::GetIndex(const std::string& filename, AVL_TREE::Pointer
 * 
 ! Currently, Selection sort is used! Therefore the time complexcity if very high!
 */
-void THE_DOC_GIA_MODULES::SortByName(AVL_TREE::Pointer const& node, AVL_TREE::Pointer*& pointerArr, int& arrSize) {
+void READER_MODULES::SortByName(AVL_TREE::Pointer const& node, AVL_TREE::Pointer*& pointerArr, int& arrSize) {
     
     //* If the array is empty at first, then create the array.
     AVL_TREE::CountNode(node, arrSize);
@@ -773,8 +773,8 @@ void THE_DOC_GIA_MODULES::SortByName(AVL_TREE::Pointer const& node, AVL_TREE::Po
 
     for (int i = 0; i < arrSize - 1; ++i) {
         for (int j = i + 1; j < arrSize; ++j) {
-            const std::string& valueA = pointerArr[i]->info.GetTen() + pointerArr[i]->info.GetHo();
-            const std::string& valueB = pointerArr[j]->info.GetTen() + pointerArr[j]->info.GetHo();
+            const std::string& valueA = pointerArr[i]->info.GetLastName() + pointerArr[i]->info.GetFirstName();
+            const std::string& valueB = pointerArr[j]->info.GetLastName() + pointerArr[j]->info.GetFirstName();
 
             if (valueA.compare(valueB) > 0) {
                 std::swap(pointerArr[i], pointerArr[j]);
@@ -783,10 +783,10 @@ void THE_DOC_GIA_MODULES::SortByName(AVL_TREE::Pointer const& node, AVL_TREE::Po
     }
 }
 
-int MUON_TRA_MODULES::CountBorrowedBooks(const DOUBLE_LINKED_LIST::Controller& list) {
+int BOOK_CIRCULATION_MODULES::CountBorrowedBooks(const DOUBLE_LINKED_LIST::Controller& list) {
     int counter = 0;
     for (DOUBLE_LINKED_LIST::Pointer p = list.First; p != nullptr; p = p->right) {
-        if (p->info.GetStatus() == MUON_TRA::TrangThaiMuonTra::SACH_DANG_MUON) {
+        if (p->info.GetStatus() == BOOK_CIRCULATION::CirculationStatus::BORROWED) {
             ++counter;
         }
     }

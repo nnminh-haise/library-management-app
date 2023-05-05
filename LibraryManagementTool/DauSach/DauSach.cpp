@@ -218,7 +218,7 @@ LINKED_LIST::Controller BOOK_TITLE::BookTitle::GetCatalogue() {
 void BOOK_TITLE::BookTitle::Log() {
 	std::cerr << std::format("___ Dau Book ___\n");
 	std::cerr << std::format("isbn    : {}\n", this->isbn);
-	std::cerr << std::format("Ten sach: {}\n", this->title);
+	std::cerr << std::format("lastName sach: {}\n", this->title);
 	std::cerr << std::format("So trang: {}\n", this->pageCount);
 	std::cerr << std::format("Tac gia : {}\n", this->author);
 	std::cerr << std::format("NXB     : {}\n", this->publiationYear);
