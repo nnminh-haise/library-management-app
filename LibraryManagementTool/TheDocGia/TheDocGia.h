@@ -30,6 +30,8 @@ namespace BOOK_CIRCULATION
 
 		CirculationStatus GetStatus();
 
+		std::string StringfyStatus();
+
 	private:
 		std::string id;
 		HELPER::Date borrowDate;
@@ -66,6 +68,10 @@ namespace DOUBLE_LINKED_LIST
 	int Size(const Controller& list);
 
 	void ClearList(Controller& list);
+
+	void InsertFirst(Controller& list, BOOK_CIRCULATION::BookCirculation info);
+
+	void InsertLast(Controller& list, BOOK_CIRCULATION::BookCirculation info);
 }
 
 namespace BOOK_CIRCULATION_MODULES {
@@ -175,8 +181,6 @@ namespace AVL_TREE
 
 namespace READER_MODULES 
 {
-	bool TheDocGiaExtractor(std::string data, std::string seperator, READER::Reader& returnData);
-
 	bool LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE::Pointer& tree);
 
 	bool UpdateListToDatabase(const std::string& filename, AVL_TREE::Pointer& tree);

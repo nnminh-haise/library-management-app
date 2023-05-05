@@ -54,6 +54,22 @@ BOOK_CIRCULATION::CirculationStatus BOOK_CIRCULATION::BookCirculation::GetStatus
 	return this->status;
 }
 
+std::string BOOK_CIRCULATION::BookCirculation::StringfyStatus()
+{
+    if (this->status == BOOK_CIRCULATION::CirculationStatus::BORROWED)
+    {
+        return "BORROWED";
+    }
+    else if (this->status == BOOK_CIRCULATION::CirculationStatus::RETURNED)
+    {
+        return "RETURNED";
+    }
+    else if (this->status == BOOK_CIRCULATION::CirculationStatus::LOSTED)
+    {
+        return "LOSTED";
+    }
+}
+
 DOUBLE_LINKED_LIST::Node::Node() {
 	this->info = BOOK_CIRCULATION::BookCirculation();
 	this->left = this->right = nullptr;
@@ -87,6 +103,39 @@ void DOUBLE_LINKED_LIST::ClearList(Controller& list) {
         delete deleteNode;
     }
     list.First = list.Last = nullptr;
+}
+
+void DOUBLE_LINKED_LIST::InsertFirst(Controller& list, BOOK_CIRCULATION::BookCirculation info)
+{
+    DOUBLE_LINKED_LIST::Pointer newNode = new DOUBLE_LINKED_LIST::Node;
+    newNode->info = info;
+    newNode->left = nullptr;
+    newNode->right = list.First;
+
+    if (DOUBLE_LINKED_LIST::IsEmpty(list))
+    {
+        list.First = newNode;
+        list.Last = newNode;
+        return;
+    }
+
+    list.First = newNode;
+}
+
+void DOUBLE_LINKED_LIST::InsertLast(Controller& list, BOOK_CIRCULATION::BookCirculation info)
+{
+    if (DOUBLE_LINKED_LIST::IsEmpty(list))
+    {
+        DOUBLE_LINKED_LIST::InsertFirst(list, info);
+        return;
+    }
+
+    DOUBLE_LINKED_LIST::Pointer newNode = new DOUBLE_LINKED_LIST::Node;
+    newNode->info = info;
+    newNode->left = list.Last;
+    newNode->right = nullptr;
+
+    list.Last = newNode;
 }
 
 READER::Reader::Reader() {
@@ -156,7 +205,7 @@ READER::ReaderStatus READER::Reader::GetStatus() {
 }
 
 std::string READER::Reader::StringfyStatus() {
-    return (this->status == READER::ReaderStatus::BANNED ? "BI KHOA" : "HOAT DONG");
+    return (this->status == READER::ReaderStatus::BANNED ? "BANNED" : "ACTIVE");
 }
 
 void READER::Reader::SetBorrowedBooks(DOUBLE_LINKED_LIST::Controller DanhSachMuonTra) {
@@ -443,7 +492,7 @@ bool AVL_TREE::Insert(AVL_TREE::Pointer& root, READER::Reader info) {
             currentNode = AVL_TREE::RotateLeft(imbalancedNode);
         }
 
-        //* If p is the inserted node
+        //* If currentNode is the inserted node
         if (currentNode->balanceFactor == 0) {
             imbalancedNode->balanceFactor = 0;
             imbalancedNodeChild->balanceFactor = 0;
@@ -556,114 +605,130 @@ AVL_TREE::Pointer AVL_TREE::RemoveNode(AVL_TREE::Pointer& node, const int& key) 
 }
 
 /**
-* The function will extract the data string and return an object pointer.
-*/
-bool READER_MODULES::TheDocGiaExtractor(std::string data, std::string separator, READER::Reader& returnData) {
-	if (data.length() == 0) {
-		return false;
-	}
-
-	int indicator = 0;
-	size_t pos = 0;
-
-	while ((pos = data.find(separator)) != std::string::npos) {
-		std::string extractedData = data.substr(0, pos);
-		if (extractedData.length() == 0) {
-			continue;
-		}
-
-		switch (indicator++) {
-		case (0): {
-            returnData.SetID(std::stoi(extractedData));
-			break;
-		}
-		case (1): {
-            returnData.SetFirstName(extractedData);
-			break;
-		}
-		case (2): {
-            returnData.SetLastName(extractedData);
-			break;
-		}
-		case (3): {
-            returnData.SetSex(extractedData == "0" ? READER::Sex::MALE : READER::Sex::FEMALE);
-			break;
-		}
-		case (4): {
-            returnData.SetStatus(extractedData == "0" ? READER::ReaderStatus::BANNED : READER::ReaderStatus::ACTIVE);
-			break;
-		}
-		}
-		data.erase(0, pos + separator.length());
-	}
-
-	if (data.length() == 0) {
-        returnData.SetBorrowedBooks(DOUBLE_LINKED_LIST::Controller());
-		return true;
-	}
-
-	int muonTraCount = std::stoi(data);
-	if (muonTraCount == 0) {
-        returnData.SetBorrowedBooks(DOUBLE_LINKED_LIST::Controller());
-	}
-	else {
-		/**
-        * Currently this session is for LOADING @borrowedBooks from file based database.
-        * todo: update database and write these code.
-        */
-	}
-
-	return true;
-}
-
-/**
 * READ DATA FROM FILE BASED DATABASE!
 *
 * 1. Create a file buffer reader.
 * 2. Filter out the case where we cannot open the file!
 */
-bool READER_MODULES::LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE::Pointer& tree) {
-
-    //time_t startPoint = time(0);
+bool READER_MODULES::LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE::Pointer& node) 
+{
+    AVL_TREE::Initialize(node);
 
     std::filebuf databaseBuffer{};
 
-	if (!databaseBuffer.open(filename, std::ios::in)) {
-		std::cerr << std::format("[ERROR] Can not open file {}\n", filename);
-		return false;
-	}
+    if (!databaseBuffer.open(filename, std::ios::in)) {
+        std::cerr << std::format("[ERROR] Can not open file {}\n", filename);
+        exit(0);
+    }
 
-	std::istream database(&databaseBuffer);
-    bool processResult = true;
-    int attributeCount = 0;
-	while (database) {
-        std::string line{};
-		std::getline(database, line);
-        READER::Reader newTheDocGia{};
-		bool result = READER_MODULES::TheDocGiaExtractor(line, ", ", newTheDocGia);
-		if (result) {
-            ++attributeCount;
-            //newTheDocGia.Log();
+    std::istream database(&databaseBuffer);
+    while (database) {
+        std::string titleData{};
+        std::getline(database, titleData);
 
-            //* If the tree is empty, then directly insert to the tree
-            if (AVL_TREE::IsEmpty(tree)) {
-                AVL_TREE::Pointer firstNode = new AVL_TREE::Node();
-                firstNode->info = newTheDocGia;
-                tree = firstNode;
+        if (titleData.length() == 0) {
+            continue;
+        }
+
+        std::string* data = nullptr;
+        int dataCount = 0;
+        STR::Extract(titleData, ", ", data, dataCount);
+
+        READER::Reader newReader;
+
+        for (int i = 0; i < dataCount; ++i) {
+            switch (i) {
+            case (0): {
+                newReader.SetID(std::stoi(data[i]));
+                break;
             }
-            //* Otherwise, we use the algorithm to insert a new Node to the tree and balanced the tree.
-            else {
-                AVL_TREE::Insert(tree, newTheDocGia);
+            case (1): {
+                newReader.SetFirstName(data[i]);
+                break;
             }
-		}
-	}
-	databaseBuffer.close();
+            case (2): {
+                newReader.SetLastName(data[i]);
+                break;
+            }
+            case (3): {
+                newReader.SetSex(data[i] == "MALE" ? READER::Sex::MALE : READER::Sex::FEMALE);
+                break;
+            }
+            case (4): {
+                newReader.SetStatus(data[i] == "BANNED" ? READER::ReaderStatus::BANNED : READER::ReaderStatus::ACTIVE);
+                break;
+            }
+            case (5): {
+                int borrowedBooksCount = std::stoi(data[i]);
+                if (borrowedBooksCount == 0) //* Case where the reader did not borrowed any book!
+                {
+                    newReader.SetBorrowedBooks(DOUBLE_LINKED_LIST::Controller());
+                }
+                else //* Case where the reader borrowed at least one book!
+                {
+                    DOUBLE_LINKED_LIST::Controller newBorrowedBooksList;
+                    DOUBLE_LINKED_LIST::Initialize(newBorrowedBooksList);
 
-    //time_t endPoint = time(0);
-    //std::cerr << std::format("Record count: {}\n", recordCount);
-    //std::cerr << std::format("performance : {}s\n", ((double)(endPoint - startPoint)) / CLOCKS_PER_SEC);
+                    while (database && borrowedBooksCount--) {
+                        BOOK_CIRCULATION::BookCirculation newBorrowedBook{};
 
-	return processResult;
+                        std::string borrowedBookData{};
+                        std::getline(database, borrowedBookData);
+
+                        if (borrowedBookData.length() == 0) {
+                            std::cerr << std::format("[ERROR] Empty book list data in database!\n");
+                            exit(1);
+                        }
+
+                        std::string* items = nullptr;
+                        int itemCount = 0;
+                        STR::Extract(borrowedBookData, ", ", items, itemCount);
+
+                        newBorrowedBook.SetID(items[0]);
+                        newBorrowedBook.SetBorrowDate(HELPER::ParseDate(items[1]));
+                        newBorrowedBook.SetReturnDate(HELPER::ParseDate(items[2]));
+                        if (items[3] == "BORROWED")
+                        {
+                            newBorrowedBook.SetStatus(BOOK_CIRCULATION::CirculationStatus::BORROWED);
+                        }
+                        else if (items[3] == "RETURNED")
+                        {
+                            newBorrowedBook.SetStatus(BOOK_CIRCULATION::CirculationStatus::RETURNED);
+                        }
+                        else if (items[3] == "LOSTED")
+                        {
+                            newBorrowedBook.SetStatus(BOOK_CIRCULATION::CirculationStatus::LOSTED);
+                        }
+                        DOUBLE_LINKED_LIST::InsertLast(newBorrowedBooksList, newBorrowedBook);
+                    }
+
+                    newReader.SetBorrowedBooks(newBorrowedBooksList);
+                }
+                break;
+            }
+            }
+        }
+
+        if (AVL_TREE::IsEmpty(node)) 
+        {
+            AVL_TREE::Pointer firstNode = new AVL_TREE::Node;
+            firstNode->info = newReader;
+            firstNode->left = nullptr;
+            firstNode->right = nullptr;
+            firstNode->balanceFactor = 0;
+            firstNode->height = 1;
+
+            node = firstNode;
+        }
+        else
+        {
+            AVL_TREE::Insert(node, newReader);
+        }
+    }
+
+    databaseBuffer.close();
+
+    return true;
 }
 
 bool READER_MODULES::UpdateListToDatabase(const std::string& filename, AVL_TREE::Pointer& tree) {
@@ -694,15 +759,22 @@ bool READER_MODULES::UpdateListToDatabase(const std::string& filename, AVL_TREE:
             database << p->info.GetID() << ", ";
             database << p->info.GetFirstName() << ", ";
             database << p->info.GetLastName() << ", ";
-            database << (p->info.StringfySex() == "MALE" ? 0 : 1) << ", ";
-            database << (p->info.StringfyStatus() == "THE BI KHOA" ? 0 : 1) << ", ";
+            database << p->info.StringfySex() << ", ";
+            database << p->info.StringfyStatus() << ", ";
 
             if (DOUBLE_LINKED_LIST::IsEmpty(p->info.GetBorrowedBooks())) {
                 database << 0;
             }
             else {
-                int listSize = DOUBLE_LINKED_LIST::Size(p->info.GetBorrowedBooks());
-                database << listSize;
+                DOUBLE_LINKED_LIST::Controller lst = p->info.GetBorrowedBooks();
+
+                int listSize = DOUBLE_LINKED_LIST::Size(lst);
+                database << listSize << "\n";
+
+                for (DOUBLE_LINKED_LIST::Pointer currentNode = lst.First; currentNode != nullptr; currentNode = currentNode->right)
+                {
+                    database << currentNode->info.GetID() << ", " << currentNode->info.GetBorrowDate().Stringfy() << ", " << currentNode->info.GetReturnDate().Stringfy() << ", " << currentNode->info.StringfyStatus();
+                }
             }
             database << "\n";
 

@@ -53,8 +53,7 @@ namespace DAU_SACH_TAB {
 			data[3] = std::to_string(titleList->nodes[i]->GetPageCount());
 			data[4] = titleList->nodes[i]->GetAuthor();
 			data[5] = std::to_string(titleList->nodes[i]->GetPublicationYear());
-			data[6] = titleList->nodes[i]->GetCategory();
-			data[7] = "DANH MUC BOOK";
+			data[6] = titleList->nodes[i]->GetCategory();		
 
 			controler[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 		}
@@ -97,7 +96,6 @@ namespace DAU_SACH_TAB {
 			data[4] = sortedList[i]->GetAuthor();
 			data[5] = std::to_string(sortedList[i]->GetPublicationYear());
 			data[6] = sortedList[i]->GetCategory();
-			data[7] = "DANH MUC BOOK";
 
 			datasheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 		}

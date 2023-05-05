@@ -140,6 +140,17 @@ void HELPER::Fill::Draw() {
     rectangle(this->topLeft.x, this->topLeft.y, this->bottomRight.x, this->bottomRight.y);
 }
 
+HELPER::Date HELPER::ParseDate(const std::string& date)
+{
+    std::istringstream ss(date);
+    char delimiter;
+    HELPER::Date result;
+
+    ss >> result.day >> delimiter >> result.month >> delimiter >> result.year;
+
+    return result;
+}
+
 HELPER::Coordinate HELPER::GetCurrentMouseCoordinate() {
     return {mousex(), mousey()};
 }

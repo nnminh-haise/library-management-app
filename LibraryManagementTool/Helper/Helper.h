@@ -3,6 +3,7 @@
 #include <iostream>
 #include <ctime>
 #include <string>
+#include <sstream>
 
 #include "../Graphics/graphics.h"
 
@@ -20,6 +21,8 @@ namespace HELPER {
 
         std::string Stringfy();
     };
+
+    Date ParseDate(const std::string& date);
 
     struct Dimension {
         int width;

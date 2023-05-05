@@ -644,7 +644,6 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::Display()
 {
 	this->titlesDatasheetController.Display();
 	this->titlesDatasheetController.DatasheetChangeButtonUpdate();
-
 	this->readerInfo.Display();
 	this->goBackButton.Display();
 }
@@ -801,7 +800,6 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 			data[3] = currentNode->info.GetLastName();
 			data[4] = currentNode->info.StringfySex();
 			data[5] = currentNode->info.StringfyStatus();
-			data[6] = "BOOK DANG MUON";
 
 			(*datasheetController)[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 
@@ -852,7 +850,6 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int 
 		data[3] = arr[i]->info.GetLastName();
 		data[4] = arr[i]->info.StringfySex();
 		data[5] = arr[i]->info.StringfyStatus();
-		data[6] = "BOOK DANG MUON";
 
 		(*datasheetController)[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 

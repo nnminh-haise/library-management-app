@@ -68,17 +68,17 @@ namespace GLOBAL_VARIABLES {
 }
 
 namespace THE_DOC_GIA_PROPERTIES {
-	const int PROPERTIES_COUNT = 7;
-	const int CHARACTER_LIMITS[] = { 3, 4, 30, 15, 3, 9, 10 };
+	const int PROPERTIES_COUNT = 6;
+	const int CHARACTER_LIMITS[] = { 3, 4, 30, 15, 6, 9 };
 	const int ROW_HEIGHT = 50;
-	const std::string LABEL_PLACEHOLDERS[] = { "STT", "MA THE", "HO", "TEN", "PHAI", "TRANG THAI", "BOOK DANG MUON" };
+	const std::string LABEL_PLACEHOLDERS[] = { "ORDER", "ID", "FIRST NAME", "LAST NAME", "SEX", "STATUS" };
 }
 
 namespace DAU_SACH_PROPERTIES {
-	const int PROPERTIES_COUNT = 8;
-	const int CHARACTER_LIMITS[] = { 3, 4, 30, 3, 20, 4, 10, 8 };
+	const int PROPERTIES_COUNT = 7;
+	const int CHARACTER_LIMITS[] = { 3, 4, 30, 3, 20, 4, 10 };
 	const int ROW_HEIGHT = 50;
-	const std::string LABEL_PLACEHOLDERS[] = { "STT", "isbn", "TEN BOOK", "SO TRANG", "TAC GIA", "NXB", "THE LOAI", "DANH MUC BOOK" };
+	const std::string LABEL_PLACEHOLDERS[] = { "ORDER", "ISBN", "TITLE", "PAGE COUNT", "AUTHOR", "PUBLICATION", "CATEGORY" };
 }
 
 namespace VIEW_ELEMENTS_PROPERTIES {
