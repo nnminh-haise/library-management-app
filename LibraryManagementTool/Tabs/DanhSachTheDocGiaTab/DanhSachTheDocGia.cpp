@@ -623,13 +623,16 @@ READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail(LINEAR_LIST::LinearLi
 	this->CreateTitlesDatasheet();
 	this->titlesDatasheetController.ActivateDatasheets();
 
-	if (this->reader != nullptr) {
+	if (this->reader != nullptr) 
+	{
 		this->readerInfo.UpdateReaderInfo(this->reader);
 	}
 
 	this->goBackButton = Button(
 		HELPER::Coordinate(1685, 930), 70, 40,
-		rgb(24, 18, 43), rgb(236, 242, 255), rgb(24, 18, 43)
+		rgb(24, 18, 43),
+		rgb(236, 242, 255),
+		rgb(24, 18, 43)
 	);
 	this->goBackButton.SetPlaceholder("<");
 }
@@ -637,13 +640,35 @@ READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail(LINEAR_LIST::LinearLi
 void READER_TAB_MEMBERS::ReaderIndeptDetail::UpdateReader(READER::Reader* reader)
 {
 	this->reader = reader;
+
+	for (DOUBLE_LINKED_LIST::Pointer p = this->reader->GetBorrowedBooks().First; p != nullptr; p = p->right)
+	{
+		std::cout << p->info.GetID() << "\n";
+		std::cout << p->info.GetBorrowDate().Stringfy() << "\n";
+		std::cout << p->info.GetReturnDate().Stringfy() << "\n";
+		std::cout << p->info.StringfyStatus() << "\n";
+	}
+
 	this->readerInfo.UpdateReaderInfo(this->reader);
+
+	this->borrowedBooksDatassheetController = DATASHEET::Controller(
+		READER_PROPERTIES::READER_DETAIL_PROPERTIES::BORROWED_BOOK_DATASHEET_PROPERTIES::MAX_ROW,
+		READER_PROPERTIES::READER_DETAIL_PROPERTIES::BORROWED_BOOK_DATASHEET_PROPERTIES::PROPERTIES_COUNT,
+		DATASHEET_DEFAULT_PROPERTIES::ROW_HEIGHT,
+		READER_PROPERTIES::READER_DETAIL_PROPERTIES::BORROWED_BOOK_DATASHEET_PROPERTIES::TOP_LEFT
+	);
+
+	this->CreateBorrowBooksDatasheet();
+	this->borrowedBooksDatassheetController.ActivateDatasheets();
 }
 
 void READER_TAB_MEMBERS::ReaderIndeptDetail::Display()
 {
 	this->titlesDatasheetController.Display();
 	this->titlesDatasheetController.DatasheetChangeButtonUpdate();
+
+	this->borrowedBooksDatassheetController.Display(false);
+
 	this->readerInfo.Display();
 	this->goBackButton.Display();
 }
@@ -672,12 +697,14 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::GoBackButtonOnAction()
 void READER_TAB_MEMBERS::ReaderIndeptDetail::Activate()
 {
 	this->titlesDatasheetController.ActivateDatasheets();
+	this->borrowedBooksDatassheetController.ActivateDatasheets();
 	this->active = true;
 }
 
 void READER_TAB_MEMBERS::ReaderIndeptDetail::Deactivate()
 {
 	this->titlesDatasheetController.DeactivateDatasheets();
+	this->borrowedBooksDatassheetController.DeactivateDatasheets();
 	this->active = false;
 }
 
@@ -741,9 +768,55 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateTitlesDatasheet()
 
 void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateBorrowBooksDatasheet()
 {
-	for (DOUBLE_LINKED_LIST::Pointer p = this->reader->GetBorrowedBooks().First; p != nullptr; p = p->right) 
+	DOUBLE_LINKED_LIST::Controller borrowedBooks = this->reader->GetBorrowedBooks();
+
+	this->borrowedBooksDatassheetController.SetDatasheetCount(1);
+	this->borrowedBooksDatassheetController.InitializeDatasheets();
+
+	std::cout << "reader id: " << this->reader->GetID() << "\n";
+	std::cout << "datasheet count: " << this->borrowedBooksDatassheetController.GetDatasheetCount() << "\n";
+
+	for (int i = 0; i < this->borrowedBooksDatassheetController.GetDatasheetCount(); ++i)
 	{
-		std::cout << p->info.GetID() << "\n";
+		this->borrowedBooksDatassheetController[i] = DATASHEET::Datasheet(
+			this->borrowedBooksDatassheetController.GetRecordCount(),
+			this->borrowedBooksDatassheetController.GetAttributeCount(),
+			this->borrowedBooksDatassheetController.GetRowHeight(),
+			this->borrowedBooksDatassheetController.GetTopLeft(),
+			(std::string*)READER_PROPERTIES::READER_DETAIL_PROPERTIES::BORROWED_BOOK_DATASHEET_PROPERTIES::LABEL_PLACEHOLDERS,
+			(int*)READER_PROPERTIES::READER_DETAIL_PROPERTIES::BORROWED_BOOK_DATASHEET_PROPERTIES::CHARACTER_LIMITS
+		);
+	}
+
+	if (DOUBLE_LINKED_LIST::IsEmpty(borrowedBooks))
+	{
+		return;
+	}
+
+	int recordIndex = 0;
+	int sheetIndex = -1;
+	int order = 0;
+
+	for (DOUBLE_LINKED_LIST::Pointer currentNode = borrowedBooks.First; currentNode != nullptr; currentNode = currentNode->right)
+	{
+		++recordIndex;
+		if (recordIndex > this->borrowedBooksDatassheetController.GetRecordCount() - 1)
+		{
+			recordIndex = 1;
+		}
+		if (recordIndex % (this->borrowedBooksDatassheetController.GetRecordCount() - 1) == 1)
+		{
+			sheetIndex += 1;
+		}
+
+		std::string* data = new std::string[this->borrowedBooksDatassheetController.GetAttributeCount()];
+		data[0] = std::to_string(order + 1);
+		data[1] = currentNode->info.GetID();
+		data[2] = currentNode->info.GetBorrowDate().Stringfy();
+		data[3] = currentNode->info.GetReturnDate().Stringfy();
+		data[4] = currentNode->info.StringfyStatus();
+
+		this->borrowedBooksDatassheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 	}
 }
 
@@ -764,7 +837,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 			datasheetController->GetAttributeCount(),
 			datasheetController->GetRowHeight(),
 			datasheetController->GetTopLeft(),
-			(std::string*)THE_DOC_GIA_PROPERTIES::LABEL_PLACEHOLDERS, (int*)THE_DOC_GIA_PROPERTIES::CHARACTER_LIMITS
+			(std::string*)READER_PROPERTIES::LABEL_PLACEHOLDERS, (int*)READER_PROPERTIES::CHARACTER_LIMITS
 		);
 	}
 
@@ -825,7 +898,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int 
 			datasheetController->GetAttributeCount(),
 			datasheetController->GetRowHeight(),
 			datasheetController->GetTopLeft(),
-			(std::string*)THE_DOC_GIA_PROPERTIES::LABEL_PLACEHOLDERS, (int*)THE_DOC_GIA_PROPERTIES::CHARACTER_LIMITS
+			(std::string*)READER_PROPERTIES::LABEL_PLACEHOLDERS, (int*)READER_PROPERTIES::CHARACTER_LIMITS
 		);
 	}
 
@@ -875,8 +948,8 @@ DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_TREE::Pointer* readerList, LINE
 	HELPER::Coordinate toRightBtnTopLeft(86, 935);
 
 	this->datasheetController = DATASHEET::Controller(
-		CONSTANTS::MAX_ROW_COUNT, THE_DOC_GIA_PROPERTIES::PROPERTIES_COUNT, 
-		THE_DOC_GIA_PROPERTIES::ROW_HEIGHT, datasheetTopLeft
+		CONSTANTS::MAX_ROW_COUNT, READER_PROPERTIES::PROPERTIES_COUNT, 
+		READER_PROPERTIES::ROW_HEIGHT, datasheetTopLeft
 	);
 	this->datasheetController.ActivateDatasheets();
 	if (this->defaultOrder) {

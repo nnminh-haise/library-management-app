@@ -331,7 +331,7 @@ namespace DATASHEET {
 		return this->active;
 	}
 
-	void Controller::Display()
+	void Controller::Display(bool displayDatasheetChangeButton)
 	{
 		if (this->active == false) 
 		{
@@ -345,9 +345,10 @@ namespace DATASHEET {
 
 		this->sheets[this->activeSheet].Display();
 
-		for (int i = 0; i < 2; ++i)
+		if (displayDatasheetChangeButton)
 		{
-			this->datasheetChangeButton[i].Display();
+			this->datasheetChangeButton[0].Display();
+			this->datasheetChangeButton[1].Display();
 		}
 	}
 

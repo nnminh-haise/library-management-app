@@ -122,6 +122,6 @@ namespace DATASHEET {
 
         bool DisplayStatus();
 
-        void Display();
+        void Display(bool displayDatasheetChangeButton = true);
     };
 }

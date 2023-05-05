@@ -5,8 +5,8 @@
 
 #include <string>
 
-namespace CONSTANTS {
-	
+namespace CONSTANTS 
+{	
 	const std::string THE_DOC_GIA_DB = "Databases/DOC_GIA_DB.txt";
 	const std::string DAU_SACH_DB = "Databases/DAU_SACH_DB.txt";
 	const std::string THE_DOC_GIA_INDEX = "Databases/DanhSachTheDocGiaIndex.txt";
@@ -14,13 +14,14 @@ namespace CONSTANTS {
 	const int MAX_ROW_COUNT = 16;
 }
 
-namespace WINDOW_PROPERTIES {
+namespace WINDOW_PROPERTIES 
+{
 	const HELPER::Dimension DIMENSION(1800, 1000);
 	const std::string TITLE = "LIBRARY MANAGEMENT TOOL";
 }
 
-namespace NAVIGATION_BAR_PROPERTIES {
-	
+namespace NAVIGATION_BAR_PROPERTIES 
+{	
 	//* Navigation bar
 	const HELPER::Dimension DIMENSION(1800, 100);
 	const HELPER::Coordinate COORDINATE(0, 0);
@@ -67,11 +68,33 @@ namespace GLOBAL_VARIABLES {
 	inline extern textsettingstype defaultTextSetting{};
 }
 
-namespace THE_DOC_GIA_PROPERTIES {
+namespace DATASHEET_DEFAULT_PROPERTIES
+{
+	const int ROW_HEIGHT = 50;
+	const int MAX_ROW = 16;
+	const int PROPERTIES_COUNT = 6;
+	const std::string LABEL_PLACEHOLDERS[] = { "ORDER", "PROP 1", "PROP 2", "PROP 3", "PROP 4", "PROP 5" };
+	const int CHARACTER_LIMITS[] = { 3, 6, 6, 6, 6, 6 };
+}
+
+namespace READER_PROPERTIES
+{
 	const int PROPERTIES_COUNT = 6;
 	const int CHARACTER_LIMITS[] = { 3, 4, 30, 15, 6, 9 };
 	const int ROW_HEIGHT = 50;
 	const std::string LABEL_PLACEHOLDERS[] = { "ORDER", "ID", "FIRST NAME", "LAST NAME", "SEX", "STATUS" };
+
+	namespace READER_DETAIL_PROPERTIES
+	{
+		namespace BORROWED_BOOK_DATASHEET_PROPERTIES
+		{
+			const int MAX_ROW = 4;
+			const int PROPERTIES_COUNT = 5;
+			const std::string LABEL_PLACEHOLDERS[] = { "ORDER", "BOOK ID", "BORROW DATE", "RETURN DATE", "STATUS" };
+			const int CHARACTER_LIMITS[] = { 3, 8, 10, 10, 8 };
+			const HELPER::Coordinate TOP_LEFT{ 1106, 120 };
+		}
+	}
 }
 
 namespace DAU_SACH_PROPERTIES {
