@@ -10,23 +10,46 @@
 #include <format>
 
 HELPER::Date::Date() {
-    std::time_t current_time = std::time(nullptr);
-    struct std::tm local_time;
-    localtime_s(&local_time, &current_time);
-    this->year = local_time.tm_year + 1900;
-    this->month = local_time.tm_mon + 1;
-    this->day = local_time.tm_mday;
+    auto now = std::chrono::system_clock::now();
+    time_t currentTime = std::chrono::system_clock::to_time_t(now);
+    struct tm timeinfo;
+    localtime_s(&timeinfo, &currentTime);
+    day_ = timeinfo.tm_mday;
+    month_ = timeinfo.tm_mon + 1;  // tm_mon is 0-based
+    year_ = timeinfo.tm_year + 1900;  // tm_year is years since 1900
 }
 
-HELPER::Date::Date(int day, int month, int year) {
-    this->day = day;
-    this->month = month;
-    this->year = year;
+HELPER::Date::Date(const std::string& dateString)
+{
+    std::istringstream iss(dateString);
+    char delimiter;
+    int day, month, year;
+
+    if (!(iss >> day >> delimiter >> month >> delimiter >> year) || delimiter != '/')
+        throw std::invalid_argument("Invalid date format");
+
+    //* Validate day
+    if (day < 1 || day > DaysInMonth(month, year))
+        throw std::out_of_range("Invalid day");
+
+    //* Validate month
+    if (month < 1 || month > 12)
+        throw std::out_of_range("Invalid month");
+
+    //* Validate year
+    if (year < 1900 || year > 2100)
+        throw std::out_of_range("Invalid year");
+
+    day_ = day;
+    month_ = month;
+    year_ = year;
 }
+
+HELPER::Date::Date(int day, int month, int year) : day_(day), month_(month), year_(year) {}
 
 HELPER::Date HELPER::Date::Random() {
     int maxDaysInMonth[] = {
-        31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+    31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
     };
 
     // Generate a random year between 1900 and 2100
@@ -44,11 +67,112 @@ HELPER::Date HELPER::Date::Random() {
     int maxDays = maxDaysInMonth[month - 1];
     int day = rand() % maxDays + 1;
 
-    return HELPER::Date(day, month, year);
+    return Date(day, month, year);
 }
 
-std::string HELPER::Date::Stringfy() {
-    return std::format("{}/{}/{}", this->day, this->month, this->year);
+std::string HELPER::Date::Stringify() const {
+    return std::format("{}/{}/{}", this->day_, this->month_, this->year_);
+}
+
+int HELPER::Date::DaysBetween(const HELPER::Date& other) const {
+    int days1 = day_;
+    for (int m = 1; m < month_; m++)
+        days1 += DaysInMonth(m, year_);
+
+    int days2 = other.day_;
+    for (int m = 1; m < other.month_; m++)
+        days2 += DaysInMonth(m, other.year_);
+
+    for (int y = year_; y < other.year_; y++)
+        days2 += IsLeapYear(y) ? 366 : 365;
+
+    return std::abs(days2 - days1);
+}
+
+void HELPER::Date::ParseFromString(const std::string& dateString) 
+{
+    std::istringstream iss(dateString);
+    char delimiter;
+    int day, month, year;
+
+    if (!(iss >> day >> delimiter >> month >> delimiter >> year) || delimiter != '/')
+        throw std::invalid_argument("Invalid date format");
+
+    //* Validate day
+    if (day < 1 || day > DaysInMonth(month, year))
+        throw std::out_of_range("Invalid day");
+
+    //* Validate month
+    if (month < 1 || month > 12)
+        throw std::out_of_range("Invalid month");
+
+    //* Validate year
+    if (year < 1900 || year > 2100)
+        throw std::out_of_range("Invalid year");
+
+    day_ = day;
+    month_ = month;
+    year_ = year;
+}
+
+HELPER::Date HELPER::Date::operator+(int days) const {
+    Date result(*this);
+    int totalDays = day_ + days;
+
+    while (totalDays > DaysInMonth(result.month_, result.year_)) {
+        totalDays -= DaysInMonth(result.month_, result.year_);
+        ++result.month_;
+        if (result.month_ > 12) {
+            result.month_ = 1;
+            ++result.year_;
+        }
+    }
+
+    result.day_ = totalDays;
+    return result;
+}
+
+HELPER::Date HELPER::Date::operator-(int days) const {
+    Date result(*this);
+    int totalDays = day_ - days;
+
+    while (totalDays < 1) {
+        --result.month_;
+        if (result.month_ < 1) {
+            result.month_ = 12;
+            --result.year_;
+        }
+        totalDays += DaysInMonth(result.month_, result.year_);
+    }
+
+    result.day_ = totalDays;
+    return result;
+}
+
+bool HELPER::operator>(const Date& lhs, const Date& rhs) {
+    if (lhs.year_ > rhs.year_)
+        return true;
+    else if (lhs.year_ == rhs.year_) {
+        if (lhs.month_ > rhs.month_)
+            return true;
+        else if (lhs.month_ == rhs.month_)
+            return lhs.day_ > rhs.day_;
+    }
+    return false;
+}
+
+bool HELPER::Date::IsLeapYear(int year) {
+    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+}
+
+int HELPER::Date::DaysInMonth(int month, int year) {
+    static const int daysPerMonth[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+    if (month < 1 || month > 12)
+        throw std::out_of_range("Invalid month");
+    int days = daysPerMonth[month - 1];
+    if (month == 2 && IsLeapYear(year))
+        days++;
+    return days;
 }
 
 HELPER::Dimension::Dimension() : width(0), height(0) {
@@ -138,17 +262,6 @@ void HELPER::Fill::Draw() {
     setcolor(borderColor);
     bar(this->topLeft.x, this->topLeft.y, this->bottomRight.x, this->bottomRight.y);
     rectangle(this->topLeft.x, this->topLeft.y, this->bottomRight.x, this->bottomRight.y);
-}
-
-HELPER::Date HELPER::ParseDate(const std::string& date)
-{
-    std::istringstream ss(date);
-    char delimiter;
-    HELPER::Date result;
-
-    ss >> result.day >> delimiter >> result.month >> delimiter >> result.year;
-
-    return result;
 }
 
 HELPER::Coordinate HELPER::GetCurrentMouseCoordinate() {

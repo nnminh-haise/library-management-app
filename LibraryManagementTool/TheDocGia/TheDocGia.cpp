@@ -70,6 +70,16 @@ std::string BOOK_CIRCULATION::BookCirculation::StringfyStatus()
     }
 }
 
+bool BOOK_CIRCULATION::BookCirculation::IsOverdue()
+{
+    HELPER::Date today;
+    if (today.DaysBetween(this->borrowDate) > 7)
+    {
+        return true;
+    }
+    return false;
+}
+
 DOUBLE_LINKED_LIST::Node::Node() {
 	this->info = BOOK_CIRCULATION::BookCirculation();
 	this->left = this->right = nullptr;
@@ -685,8 +695,9 @@ bool READER_MODULES::LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE:
                         STR::Extract(borrowedBookData, ", ", items, itemCount);
 
                         newBorrowedBook.SetID(items[0]);
-                        newBorrowedBook.SetBorrowDate(HELPER::ParseDate(items[1]));
-                        newBorrowedBook.SetReturnDate(HELPER::ParseDate(items[2]));
+                        newBorrowedBook.SetBorrowDate(HELPER::Date(items[1]));
+                        newBorrowedBook.SetReturnDate(HELPER::Date(items[2]));
+
                         if (items[3] == "BORROWED")
                         {
                             newBorrowedBook.SetStatus(BOOK_CIRCULATION::CirculationStatus::BORROWED);
@@ -773,7 +784,7 @@ bool READER_MODULES::UpdateListToDatabase(const std::string& filename, AVL_TREE:
 
                 for (DOUBLE_LINKED_LIST::Pointer currentNode = lst.First; currentNode != nullptr; currentNode = currentNode->right)
                 {
-                    database << currentNode->info.GetID() << ", " << currentNode->info.GetBorrowDate().Stringfy() << ", " << currentNode->info.GetReturnDate().Stringfy() << ", " << currentNode->info.StringfyStatus();
+                    database << currentNode->info.GetID() << ", " << currentNode->info.GetBorrowDate().Stringify() << ", " << currentNode->info.GetReturnDate().Stringify() << ", " << currentNode->info.StringfyStatus();
                 }
             }
             database << "\n";

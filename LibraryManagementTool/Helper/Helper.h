@@ -4,25 +4,37 @@
 #include <ctime>
 #include <string>
 #include <sstream>
+#include <cmath>
+#include <stdexcept>
+#include <format>
+#include <chrono>
 
 #include "../Graphics/graphics.h"
 
 namespace HELPER {
-    struct Date {
-        int day;
-        int month;
-        int year;
-
+    class Date {
+    public:
         Date();
-
+        Date(const std::string& dateString);
         Date(int day, int month, int year);
-
         static Date Random();
+        std::string Stringify() const;
+        int DaysBetween(const Date& other) const;
+        void ParseFromString(const std::string& dateString);
 
-        std::string Stringfy();
+        Date operator+(int days) const;
+        Date operator-(int days) const;
+
+        friend bool operator>(const Date& lhs, const Date& rhs);
+
+    private:
+        int day_;
+        int month_;
+        int year_;
+
+        static bool IsLeapYear(int year);
+        static int DaysInMonth(int month, int year);
     };
-
-    Date ParseDate(const std::string& date);
 
     struct Dimension {
         int width;

@@ -606,12 +606,20 @@ READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail()
 	this->active = false;
 	this->reader = nullptr;
 	this->titleList = nullptr;
+
+	this->inputController = nullptr;
+
+	this->borrowBook = nullptr;
+	this->returnBook = nullptr;
 }
 
 READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail(LINEAR_LIST::LinearList* titleList, READER::Reader* reader)
 {
 	this->titleList = titleList;
 	this->reader = reader;
+
+	this->borrowBook = nullptr;
+	this->returnBook = nullptr;
 
 	const int labelsCount = 5;
 	this->titlesDatasheetController = DATASHEET::Controller(
@@ -637,9 +645,18 @@ READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail(LINEAR_LIST::LinearLi
 	this->goBackButton.SetPlaceholder("<");
 }
 
+void READER_TAB_MEMBERS::ReaderIndeptDetail::SetInputController(ELEMENTS::InputModeController* inputController)
+{
+	this->inputController = inputController;
+}
+
 void READER_TAB_MEMBERS::ReaderIndeptDetail::UpdateReader(READER::Reader* reader)
 {
 	this->InitializeFunctionalButton();
+	this->InitializeBookIDButton();
+
+	this->borrowBook = nullptr;
+	this->returnBook = nullptr;
 
 	this->reader = reader;
 	this->readerInfo.UpdateReaderInfo(this->reader);
@@ -661,6 +678,9 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::Display()
 	this->titlesDatasheetController.DatasheetChangeButtonUpdate();
 
 	this->borrowedBooksDatassheetController.Display(false);
+
+	this->bookIDButton.Display();
+	this->BookIDButtonOnAction();
 
 	this->borrowBookButton.Display();
 	this->BorrowButtonOnAction();
@@ -702,6 +722,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowButtonOnAction()
 	else if (this->borrowBookButton.LeftMouseClicked())
 	{
 		delay(100);
+		
 		this->BorrowBook();
 	}
 	else
@@ -726,6 +747,23 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnButtonOnAction()
 	}
 }
 
+void READER_TAB_MEMBERS::ReaderIndeptDetail::BookIDButtonOnAction()
+{
+	if (this->bookIDButton.IsHover())
+	{
+		this->ApplyHoverStyleForBookIDButton();
+	}
+	else if (this->bookIDButton.LeftMouseClicked())
+	{
+		delay(100);
+		this->inputController->Activate(&this->bookIDButton, &this->bookIDButton, 8, true, true, false);
+	}
+	else
+	{
+		this->ApplyDefaultStyleForBookIDButton();
+	}
+}
+
 void READER_TAB_MEMBERS::ReaderIndeptDetail::Activate()
 {
 	this->titlesDatasheetController.ActivateDatasheets();
@@ -747,7 +785,80 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::IsActive()
 
 void READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 {
-	std::cout << "borrowing book\n";
+	const std::string& borrowingBookID = this->bookIDButton.GetPlaceholder();
+
+	if (borrowingBookID == "" || borrowingBookID == " " || borrowingBookID == "Book ID")
+	{
+		std::cerr << "[ERROR] User must enter a vald book id!\n";
+		return;
+	}
+
+	const std::string& borrowingTitleISBN = borrowingBookID.substr(0, 4);
+	BOOK_TITLE::BookTitle* correspondTitle = LINEAR_LIST::SearchForISBN(*this->titleList, borrowingTitleISBN);
+	if (correspondTitle == nullptr)
+	{
+		std::cout << "[ERROR] Invalid ISBN\n";
+		return;
+	}
+
+	std::cout << "founded correspond isbn!\n";
+
+	LINKED_LIST::Controller titleCatalogue = correspondTitle->GetCatalogue();
+	this->borrowBook = LINKED_LIST::SearchByID(titleCatalogue, borrowingBookID);
+
+	if (this->borrowBook == nullptr)
+	{
+		std::cout << "[ERROR] Cannot find the book with ID: " << borrowingBookID << "\n";
+		return;
+	}
+
+	std::cout << "founded correspond book!\n";
+
+	//* Check for book's borrow-ability
+	if (this->borrowBook->GetStatus() != BOOK::Status::AVAILABLE)
+	{
+		std::cout << "[ERROR] Book is not available to borrow!\n";
+		return;
+	}
+
+	DOUBLE_LINKED_LIST::Controller readerBorrowedBooks = this->reader->GetBorrowedBooks();
+
+	//* Check the size of borrow book list!
+	if (DOUBLE_LINKED_LIST::Size(readerBorrowedBooks) == 3)
+	{
+		std::cout << "[ERROR] User has borrowed three books! Cannot borrows more book! Return a book before borrow another one!\n";
+		return;
+	}
+
+	//* Check if there is any book at did not return on date!
+	bool allReturnedInTime = true;
+	for (DOUBLE_LINKED_LIST::Pointer currentNode = readerBorrowedBooks.First; currentNode != nullptr; currentNode = currentNode->right)
+	{
+		//* Check for book did not return in time!
+		//if (currentNode->info.GetStatus() == BOOK_CIRCULATION::CirculationStatus::)
+		/*
+		* todo: working on this feature
+		*/
+	}
+
+	//* Check for duplicate title!
+	bool noDuplicateTitle = true;
+	for (DOUBLE_LINKED_LIST::Pointer currentNode = readerBorrowedBooks.First; currentNode != nullptr; currentNode = currentNode->right)
+	{
+		//* Check for duplicate ISBN code -> duplicate title!
+		if (borrowingTitleISBN.substr(0, 4).compare(currentNode->info.GetID().substr(0, 4)) == 0)
+		{
+			noDuplicateTitle = false;
+			break;
+		}
+	}
+	if (!noDuplicateTitle)
+	{
+		std::cout << "[ERROR] User has borrowed another book with the same title! Cannot borrows another one!\n";
+		return;
+	}
+
+	
 }
 
 void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateTitlesDatasheet()
@@ -846,8 +957,8 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateBorrowBooksDatasheet()
 		std::string* data = new std::string[this->borrowedBooksDatassheetController.GetAttributeCount()];
 		data[0] = std::to_string(order + 1);
 		data[1] = currentNode->info.GetID();
-		data[2] = currentNode->info.GetBorrowDate().Stringfy();
-		data[3] = currentNode->info.GetReturnDate().Stringfy();
+		data[2] = currentNode->info.GetBorrowDate().Stringify();
+		data[3] = currentNode->info.GetReturnDate().Stringify();
 		data[4] = currentNode->info.StringfyStatus();
 
 		this->borrowedBooksDatassheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
@@ -864,6 +975,13 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::InitializeFunctionalButton()
 	this->ApplyDefaultStyleForFunctionalButton(this->returnBookButton);
 }
 
+void READER_TAB_MEMBERS::ReaderIndeptDetail::InitializeBookIDButton()
+{
+	this->bookIDButton = Button(HELPER::Coordinate(1106, 400), 150, 50);
+	this->bookIDButton.SetPlaceholder("Book ID");
+	this->ApplyDefaultStyleForBookIDButton();
+}
+
 void READER_TAB_MEMBERS::ReaderIndeptDetail::ApplyDefaultStyleForFunctionalButton(Button& button)
 {
 	button.SetFillColor(rgb(236, 242, 255));
@@ -876,6 +994,20 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::ApplyHoverStyleForFunctionalButton(
 	button.SetFillColor(rgb(130, 170, 227));
 	button.SetBorderColor(BLACK);
 	button.SetTextColor(WHITE);
+}
+
+void READER_TAB_MEMBERS::ReaderIndeptDetail::ApplyDefaultStyleForBookIDButton()
+{
+	this->bookIDButton.SetFillColor(rgb(73, 84, 100));
+	this->bookIDButton.SetBorderColor(rgb(73, 84, 100));
+	this->bookIDButton.SetTextColor(rgb(244, 244, 242));
+}
+
+void READER_TAB_MEMBERS::ReaderIndeptDetail::ApplyHoverStyleForBookIDButton()
+{
+	this->bookIDButton.SetFillColor(rgb(246, 241, 241));
+	this->bookIDButton.SetBorderColor(BLACK);
+	this->bookIDButton.SetTextColor(rgb(73, 84, 100));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------
@@ -999,7 +1131,7 @@ DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_TREE::Pointer* readerList, LINE
 	this->defaultOrder = true;
 	this->readerList = readerList;
 	this->titleList = titleList;
-	this->InputController = inputController;
+	this->inputController = inputController;
 	
 	HELPER::Coordinate datasheetTopLeft(36, 120);
 	HELPER::Coordinate toLeftBtnTopLeft(36, 935);
@@ -1028,7 +1160,7 @@ DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_TREE::Pointer* readerList, LINE
 		DANH_SACH_THE_DOC_GIA_STYLING::ListManipulateButtonDefaultProperties(this->listManipulateButton[i]);
 	}
 
-	this->searchField = READER_TAB_MEMBERS::SearchField(this->readerList, this->InputController);
+	this->searchField = READER_TAB_MEMBERS::SearchField(this->readerList, this->inputController);
 	this->searchField.Activate();
 	this->readerIndeptDetail = READER_TAB_MEMBERS::ReaderIndeptDetail(this->titleList, nullptr);
 }
@@ -1067,6 +1199,7 @@ void DanhSachTheDocGiaView::Run()
 					this->datasheetController.DeactivateDatasheets();
 					this->searchField.Deactivate();
 					this->readerIndeptDetail.Activate();
+					this->readerIndeptDetail.SetInputController(this->inputController);
 					this->readerIndeptDetail.UpdateReader(&this->searchField.searchResult->info);
 				}
 				else {
@@ -1081,23 +1214,23 @@ void DanhSachTheDocGiaView::Run()
 			case (0): {
 				//* Display form
 				this->newItemForm.Display();
-				bool formSubmitted = this->newItemForm.SubmitForm(*this->readerList, *this->InputController);
+				bool formSubmitted = this->newItemForm.SubmitForm(*this->readerList, *this->inputController);
 				if (formSubmitted) {
 					DanhSachTheDocGiaView::CreateDatasheetsFromList(*this->readerList, &this->datasheetController);
 				}
 				break;
 			}
 			case (1): {
-				this->editItemForm.Display(*this->readerList, *this->InputController);
-				bool confirmSave = this->editItemForm.SubmitForm(*this->readerList, *this->InputController);
+				this->editItemForm.Display(*this->readerList, *this->inputController);
+				bool confirmSave = this->editItemForm.SubmitForm(*this->readerList, *this->inputController);
 				if (confirmSave) {
 					DanhSachTheDocGiaView::CreateDatasheetsFromList(*this->readerList, &this->datasheetController);
 				}
 				break;
 			}
 			case (2): {
-				this->deleteItemForm.Display(*this->readerList, *this->InputController);
-				bool confirmDelete = this->deleteItemForm.SubmitForm(*this->readerList, *this->InputController);
+				this->deleteItemForm.Display(*this->readerList, *this->inputController);
+				bool confirmDelete = this->deleteItemForm.SubmitForm(*this->readerList, *this->inputController);
 				if (confirmDelete) {
 					DanhSachTheDocGiaView::CreateDatasheetsFromList(*this->readerList, &this->datasheetController);
 				}

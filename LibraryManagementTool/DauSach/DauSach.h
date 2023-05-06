@@ -65,6 +65,8 @@ namespace LINKED_LIST
 	void InsertLast(Controller& controller, BOOK::Book item);
 
 	bool DeleteAt(Controller& controller, BOOK::Book item);
+
+	BOOK::Book* SearchByID(Controller& controller, const std::string& id);
 }
 
 namespace BOOK_TITLE 
@@ -145,6 +147,8 @@ namespace LINEAR_LIST
 	void Traversal(const LinearList& list);
 
 	BOOK_TITLE::BookTitle* SearchByName(const LinearList& list, const std::string& titleName);
+
+	BOOK_TITLE::BookTitle* SearchForISBN(const LinearList& list, const std::string& isbn);
 }
 
 namespace DAU_SACH_MODULES {

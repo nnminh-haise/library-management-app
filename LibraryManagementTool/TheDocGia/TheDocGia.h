@@ -32,6 +32,8 @@ namespace BOOK_CIRCULATION
 
 		std::string StringfyStatus();
 
+		bool IsOverdue();
+
 	private:
 		std::string id;
 		HELPER::Date borrowDate;

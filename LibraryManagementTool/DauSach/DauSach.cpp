@@ -138,6 +138,18 @@ bool LINKED_LIST::DeleteAt(Controller& controller, BOOK::Book item) {
 	return true;
 }
 
+BOOK::Book* LINKED_LIST::SearchByID(Controller& controller, const std::string& id)
+{
+	for (LINKED_LIST::Pointer currentNode = controller.first; currentNode != nullptr; currentNode = currentNode->next)
+	{
+		if (id.compare(currentNode->info.GetID()) == 0)
+		{
+			return &currentNode->info;
+		}
+	}
+	return nullptr;
+}
+
 
 BOOK_TITLE::BookTitle::BookTitle() {
 	this->isbn = std::string();
@@ -330,6 +342,18 @@ BOOK_TITLE::BookTitle* LINEAR_LIST::SearchByName(const LinearList& list, const s
 		}
 	}
 
+	return nullptr;
+}
+
+BOOK_TITLE::BookTitle* LINEAR_LIST::SearchForISBN(const LinearList& list, const std::string& isbn)
+{
+	for (int i = 0; i < list.numberOfNode; ++i)
+	{
+		if (isbn.compare(list.nodes[i]->GetISBN()) == 0)
+		{
+			return list.nodes[i];
+		}
+	}
 	return nullptr;
 }
 

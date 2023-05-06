@@ -132,6 +132,8 @@ namespace READER_TAB_MEMBERS
 
 		ReaderIndeptDetail(LINEAR_LIST::LinearList* titleList, READER::Reader* reader);
 
+		void SetInputController(ELEMENTS::InputModeController* inputController);
+
 		void UpdateReader(READER::Reader* reader);
 
 		void Display();
@@ -141,6 +143,8 @@ namespace READER_TAB_MEMBERS
 		void BorrowButtonOnAction();
 
 		void ReturnButtonOnAction();
+
+		void BookIDButtonOnAction();
 
 		void Activate();
 
@@ -157,10 +161,16 @@ namespace READER_TAB_MEMBERS
 
 		void InitializeFunctionalButton();
 
+		void InitializeBookIDButton();
+
 	private:
 		void ApplyDefaultStyleForFunctionalButton(Button& button);
 
 		void ApplyHoverStyleForFunctionalButton(Button& button);
+
+		void ApplyDefaultStyleForBookIDButton();
+
+		void ApplyHoverStyleForBookIDButton();
 
 	private:
 		bool active;
@@ -169,12 +179,17 @@ namespace READER_TAB_MEMBERS
 
 		DATASHEET::Controller titlesDatasheetController;
 		DATASHEET::Controller borrowedBooksDatassheetController;
+		ELEMENTS::InputModeController* inputController;
 
+		Button bookIDButton;
 		Button borrowBookButton;
 		Button returnBookButton;
 		Button goBackButton;
 
 		ReaderInfo readerInfo;
+
+		BOOK::Book* borrowBook;
+		BOOK::Book* returnBook;
 	};
 }
 
@@ -194,7 +209,7 @@ private:
 
 	AVL_TREE::Pointer* readerList;
 	LINEAR_LIST::LinearList* titleList;
-	ELEMENTS::InputModeController* InputController;
+	ELEMENTS::InputModeController* inputController;
 
 public:
 	void CreateDatasheetsFromList(AVL_TREE::Pointer& danhSachThedocGia, DATASHEET::Controller* controller);
