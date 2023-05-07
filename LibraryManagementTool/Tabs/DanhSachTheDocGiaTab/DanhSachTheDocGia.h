@@ -153,7 +153,7 @@ namespace READER_TAB_MEMBERS
 		bool IsActive();
 
 	private:
-		void BorrowBook();
+		bool BorrowBook();
 
 		void CreateTitlesDatasheet();
 

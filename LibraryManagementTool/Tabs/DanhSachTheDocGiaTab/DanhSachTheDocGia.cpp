@@ -550,15 +550,15 @@ bool READER_TAB_MEMBERS::EditItemInListForm::SubmitForm(AVL_TREE::Pointer& danhS
 READER_TAB_MEMBERS::ReaderInfo::ReaderInfo()
 {
 	this->background = HELPER::Fill(
-		HELPER::Coordinate(1148, 489),
-		600, 330,
+		HELPER::Coordinate(1125, 120),
+		630, 150,
 		rgb(217, 217, 217),
 		BLACK
 	);
 
 	this->readerFullname = Button(
-		HELPER::Coordinate(1171, 525),
-		550, 60,
+		HELPER::Coordinate(1140, 138),
+		600, 50,
 		BLACK,
 		rgb(244, 244, 242),
 		BLACK
@@ -566,8 +566,8 @@ READER_TAB_MEMBERS::ReaderInfo::ReaderInfo()
 	this->readerFullname.SetPlaceholder("Reader fullname");
 
 	this->readerId = Button(
-		HELPER::Coordinate(1171, 620),
-		550, 60,
+		HELPER::Coordinate(1140, 203),
+		250, 50,
 		BLACK,
 		rgb(244, 244, 242),
 		BLACK
@@ -575,8 +575,8 @@ READER_TAB_MEMBERS::ReaderInfo::ReaderInfo()
 	this->readerId.SetPlaceholder("Reader ID");
 
 	this->readerStatus = Button(
-		HELPER::Coordinate(1171, 723),
-		550, 60,
+		HELPER::Coordinate(1400, 203),
+		340, 50,
 		BLACK,
 		rgb(244, 244, 242),
 		BLACK
@@ -626,7 +626,8 @@ READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail(LINEAR_LIST::LinearLi
 		CONSTANTS::MAX_ROW_COUNT,
 		labelsCount,
 		DAU_SACH_PROPERTIES::ROW_HEIGHT,
-		HELPER::Coordinate(36, 120)
+		HELPER::Coordinate(36, 120),
+		HELPER::Coordinate(980, 945)
 	);
 	this->CreateTitlesDatasheet();
 	this->titlesDatasheetController.ActivateDatasheets();
@@ -637,7 +638,7 @@ READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail(LINEAR_LIST::LinearLi
 	}
 
 	this->goBackButton = Button(
-		HELPER::Coordinate(1685, 930), 70, 40,
+		HELPER::Coordinate(36, 940), 70, 40,
 		rgb(24, 18, 43),
 		rgb(236, 242, 255),
 		rgb(24, 18, 43)
@@ -665,7 +666,8 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::UpdateReader(READER::Reader* reader
 		READER_PROPERTIES::READER_DETAIL_PROPERTIES::BORROWED_BOOK_DATASHEET_PROPERTIES::MAX_ROW,
 		READER_PROPERTIES::READER_DETAIL_PROPERTIES::BORROWED_BOOK_DATASHEET_PROPERTIES::PROPERTIES_COUNT,
 		DATASHEET_DEFAULT_PROPERTIES::ROW_HEIGHT,
-		READER_PROPERTIES::READER_DETAIL_PROPERTIES::BORROWED_BOOK_DATASHEET_PROPERTIES::TOP_LEFT
+		READER_PROPERTIES::READER_DETAIL_PROPERTIES::BORROWED_BOOK_DATASHEET_PROPERTIES::TOP_LEFT,
+		READER_PROPERTIES::READER_DETAIL_PROPERTIES::BORROWED_BOOK_DATASHEET_PROPERTIES::DATASHEET_CHANGE_BUTTON_TOP_LEFT
 	);
 
 	this->CreateBorrowBooksDatasheet();
@@ -677,7 +679,8 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::Display()
 	this->titlesDatasheetController.Display();
 	this->titlesDatasheetController.DatasheetChangeButtonUpdate();
 
-	this->borrowedBooksDatassheetController.Display(false);
+	this->borrowedBooksDatassheetController.Display();
+	this->borrowedBooksDatassheetController.DatasheetChangeButtonUpdate();
 
 	this->bookIDButton.Display();
 	this->BookIDButtonOnAction();
@@ -723,7 +726,21 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowButtonOnAction()
 	{
 		delay(100);
 		
-		this->BorrowBook();
+		bool borrowingBookProcessResult = false;
+		try 
+		{
+			borrowingBookProcessResult = this->BorrowBook();
+		}
+		catch (const std::exception& ex)
+		{
+			std::cout << ex.what();
+		}
+
+		if (borrowingBookProcessResult == true)
+		{
+			this->CreateBorrowBooksDatasheet();
+			this->borrowedBooksDatassheetController.ActivateDatasheets();
+		}
 	}
 	else
 	{
@@ -783,51 +800,61 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::IsActive()
 	return this->active == true;
 }
 
-void READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
+bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 {
+	//* VALIDATE USER INPUT (start below) ----------------------------------------------------------------
 	const std::string& borrowingBookID = this->bookIDButton.GetPlaceholder();
-
 	if (borrowingBookID == "" || borrowingBookID == " " || borrowingBookID == "Book ID")
 	{
-		std::cerr << "[ERROR] User must enter a vald book id!\n";
-		return;
+		throw std::logic_error("[ERROR] USER MUST ENTER A VALID BOOK'S ID!\n");
+		return false;
 	}
+	//* VALIDATE USER INPUT (ended below) ----------------------------------------------------------------
 
-	const std::string& borrowingTitleISBN = borrowingBookID.substr(0, 4);
+
+
+	//* FINDING CORRESPOND BOOK ID (start below) ---------------------------------------------------------
+	const std::string& borrowingTitleISBN = borrowingBookID.substr(0, 4); //* Taking the ISBN code of the book
 	BOOK_TITLE::BookTitle* correspondTitle = LINEAR_LIST::SearchForISBN(*this->titleList, borrowingTitleISBN);
 	if (correspondTitle == nullptr)
 	{
-		std::cout << "[ERROR] Invalid ISBN\n";
-		return;
+		throw std::logic_error(std::format("[ERROR] THE ISBN: {} NOT EXIST!\n", borrowingTitleISBN));
+		return false;
 	}
-
-	std::cout << "founded correspond isbn!\n";
 
 	LINKED_LIST::Controller titleCatalogue = correspondTitle->GetCatalogue();
 	this->borrowBook = LINKED_LIST::SearchByID(titleCatalogue, borrowingBookID);
-
 	if (this->borrowBook == nullptr)
 	{
-		std::cout << "[ERROR] Cannot find the book with ID: " << borrowingBookID << "\n";
-		return;
+		throw std::logic_error(std::format("[ERROR] CANNOT FIND THE CORRESPOND BOOK'S ID: {}!\n", borrowingBookID));
+		return false;
 	}
+	//* FINDING CORRESPOND BOOK ID (ended below) ---------------------------------------------------------
 
-	std::cout << "founded correspond book!\n";
 
-	//* Check for book's borrow-ability
+
+	//* Check for book's borrow-ability!
 	if (this->borrowBook->GetStatus() != BOOK::Status::AVAILABLE)
 	{
-		std::cout << "[ERROR] Book is not available to borrow!\n";
-		return;
+		throw std::logic_error("[ERROR] BOOK IS NOT AVAILABLE TO BORROW!\n");
+		return false;
 	}
 
 	DOUBLE_LINKED_LIST::Controller readerBorrowedBooks = this->reader->GetBorrowedBooks();
 
-	//* Check the size of borrow book list!
-	if (DOUBLE_LINKED_LIST::Size(readerBorrowedBooks) == 3)
+	//* Check for number of book is borrowing!
+	int readerBorrowedBookCount = 0;
+	for (DOUBLE_LINKED_LIST::Pointer readerBorrowedBook = readerBorrowedBooks.First; readerBorrowedBook != nullptr; readerBorrowedBook = readerBorrowedBook->right)
 	{
-		std::cout << "[ERROR] User has borrowed three books! Cannot borrows more book! Return a book before borrow another one!\n";
-		return;
+		if (readerBorrowedBook->info.GetStatus() == BOOK_CIRCULATION::CirculationStatus::BORROWING)
+		{
+			readerBorrowedBookCount += 1;
+		}
+	}
+	if (readerBorrowedBookCount > 3)
+	{
+		throw std::logic_error("[ERROR] CANNOT BORROW MORE THAN 3 BOOKS! RETURN BEFORE BORROWING MORE BOOK!");
+		return false;
 	}
 
 	//* Check if there is any book at did not return on date!
@@ -835,10 +862,17 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 	for (DOUBLE_LINKED_LIST::Pointer currentNode = readerBorrowedBooks.First; currentNode != nullptr; currentNode = currentNode->right)
 	{
 		//* Check for book did not return in time!
-		//if (currentNode->info.GetStatus() == BOOK_CIRCULATION::CirculationStatus::)
-		/*
-		* todo: working on this feature
-		*/
+		if (currentNode->info.IsOverdue())
+		{
+			allReturnedInTime = false;
+			break;
+		}
+		
+	}
+	if (!allReturnedInTime)
+	{
+		throw std::logic_error("[ERROR] EXIST OVERDUE BOOK! RETURN ALL OVERDUE BOOK BEFORE BORROWING A NEW ONE!\n");
+		return false;
 	}
 
 	//* Check for duplicate title!
@@ -854,11 +888,32 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 	}
 	if (!noDuplicateTitle)
 	{
-		std::cout << "[ERROR] User has borrowed another book with the same title! Cannot borrows another one!\n";
-		return;
+		throw std::logic_error("[ERROR] User has borrowed another book with the same title! Cannot borrows another one!\n");
+		return false;
 	}
 
-	
+	//* BORROW BOOK PROCESS
+	HELPER::Date borrowingDate; //* borrowing date is today;
+	HELPER::Date returningDate; //* returning date is not identified yet, therefore yesterday will be assigned;
+	BOOK_CIRCULATION::BookCirculation newBorrowedBook(
+		this->borrowBook->GetID(),
+		borrowingDate,
+		returningDate,
+		BOOK_CIRCULATION::CirculationStatus::BORROWING
+	);
+	DOUBLE_LINKED_LIST::InsertLast(readerBorrowedBooks, newBorrowedBook);
+	this->borrowBook->SetStatus(BOOK::Status::UNAVAILABLE);
+	this->reader->SetBorrowedBooks(readerBorrowedBooks);
+
+	for (DOUBLE_LINKED_LIST::Pointer p = readerBorrowedBooks.First; p != nullptr; p = p->right)
+	{
+		std::cout << p->info.GetID() << "\n";
+		std::cout << p->info.GetBorrowDate().Stringify() << "\n";
+		std::cout << p->info.GetReturnDate().Stringify() << "\n";
+		std::cout << p->info.GetStatus() << "\n";
+	}
+
+	return true;
 }
 
 void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateTitlesDatasheet()
@@ -955,7 +1010,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateBorrowBooksDatasheet()
 		}
 
 		std::string* data = new std::string[this->borrowedBooksDatassheetController.GetAttributeCount()];
-		data[0] = std::to_string(order + 1);
+		data[0] = std::to_string(++order);
 		data[1] = currentNode->info.GetID();
 		data[2] = currentNode->info.GetBorrowDate().Stringify();
 		data[3] = currentNode->info.GetReturnDate().Stringify();
@@ -967,17 +1022,17 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateBorrowBooksDatasheet()
 
 void READER_TAB_MEMBERS::ReaderIndeptDetail::InitializeFunctionalButton()
 {
-	this->borrowBookButton = Button(HELPER::Coordinate(1106, 334), 150, 50);
+	this->borrowBookButton = Button(HELPER::Coordinate(1275, 940), 150, 40);
 	this->borrowBookButton.SetPlaceholder("BORROW BOOK");
 	this->ApplyDefaultStyleForFunctionalButton(this->borrowBookButton);
-	this->returnBookButton = Button(HELPER::Coordinate(1296, 334), 150, 50);
+	this->returnBookButton = Button(HELPER::Coordinate(1455, 940), 150, 40);
 	this->returnBookButton.SetPlaceholder("RETURN BOOK");
 	this->ApplyDefaultStyleForFunctionalButton(this->returnBookButton);
 }
 
 void READER_TAB_MEMBERS::ReaderIndeptDetail::InitializeBookIDButton()
 {
-	this->bookIDButton = Button(HELPER::Coordinate(1106, 400), 150, 50);
+	this->bookIDButton = Button(HELPER::Coordinate(1275, 870), 330, 50);
 	this->bookIDButton.SetPlaceholder("Book ID");
 	this->ApplyDefaultStyleForBookIDButton();
 }

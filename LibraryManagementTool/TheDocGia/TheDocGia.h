@@ -5,7 +5,7 @@
 
 namespace BOOK_CIRCULATION 
 {
-	enum CirculationStatus { BORROWED, RETURNED, LOSTED };
+	enum CirculationStatus { BORROWING, RETURNED, LOSTED };
 
 	class BookCirculation 
 	{

@@ -86,7 +86,7 @@ namespace DATASHEET {
     public:
         Controller();
 
-        Controller(int recordCount, int attributeCount, int rowHeight, HELPER::Coordinate topLeft);
+        Controller(int recordCount, int attributeCount, int rowHeight, HELPER::Coordinate topLeft, HELPER::Coordinate changeButtonTopLeft = {36, 940});
 
         //~Controller();
 

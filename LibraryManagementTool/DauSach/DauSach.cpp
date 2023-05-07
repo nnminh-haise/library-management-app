@@ -37,11 +37,11 @@ BOOK::Status BOOK::Book::GetStatus() {
 std::string BOOK::Book::StringfyStatus() {
 	switch (this->status) {
 		case(BOOK::Status::AVAILABLE):
-			return "CHO MUON DUOC";
+			return "AVAILABLE";
 		case(BOOK::Status::UNAVAILABLE):
-			return "DA CO DOC GIA MUON";
+			return "UNAVAILABLE";
 		case(BOOK::Status::SOLD):
-			return "DA THANH LY";
+			return "SOLD";
 	}
 	return std::string();
 }
@@ -433,10 +433,10 @@ bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LI
 							STR::Extract(bookData, ", ", bookItems, itemCount);
 
 							newBook.SetID(bookItems[0]);
-							if (bookItems[1] == "CHO MUON DUOC") {
+							if (bookItems[1] == "AVAILABLE") {
 								newBook.SetStatus(BOOK::AVAILABLE);
 							}
-							else if (bookItems[1] == "DA CO DOC GIA MUON") {
+							else if (bookItems[1] == "UNAVAILABLE") {
 								newBook.SetStatus(BOOK::UNAVAILABLE);
 							}
 							else {

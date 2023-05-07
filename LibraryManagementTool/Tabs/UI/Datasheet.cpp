@@ -207,7 +207,7 @@ namespace DATASHEET {
 		this->active = false;
 	}
 
-	Controller::Controller(int recordCount, int attributeCount, int rowHeight, HELPER::Coordinate topLeft) {
+	Controller::Controller(int recordCount, int attributeCount, int rowHeight, HELPER::Coordinate topLeft, HELPER::Coordinate changeButtonTopLeft) {
 		this->recordCount = recordCount;
 		this->attributeCount = attributeCount;
 		this->rowHeight = rowHeight;
@@ -218,10 +218,11 @@ namespace DATASHEET {
 		this->sheets = nullptr;
 		this->activeSheet = -1;
 
-		HELPER::Coordinate buttonCoordinates[] = {
-			HELPER::Coordinate(36, 940),
-			HELPER::Coordinate(86, 940)
+		HELPER::Coordinate buttonCoordinates[2] = {
+			changeButtonTopLeft,
+			HELPER::Coordinate(changeButtonTopLeft.x + 50, changeButtonTopLeft.y)
 		};
+
 		std::string placeholder[] = { "<", ">" };
 
 		for (int i = 0; i < 2; ++i) {

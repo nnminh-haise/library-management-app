@@ -56,22 +56,24 @@ BOOK_CIRCULATION::CirculationStatus BOOK_CIRCULATION::BookCirculation::GetStatus
 
 std::string BOOK_CIRCULATION::BookCirculation::StringfyStatus()
 {
-    if (this->status == BOOK_CIRCULATION::CirculationStatus::BORROWED)
+    if (this->status == BOOK_CIRCULATION::CirculationStatus::BORROWING)
     {
-        return "BORROWED";
+        return "BORROWING";
     }
     else if (this->status == BOOK_CIRCULATION::CirculationStatus::RETURNED)
     {
         return "RETURNED";
     }
-    else if (this->status == BOOK_CIRCULATION::CirculationStatus::LOSTED)
-    {
-        return "LOSTED";
-    }
+    return "LOSTED";
 }
 
 bool BOOK_CIRCULATION::BookCirculation::IsOverdue()
 {
+    if (this->status != BOOK_CIRCULATION::CirculationStatus::BORROWING)
+    {
+        return false;
+    }
+
     HELPER::Date today;
     if (today.DaysBetween(this->borrowDate) > 7)
     {
@@ -99,7 +101,7 @@ bool DOUBLE_LINKED_LIST::IsEmpty(const Controller& list) {
 
 int DOUBLE_LINKED_LIST::Size(const Controller& list) {
     int result = 0;
-    for (DOUBLE_LINKED_LIST::Pointer p = list.First; p != nullptr; p = p->left) {
+    for (DOUBLE_LINKED_LIST::Pointer p = list.First; p != nullptr; p = p->right) {
         ++result;
     }
     return result;
@@ -145,6 +147,8 @@ void DOUBLE_LINKED_LIST::InsertLast(Controller& list, BOOK_CIRCULATION::BookCirc
     newNode->left = list.Last;
     newNode->right = nullptr;
 
+    list.Last->right = newNode;
+    
     list.Last = newNode;
 }
 
@@ -698,9 +702,9 @@ bool READER_MODULES::LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE:
                         newBorrowedBook.SetBorrowDate(HELPER::Date(items[1]));
                         newBorrowedBook.SetReturnDate(HELPER::Date(items[2]));
 
-                        if (items[3] == "BORROWED")
+                        if (items[3] == "BORROWING")
                         {
-                            newBorrowedBook.SetStatus(BOOK_CIRCULATION::CirculationStatus::BORROWED);
+                            newBorrowedBook.SetStatus(BOOK_CIRCULATION::CirculationStatus::BORROWING);
                         }
                         else if (items[3] == "RETURNED")
                         {
@@ -774,20 +778,31 @@ bool READER_MODULES::UpdateListToDatabase(const std::string& filename, AVL_TREE:
             database << p->info.StringfyStatus() << ", ";
 
             if (DOUBLE_LINKED_LIST::IsEmpty(p->info.GetBorrowedBooks())) {
-                database << 0;
+                database << 0 << "\n";
             }
             else {
                 DOUBLE_LINKED_LIST::Controller lst = p->info.GetBorrowedBooks();
 
+                std::cout << "debug\n";
+                int cnt = 0;
+                for (auto p = lst.First; p != nullptr; p = p->right)
+                {
+                    ++cnt;
+                    std::cout << p->info.GetID() << "\n";
+                }
+                std::cout << "cnt = " << cnt << "\n";
+
+
                 int listSize = DOUBLE_LINKED_LIST::Size(lst);
+                std::cout << "size: " << listSize << "\n";
+
                 database << listSize << "\n";
 
                 for (DOUBLE_LINKED_LIST::Pointer currentNode = lst.First; currentNode != nullptr; currentNode = currentNode->right)
                 {
-                    database << currentNode->info.GetID() << ", " << currentNode->info.GetBorrowDate().Stringify() << ", " << currentNode->info.GetReturnDate().Stringify() << ", " << currentNode->info.StringfyStatus();
+                    database << currentNode->info.GetID() << ", " << currentNode->info.GetBorrowDate().Stringify() << ", " << currentNode->info.GetReturnDate().Stringify() << ", " << currentNode->info.StringfyStatus() << "\n";
                 }
             }
-            database << "\n";
 
             p = p->right;
         }
@@ -869,7 +884,7 @@ void READER_MODULES::SortByName(AVL_TREE::Pointer const& node, AVL_TREE::Pointer
 int BOOK_CIRCULATION_MODULES::CountBorrowedBooks(const DOUBLE_LINKED_LIST::Controller& list) {
     int counter = 0;
     for (DOUBLE_LINKED_LIST::Pointer p = list.First; p != nullptr; p = p->right) {
-        if (p->info.GetStatus() == BOOK_CIRCULATION::CirculationStatus::BORROWED) {
+        if (p->info.GetStatus() == BOOK_CIRCULATION::CirculationStatus::BORROWING) {
             ++counter;
         }
     }
