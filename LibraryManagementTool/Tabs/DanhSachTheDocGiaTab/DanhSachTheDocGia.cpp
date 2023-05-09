@@ -733,6 +733,9 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::Display()
 	this->returnBookButton.Display();
 	this->ReturnButtonOnAction();
 
+	this->lostBookButton.Display();
+	this->LostButtonOnAction();
+
 	this->readerInfo.Display();
 	this->goBackButton.Display();
 }
@@ -824,6 +827,38 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnButtonOnAction()
 	else
 	{
 		this->ApplyDefaultStyleForFunctionalButton(this->returnBookButton);
+	}
+}
+
+void READER_TAB_MEMBERS::ReaderIndeptDetail::LostButtonOnAction()
+{
+	if (this->lostBookButton.IsHover())
+	{
+		this->ApplyHoverStyleForFunctionalButton(this->lostBookButton);
+	}
+	else if (this->lostBookButton.LeftMouseClicked())
+	{
+		delay(100);
+
+		bool alertingLostBookProcessResult = false;
+		try
+		{
+			alertingLostBookProcessResult = this->LostBook();
+		}
+		catch (const std::exception& ex)
+		{
+			std::cout << ex.what();
+		}
+
+		if (alertingLostBookProcessResult == true)
+		{
+			this->CreateBorrowBooksDatasheet();
+			this->borrowedBooksDatassheetController.ActivateDatasheets();
+		}
+	}
+	else
+	{
+		this->ApplyDefaultStyleForFunctionalButton(this->lostBookButton);
 	}
 }
 
@@ -1035,8 +1070,42 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnBook()
 
 	targetedBook->info.SetStatus(BOOK::Status::AVAILABLE);
 	this->titleList->nodes[indexOfCoresspondTitle]->SetCatalogue(targetedTitleCatalouge);
-	DOUBLE_LINKED_LIST::RemoveNode(readerBookCirculationList, targetBookCirculation);
+	//DOUBLE_LINKED_LIST::RemoveNode(readerBookCirculationList, targetBookCirculation);
 	this->reader->SetBorrowedBooks(readerBookCirculationList);
+	return true;
+}
+
+bool READER_TAB_MEMBERS::ReaderIndeptDetail::LostBook()
+{
+	//* VALIDATE USER INPUT (start below) ----------------------------------------------------------------
+	const std::string& userTargetedLostedBookID = this->bookIDButton.GetPlaceholder();
+	if (userTargetedLostedBookID == "" || userTargetedLostedBookID == " " || userTargetedLostedBookID == "Book ID")
+	{
+		throw std::logic_error("[ERROR] USER MUST ENTER A VALID BOOK'S ID!\n");
+		return false;
+	}
+	//* VALIDATE USER INPUT (ended below) ----------------------------------------------------------------
+
+	//* Finding existance of the targetedBook's id in the user's book circulations list.
+	DOUBLE_LINKED_LIST::Controller readerBookCirculationList = this->reader->GetBorrowedBooks();
+
+	bool existReaderTargetBookCirculation = false;
+	DOUBLE_LINKED_LIST::Pointer targetBookCirculation = readerBookCirculationList.First;
+	for (; targetBookCirculation != nullptr; targetBookCirculation = targetBookCirculation->right)
+	{
+		if (targetBookCirculation->info.GetID().compare(userTargetedLostedBookID) == 0)
+		{
+			existReaderTargetBookCirculation = true;
+			break;
+		}
+	}
+	if (!existReaderTargetBookCirculation)
+	{
+		throw std::logic_error(std::format("[ERROR] BOOK'S ID: {} IS NOT EXIST IN USER'S BOOK'S CIRCULATION LIST!\n", userTargetedLostedBookID));
+		return false;
+	}
+
+	targetBookCirculation->info.SetStatus(BOOK_CIRCULATION::CirculationStatus::LOSTED);
 	return true;
 }
 
@@ -1149,12 +1218,17 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateBorrowBooksDatasheet()
 
 void READER_TAB_MEMBERS::ReaderIndeptDetail::InitializeFunctionalButton()
 {
-	this->borrowBookButton = Button(HELPER::Coordinate(1275, 940), 150, 40);
-	this->borrowBookButton.SetPlaceholder("BORROW BOOK");
+	this->borrowBookButton = Button(HELPER::Coordinate(1275, 940), 100, 40);
+	this->borrowBookButton.SetPlaceholder("BORROW");
 	this->ApplyDefaultStyleForFunctionalButton(this->borrowBookButton);
-	this->returnBookButton = Button(HELPER::Coordinate(1455, 940), 150, 40);
-	this->returnBookButton.SetPlaceholder("RETURN BOOK");
+	
+	this->returnBookButton = Button(HELPER::Coordinate(1390, 940), 100, 40);
+	this->returnBookButton.SetPlaceholder("RETURN");
 	this->ApplyDefaultStyleForFunctionalButton(this->returnBookButton);
+
+	this->lostBookButton = Button(HELPER::Coordinate(1505, 940), 100, 40);
+	this->lostBookButton.SetPlaceholder("LOST");
+	this->ApplyDefaultStyleForFunctionalButton(this->lostBookButton);
 }
 
 void READER_TAB_MEMBERS::ReaderIndeptDetail::InitializeBookIDButton()

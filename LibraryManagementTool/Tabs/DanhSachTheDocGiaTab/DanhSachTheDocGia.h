@@ -163,6 +163,8 @@ namespace READER_TAB_MEMBERS
 
 		void ReturnButtonOnAction();
 
+		void LostButtonOnAction();
+
 		void BookIDButtonOnAction();
 
 		void Activate();
@@ -175,6 +177,8 @@ namespace READER_TAB_MEMBERS
 		bool BorrowBook();
 
 		bool ReturnBook();
+
+		bool LostBook();
 
 		void CreateTitlesDatasheet();
 
@@ -205,6 +209,7 @@ namespace READER_TAB_MEMBERS
 		Button bookIDButton;
 		Button borrowBookButton;
 		Button returnBookButton;
+		Button lostBookButton;
 		Button goBackButton;
 
 		ReaderInfo readerInfo;
