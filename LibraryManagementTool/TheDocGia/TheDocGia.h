@@ -74,6 +74,8 @@ namespace DOUBLE_LINKED_LIST
 	void InsertFirst(Controller& list, BOOK_CIRCULATION::BookCirculation info);
 
 	void InsertLast(Controller& list, BOOK_CIRCULATION::BookCirculation info);
+
+	void RemoveNode(Controller& list, DOUBLE_LINKED_LIST::Pointer targetNode);
 }
 
 namespace BOOK_CIRCULATION_MODULES {

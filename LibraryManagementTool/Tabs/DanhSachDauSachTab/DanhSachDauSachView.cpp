@@ -469,7 +469,7 @@ namespace DAU_SACH_TAB {
 				this->sachAddFieldController.Initialize(std::stoi(this->inputField[6].GetPlaceholder()), this->inputField[0].GetPlaceholder());
 			}
 			else {
-				std::cerr << std::format("[ERROR] Thong tin cua truong \"kich thuoc danh muc sach phai la so nguyen khong am\"\n");
+				std::cerr << std::format("[ERROR] Thong tin cua truong \"kich thuoc danh muc sach readerSexButton la so nguyen khong am\"\n");
 				exit(1);
 			}
 		}

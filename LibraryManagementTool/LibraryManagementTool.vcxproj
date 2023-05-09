@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Helper\IndexGenerator.cpp" />
     <ClCompile Include="Tabs\UI\Datasheet.cpp" />
     <ClCompile Include="Tabs\UI\Button.cpp" />
     <ClCompile Include="Tabs\DanhSachDauSachTab\DanhSachDauSachStyling.cpp" />
@@ -147,6 +148,7 @@
     <ClCompile Include="TheDocGia\TheDocGia.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Helper\IndexGenerator.h" />
     <ClInclude Include="Tabs\UI\Datasheet.h" />
     <ClInclude Include="Tabs\UI\Button.h" />
     <ClInclude Include="Tabs\DanhSachDauSachTab\DanhSachDauSachStyling.h" />
@@ -172,6 +174,10 @@
     <Text Include="Databases\DanhSachTheDocGiaIndex.txt" />
     <Text Include="Databases\DAU_SACH_DB.txt" />
     <Text Include="Databases\DOC_GIA_DB.txt" />
+    <Text Include="Databases\ReaderIndicies.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Databases\ReaderIndicies.bin" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

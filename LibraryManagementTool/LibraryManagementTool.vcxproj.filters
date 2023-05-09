@@ -57,6 +57,9 @@
     <ClCompile Include="Tabs\UI\Datasheet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Helper\IndexGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DauSach\DauSach.h">
@@ -107,6 +110,9 @@
     <ClInclude Include="Tabs\UI\Datasheet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Helper\IndexGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="Graphics\graphics.lib" />
@@ -116,5 +122,11 @@
     <Text Include="Databases\DanhSachTheDocGiaIndex.txt" />
     <Text Include="Databases\DOC_GIA_DB.txt" />
     <Text Include="Databases\DAU_SACH_DB.txt" />
+    <Text Include="Databases\ReaderIndicies.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Databases\ReaderIndicies.bin">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

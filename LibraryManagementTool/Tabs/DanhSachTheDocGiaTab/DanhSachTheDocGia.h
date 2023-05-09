@@ -10,16 +10,6 @@ namespace READER_TAB_MEMBERS
 {
 	struct SearchField
 	{
-		bool status;
-		bool showSearchResult;
-		HELPER::Fill background;
-		Button title;
-		Button searchBox;
-		Button resultBox;
-		AVL_TREE::Pointer* readerList;
-		AVL_TREE::Pointer searchResult;
-		ELEMENTS::InputModeController* inputController;
-
 	public:
 		SearchField();
 
@@ -35,35 +25,52 @@ namespace READER_TAB_MEMBERS
 
 		int SearchReaderAlgorithm();
 
-		void ProcessingSearchResult();
+		void ProcessingSearchResult();		
 
 		void Display();
-		
+
 		void ResultBoxDefaultStyling();
 
 		void ResultBoxFoundedStyling();
 
 		void ResultBoxOnAction();
+
+		bool status;
+		bool showSearchResult;
+		HELPER::Fill background;
+		Button title;
+		Button searchBox;
+		Button resultBox;
+		AVL_TREE::Pointer* readerList;
+		AVL_TREE::Pointer searchResult;
+		ELEMENTS::InputModeController* inputController;
 	};
 
-	struct NewListItemForm 
+	class NewReaderForm 
 	{
-		bool status;
-		HELPER::Fill* background;
-		Button* title;
-		Button* maThe;
-		Button* ho;
-		Button* ten;
-		Button* phai;
-		Button* createDanhMucSach;
-
-		NewListItemForm();
-
-		~NewListItemForm();
+	public:
+		NewReaderForm(AVL_TREE::Pointer* readerList, ELEMENTS::InputModeController* inputController);
 
 		void Display();
 
-		bool SubmitForm(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController);
+		void FormOnAction();
+
+		bool SubmitForm();
+
+	private:
+		bool status;
+		HELPER::Fill background;
+		Button title;
+		Button readerIDButton;
+		Button readerFirstNameButton;
+		Button readerLastNameButton;
+		Button readerSexButton;
+		Button submitButton;
+
+		AVL_TREE::Pointer* readerList;
+		ELEMENTS::InputModeController* inputController;
+
+		int readerIndex;
 	};
 
 	struct DeleteItemInListForm 
@@ -88,27 +95,39 @@ namespace READER_TAB_MEMBERS
 		bool SubmitForm(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController);
 	};
 
-	struct EditItemInListForm 
+	class EditReaderInfoForm 
 	{
+	public:
+		EditReaderInfoForm(AVL_TREE::Pointer* readerList, ELEMENTS::InputModeController* inputController);
+
+		void ReaderIDButtonOnAction();
+
+		void Display();
+
+		void AssignReaderOldInfoToFields();
+
+		void FormOnAction();
+
+		bool SearchReaderProcess();
+
+		bool SubmitForm();
+
+	private:
 		bool status;
-		HELPER::Fill* background;
-		Button* title;
-		Button* maThe;
-		Button* ho;
-		Button* ten;
-		Button* trangThai;
-		Button* phai;
-		Button* saveBtn;
-		bool searchTargetFound;
+		HELPER::Fill background;
+		Button title;
+		Button readerIDButton;
+		Button readerFirstNameButton;
+		Button readerLastNameButton;
+		Button readerStatusButton;
+		Button readerGenderButton;
+		Button saveBtn;
+		int searchReaderFound;
+		bool assignReaderOldInfo;
 		AVL_TREE::Pointer searchResult;
 
-		EditItemInListForm();
-
-		~EditItemInListForm();
-
-		void Display(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController);
-
-		bool SubmitForm(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController);
+		AVL_TREE::Pointer* readerList;
+		ELEMENTS::InputModeController* inputController;
 	};
 
 	struct ReaderInfo 
@@ -155,6 +174,8 @@ namespace READER_TAB_MEMBERS
 	private:
 		bool BorrowBook();
 
+		bool ReturnBook();
+
 		void CreateTitlesDatasheet();
 
 		void CreateBorrowBooksDatasheet();
@@ -188,8 +209,7 @@ namespace READER_TAB_MEMBERS
 
 		ReaderInfo readerInfo;
 
-		BOOK::Book* borrowBook;
-		BOOK::Book* returnBook;
+		BOOK::Book* targetedBookID;
 	};
 }
 
@@ -202,9 +222,9 @@ private:
 	bool defaultOrder;
 
 	READER_TAB_MEMBERS::SearchField searchField;
-	READER_TAB_MEMBERS::NewListItemForm newItemForm;
+	READER_TAB_MEMBERS::NewReaderForm* newItemForm;
 	READER_TAB_MEMBERS::DeleteItemInListForm deleteItemForm;
-	READER_TAB_MEMBERS::EditItemInListForm editItemForm;
+	READER_TAB_MEMBERS::EditReaderInfoForm* editItemForm;
 	READER_TAB_MEMBERS::ReaderIndeptDetail readerIndeptDetail;
 
 	AVL_TREE::Pointer* readerList;

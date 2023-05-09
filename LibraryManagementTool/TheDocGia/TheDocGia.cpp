@@ -100,6 +100,11 @@ bool DOUBLE_LINKED_LIST::IsEmpty(const Controller& list) {
 }
 
 int DOUBLE_LINKED_LIST::Size(const Controller& list) {
+    if (DOUBLE_LINKED_LIST::IsEmpty(list))
+    {
+        return 0;
+    }
+
     int result = 0;
     for (DOUBLE_LINKED_LIST::Pointer p = list.First; p != nullptr; p = p->right) {
         ++result;
@@ -127,29 +132,71 @@ void DOUBLE_LINKED_LIST::InsertFirst(Controller& list, BOOK_CIRCULATION::BookCir
     if (DOUBLE_LINKED_LIST::IsEmpty(list))
     {
         list.First = newNode;
-        list.Last = newNode;
         return;
     }
 
+    newNode->right = list.First;
+    list.First->left = newNode;
     list.First = newNode;
 }
 
 void DOUBLE_LINKED_LIST::InsertLast(Controller& list, BOOK_CIRCULATION::BookCirculation info)
 {
+    DOUBLE_LINKED_LIST::Pointer newNode = new DOUBLE_LINKED_LIST::Node;
+    newNode->info = info;
+    newNode->left = nullptr;
+    newNode->right = nullptr;
+    
     if (DOUBLE_LINKED_LIST::IsEmpty(list))
     {
-        DOUBLE_LINKED_LIST::InsertFirst(list, info);
+        list.First = newNode;
         return;
     }
 
-    DOUBLE_LINKED_LIST::Pointer newNode = new DOUBLE_LINKED_LIST::Node;
-    newNode->info = info;
-    newNode->left = list.Last;
-    newNode->right = nullptr;
+    DOUBLE_LINKED_LIST::Pointer currentNode = list.First;
+    for (; currentNode->right != nullptr; currentNode = currentNode->right);
+    currentNode->right = newNode;
+    newNode->left = currentNode;
+}
 
-    list.Last->right = newNode;
-    
-    list.Last = newNode;
+void DOUBLE_LINKED_LIST::RemoveNode(Controller& list, DOUBLE_LINKED_LIST::Pointer targetNode)
+{
+    if (targetNode == nullptr)
+    {
+        return;
+    }
+
+    if (DOUBLE_LINKED_LIST::IsEmpty(list))
+    {
+        return;
+    }
+
+    if (list.First == targetNode)
+    {
+        list.First = targetNode->right;
+        if (list.First != nullptr)
+        {
+            list.First->left = nullptr;
+        }
+        delete targetNode;
+        return;
+    }
+
+    DOUBLE_LINKED_LIST::Pointer currentNode = list.First;
+    for (; currentNode != nullptr && currentNode != targetNode; currentNode = currentNode->right)
+
+    if (currentNode == nullptr)
+    {
+        return;
+    }
+
+    currentNode->left->right = currentNode->right;
+    if (currentNode->right != nullptr)
+    {
+        currentNode->right->left = currentNode->left;
+    }
+
+    delete currentNode;
 }
 
 READER::Reader::Reader() {

@@ -3,6 +3,7 @@
 
 #include "../../Graphics/graphics.h"
 #include "../../Helper/Helper.h"
+#include "../../Helper/IndexGenerator.h"
 #include "../../Helper/ConstantsAndGlobalVariables.h"
 #include "../../TheDocGia/TheDocGia.h"
 #include "../../DataStructures/Stack.h"
@@ -174,99 +175,107 @@ void READER_TAB_MEMBERS::SearchField::Display()
 	this->resultBox.Display();
 }
 
-READER_TAB_MEMBERS::NewListItemForm::NewListItemForm() {
+READER_TAB_MEMBERS::NewReaderForm::NewReaderForm(AVL_TREE::Pointer* readerList, ELEMENTS::InputModeController* inputController) {
 	this->status = false;
-	this->background = new HELPER::Fill(HELPER::Coordinate(1305, 420), 450, 500);
+	this->background = HELPER::Fill(HELPER::Coordinate(1305, 420), 450, 500);
 
-	this->title = new Button(HELPER::Coordinate(1305, 420), 450, 50);
-	this->title->SetPlaceholder("THE DOC GIA");
+	this->title = Button(HELPER::Coordinate(1305, 420), 450, 50);
+	this->title.SetPlaceholder("NEW READER");
 
-	this->maThe = new Button(HELPER::Coordinate(1330, 500), 400, 60);
-	this->maThe->SetPlaceholder("Ma the");
+	this->readerIDButton = Button(HELPER::Coordinate(1330, 500), 400, 60);
+	this->readerIDButton.SetPlaceholder("Reader's ID");
 
-	this->ho = new Button(HELPER::Coordinate(1330, 590), 400, 60);
-	this->ho->SetPlaceholder("firstName");
+	this->readerFirstNameButton = Button(HELPER::Coordinate(1330, 590), 400, 60);
+	this->readerFirstNameButton.SetPlaceholder("Reader's first name");
 
-	this->ten = new Button(HELPER::Coordinate(1330, 680), 400, 60);
-	this->ten->SetPlaceholder("lastName");
+	this->readerLastNameButton = Button(HELPER::Coordinate(1330, 680), 400, 60);
+	this->readerLastNameButton.SetPlaceholder("Reader's last name");
 
-	this->phai = new Button(HELPER::Coordinate(1330, 770), 400, 60);
-	this->phai->SetPlaceholder("sex");
+	this->readerSexButton = Button(HELPER::Coordinate(1330, 770), 400, 60);
+	this->readerSexButton.SetPlaceholder("Reader's sex");
 
-	this->createDanhMucSach = new Button(HELPER::Coordinate(1455, 855), 150, 40);
-	this->createDanhMucSach->SetPlaceholder("SUBMIT");
+	this->submitButton = Button(HELPER::Coordinate(1455, 855), 150, 40);
+	this->submitButton.SetPlaceholder("CREATE");
 
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::BackgroundStyling(this->background);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::TitleStyling(this->title);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->maThe);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->ho);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->ten);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->phai);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->createDanhMucSach);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::BackgroundStyling(&this->background);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::TitleStyling(&this->title);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(&this->readerIDButton);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(&this->readerFirstNameButton);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(&this->readerLastNameButton);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(&this->readerSexButton);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(&this->submitButton);
+
+	this->readerList = readerList;
+	this->inputController = inputController;
 }
 
-READER_TAB_MEMBERS::NewListItemForm::~NewListItemForm() {
-	delete this->background;
-	delete this->title;
-	delete this->maThe;
-	delete this->ho;
-	delete this->ten;
-	delete this->phai;
-	delete this->createDanhMucSach;
+void READER_TAB_MEMBERS::NewReaderForm::Display() {
+	this->background.Draw();
+	this->title.Display();
+	this->readerIDButton.Display();
+	this->readerFirstNameButton.Display();
+	this->readerLastNameButton.Display();
+	this->readerSexButton.Display();
+	this->submitButton.Display();
 }
 
-void READER_TAB_MEMBERS::NewListItemForm::Display() {
-	this->background->Draw();
-	this->title->Display();
-	this->maThe->Display();
-	this->ho->Display();
-	this->ten->Display();
-	this->phai->Display();
-	this->createDanhMucSach->Display();
-}
+void READER_TAB_MEMBERS::NewReaderForm::FormOnAction()
+{
+	Button* inputFields[3] = { &this->readerFirstNameButton, &this->readerLastNameButton, &this->readerSexButton };
+	int fieldsCharacterLimit[3] = { 30, 15, 6 };
 
-bool READER_TAB_MEMBERS::NewListItemForm::SubmitForm(AVL_TREE::Pointer& dsTheDocGia, ELEMENTS::InputModeController& InputController) {
-	Button* formInputField[3] = { this->ho, this->ten, this->phai };
-	int fieldCharacterLimit[3] = { 30, 15, 3 };
+	int readerListSize = 0;
+	AVL_TREE::CountNode(*this->readerList, readerListSize);
 
-	int nextIndex = READER_MODULES::GetIndex(CONSTANTS::THE_DOC_GIA_INDEX, dsTheDocGia);
-	this->maThe->SetPlaceholder(std::to_string(nextIndex));
+	IndexGenerator indexGenerator(500000);
+	this->readerIndex = indexGenerator.FromFileGetIndexAt(CONSTANTS::READER_INDICIES, readerListSize);
+	this->readerIDButton.SetPlaceholder(std::to_string(readerIndex));
 
-	for (int i = 0; i < 3; ++i) {
-		if (formInputField[i]->IsPointed() && formInputField[i]->LeftMouseClicked() == false) {
-			DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxHoverProperties(formInputField[i]);
+	for (int i = 0; i < 3; ++i) 
+	{
+		if (inputFields[i]->IsPointed() && inputFields[i]->LeftMouseClicked() == false) 
+		{
+			DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxHoverProperties(inputFields[i]);
 		}
-		else if (formInputField[i]->LeftMouseClicked()) {
+		else if (inputFields[i]->LeftMouseClicked()) 
+		{
 			delay(100);
-			InputController.Activate(formInputField[i], formInputField[i], fieldCharacterLimit[i], true, false, true);
+			this->inputController->Activate(inputFields[i], inputFields[i], fieldsCharacterLimit[i], true, false, true);
 		}
-		else {
-			DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(formInputField[i]);
+		else 
+		{
+			DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(inputFields[i]);
 		}
 	}
+}
 
-	if (this->createDanhMucSach->IsHover()) {
-		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmutButtonHoverStyling(this->createDanhMucSach);
+bool READER_TAB_MEMBERS::NewReaderForm::SubmitForm() 
+{
+	if (this->submitButton.IsHover()) 
+	{
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmutButtonHoverStyling(&this->submitButton);
 	}
-	else if (this->createDanhMucSach->LeftMouseClicked()) {
+	else if (this->submitButton.LeftMouseClicked()) 
+	{
 		delay(100);
 
-		READER::Reader newItem;
+		READER::Reader newreader;
 
-		newItem.SetID(nextIndex);
-		newItem.SetFirstName(STR::Trim(this->ho->GetPlaceholder()));
-		newItem.SetLastName(STR::Trim(this->ten->GetPlaceholder()));
-		newItem.SetSex(this->phai->GetPlaceholder() == "MALE" ? READER::Sex::MALE : READER::Sex::FEMALE);
-		newItem.SetStatus(READER::ReaderStatus::ACTIVE);
-		newItem.SetBorrowedBooks(DOUBLE_LINKED_LIST::Controller());
+		newreader.SetID(this->readerIndex);
+		newreader.SetFirstName(STR::Trim(this->readerFirstNameButton.GetPlaceholder()));
+		newreader.SetLastName(STR::Trim(this->readerLastNameButton.GetPlaceholder()));
+		newreader.SetSex(this->readerSexButton.GetPlaceholder() == "MALE" ? READER::Sex::MALE : READER::Sex::FEMALE);
+		newreader.SetStatus(READER::ReaderStatus::ACTIVE);
+		newreader.SetBorrowedBooks(DOUBLE_LINKED_LIST::Controller());
 		delay(100);
 
-		bool res = AVL_TREE::Insert(dsTheDocGia, newItem);
+		bool res = AVL_TREE::Insert(*this->readerList, newreader);
 
 		return true;
 	}
-	else {
-		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->createDanhMucSach);
+	else 
+	{
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(&this->submitButton);
 	}
 
 	return false;
@@ -283,7 +292,7 @@ READER_TAB_MEMBERS::DeleteItemInListForm::DeleteItemInListForm() {
 	this->maThe->SetPlaceholder("Ma the");
 
 	this->hoTen = new Button(HELPER::Coordinate(1330, 590), 400, 60);
-	this->hoTen->SetPlaceholder("firstName va ten");
+	this->hoTen->SetPlaceholder("firstName va readerLastNameButton");
 
 	this->phai = new Button(HELPER::Coordinate(1330, 680), 400, 60);
 	this->phai->SetPlaceholder("sex");
@@ -385,155 +394,191 @@ bool READER_TAB_MEMBERS::DeleteItemInListForm::SubmitForm(AVL_TREE::Pointer& dan
 	return false;
 }
 
-READER_TAB_MEMBERS::EditItemInListForm::EditItemInListForm() {
+READER_TAB_MEMBERS::EditReaderInfoForm::EditReaderInfoForm(AVL_TREE::Pointer* readerList, ELEMENTS::InputModeController* inputController) 
+{
+	this->readerList = readerList;
+	this->inputController = inputController;
+
 	this->status = false;
-	this->background = new HELPER::Fill(HELPER::Coordinate(1305, 420), 450, 500);
+	this->background = HELPER::Fill(HELPER::Coordinate(1305, 420), 450, 500);
 
-	this->title = new Button(HELPER::Coordinate(1305, 420), 450, 50);
-	this->title->SetPlaceholder("THE DOC GIA");
+	this->title = Button(HELPER::Coordinate(1305, 420), 450, 50);
+	this->title.SetPlaceholder("EDITING READER INFO");
 
-	this->maThe = new Button(HELPER::Coordinate(1330, 500), 400, 60);
-	this->maThe->SetPlaceholder("Ma the");
+	this->readerIDButton = Button(HELPER::Coordinate(1330, 500), 400, 60);
+	this->readerIDButton.SetPlaceholder("Reader's ID");
 
-	this->ho = new Button(HELPER::Coordinate(1330, 590), 400, 60);
-	this->ho->SetPlaceholder("firstName");
+	this->readerFirstNameButton = Button(HELPER::Coordinate(1330, 590), 400, 60);
+	this->readerFirstNameButton.SetPlaceholder("Reader's first name");
 
-	this->ten = new Button(HELPER::Coordinate(1330, 680), 400, 60);
-	this->ten->SetPlaceholder("lastName");
+	this->readerLastNameButton = Button(HELPER::Coordinate(1330, 680), 400, 60);
+	this->readerLastNameButton.SetPlaceholder("Reader's last name");
 
-	this->phai = new Button(HELPER::Coordinate(1330, 770), 145, 60);
-	this->phai->SetPlaceholder("sex");
+	this->readerGenderButton = Button(HELPER::Coordinate(1330, 770), 145, 60);
+	this->readerGenderButton.SetPlaceholder("Reader's gender");
 
-	this->trangThai = new Button(HELPER::Coordinate(1500, 770), 230, 60);
-	this->trangThai->SetPlaceholder("Trang thai");
+	this->readerStatusButton = Button(HELPER::Coordinate(1500, 770), 230, 60);
+	this->readerStatusButton.SetPlaceholder("Reader's Status");
 
-	this->saveBtn = new Button(HELPER::Coordinate(1455, 855), 150, 40);
-	this->saveBtn->SetPlaceholder("SAVE");
+	this->saveBtn = Button(HELPER::Coordinate(1455, 855), 150, 40);
+	this->saveBtn.SetPlaceholder("SAVE");
 
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::BackgroundStyling(this->background);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::TitleStyling(this->title);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->maThe);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->ho);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->ten);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->trangThai);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->phai);
-	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->saveBtn);
-	this->searchTargetFound = false;
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::BackgroundStyling(&this->background);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::TitleStyling(&this->title);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(&this->readerIDButton);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(&this->readerFirstNameButton);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(&this->readerLastNameButton);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(&this->readerStatusButton);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(&this->readerGenderButton);
+	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(&this->saveBtn);
+
+	this->searchReaderFound = 0;
+	this->assignReaderOldInfo = false;
 	this->searchResult = nullptr;
 }
 
-READER_TAB_MEMBERS::EditItemInListForm::~EditItemInListForm() {
-	delete this->background;
-	delete this->title;
-	delete this->maThe;
-	delete this->ho;
-	delete this->ten;
-	delete this->trangThai;
-	delete this->phai;
-	delete this->saveBtn;
-}
-
-void READER_TAB_MEMBERS::EditItemInListForm::Display(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController) {
-	this->searchTargetFound = false;
-
-	this->background->Draw();
-	this->title->Display();
-	this->maThe->Display();
-
-	if (this->maThe->IsHover()) {
-		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxHoverProperties(this->maThe);
+void READER_TAB_MEMBERS::EditReaderInfoForm::ReaderIDButtonOnAction()
+{
+	if (this->readerIDButton.IsHover())
+	{
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxHoverProperties(&this->readerIDButton);
 	}
-	else if (this->maThe->LeftMouseClicked()) {
+	else if (this->readerIDButton.LeftMouseClicked())
+	{
 		delay(100);
-		InputController.Activate(this->maThe, this->maThe, 4, false, true, false);
+		this->inputController->Activate(&this->readerIDButton, &this->readerIDButton, 6, false, true, false);
+		this->assignReaderOldInfo = false;
+		this->searchReaderFound = 0;
 	}
-	else {
-		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(this->maThe);
+	else
+	{
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(&this->readerIDButton);
 	}
 }
 
-bool READER_TAB_MEMBERS::EditItemInListForm::SubmitForm(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController) {
+void READER_TAB_MEMBERS::EditReaderInfoForm::Display() 
+{
+	this->background.Draw();
+	this->title.Display();
+	this->readerIDButton.Display();
+	this->readerFirstNameButton.Display();
+	this->readerLastNameButton.Display();
+	this->readerGenderButton.Display();
+	this->readerStatusButton.Display();
+	this->saveBtn.Display();
+}
 
-	this->searchTargetFound = false;
+void READER_TAB_MEMBERS::EditReaderInfoForm::AssignReaderOldInfoToFields()
+{
+	this->readerIDButton.SetPlaceholder(std::to_string(this->searchResult->info.GetID()));
+	this->readerFirstNameButton.SetPlaceholder(this->searchResult->info.GetFirstName());
+	this->readerLastNameButton.SetPlaceholder(this->searchResult->info.GetLastName());
+	this->readerGenderButton.SetPlaceholder(this->searchResult->info.StringfySex());
+	this->readerStatusButton.SetPlaceholder(this->searchResult->info.StringfyStatus());
+}
 
-	bool checker = VALIDATOR::OnlyDigit(this->maThe->GetPlaceholder());
-	if (checker) {
-		this->searchResult = AVL_TREE::SearchByKey(danhSachTheDocGia, std::stoi(this->maThe->GetPlaceholder()));
-		if (this->searchResult != nullptr) {
-			this->searchTargetFound = true;
+void READER_TAB_MEMBERS::EditReaderInfoForm::FormOnAction()
+{
+	this->ReaderIDButtonOnAction();
+	this->searchReaderFound += this->SearchReaderProcess();
+	if (this->searchReaderFound == 1 && this->assignReaderOldInfo == true)
+	{
+		this->AssignReaderOldInfoToFields();
+		this->assignReaderOldInfo = false;
+	}
 
-			this->ho->Display();
-			this->ten->Display();
-			this->phai->Display();
-			this->trangThai->Display();
-			this->saveBtn->Display();
+	Button* inpField[4] = { &this->readerFirstNameButton, &this->readerLastNameButton, &this->readerGenderButton, &this->readerStatusButton };
 
-			Button* inpField[4] = {
-				this->ho, this->ten, this->phai, this->trangThai
-			};
-
-			for (int i = 0; i < 4; ++i) {
-				if (inpField[i]->IsHover()) {
-					DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxHoverProperties(inpField[i]);
-				}
-				else if (inpField[i]->LeftMouseClicked()) {
-					switch (i) {
-					case (0):
-						InputController.Activate(inpField[i], inpField[i], 30, true, false, true);
-						break;
-					case (1):
-						InputController.Activate(inpField[i], inpField[i], 15, true, false, true);
-						break;
-					case (2):
-						InputController.Activate(inpField[i], inpField[i], 3, true, false, false);
-						break;
-					case (3):
-						InputController.Activate(inpField[i], inpField[i], 9, true, false, true);
-						break;
-					}
-				}
-				else {
-					DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(inpField[i]);
-				}
+	for (int i = 0; i < 4; ++i)
+	{
+		if (inpField[i]->IsHover())
+		{
+			DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxHoverProperties(inpField[i]);
+		}
+		else if (inpField[i]->LeftMouseClicked())
+		{
+			switch (i)
+			{
+			case (0):
+				this->inputController->Activate(inpField[i], inpField[i], 30, true, false, true);
+				break;
+			case (1):
+				this->inputController->Activate(inpField[i], inpField[i], 15, true, false, true);
+				break;
+			case (2):
+				this->inputController->Activate(inpField[i], inpField[i], 6, true, false, false);
+				break;
+			case (3):
+				this->inputController->Activate(inpField[i], inpField[i], 6, true, false, true);
+				break;
 			}
 		}
-		else {
+		else
+		{
+			DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(inpField[i]);
+		}
+	}
+}
+
+bool READER_TAB_MEMBERS::EditReaderInfoForm::SearchReaderProcess()
+{
+	bool checker = VALIDATOR::OnlyDigit(this->readerIDButton.GetPlaceholder());
+	if (checker)
+	{
+		this->searchResult = AVL_TREE::SearchByKey(*this->readerList, std::stoi(this->readerIDButton.GetPlaceholder()));
+		if (this->searchResult != nullptr)
+		{
+			this->assignReaderOldInfo = true;
+			return true;
+		}
+		else
+		{
 			std::cerr << std::format("[ERROR] MA THE IS NOT EXIST!\n");
 		}
 	}
-	else {
+	else
+	{
 		std::cerr << std::format("[ERROR] INVALID SEARCH DATA!\n");
 	}
+	this->assignReaderOldInfo = false;
+	return false;
+}
 
-	//* Submit button
-	if (this->saveBtn->IsHover()) {
-		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmutButtonHoverStyling(this->saveBtn);
+bool READER_TAB_MEMBERS::EditReaderInfoForm::SubmitForm() 
+{
+	if (this->saveBtn.IsHover()) 
+	{
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmutButtonHoverStyling(&this->saveBtn);
 	}
-	else if (this->saveBtn->LeftMouseClicked()) {
+	else if (this->saveBtn.LeftMouseClicked()) 
+	{
 		delay(100);
-
-		if (this->searchTargetFound == true) {
-
+		
+		if (this->searchReaderFound)
+		{
 			bool checker = true;
 
-			if (this->phai->GetPlaceholder() != "MALE" && this->phai->GetPlaceholder() != "FEMALE") {
+			if (this->readerGenderButton.GetPlaceholder() != "MALE" && this->readerGenderButton.GetPlaceholder() != "FEMALE") 
+			{
 				std::cerr << std::format("[ERROR] SAI DU LIEU O TRUONG PHAI\n");
 				checker = false;
 			}
 
-			if (this->trangThai->GetPlaceholder() != "HOAT DONG" && this->trangThai->GetPlaceholder() != "BI KHOA") {
+			if (this->readerStatusButton.GetPlaceholder() != "ACTIVE" && this->readerStatusButton.GetPlaceholder() != "BANNED") 
+			{
 				std::cerr << std::format("[ERROR] SAI DU LIEU O TRUONG TRANG THAI\n");
 				checker = false;
 			}
 
-			if (checker) {
-				this->searchResult->info.SetFirstName(this->ho->GetPlaceholder());
-				this->searchResult->info.SetLastName(this->ten->GetPlaceholder());
+			if (checker) 
+			{
+				this->searchResult->info.SetFirstName(this->readerFirstNameButton.GetPlaceholder());
+				this->searchResult->info.SetLastName(this->readerLastNameButton.GetPlaceholder());
 				this->searchResult->info.SetSex(
-					this->phai->GetPlaceholder() == "MALE" ? READER::Sex::MALE : READER::Sex::FEMALE
+					this->readerGenderButton.GetPlaceholder() == "MALE" ? READER::Sex::MALE : READER::Sex::FEMALE
 				);
 				this->searchResult->info.SetStatus(
-					this->trangThai->GetPlaceholder() == "BI KHOA" ? READER::ReaderStatus::BANNED : READER::ReaderStatus::ACTIVE
+					this->readerStatusButton.GetPlaceholder() == "BANNED" ? READER::ReaderStatus::BANNED : READER::ReaderStatus::ACTIVE
 				);
 
 				return true;
@@ -541,7 +586,7 @@ bool READER_TAB_MEMBERS::EditItemInListForm::SubmitForm(AVL_TREE::Pointer& danhS
 		}
 	}
 	else {
-		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(this->saveBtn);
+		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(&this->saveBtn);
 	}
 
 	return false;
@@ -609,8 +654,7 @@ READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail()
 
 	this->inputController = nullptr;
 
-	this->borrowBook = nullptr;
-	this->returnBook = nullptr;
+	this->targetedBookID = nullptr;
 }
 
 READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail(LINEAR_LIST::LinearList* titleList, READER::Reader* reader)
@@ -618,8 +662,7 @@ READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail(LINEAR_LIST::LinearLi
 	this->titleList = titleList;
 	this->reader = reader;
 
-	this->borrowBook = nullptr;
-	this->returnBook = nullptr;
+	this->targetedBookID = nullptr;
 
 	const int labelsCount = 5;
 	this->titlesDatasheetController = DATASHEET::Controller(
@@ -656,8 +699,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::UpdateReader(READER::Reader* reader
 	this->InitializeFunctionalButton();
 	this->InitializeBookIDButton();
 
-	this->borrowBook = nullptr;
-	this->returnBook = nullptr;
+	this->targetedBookID = nullptr;
 
 	this->reader = reader;
 	this->readerInfo.UpdateReaderInfo(this->reader);
@@ -697,20 +739,25 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::Display()
 
 bool READER_TAB_MEMBERS::ReaderIndeptDetail::GoBackButtonOnAction()
 {
-	if (this->active == false) {
+	if (this->active == false) 
+	{
 		return false;
 	}
 
-	if (this->goBackButton.IsHover()) {
+	
+	if (this->goBackButton.IsHover()) 
+	{
 		this->goBackButton.SetFillColor(rgb(130, 170, 227));
 	}
-	else if (this->goBackButton.LeftMouseClicked()) {
+	else if (this->goBackButton.LeftMouseClicked()) 
+	{
 		delay(100);
 		this->active = false;
 		this->titlesDatasheetController.DeactivateDatasheets();
 		return true;
 	}
-	else {
+	else 
+	{
 		this->goBackButton.SetFillColor(rgb(236, 242, 255));
 	}
 	return false;
@@ -757,6 +804,22 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnButtonOnAction()
 	else if (this->returnBookButton.LeftMouseClicked())
 	{
 		delay(100);
+
+		bool returningBookProcessresult = false;
+		try 
+		{
+			returningBookProcessresult = this->ReturnBook();
+		}
+		catch (const std::exception& ex)
+		{
+			std::cout << ex.what();
+		}
+
+		if (returningBookProcessresult == true)
+		{
+			this->CreateBorrowBooksDatasheet();
+			this->borrowedBooksDatassheetController.ActivateDatasheets();
+		}
 	}
 	else
 	{
@@ -814,7 +877,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 
 
 	//* FINDING CORRESPOND BOOK ID (start below) ---------------------------------------------------------
-	const std::string& borrowingTitleISBN = borrowingBookID.substr(0, 4); //* Taking the ISBN code of the book
+	const std::string& borrowingTitleISBN = borrowingBookID.substr(0, 4); //* Taking the ISBN code of the targetedBook
 	BOOK_TITLE::BookTitle* correspondTitle = LINEAR_LIST::SearchForISBN(*this->titleList, borrowingTitleISBN);
 	if (correspondTitle == nullptr)
 	{
@@ -823,8 +886,8 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 	}
 
 	LINKED_LIST::Controller titleCatalogue = correspondTitle->GetCatalogue();
-	this->borrowBook = LINKED_LIST::SearchByID(titleCatalogue, borrowingBookID);
-	if (this->borrowBook == nullptr)
+	this->targetedBookID = LINKED_LIST::SearchByID(titleCatalogue, borrowingBookID);
+	if (this->targetedBookID == nullptr)
 	{
 		throw std::logic_error(std::format("[ERROR] CANNOT FIND THE CORRESPOND BOOK'S ID: {}!\n", borrowingBookID));
 		return false;
@@ -833,8 +896,8 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 
 
 
-	//* Check for book's borrow-ability!
-	if (this->borrowBook->GetStatus() != BOOK::Status::AVAILABLE)
+	//* Check for targetedBook's borrow-ability!
+	if (this->targetedBookID->GetStatus() != BOOK::Status::AVAILABLE)
 	{
 		throw std::logic_error("[ERROR] BOOK IS NOT AVAILABLE TO BORROW!\n");
 		return false;
@@ -842,7 +905,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 
 	DOUBLE_LINKED_LIST::Controller readerBorrowedBooks = this->reader->GetBorrowedBooks();
 
-	//* Check for number of book is borrowing!
+	//* Check for number of targetedBook is borrowing!
 	int readerBorrowedBookCount = 0;
 	for (DOUBLE_LINKED_LIST::Pointer readerBorrowedBook = readerBorrowedBooks.First; readerBorrowedBook != nullptr; readerBorrowedBook = readerBorrowedBook->right)
 	{
@@ -857,11 +920,11 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 		return false;
 	}
 
-	//* Check if there is any book at did not return on date!
+	//* Check if there is any targetedBook at did not return on date!
 	bool allReturnedInTime = true;
 	for (DOUBLE_LINKED_LIST::Pointer currentNode = readerBorrowedBooks.First; currentNode != nullptr; currentNode = currentNode->right)
 	{
-		//* Check for book did not return in time!
+		//* Check for targetedBook did not return in time!
 		if (currentNode->info.IsOverdue())
 		{
 			allReturnedInTime = false;
@@ -888,7 +951,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 	}
 	if (!noDuplicateTitle)
 	{
-		throw std::logic_error("[ERROR] User has borrowed another book with the same title! Cannot borrows another one!\n");
+		throw std::logic_error("[ERROR] User has borrowed another targetedBook with the same title! Cannot borrows another one!\n");
 		return false;
 	}
 
@@ -896,23 +959,84 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 	HELPER::Date borrowingDate; //* borrowing date is today;
 	HELPER::Date returningDate; //* returning date is not identified yet, therefore yesterday will be assigned;
 	BOOK_CIRCULATION::BookCirculation newBorrowedBook(
-		this->borrowBook->GetID(),
+		this->targetedBookID->GetID(),
 		borrowingDate,
 		returningDate,
 		BOOK_CIRCULATION::CirculationStatus::BORROWING
 	);
 	DOUBLE_LINKED_LIST::InsertLast(readerBorrowedBooks, newBorrowedBook);
-	this->borrowBook->SetStatus(BOOK::Status::UNAVAILABLE);
+	this->targetedBookID->SetStatus(BOOK::Status::UNAVAILABLE);
 	this->reader->SetBorrowedBooks(readerBorrowedBooks);
+	return true;
+}
 
-	for (DOUBLE_LINKED_LIST::Pointer p = readerBorrowedBooks.First; p != nullptr; p = p->right)
+bool READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnBook()
+{
+	//* VALIDATE USER INPUT (start below) ----------------------------------------------------------------
+	const std::string& userTargetedReturnBookID = this->bookIDButton.GetPlaceholder();
+	if (userTargetedReturnBookID == "" || userTargetedReturnBookID == " " || userTargetedReturnBookID == "Book ID")
 	{
-		std::cout << p->info.GetID() << "\n";
-		std::cout << p->info.GetBorrowDate().Stringify() << "\n";
-		std::cout << p->info.GetReturnDate().Stringify() << "\n";
-		std::cout << p->info.GetStatus() << "\n";
+		throw std::logic_error("[ERROR] USER MUST ENTER A VALID BOOK'S ID!\n");
+		return false;
+	}
+	//* VALIDATE USER INPUT (ended below) ----------------------------------------------------------------
+
+	//* Finding existance of the targetedBook's id in the user's borrowing targetedBook list.
+	DOUBLE_LINKED_LIST::Controller readerBookCirculationList = this->reader->GetBorrowedBooks();
+
+	bool existReaderTargetBookCirculation = false;
+	DOUBLE_LINKED_LIST::Pointer targetBookCirculation = readerBookCirculationList.First;
+	for (; targetBookCirculation != nullptr; targetBookCirculation = targetBookCirculation->right)
+	{
+		if (targetBookCirculation->info.GetID().compare(userTargetedReturnBookID) == 0)
+		{
+			existReaderTargetBookCirculation = true;
+			break;
+		}
+	}
+	if (!existReaderTargetBookCirculation)
+	{
+		throw std::logic_error(std::format("[ERROR] BOOK'S ID: {} IS NOT EXIST IN USER'S BOOK'S CIRCULATION LIST!\n", userTargetedReturnBookID));
+		return false;
 	}
 
+	//* Finding the title which the targeted targetedBook belongs to.
+	int indexOfCoresspondTitle = -1;
+	for (int i = 0; i < this->titleList->numberOfNode; ++i)
+	{
+		if (this->titleList->nodes[i]->GetISBN().compare(userTargetedReturnBookID.substr(0, 4)) == 0)
+		{
+			indexOfCoresspondTitle = i;
+			break;
+		}
+	}
+	if (indexOfCoresspondTitle == -1)
+	{
+		throw std::logic_error(std::format("[ERROR] CANNOT FIND ANY TITLE WITH ISBN = {} IN THE TITLE LIST!\n", userTargetedReturnBookID.substr(0, 4)));
+		return false;
+	}
+
+	LINKED_LIST::Controller targetedTitleCatalouge = this->titleList->nodes[indexOfCoresspondTitle]->GetCatalogue();
+	bool bookExist = false;
+	LINKED_LIST::Pointer targetedBook = targetedTitleCatalouge.first;
+	for (; targetedBook != nullptr; targetedBook = targetedBook->next)
+	{
+		if (targetedBook->info.GetID().compare(userTargetedReturnBookID) == 0)
+		{
+			bookExist = true;
+			break;
+		}
+	}
+	if (!bookExist)
+	{
+		throw std::logic_error(std::format("[ERROR] CANNOT FIND ANY BOOK WITH THE ID: {}\n", userTargetedReturnBookID));
+		return false;
+	}
+
+	targetedBook->info.SetStatus(BOOK::Status::AVAILABLE);
+	this->titleList->nodes[indexOfCoresspondTitle]->SetCatalogue(targetedTitleCatalouge);
+	DOUBLE_LINKED_LIST::RemoveNode(readerBookCirculationList, targetBookCirculation);
+	this->reader->SetBorrowedBooks(readerBookCirculationList);
 	return true;
 }
 
@@ -971,9 +1095,12 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateTitlesDatasheet()
 
 void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateBorrowBooksDatasheet()
 {
-	DOUBLE_LINKED_LIST::Controller borrowedBooks = this->reader->GetBorrowedBooks();
+	DOUBLE_LINKED_LIST::Controller readerBookCirculationList = this->reader->GetBorrowedBooks();
 
-	this->borrowedBooksDatassheetController.SetDatasheetCount(1);
+	int listSize = DOUBLE_LINKED_LIST::Size(readerBookCirculationList);
+	this->borrowedBooksDatassheetController.SetDatasheetCount(
+		listSize / (CONSTANTS::MAX_ROW_COUNT - 1) + (listSize % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
+	);
 	this->borrowedBooksDatassheetController.InitializeDatasheets();
 
 	for (int i = 0; i < this->borrowedBooksDatassheetController.GetDatasheetCount(); ++i)
@@ -988,7 +1115,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateBorrowBooksDatasheet()
 		);
 	}
 
-	if (DOUBLE_LINKED_LIST::IsEmpty(borrowedBooks))
+	if (DOUBLE_LINKED_LIST::IsEmpty(readerBookCirculationList))
 	{
 		return;
 	}
@@ -997,7 +1124,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateBorrowBooksDatasheet()
 	int sheetIndex = -1;
 	int order = 0;
 
-	for (DOUBLE_LINKED_LIST::Pointer currentNode = borrowedBooks.First; currentNode != nullptr; currentNode = currentNode->right)
+	for (DOUBLE_LINKED_LIST::Pointer currentNode = readerBookCirculationList.First; currentNode != nullptr; currentNode = currentNode->right)
 	{
 		++recordIndex;
 		if (recordIndex > this->borrowedBooksDatassheetController.GetRecordCount() - 1)
@@ -1218,6 +1345,9 @@ DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_TREE::Pointer* readerList, LINE
 	this->searchField = READER_TAB_MEMBERS::SearchField(this->readerList, this->inputController);
 	this->searchField.Activate();
 	this->readerIndeptDetail = READER_TAB_MEMBERS::ReaderIndeptDetail(this->titleList, nullptr);
+
+	this->newItemForm = new READER_TAB_MEMBERS::NewReaderForm(this->readerList, this->inputController);
+	this->editItemForm = new READER_TAB_MEMBERS::EditReaderInfoForm(this->readerList, this->inputController);
 }
 
 /**
@@ -1268,16 +1398,18 @@ void DanhSachTheDocGiaView::Run()
 			switch (this->listManipulationButtonStatus) {
 			case (0): {
 				//* Display form
-				this->newItemForm.Display();
-				bool formSubmitted = this->newItemForm.SubmitForm(*this->readerList, *this->inputController);
+				this->newItemForm->Display();
+				this->newItemForm->FormOnAction();
+				bool formSubmitted = this->newItemForm->SubmitForm();
 				if (formSubmitted) {
 					DanhSachTheDocGiaView::CreateDatasheetsFromList(*this->readerList, &this->datasheetController);
 				}
 				break;
 			}
 			case (1): {
-				this->editItemForm.Display(*this->readerList, *this->inputController);
-				bool confirmSave = this->editItemForm.SubmitForm(*this->readerList, *this->inputController);
+				this->editItemForm->Display();
+				this->editItemForm->FormOnAction();
+				bool confirmSave = this->editItemForm->SubmitForm();
 				if (confirmSave) {
 					DanhSachTheDocGiaView::CreateDatasheetsFromList(*this->readerList, &this->datasheetController);
 				}
