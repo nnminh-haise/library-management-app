@@ -913,7 +913,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 
 	//* FINDING CORRESPOND BOOK ID (start below) ---------------------------------------------------------
 	const std::string& borrowingTitleISBN = borrowingBookID.substr(0, 4); //* Taking the ISBN code of the targetedBook
-	BOOK_TITLE::BookTitle* correspondTitle = LINEAR_LIST::SearchForISBN(*this->titleList, borrowingTitleISBN);
+	BOOK_TITLE::BookTitle* correspondTitle = LINEAR_LIST::SearchByISBN(*this->titleList, borrowingTitleISBN);
 	if (correspondTitle == nullptr)
 	{
 		throw std::logic_error(std::format("[ERROR] THE ISBN: {} NOT EXIST!\n", borrowingTitleISBN));

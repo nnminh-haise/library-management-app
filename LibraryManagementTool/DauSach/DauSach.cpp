@@ -345,7 +345,7 @@ BOOK_TITLE::BookTitle* LINEAR_LIST::SearchByName(const LinearList& list, const s
 	return nullptr;
 }
 
-BOOK_TITLE::BookTitle* LINEAR_LIST::SearchForISBN(const LinearList& list, const std::string& isbn)
+BOOK_TITLE::BookTitle* LINEAR_LIST::SearchByISBN(const LinearList& list, const std::string& isbn)
 {
 	for (int i = 0; i < list.numberOfNode; ++i)
 	{
@@ -357,22 +357,26 @@ BOOK_TITLE::BookTitle* LINEAR_LIST::SearchForISBN(const LinearList& list, const 
 	return nullptr;
 }
 
-bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LIST::LinearList& danhSachDauSach) {
+bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LIST::LinearList& danhSachDauSach) 
+{
 	LINEAR_LIST::Initialize(danhSachDauSach);
 	
 	std::filebuf databaseBuffer{};
 
-	if (!databaseBuffer.open(filename, std::ios::in)) {
+	if (!databaseBuffer.open(filename, std::ios::in)) 
+	{
 		std::cerr << std::format("[ERROR] Can not open file {}\n", filename);
 		exit(0);
 	}
 
 	std::istream database(&databaseBuffer);
-	while (database) {
+	while (database) 
+	{
 		std::string titleData{};
 		std::getline(database, titleData);
 
-		if (titleData.length() == 0) {
+		if (titleData.length() == 0) 
+		{
 			continue;
 		}
 
@@ -382,48 +386,61 @@ bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LI
 
 		BOOK_TITLE::BookTitle* newTitle = new BOOK_TITLE::BookTitle;
 
-		for (int i = 0; i < dataCount; ++i) {
-			switch (i) {
-				case (0): {
+		for (int i = 0; i < dataCount; ++i) 
+		{
+			switch (i) 
+			{
+				case (0): 
+				{
 					newTitle->SetISBN(data[i]);
 					break;
 				}
-				case (1): {
+				case (1): 
+				{
 					newTitle->SetTitle(data[i]);
 					break;
 				}
-				case (2): {
+				case (2): 
+				{
 					newTitle->SetPageCount(std::stoi(data[i]));
 					break;
 				}
-				case (3): {
+				case (3): 
+				{
 					newTitle->SetAuthor(data[i]);
 					break;
 				}
-				case (4): {
+				case (4): 
+				{
 					newTitle->SetPublicationYear(std::stoi(data[i]));
 					break;
 				}
-				case (5): {
+				case (5): 
+				{
 					newTitle->SetCategory(data[i]);
 					break;
 				}
-				case (6): {
+				case (6): 
+				{
 					int bookListSize = std::stoi(data[i]);
-					if (bookListSize == 0) {
+					if (bookListSize == 0) 
+					{
 						newTitle->SetCatalogue(LINKED_LIST::Controller());
 					}
-					else {
+					else 
+					{
 						LINKED_LIST::Controller newBookList;
 						LINKED_LIST::Initialize(newBookList);
 
-						while (database && bookListSize--) {
+						while (database && bookListSize--) 
+						{
 							BOOK::Book newBook{};
 
 							std::string bookData{};
 							std::getline(database, bookData);
 
-							if (bookData.length() == 0) {
+							if (bookData.length() == 0) 
+							{
 								std::cerr << std::format("[ERROR] Empty book list data in database!\n");
 								exit(1);
 							}
@@ -433,13 +450,16 @@ bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LI
 							STR::Extract(bookData, ", ", bookItems, itemCount);
 
 							newBook.SetID(bookItems[0]);
-							if (bookItems[1] == "AVAILABLE") {
+							if (bookItems[1] == "AVAILABLE") 
+							{
 								newBook.SetStatus(BOOK::AVAILABLE);
 							}
-							else if (bookItems[1] == "UNAVAILABLE") {
+							else if (bookItems[1] == "UNAVAILABLE") 
+							{
 								newBook.SetStatus(BOOK::UNAVAILABLE);
 							}
-							else {
+							else 
+							{
 								newBook.SetStatus(BOOK::SOLD);
 							}
 							newBook.SetDescription(bookItems[2]);
@@ -454,10 +474,12 @@ bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LI
 			}
 		}
 
-		if (LINEAR_LIST::IsEmpty(danhSachDauSach)) {
+		if (LINEAR_LIST::IsEmpty(danhSachDauSach)) 
+		{
 			LINEAR_LIST::InsertFirst(danhSachDauSach, newTitle);
 		}
-		else {
+		else 
+		{
 			LINEAR_LIST::InsertOrder(danhSachDauSach, newTitle);
 		}
 	}
@@ -467,17 +489,20 @@ bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LI
 	return true;
 }
 
-bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const LINEAR_LIST::LinearList& titleList) {
+bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const LINEAR_LIST::LinearList& titleList) 
+{
 	std::filebuf databaseBuffer{};
 
-	if (!databaseBuffer.open(filename, std::ios::out)) {
+	if (!databaseBuffer.open(filename, std::ios::out)) 
+	{
 		std::cerr << std::format("[ERROR] Can not open file {}\n", filename);
 		return false;
 	}
 
 	std::ostream database(&databaseBuffer);
 
-	for (int i = 0; i < titleList.numberOfNode; ++i) {
+	for (int i = 0; i < titleList.numberOfNode; ++i) 
+	{
 		database << titleList.nodes[i]->GetISBN() << ", ";
 		database << titleList.nodes[i]->GetTitle() << ", ";
 		database << titleList.nodes[i]->GetPageCount() << ", ";
@@ -487,13 +512,16 @@ bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const L
 
 		LINKED_LIST::Controller danhMucSach = titleList.nodes[i]->GetCatalogue();
 		
-		if (LINKED_LIST::IsEmpty(danhMucSach)) {
+		if (LINKED_LIST::IsEmpty(danhMucSach)) 
+		{
 			database << 0 << "\n";
 		}
-		else {
+		else 
+		{
 			int danhMucSachSize = LINKED_LIST::Size(danhMucSach);
 			database << danhMucSachSize << "\n";
-			for (LINKED_LIST::Pointer p = danhMucSach.first; p != nullptr; p = p->next) {
+			for (LINKED_LIST::Pointer p = danhMucSach.first; p != nullptr; p = p->next) 
+			{
 				database << p->info.GetID() << ", ";
 				database << p->info.StringfyStatus() << ", ";
 				database << p->info.GetDescription() << "\n";
@@ -503,4 +531,13 @@ bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const L
 
 	databaseBuffer.close();
 	return true;
+}
+
+void DAU_SACH_MODULES::DuplicateList(const LINEAR_LIST::LinearList& titleList, LINEAR_LIST::LinearList& destinationList)
+{
+	destinationList.numberOfNode = titleList.numberOfNode;
+	for (int i = 0; i < titleList.numberOfNode; ++i)
+	{
+		destinationList.nodes[i] = titleList.nodes[i];
+	}
 }

@@ -6,7 +6,8 @@ namespace BOOK
 {
 	enum Status { AVAILABLE, UNAVAILABLE, SOLD };
 
-	class Book {
+	class Book 
+	{
 	public:
 		Book();
 
@@ -35,7 +36,8 @@ namespace BOOK
 
 namespace LINKED_LIST 
 {
-	struct Node {
+	struct Node 
+	{
 		BOOK::Book info;
 		Node* next;
 
@@ -123,7 +125,8 @@ namespace LINEAR_LIST
 {
 	const unsigned int MAX_SIZE = 10000;
 
-	struct LinearList {
+	struct LinearList 
+	{
 		unsigned int numberOfNode;
 		BOOK_TITLE::BookTitle* nodes[MAX_SIZE];
 
@@ -148,11 +151,14 @@ namespace LINEAR_LIST
 
 	BOOK_TITLE::BookTitle* SearchByName(const LinearList& list, const std::string& titleName);
 
-	BOOK_TITLE::BookTitle* SearchForISBN(const LinearList& list, const std::string& isbn);
+	BOOK_TITLE::BookTitle* SearchByISBN(const LinearList& list, const std::string& isbn);
 }
 
-namespace DAU_SACH_MODULES {
+namespace DAU_SACH_MODULES 
+{
 	bool LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LIST::LinearList& danhSachDauSach);
 
 	bool UpdateListToDatabase(const std::string& filename, const LINEAR_LIST::LinearList& titleList);
+
+	void DuplicateList(const LINEAR_LIST::LinearList& titleList, LINEAR_LIST::LinearList& destinationList);
 }

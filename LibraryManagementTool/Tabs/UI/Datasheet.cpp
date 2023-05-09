@@ -42,12 +42,12 @@ namespace DATASHEET {
 		return this->items[index];
 	}
 
-	HELPER::Coordinate* Row::GetTopLeft() {
-		return &this->topLeft;
+	HELPER::Coordinate Row::GetTopLeft() {
+		return this->topLeft;
 	}
 
-	HELPER::Coordinate* Row::GetBottomRight() {
-		return &this->bottomRight;
+	HELPER::Coordinate Row::GetBottomRight() {
+		return this->bottomRight;
 	}
 
 	int Row::GetItemCount() {
@@ -142,7 +142,7 @@ namespace DATASHEET {
 			}
 			else {//* Create data's field
 				currentRow = DATASHEET::Row(this->attributeCount, this->rowHeight,
-					HELPER::Coordinate(this->records[i - 1].GetTopLeft()->x, this->records[i - 1].GetBottomRight()->y),
+					HELPER::Coordinate(this->records[i - 1].GetTopLeft().x, this->records[i - 1].GetBottomRight().y),
 					data, characterLimits
 				);
 				currentRow.UpdateRowData(defaultData);
@@ -180,6 +180,11 @@ namespace DATASHEET {
 		for (int i = 0; i < this->recordCount; ++i) {
 			this->records[i].Display();
 		}
+	}
+
+	HELPER::Coordinate Datasheet::GetBottomRight()
+	{
+		return this->records[this->recordCount - 1].GetBottomRight();
 	}
 
 	//! TODO: Destructor is having a bug!
@@ -282,6 +287,11 @@ namespace DATASHEET {
 
 	int Controller::GetRowHeight() {
 		return this->rowHeight;
+	}
+
+	HELPER::Coordinate Controller::GetBottomRight()
+	{
+		return this->sheets[0].GetBottomRight();
 	}
 
 	int Controller::CurrentActiveDatasheet() {

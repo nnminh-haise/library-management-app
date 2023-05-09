@@ -7,8 +7,8 @@
 
 namespace CONSTANTS 
 {	
-	const std::string THE_DOC_GIA_DB = "Databases/DOC_GIA_DB.txt";
-	const std::string DAU_SACH_DB = "Databases/DAU_SACH_DB.txt";
+	const std::string READER_DATABASE = "Databases/DOC_GIA_DB.txt";
+	const std::string TITLES_DATABASE = "Databases/DAU_SACH_DB.txt";
 	const std::string READER_INDICIES = "Databases/ReaderIndicies.bin";
 	const int BACKGROUND_COLOR = WHITE;
 	const int MAX_ROW_COUNT = 16;
@@ -95,6 +95,29 @@ namespace READER_PROPERTIES
 			const HELPER::Coordinate TOP_LEFT{ 1115, 295 };
 			const HELPER::Coordinate DATASHEET_CHANGE_BUTTON_TOP_LEFT{ 1115, 870 };
 		}
+	}
+}
+
+namespace STATISTIC_TAB_PROPERTIES
+{
+	namespace OVERDUE_READER_DATASHEET_PROPERTIES
+	{
+		const int MAX_ROW = 15;
+		const int PROPERTIES_COUNT = 8;
+		const std::string LABEL_PLACEHOLDERS[] = { "ORDER", "READER ID", "FIRST NAME", "LAST NAME", "BOOK ID", "TITLE", "BORROW DATE", "OVERDUE DATE" };
+		const int CHARACTER_LIMITS[] = { 5, 6, 30, 15, 8, 30, 10, 10 };
+		const HELPER::Coordinate TOP_LEFT{ 20, 180 };
+		const HELPER::Coordinate DATASHEET_CHANGE_BUTTON_TOP_LEFT{ 850, 952 };
+	}
+
+	namespace TOP_10_TITLES_DATASHEET_PROPERTIES
+	{
+		const int MAX_ROW = 11;
+		const int PROPERTIES_COUNT = 6;
+		const std::string LABEL_PLACEHOLDERS[] = { "ORDER", "ISBN", "TITLE", "AUTHOR", "CATEGORY", "BORROWED COUNT" };
+		const int CHARACTER_LIMITS[] = { 2, 4, 30, 20, 10, 6 };
+		const HELPER::Coordinate TOP_LEFT{ 300, 180 };
+		const HELPER::Coordinate DATASHEET_CHANGE_BUTTON_TOP_LEFT{ 36, 870 };
 	}
 }
 

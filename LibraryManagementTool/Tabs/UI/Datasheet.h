@@ -21,9 +21,9 @@ namespace DATASHEET {
 
         Button& operator[] (int index);
 
-        HELPER::Coordinate* GetTopLeft();
+        HELPER::Coordinate GetTopLeft();
 
-        HELPER::Coordinate* GetBottomRight();
+        HELPER::Coordinate GetBottomRight();
 
         int GetItemCount();
 
@@ -63,6 +63,8 @@ namespace DATASHEET {
         int GetRecordCount();
 
         void Display();
+
+        HELPER::Coordinate GetBottomRight();
 
         //void Destructor();
     };
@@ -107,6 +109,8 @@ namespace DATASHEET {
         int GetRecordCount();
 
         int GetRowHeight();
+
+        HELPER::Coordinate GetBottomRight();
 
         int CurrentActiveDatasheet();
 

@@ -95,8 +95,8 @@ LandingView::LandingView(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList*
 	this->readerList = readerList;
 	this->titleList = titleList;
 
-	READER_MODULES::LoadDanhSachTheDocGiaFromDB(CONSTANTS::THE_DOC_GIA_DB, *this->readerList);
-	DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(CONSTANTS::DAU_SACH_DB, *this->titleList);
+	READER_MODULES::LoadDanhSachTheDocGiaFromDB(CONSTANTS::READER_DATABASE, *this->readerList);
+	DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(CONSTANTS::TITLES_DATABASE, *this->titleList);
 
 	this->ConstructGraphicWindow();
 	this->graphicWindow->Activate();
@@ -105,7 +105,7 @@ LandingView::LandingView(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList*
 
 	this->dauSachView = new DauSachTab(this->titleList, &this->inpController);
 	this->theDocGiaView = new DanhSachTheDocGiaView(this->readerList, this->titleList, &this->inpController);
-	this->thongKeView = new ThongKeView(*this->readerList, *this->titleList);
+	this->thongKeView = new ThongKeView(this->readerList, this->titleList);
 }
 
 //* View Run function
@@ -164,8 +164,8 @@ void LandingView::Run() {
 	}
 
 	//* Update databse before closing the program
-	READER_MODULES::UpdateListToDatabase(CONSTANTS::THE_DOC_GIA_DB, *this->readerList);
-	DAU_SACH_MODULES::UpdateListToDatabase(CONSTANTS::DAU_SACH_DB, *this->titleList);
+	READER_MODULES::UpdateListToDatabase(CONSTANTS::READER_DATABASE, *this->readerList);
+	DAU_SACH_MODULES::UpdateListToDatabase(CONSTANTS::TITLES_DATABASE, *this->titleList);
 }
 
 //* View destructor
