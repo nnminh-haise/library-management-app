@@ -978,7 +978,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 	for (DOUBLE_LINKED_LIST::Pointer currentNode = readerBorrowedBooks.First; currentNode != nullptr; currentNode = currentNode->right)
 	{
 		//* Check for duplicate ISBN code -> duplicate title!
-		if (borrowingTitleISBN.substr(0, 4).compare(currentNode->info.GetID().substr(0, 4)) == 0)
+		if (currentNode->info.GetStatus() == BOOK_CIRCULATION::CirculationStatus::BORROWING && borrowingTitleISBN.substr(0, 4).compare(currentNode->info.GetID().substr(0, 4)) == 0)
 		{
 			noDuplicateTitle = false;
 			break;
@@ -1070,6 +1070,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnBook()
 
 	targetedBook->info.SetStatus(BOOK::Status::AVAILABLE);
 	this->titleList->nodes[indexOfCoresspondTitle]->SetCatalogue(targetedTitleCatalouge);
+	targetBookCirculation->info.SetStatus(BOOK_CIRCULATION::CirculationStatus::RETURNED);
 	//DOUBLE_LINKED_LIST::RemoveNode(readerBookCirculationList, targetBookCirculation);
 	this->reader->SetBorrowedBooks(readerBookCirculationList);
 	return true;
