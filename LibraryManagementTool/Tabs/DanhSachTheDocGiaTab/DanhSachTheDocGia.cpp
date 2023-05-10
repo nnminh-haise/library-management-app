@@ -1070,6 +1070,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnBook()
 
 	targetedBook->info.SetStatus(BOOK::Status::AVAILABLE);
 	this->titleList->nodes[indexOfCoresspondTitle]->SetCatalogue(targetedTitleCatalouge);
+	targetBookCirculation->info.SetReturnDate(HELPER::Date());
 	targetBookCirculation->info.SetStatus(BOOK_CIRCULATION::CirculationStatus::RETURNED);
 	//DOUBLE_LINKED_LIST::RemoveNode(readerBookCirculationList, targetBookCirculation);
 	this->reader->SetBorrowedBooks(readerBookCirculationList);
