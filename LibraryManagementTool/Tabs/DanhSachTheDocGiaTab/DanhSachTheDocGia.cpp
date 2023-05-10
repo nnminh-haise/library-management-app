@@ -992,7 +992,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 
 	//* BORROW BOOK PROCESS
 	HELPER::Date borrowingDate; //* borrowing date is today;
-	HELPER::Date returningDate; //* returning date is not identified yet, therefore yesterday will be assigned;
+	HELPER::Date returningDate = borrowingDate + 7; //* returning date is not identified yet, therefore yesterday will be assigned;
 	BOOK_CIRCULATION::BookCirculation newBorrowedBook(
 		this->targetedBookID->GetID(),
 		borrowingDate,

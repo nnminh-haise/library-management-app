@@ -136,7 +136,18 @@ void ThongKeView::CreateTop10TitlesDatasheet()
 		newTitleList[i] = this->titleList->nodes[i];
 	}
 
+	for (int i = 0; i < this->titleList->numberOfNode - 1; ++i)
+	{
+		for (int j = i + 1; j < this->titleList->numberOfNode; ++j)
+		{
+			if (this->titleBorrowedCountMap[newTitleList[i]->GetISBN()] < this->titleBorrowedCountMap[newTitleList[j]->GetISBN()])
+			{
+				std::swap(newTitleList[i], newTitleList[j]);
+			}
+		}
+	}
 
+	int listSize = 10;
 	this->top10TitlesDatasheetController.SetDatasheetCount(1);
 	this->top10TitlesDatasheetController.InitializeDatasheets();
 
@@ -148,6 +159,33 @@ void ThongKeView::CreateTop10TitlesDatasheet()
 		(std::string*)STATISTIC_TAB_PROPERTIES::TOP_10_TITLES_DATASHEET_PROPERTIES::LABEL_PLACEHOLDERS,
 		(int*)STATISTIC_TAB_PROPERTIES::TOP_10_TITLES_DATASHEET_PROPERTIES::CHARACTER_LIMITS
 	);
+
+	int recordIndex = 0;
+	int sheetIndex = -1;
+	int order = 0;
+
+	for (int i = 0; i < 10; ++i)
+	{
+		++recordIndex;
+		if (recordIndex > this->top10TitlesDatasheetController.GetRecordCount() - 1)
+		{
+			recordIndex = 1;
+		}
+		if (recordIndex % (this->top10TitlesDatasheetController.GetRecordCount() - 1) == 1)
+		{
+			sheetIndex += 1;
+		}
+
+		std::string* data = new std::string[this->top10TitlesDatasheetController.GetAttributeCount()];
+		data[0] = std::to_string(++order);
+		data[1] = newTitleList[i]->GetISBN();
+		data[2] = newTitleList[i]->GetTitle();
+		data[3] = newTitleList[i]->GetAuthor();
+		data[4] = newTitleList[i]->GetCategory();
+		data[5] = std::to_string(this->titleBorrowedCountMap[newTitleList[i]->GetISBN()]);
+
+		this->top10TitlesDatasheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
+	}
 
 	delete[] newTitleList;
 }
