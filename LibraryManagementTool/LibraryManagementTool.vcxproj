@@ -131,12 +131,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DataStructures\Stack.cpp" />
     <ClCompile Include="Helper\IndexGenerator.cpp" />
     <ClCompile Include="Tabs\UI\Datasheet.cpp" />
     <ClCompile Include="Tabs\UI\Button.cpp" />
     <ClCompile Include="Tabs\DanhSachDauSachTab\DanhSachDauSachStyling.cpp" />
     <ClCompile Include="Tabs\DanhSachTheDocGiaTab\DanhSachTheDocGiaStyling.cpp" />
-    <ClCompile Include="DataStructures\Stack.cpp" />
     <ClCompile Include="Tabs\ThongKeTab\ThongKeView.cpp" />
     <ClCompile Include="Tabs\DanhSachTheDocGiaTab\DanhSachTheDocGia.cpp" />
     <ClCompile Include="Tabs\LandingView\LandingView.cpp" />
@@ -148,6 +148,7 @@
     <ClCompile Include="TheDocGia\TheDocGia.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DataStructures\HashMap.h" />
     <ClInclude Include="Helper\IndexGenerator.h" />
     <ClInclude Include="Tabs\UI\Datasheet.h" />
     <ClInclude Include="Tabs\UI\Button.h" />

@@ -3,23 +3,11 @@
 
 #pragma once
 
+#include "../../DataStructures/HashMap.h"
 #include "../../TheDocGia/TheDocGia.h"
 #include "../../DauSach/DauSach.h"
 #include "../UI/Elements.h"
 #include "../UI/Datasheet.h"
-
-class Map {
-public:
-	Map();
-
-private:
-	int HashFunction(std::string combination);
-
-private:
-	const int MAX_VALUE = 456975;
-
-
-};
 
 class ThongKeView {
 public:
@@ -28,6 +16,8 @@ public:
 	void Run();
 
 private:
+	void TitleBorrowedCountProcess();
+
 	void TitleButtonOnAction();
 
 	void CreateOverdueReaderDatasheet();
@@ -47,6 +37,9 @@ private:
 
 	AVL_TREE::Pointer* readerList;
 	LINEAR_LIST::LinearList* titleList;
+
+	HashMap < int > titleBorrowedCountMap;
+	HashMap < BOOK_TITLE::BookTitle* > titleMap;
 };
 
 #endif // !THONG_KE_VIEW

@@ -1,8 +1,59 @@
 #include "ThongKeView.h"
 
+#include "../../DataStructures/Stack.h"
+
 #include <iostream>
 #include <string>
 #include <format>
+
+void ThongKeView::TitleBorrowedCountProcess()
+{
+	this->titleMap = HashMap < BOOK_TITLE::BookTitle* > (456976, nullptr);
+	this->titleBorrowedCountMap = HashMap < int > (456976, 0);
+
+	for (int i = 0; i < this->titleList->numberOfNode; ++i)
+	{
+		this->titleMap.Insert(this->titleList->nodes[i]->GetISBN(), this->titleList->nodes[i]);
+		this->titleBorrowedCountMap.Insert(this->titleList->nodes[i]->GetISBN(), 0);
+	}
+
+	STACK::Stack stk;
+	STACK::Initialize(stk);
+
+	AVL_TREE::Pointer reader = *this->readerList;
+
+	do 
+	{
+		while (reader != nullptr) 
+		{
+			STACK::Push(stk, reader);
+			reader = reader->left;
+		}
+
+		if (STACK::IsEmpty(stk) == false) 
+		{
+			reader = STACK::Pop(stk);
+			
+			DOUBLE_LINKED_LIST::Controller readerBooksCirculation = reader->info.GetBorrowedBooks();
+
+			std::string bookTitle = {};
+			for (DOUBLE_LINKED_LIST::Pointer bookCirculation = readerBooksCirculation.First; bookCirculation != nullptr; bookCirculation = bookCirculation->right)
+			{
+				if (bookCirculation->info.GetStatus() == BOOK_CIRCULATION::CirculationStatus::BORROWING || bookCirculation->info.GetStatus() == BOOK_CIRCULATION::CirculationStatus::RETURNED)
+				{
+					bookTitle = bookCirculation->info.GetID().substr(0, 4);
+					this->titleBorrowedCountMap[bookTitle] = this->titleBorrowedCountMap[bookTitle] + 1;
+				}
+			}
+
+			reader = reader->right;
+		}
+		else 
+		{
+			break;
+		}
+	} while (true);
+}
 
 void ThongKeView::TitleButtonOnAction()
 {
@@ -78,6 +129,14 @@ void ThongKeView::CreateOverdueReaderDatasheet()
 
 void ThongKeView::CreateTop10TitlesDatasheet()
 {
+	this->TitleBorrowedCountProcess();
+	BOOK_TITLE::BookTitle** newTitleList = new BOOK_TITLE::BookTitle* [this->titleList->numberOfNode];
+	for (int i = 0; i < this->titleList->numberOfNode; ++i)
+	{
+		newTitleList[i] = this->titleList->nodes[i];
+	}
+
+
 	this->top10TitlesDatasheetController.SetDatasheetCount(1);
 	this->top10TitlesDatasheetController.InitializeDatasheets();
 
@@ -90,7 +149,7 @@ void ThongKeView::CreateTop10TitlesDatasheet()
 		(int*)STATISTIC_TAB_PROPERTIES::TOP_10_TITLES_DATASHEET_PROPERTIES::CHARACTER_LIMITS
 	);
 
-	
+	delete[] newTitleList;
 }
 
 void ThongKeView::InittializeTitleButton()
@@ -156,19 +215,4 @@ void ThongKeView::Run()
 		this->CreateTop10TitlesDatasheet();
 		this->top10TitlesDatasheetController.Display(false);
 	}
-}
-
-int Map::HashFunction(std::string combination)
-{
-	int result = 0;
-	int base = 1;
-
-	for (int i = 3; i >= 0; i--)
-	{
-		int numericalValue = combination[i] - 'A';
-		result += numericalValue * base;
-		base *= 26;
-	}
-
-	return result;
 }
