@@ -34,6 +34,8 @@ namespace BOOK_CIRCULATION
 
 		bool IsOverdue();
 
+		int CountOverdueDate();
+
 	private:
 		std::string id;
 		HELPER::Date borrowDate;

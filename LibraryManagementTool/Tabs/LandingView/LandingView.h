@@ -32,7 +32,7 @@ private:
 	//* Tabs
 	DauSachTab* dauSachView;
 	DanhSachTheDocGiaView* theDocGiaView;
-	ThongKeView* thongKeView;
+	StatisticTab* thongKeView;
 
 	//* Landing view elements
 	ELEMENTS::Window* graphicWindow;

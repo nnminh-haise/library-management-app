@@ -149,6 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStructures\HashMap.h" />
+    <ClInclude Include="DataStructures\DynamicArray.h" />
     <ClInclude Include="Helper\IndexGenerator.h" />
     <ClInclude Include="Tabs\UI\Datasheet.h" />
     <ClInclude Include="Tabs\UI\Button.h" />

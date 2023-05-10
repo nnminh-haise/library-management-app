@@ -105,7 +105,7 @@ LandingView::LandingView(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList*
 
 	this->dauSachView = new DauSachTab(this->titleList, &this->inpController);
 	this->theDocGiaView = new DanhSachTheDocGiaView(this->readerList, this->titleList, &this->inpController);
-	this->thongKeView = new ThongKeView(this->readerList, this->titleList);
+	this->thongKeView = new StatisticTab(this->readerList, this->titleList);
 }
 
 //* View Run function

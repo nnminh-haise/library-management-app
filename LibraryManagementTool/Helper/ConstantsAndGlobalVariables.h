@@ -103,9 +103,9 @@ namespace STATISTIC_TAB_PROPERTIES
 	namespace OVERDUE_READER_DATASHEET_PROPERTIES
 	{
 		const int MAX_ROW = 15;
-		const int PROPERTIES_COUNT = 8;
-		const std::string LABEL_PLACEHOLDERS[] = { "ORDER", "READER ID", "FIRST NAME", "LAST NAME", "BOOK ID", "TITLE", "BORROW DATE", "OVERDUE DATE" };
-		const int CHARACTER_LIMITS[] = { 5, 6, 30, 15, 8, 30, 10, 10 };
+		const int PROPERTIES_COUNT = 7;
+		const std::string LABEL_PLACEHOLDERS[] = { "ORDER", "READER ID", "FULL NAME", "BOOK ID", "TITLE", "BORROW DATE", "OVERDUE DATE" };
+		const int CHARACTER_LIMITS[] = { 5, 6, 40, 8, 30, 10, 10 };
 		const HELPER::Coordinate TOP_LEFT{ 20, 180 };
 		const HELPER::Coordinate DATASHEET_CHANGE_BUTTON_TOP_LEFT{ 850, 952 };
 	}

@@ -82,6 +82,15 @@ bool BOOK_CIRCULATION::BookCirculation::IsOverdue()
     return false;
 }
 
+int BOOK_CIRCULATION::BookCirculation::CountOverdueDate()
+{
+    if (!this->IsOverdue())
+    {
+        return 0;
+    }
+    return HELPER::Date().DaysBetween(this->borrowDate + 7);
+}
+
 DOUBLE_LINKED_LIST::Node::Node() {
 	this->info = BOOK_CIRCULATION::BookCirculation();
 	this->left = this->right = nullptr;

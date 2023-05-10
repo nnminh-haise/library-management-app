@@ -1,19 +1,17 @@
 #include "ThongKeView.h"
 
-#include "../../DataStructures/Stack.h"
-
 #include <iostream>
 #include <string>
 #include <format>
 
-void ThongKeView::TitleBorrowedCountProcess()
+void StatisticTab::TitleBorrowedCountProcess()
 {
-	this->titleMap = HashMap < BOOK_TITLE::BookTitle* > (456976, nullptr);
+	this->titleListMap = HashMap < BOOK_TITLE::BookTitle* > (456976, nullptr);
 	this->titleBorrowedCountMap = HashMap < int > (456976, 0);
 
 	for (int i = 0; i < this->titleList->numberOfNode; ++i)
 	{
-		this->titleMap.Insert(this->titleList->nodes[i]->GetISBN(), this->titleList->nodes[i]);
+		this->titleListMap.Insert(this->titleList->nodes[i]->GetISBN(), this->titleList->nodes[i]);
 		this->titleBorrowedCountMap.Insert(this->titleList->nodes[i]->GetISBN(), 0);
 	}
 
@@ -55,7 +53,59 @@ void ThongKeView::TitleBorrowedCountProcess()
 	} while (true);
 }
 
-void ThongKeView::TitleButtonOnAction()
+void StatisticTab::OverdueReaderCountProcess()
+{
+	STACK::Stack stk;
+	STACK::Initialize(stk);
+
+	AVL_TREE::Pointer currentReader = *this->readerList;
+	do {
+		while (currentReader != nullptr) {
+			STACK::Push(stk, currentReader);
+			currentReader = currentReader->left;
+		}
+
+		if (STACK::IsEmpty(stk) == false) {
+			currentReader = STACK::Pop(stk);
+			//----------------------------------------
+
+			DOUBLE_LINKED_LIST::Controller readerBookCirculationList = currentReader->info.GetBorrowedBooks();
+			
+			if (DOUBLE_LINKED_LIST::IsEmpty(readerBookCirculationList) == false)
+			{
+				for (DOUBLE_LINKED_LIST::Pointer currentBookCirculation = readerBookCirculationList.First; currentBookCirculation != nullptr; currentBookCirculation = currentBookCirculation->right)
+				{
+					if (currentBookCirculation->info.IsOverdue())
+					{
+						this->overdueReaders.PushBack(STATISTIC_TAB_MEMBER::OverdueReader(&currentReader->info, &currentBookCirculation->info));
+						break;
+					}
+				}
+			}
+
+			//----------------------------------------
+			currentReader = currentReader->right;
+		}
+		else {
+			break;
+		}
+	} while (true);
+
+	//* Sort by overdue day count
+	int overdueReadersCount = this->overdueReaders.Size();
+	for (int i = 0; i < overdueReadersCount - 1; ++i)
+	{
+		for (int j = i + 1; j < overdueReadersCount; ++j)
+		{
+			if (this->overdueReaders[i].book_->CountOverdueDate() > this->overdueReaders[j].book_->CountOverdueDate())
+			{
+				std::swap(this->overdueReaders[i], this->overdueReaders[j]);
+			}
+		}
+	}
+}
+
+void StatisticTab::TitleButtonOnAction()
 {
 	Button* buttons[2] = { &this->overdueReaderListButton, &this->top10TitleButton };
 
@@ -112,9 +162,13 @@ void ThongKeView::TitleButtonOnAction()
 	}
 }
 
-void ThongKeView::CreateOverdueReaderDatasheet()
+void StatisticTab::CreateOverdueReaderDatasheet()
 {
-	this->overdueReaderDatasheetController.SetDatasheetCount(1);
+	this->OverdueReaderCountProcess();
+	int dataSize = this->overdueReaders.Size();
+	this->overdueReaderDatasheetController.SetDatasheetCount(
+		dataSize / (STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::MAX_ROW - 1) + (dataSize % (STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::MAX_ROW - 1) == 0 ? 0 : 1)
+	);
 	this->overdueReaderDatasheetController.InitializeDatasheets();
 
 	this->overdueReaderDatasheetController[0] = DATASHEET::Datasheet(
@@ -125,9 +179,36 @@ void ThongKeView::CreateOverdueReaderDatasheet()
 		(std::string*)STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::LABEL_PLACEHOLDERS,
 		(int*)STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::CHARACTER_LIMITS
 	);
+
+	int recordIndex = 0;
+	int sheetIndex = -1;
+	int order = 0;
+
+	for (int i = 0; i < dataSize; ++i)
+	{
+		++recordIndex;
+		if (recordIndex > this->overdueReaderDatasheetController.GetRecordCount() - 1) {
+			recordIndex = 1;
+		}
+		if (recordIndex % (this->overdueReaderDatasheetController.GetRecordCount() - 1) == 1) {
+			sheetIndex += 1;
+		}
+
+		std::string* data = new std::string[this->overdueReaderDatasheetController.GetAttributeCount()];
+		
+		data[0] = std::to_string(++order);
+		data[1] = this->overdueReaders[i].reader_->GetID();
+		data[2] = this->overdueReaders[i].reader_->GetFullName();
+		data[3] = this->overdueReaders[i].book_->GetID();
+		data[4] = this->titleListMap[this->overdueReaders[i].book_->GetID().substr(0, 4)]->GetTitle();
+		data[5] = this->overdueReaders[i].book_->GetBorrowDate().Stringify();
+		data[6] = std::to_string(this->overdueReaders[i].book_->CountOverdueDate());
+
+		this->overdueReaderDatasheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
+	}
 }
 
-void ThongKeView::CreateTop10TitlesDatasheet()
+void StatisticTab::CreateTop10TitlesDatasheet()
 {
 	this->TitleBorrowedCountProcess();
 	BOOK_TITLE::BookTitle** newTitleList = new BOOK_TITLE::BookTitle* [this->titleList->numberOfNode];
@@ -190,7 +271,7 @@ void ThongKeView::CreateTop10TitlesDatasheet()
 	delete[] newTitleList;
 }
 
-void ThongKeView::InittializeTitleButton()
+void StatisticTab::InittializeTitleButton()
 {
 	this->overdueReaderListButton = Button(HELPER::Coordinate(300, 115), HELPER::Dimension(500, 50));
 	this->overdueReaderListButton.SetFillColor(rgb(73, 84, 100));
@@ -205,7 +286,7 @@ void ThongKeView::InittializeTitleButton()
 	this->top10TitleButton.SetPlaceholder("TOP 10 POPULAR TITLES");
 }
 
-ThongKeView::ThongKeView(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList) 
+StatisticTab::StatisticTab(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList) 
 {
 	this->readerList = readerList;
 	this->titleList = titleList;
@@ -234,7 +315,7 @@ ThongKeView::ThongKeView(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList*
 	this->top10TitlesDatasheetController.DeactivateDatasheets();
 }
 
-void ThongKeView::Run() 
+void StatisticTab::Run() 
 {
 	this->overdueReaderListButton.Display();
 	this->top10TitleButton.Display();
@@ -253,4 +334,16 @@ void ThongKeView::Run()
 		this->CreateTop10TitlesDatasheet();
 		this->top10TitlesDatasheetController.Display(false);
 	}
+}
+
+STATISTIC_TAB_MEMBER::OverdueReader::OverdueReader()
+{
+	this->reader_ = nullptr;
+	this->book_ = nullptr;
+}
+
+STATISTIC_TAB_MEMBER::OverdueReader::OverdueReader(READER::Reader* reader, BOOK_CIRCULATION::BookCirculation* book)
+{
+	this->reader_ = reader;
+	this->book_ = book;
 }

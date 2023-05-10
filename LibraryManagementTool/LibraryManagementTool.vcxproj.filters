@@ -116,6 +116,9 @@
     <ClInclude Include="DataStructures\HashMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DataStructures\DynamicArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="Graphics\graphics.lib" />
