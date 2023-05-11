@@ -4,105 +4,19 @@
 #include <string>
 #include <format>
 
-void StatisticTab::TitleBorrowedCountProcess()
+void StatisticTab::InittializeTitleButton()
 {
-	this->titleListMap = HashMap < BOOK_TITLE::BookTitle* > (456976, nullptr);
-	this->titleBorrowedCountMap = HashMap < int > (456976, 0);
+	this->overdueReaderListButton = Button(HELPER::Coordinate(300, 115), HELPER::Dimension(500, 50));
+	this->overdueReaderListButton.SetFillColor(rgb(73, 84, 100));
+	this->overdueReaderListButton.SetBorderColor(rgb(73, 84, 100));
+	this->overdueReaderListButton.SetTextColor(WHITE);
+	this->overdueReaderListButton.SetPlaceholder("OVERDUE READER LIST");
 
-	for (int i = 0; i < this->titleList->numberOfNode; ++i)
-	{
-		this->titleListMap.Insert(this->titleList->nodes[i]->GetISBN(), this->titleList->nodes[i]);
-		this->titleBorrowedCountMap.Insert(this->titleList->nodes[i]->GetISBN(), 0);
-	}
-
-	STACK::Stack stk;
-	STACK::Initialize(stk);
-
-	AVL_TREE::Pointer reader = *this->readerList;
-
-	do 
-	{
-		while (reader != nullptr) 
-		{
-			STACK::Push(stk, reader);
-			reader = reader->left;
-		}
-
-		if (STACK::IsEmpty(stk) == false) 
-		{
-			reader = STACK::Pop(stk);
-			
-			DOUBLE_LINKED_LIST::Controller readerBooksCirculation = reader->info.GetBorrowedBooks();
-
-			std::string bookTitle = {};
-			for (DOUBLE_LINKED_LIST::Pointer bookCirculation = readerBooksCirculation.First; bookCirculation != nullptr; bookCirculation = bookCirculation->right)
-			{
-				if (bookCirculation->info.GetStatus() == BOOK_CIRCULATION::CirculationStatus::BORROWING || bookCirculation->info.GetStatus() == BOOK_CIRCULATION::CirculationStatus::RETURNED)
-				{
-					bookTitle = bookCirculation->info.GetID().substr(0, 4);
-					this->titleBorrowedCountMap[bookTitle] = this->titleBorrowedCountMap[bookTitle] + 1;
-				}
-			}
-
-			reader = reader->right;
-		}
-		else 
-		{
-			break;
-		}
-	} while (true);
-}
-
-void StatisticTab::OverdueReaderCountProcess()
-{
-	STACK::Stack stk;
-	STACK::Initialize(stk);
-
-	AVL_TREE::Pointer currentReader = *this->readerList;
-	do {
-		while (currentReader != nullptr) {
-			STACK::Push(stk, currentReader);
-			currentReader = currentReader->left;
-		}
-
-		if (STACK::IsEmpty(stk) == false) {
-			currentReader = STACK::Pop(stk);
-			//----------------------------------------
-
-			DOUBLE_LINKED_LIST::Controller readerBookCirculationList = currentReader->info.GetBorrowedBooks();
-			
-			if (DOUBLE_LINKED_LIST::IsEmpty(readerBookCirculationList) == false)
-			{
-				for (DOUBLE_LINKED_LIST::Pointer currentBookCirculation = readerBookCirculationList.First; currentBookCirculation != nullptr; currentBookCirculation = currentBookCirculation->right)
-				{
-					if (currentBookCirculation->info.IsOverdue())
-					{
-						this->overdueReaders.PushBack(STATISTIC_TAB_MEMBER::OverdueReader(&currentReader->info, &currentBookCirculation->info));
-						break;
-					}
-				}
-			}
-
-			//----------------------------------------
-			currentReader = currentReader->right;
-		}
-		else {
-			break;
-		}
-	} while (true);
-
-	//* Sort by overdue day count
-	int overdueReadersCount = this->overdueReaders.Size();
-	for (int i = 0; i < overdueReadersCount - 1; ++i)
-	{
-		for (int j = i + 1; j < overdueReadersCount; ++j)
-		{
-			if (this->overdueReaders[i].book_->CountOverdueDate() > this->overdueReaders[j].book_->CountOverdueDate())
-			{
-				std::swap(this->overdueReaders[i], this->overdueReaders[j]);
-			}
-		}
-	}
+	this->top10TitleButton = Button(HELPER::Coordinate(999, 115), HELPER::Dimension(500, 50));
+	this->top10TitleButton.SetFillColor(rgb(73, 84, 100));
+	this->top10TitleButton.SetBorderColor(rgb(73, 84, 100));
+	this->top10TitleButton.SetTextColor(WHITE);
+	this->top10TitleButton.SetPlaceholder("TOP 10 POPULAR TITLES");
 }
 
 void StatisticTab::TitleButtonOnAction()
@@ -113,7 +27,7 @@ void StatisticTab::TitleButtonOnAction()
 	{
 		if (i == 0)
 		{
-			if (this->overdueReaderDatasheetController.DisplayStatus() == true)
+			if (this->overdueReadersDatasheet.GetStatus() == true)
 			{
 				buttons[i]->SetFillColor(rgb(73, 84, 100));
 				buttons[i]->SetBorderColor(rgb(73, 84, 100));
@@ -123,7 +37,7 @@ void StatisticTab::TitleButtonOnAction()
 		}
 		else
 		{
-			if (this->top10TitlesDatasheetController.DisplayStatus() == true)
+			if (this->top10TitlesDatasheet.GetStatus() == true)
 			{
 				buttons[i]->SetFillColor(rgb(73, 84, 100));
 				buttons[i]->SetBorderColor(rgb(73, 84, 100));
@@ -144,13 +58,15 @@ void StatisticTab::TitleButtonOnAction()
 
 			if (i == 0)
 			{
-				this->overdueReaderDatasheetController.ActivateDatasheets();
-				this->top10TitlesDatasheetController.DeactivateDatasheets();
+				this->overdueReadersDatasheet.Activate();
+				this->overdueReadersDatasheet.CreateDatasheet();
+				this->top10TitlesDatasheet.Deactivate();
 			}
 			else
 			{
-				this->overdueReaderDatasheetController.DeactivateDatasheets();
-				this->top10TitlesDatasheetController.ActivateDatasheets();
+				this->overdueReadersDatasheet.Deactivate();
+				this->top10TitlesDatasheet.Activate();
+				this->top10TitlesDatasheet.CreateDatasheet();
 			}
 		}
 		else
@@ -162,56 +78,115 @@ void StatisticTab::TitleButtonOnAction()
 	}
 }
 
-void StatisticTab::CreateOverdueReaderDatasheet()
+StatisticTab::StatisticTab(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList) 
 {
-	this->OverdueReaderCountProcess();
-	int dataSize = this->overdueReaders.Size();
-	this->overdueReaderDatasheetController.SetDatasheetCount(
-		dataSize / (STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::MAX_ROW - 1) + (dataSize % (STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::MAX_ROW - 1) == 0 ? 0 : 1)
-	);
-	this->overdueReaderDatasheetController.InitializeDatasheets();
+	this->readerList = readerList;
+	this->titleList = titleList;
 
-	this->overdueReaderDatasheetController[0] = DATASHEET::Datasheet(
-		overdueReaderDatasheetController.GetRecordCount(),
-		overdueReaderDatasheetController.GetAttributeCount(),
-		overdueReaderDatasheetController.GetRowHeight(),
-		overdueReaderDatasheetController.GetTopLeft(),
-		(std::string*)STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::LABEL_PLACEHOLDERS,
-		(int*)STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::CHARACTER_LIMITS
-	);
+	this->InittializeTitleButton();
 
-	int recordIndex = 0;
-	int sheetIndex = -1;
-	int order = 0;
+	this->overdueReadersDatasheet = STATISTIC_TAB_MEMBER::OverdueReadersDatasheet(readerList, titleList);
+	this->overdueReadersDatasheet.CreateDatasheet();
+	this->overdueReadersDatasheet.Activate();
 
-	for (int i = 0; i < dataSize; ++i)
+	this->top10TitlesDatasheet = STATISTIC_TAB_MEMBER::Top10TitleDatasheet(readerList, titleList);
+}
+
+void StatisticTab::Run() 
+{
+	this->overdueReaderListButton.Display();
+	this->top10TitleButton.Display();
+
+	this->TitleButtonOnAction();
+	
+	if (this->overdueReadersDatasheet.GetStatus() == true)
 	{
-		++recordIndex;
-		if (recordIndex > this->overdueReaderDatasheetController.GetRecordCount() - 1) {
-			recordIndex = 1;
-		}
-		if (recordIndex % (this->overdueReaderDatasheetController.GetRecordCount() - 1) == 1) {
-			sheetIndex += 1;
-		}
+		this->overdueReadersDatasheet.Display();
+	}
 
-		std::string* data = new std::string[this->overdueReaderDatasheetController.GetAttributeCount()];
-		
-		data[0] = std::to_string(++order);
-		data[1] = this->overdueReaders[i].reader_->GetID();
-		data[2] = this->overdueReaders[i].reader_->GetFullName();
-		data[3] = this->overdueReaders[i].book_->GetID();
-		data[4] = this->titleListMap[this->overdueReaders[i].book_->GetID().substr(0, 4)]->GetTitle();
-		data[5] = this->overdueReaders[i].book_->GetBorrowDate().Stringify();
-		data[6] = std::to_string(this->overdueReaders[i].book_->CountOverdueDate());
-
-		this->overdueReaderDatasheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
+	if (this->top10TitlesDatasheet.GetStatus() == true)
+	{
+		this->top10TitlesDatasheet.Display();
 	}
 }
 
-void StatisticTab::CreateTop10TitlesDatasheet()
+STATISTIC_TAB_MEMBER::OverdueReader::OverdueReader()
 {
-	this->TitleBorrowedCountProcess();
-	BOOK_TITLE::BookTitle** newTitleList = new BOOK_TITLE::BookTitle* [this->titleList->numberOfNode];
+	this->reader_ = nullptr;
+	this->book_ = nullptr;
+}
+
+STATISTIC_TAB_MEMBER::OverdueReader::OverdueReader(READER::Reader* reader, BOOK_CIRCULATION::BookCirculation* book)
+{
+	this->reader_ = reader;
+	this->book_ = book;
+}
+
+STATISTIC_TAB_MEMBER::Top10TitleDatasheet::Top10TitleDatasheet()
+{
+	this->readerList = nullptr;
+	this->titleList = nullptr;
+	this->status = false;
+}
+
+STATISTIC_TAB_MEMBER::Top10TitleDatasheet::Top10TitleDatasheet(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList)
+{
+	this->readerList = readerList;
+	this->titleList = titleList;
+	this->status = false;
+}
+
+void STATISTIC_TAB_MEMBER::Top10TitleDatasheet::CreateDatasheet()
+{
+	std::cerr << "[LOG] CREATING TOP 10 MOST BORROWED TITLES DATASHEET!\n";
+
+	HashMap <int> titleBorrowedCountMap(456976, -1);
+	HashMap <BOOK_TITLE::BookTitle*> titleListMap(456976, nullptr);
+
+	for (int i = 0; i < this->titleList->numberOfNode; ++i)
+	{
+		titleBorrowedCountMap.Insert(this->titleList->nodes[i]->GetISBN(), 0);
+		titleListMap.Insert(this->titleList->nodes[i]->GetISBN(), this->titleList->nodes[i]);
+	}
+
+	STACK::Stack stk;
+	STACK::Initialize(stk);
+
+	AVL_TREE::Pointer reader = *this->readerList;
+
+	do
+	{
+		while (reader != nullptr)
+		{
+			STACK::Push(stk, reader);
+			reader = reader->left;
+		}
+
+		if (STACK::IsEmpty(stk) == false)
+		{
+			reader = STACK::Pop(stk);
+
+			DOUBLE_LINKED_LIST::Controller readerBooksCirculation = reader->info.GetBorrowedBooks();
+
+			std::string bookTitle = {};
+			for (DOUBLE_LINKED_LIST::Pointer bookCirculation = readerBooksCirculation.First; bookCirculation != nullptr; bookCirculation = bookCirculation->right)
+			{
+				if (bookCirculation->info.GetStatus() == BOOK_CIRCULATION::CirculationStatus::BORROWING || bookCirculation->info.GetStatus() == BOOK_CIRCULATION::CirculationStatus::RETURNED)
+				{
+					bookTitle = bookCirculation->info.GetID().substr(0, 4);
+					titleBorrowedCountMap[bookTitle] = titleBorrowedCountMap[bookTitle] + 1;
+				}
+			}
+
+			reader = reader->right;
+		}
+		else
+		{
+			break;
+		}
+	} while (true);
+
+	BOOK_TITLE::BookTitle** newTitleList = new BOOK_TITLE::BookTitle * [this->titleList->numberOfNode];
 	for (int i = 0; i < this->titleList->numberOfNode; ++i)
 	{
 		newTitleList[i] = this->titleList->nodes[i];
@@ -221,25 +196,36 @@ void StatisticTab::CreateTop10TitlesDatasheet()
 	{
 		for (int j = i + 1; j < this->titleList->numberOfNode; ++j)
 		{
-			if (this->titleBorrowedCountMap[newTitleList[i]->GetISBN()] < this->titleBorrowedCountMap[newTitleList[j]->GetISBN()])
+			if (titleBorrowedCountMap[newTitleList[i]->GetISBN()] < titleBorrowedCountMap[newTitleList[j]->GetISBN()])
 			{
 				std::swap(newTitleList[i], newTitleList[j]);
 			}
 		}
 	}
 
+	this->top10TitlesDatasheetController = DATASHEET::Controller(
+		STATISTIC_TAB_PROPERTIES::TOP_10_TITLES_DATASHEET_PROPERTIES::MAX_ROW,
+		STATISTIC_TAB_PROPERTIES::TOP_10_TITLES_DATASHEET_PROPERTIES::PROPERTIES_COUNT,
+		DATASHEET_DEFAULT_PROPERTIES::ROW_HEIGHT,
+		STATISTIC_TAB_PROPERTIES::TOP_10_TITLES_DATASHEET_PROPERTIES::TOP_LEFT,
+		STATISTIC_TAB_PROPERTIES::TOP_10_TITLES_DATASHEET_PROPERTIES::DATASHEET_CHANGE_BUTTON_TOP_LEFT
+	);
+
 	int listSize = 10;
 	this->top10TitlesDatasheetController.SetDatasheetCount(1);
 	this->top10TitlesDatasheetController.InitializeDatasheets();
 
-	this->top10TitlesDatasheetController[0] = DATASHEET::Datasheet(
-		top10TitlesDatasheetController.GetRecordCount(),
-		top10TitlesDatasheetController.GetAttributeCount(),
-		top10TitlesDatasheetController.GetRowHeight(),
-		top10TitlesDatasheetController.GetTopLeft(),
-		(std::string*)STATISTIC_TAB_PROPERTIES::TOP_10_TITLES_DATASHEET_PROPERTIES::LABEL_PLACEHOLDERS,
-		(int*)STATISTIC_TAB_PROPERTIES::TOP_10_TITLES_DATASHEET_PROPERTIES::CHARACTER_LIMITS
-	);
+	for (int i = 0; i < this->top10TitlesDatasheetController.GetDatasheetCount(); ++i)
+	{
+		this->top10TitlesDatasheetController[i] = DATASHEET::Datasheet(
+			top10TitlesDatasheetController.GetRecordCount(),
+			top10TitlesDatasheetController.GetAttributeCount(),
+			top10TitlesDatasheetController.GetRowHeight(),
+			top10TitlesDatasheetController.GetTopLeft(),
+			(std::string*)STATISTIC_TAB_PROPERTIES::TOP_10_TITLES_DATASHEET_PROPERTIES::LABEL_PLACEHOLDERS,
+			(int*)STATISTIC_TAB_PROPERTIES::TOP_10_TITLES_DATASHEET_PROPERTIES::CHARACTER_LIMITS
+		);
+	}
 
 	int recordIndex = 0;
 	int sheetIndex = -1;
@@ -263,35 +249,123 @@ void StatisticTab::CreateTop10TitlesDatasheet()
 		data[2] = newTitleList[i]->GetTitle();
 		data[3] = newTitleList[i]->GetAuthor();
 		data[4] = newTitleList[i]->GetCategory();
-		data[5] = std::to_string(this->titleBorrowedCountMap[newTitleList[i]->GetISBN()]);
+		data[5] = std::to_string(titleBorrowedCountMap[newTitleList[i]->GetISBN()]);
 
 		this->top10TitlesDatasheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 	}
 
 	delete[] newTitleList;
+	this->top10TitlesDatasheetController.ActivateDatasheets();
+
+	std::cerr << "[LOG] TOP 10 MOST BORROWED TITLES DATASHEET CREATED!\n";
+	std::cerr << "----------------------------------------------------\n";
 }
 
-void StatisticTab::InittializeTitleButton()
+void STATISTIC_TAB_MEMBER::Top10TitleDatasheet::Display()
 {
-	this->overdueReaderListButton = Button(HELPER::Coordinate(300, 115), HELPER::Dimension(500, 50));
-	this->overdueReaderListButton.SetFillColor(rgb(73, 84, 100));
-	this->overdueReaderListButton.SetBorderColor(rgb(73, 84, 100));
-	this->overdueReaderListButton.SetTextColor(WHITE);
-	this->overdueReaderListButton.SetPlaceholder("OVERDUE READER LIST");
+	if (this->top10TitlesDatasheetController.DisplayStatus() == false)
+	{
+		throw std::logic_error("[ERROR] DATASHEET NOT ACTIVATED!\n");
+		exit(1);
+	}
 
-	this->top10TitleButton = Button(HELPER::Coordinate(999, 115), HELPER::Dimension(500, 50));
-	this->top10TitleButton.SetFillColor(rgb(73, 84, 100));
-	this->top10TitleButton.SetBorderColor(rgb(73, 84, 100));
-	this->top10TitleButton.SetTextColor(WHITE);
-	this->top10TitleButton.SetPlaceholder("TOP 10 POPULAR TITLES");
+	this->top10TitlesDatasheetController.Display();
+	this->top10TitlesDatasheetController.DatasheetChangeButtonUpdate();
 }
 
-StatisticTab::StatisticTab(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList) 
+void STATISTIC_TAB_MEMBER::Top10TitleDatasheet::Activate()
+{
+	this->status = true;
+	this->top10TitlesDatasheetController.ActivateDatasheets();
+}
+
+void STATISTIC_TAB_MEMBER::Top10TitleDatasheet::Deactivate()
+{
+	this->status = false;
+	this->top10TitlesDatasheetController.DeactivateDatasheets();
+}
+
+bool STATISTIC_TAB_MEMBER::Top10TitleDatasheet::GetStatus()
+{
+	return this->status;
+}
+
+STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::OverdueReadersDatasheet()
+{
+	this->readerList = nullptr;
+	this->titleList = nullptr;
+	this->status = false;
+}
+
+STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::OverdueReadersDatasheet(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList)
 {
 	this->readerList = readerList;
 	this->titleList = titleList;
+	this->status = false;
+}
 
-	this->displayingDatasheet = 1;
+void STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::CreateDatasheet()
+{
+	std::cerr << "[LOG] CREATING OVERDUE READERS DATASHEET!\n";
+
+	//HashMap <int> titleBorrowedCountMap(456976, -1);
+	//HashMap <BOOK_TITLE::BookTitle*> titleListMap(456976, nullptr);
+	//DynamicArray <STATISTIC_TAB_MEMBER::OverdueReader> overdueReaders;
+
+	//for (int i = 0; i < this->titleList->numberOfNode; ++i)
+	//{
+	//	titleBorrowedCountMap.Insert(this->titleList->nodes[i]->GetISBN(), 0);
+	//	titleListMap.Insert(this->titleList->nodes[i]->GetISBN(), this->titleList->nodes[i]);
+	//}
+
+	//STACK::Stack stk;
+	//STACK::Initialize(stk);
+
+	//AVL_TREE::Pointer currentReader = *this->readerList;
+	//do {
+	//	while (currentReader != nullptr) {
+	//		STACK::Push(stk, currentReader);
+	//		currentReader = currentReader->left;
+	//	}
+
+	//	if (STACK::IsEmpty(stk) == false) {
+	//		currentReader = STACK::Pop(stk);
+	//		//----------------------------------------
+
+	//		DOUBLE_LINKED_LIST::Controller readerBookCirculationList = currentReader->info.GetBorrowedBooks();
+
+	//		if (DOUBLE_LINKED_LIST::IsEmpty(readerBookCirculationList) == false)
+	//		{
+	//			for (DOUBLE_LINKED_LIST::Pointer currentBookCirculation = readerBookCirculationList.First; currentBookCirculation != nullptr; currentBookCirculation = currentBookCirculation->right)
+	//			{
+	//				if (currentBookCirculation->info.IsOverdue())
+	//				{
+	//					overdueReaders.PushBack(STATISTIC_TAB_MEMBER::OverdueReader(&currentReader->info, &currentBookCirculation->info));
+	//					break;
+	//				}
+	//			}
+	//		}
+
+	//		//----------------------------------------
+	//		currentReader = currentReader->right;
+	//	}
+	//	else {
+	//		break;
+	//	}
+	//} while (true);
+
+	////* Sort by overdue day count
+	//int overdueReadersCount = overdueReaders.Size();
+	//for (int i = 0; i < overdueReadersCount - 1; ++i)
+	//{
+	//	for (int j = i + 1; j < overdueReadersCount; ++j)
+	//	{
+	//		if (overdueReaders[i].book_->CountOverdueDate() > overdueReaders[j].book_->CountOverdueDate())
+	//		{
+	//			std::swap(overdueReaders[i], overdueReaders[j]);
+	//		}
+	//	}
+	//}
 
 	this->overdueReaderDatasheetController = DATASHEET::Controller(
 		STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::MAX_ROW,
@@ -301,49 +375,91 @@ StatisticTab::StatisticTab(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearLis
 		STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::DATASHEET_CHANGE_BUTTON_TOP_LEFT
 	);
 
-	this->top10TitlesDatasheetController = DATASHEET::Controller(
-		STATISTIC_TAB_PROPERTIES::TOP_10_TITLES_DATASHEET_PROPERTIES::MAX_ROW,
-		STATISTIC_TAB_PROPERTIES::TOP_10_TITLES_DATASHEET_PROPERTIES::PROPERTIES_COUNT,
-		DATASHEET_DEFAULT_PROPERTIES::ROW_HEIGHT,
-		STATISTIC_TAB_PROPERTIES::TOP_10_TITLES_DATASHEET_PROPERTIES::TOP_LEFT,
-		STATISTIC_TAB_PROPERTIES::TOP_10_TITLES_DATASHEET_PROPERTIES::DATASHEET_CHANGE_BUTTON_TOP_LEFT
-	);
+	//int dataSize = overdueReaders.Size();
+	//this->overdueReaderDatasheetController.SetDatasheetCount(
+	//	max(1, dataSize / (STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::MAX_ROW - 1) + (dataSize % (STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::MAX_ROW - 1) == 0 ? 0 : 1))
+	//);
+	this->overdueReaderDatasheetController.SetDatasheetCount(1);
+	this->overdueReaderDatasheetController.InitializeDatasheets();
 
-	this->InittializeTitleButton();
+	for (int i = 0; i < this->overdueReaderDatasheetController.GetDatasheetCount(); ++i)
+	{
+		this->overdueReaderDatasheetController[i] = DATASHEET::Datasheet(
+			overdueReaderDatasheetController.GetRecordCount(),
+			overdueReaderDatasheetController.GetAttributeCount(),
+			overdueReaderDatasheetController.GetRowHeight(),
+			overdueReaderDatasheetController.GetTopLeft(),
+			(std::string*)STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::LABEL_PLACEHOLDERS,
+			(int*)STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::CHARACTER_LIMITS
+		);
+	}
+
+	//int recordIndex = 0;
+	//int sheetIndex = -1;
+	//int order = 0;
+
+	//for (int i = 0; i < dataSize; ++i)
+	//{
+	//	++recordIndex;
+	//	if (recordIndex > this->overdueReaderDatasheetController.GetRecordCount() - 1) {
+	//		recordIndex = 1;
+	//	}
+	//	if (recordIndex % (this->overdueReaderDatasheetController.GetRecordCount() - 1) == 1) {
+	//		sheetIndex += 1;
+	//	}
+
+	//	std::string* data = new std::string[this->overdueReaderDatasheetController.GetAttributeCount()];
+
+	//	data[0] = std::to_string(++order);
+	//	data[1] = overdueReaders[i].reader_->GetID();
+	//	data[2] = overdueReaders[i].reader_->GetFullName();
+	//	data[3] = overdueReaders[i].book_->GetID();
+
+	//	/*try {
+	//		std::cout << (titleListMap[overdueReaders[i].book_->GetID().substr(0, 4)] == nullptr) << "\n";
+	//	}
+	//	catch (const std::exception& ex) {
+	//		std::cout << ex.what();
+	//	}*/
+
+	//	data[4] = titleListMap[overdueReaders[i].book_->GetID().substr(0, 4)]->GetTitle();
+	//	data[5] = overdueReaders[i].book_->GetBorrowDate().Stringify();
+	//	data[6] = std::to_string(overdueReaders[i].book_->CountOverdueDate());
+
+	//	this->overdueReaderDatasheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
+	//}
 
 	this->overdueReaderDatasheetController.ActivateDatasheets();
-	this->top10TitlesDatasheetController.DeactivateDatasheets();
+
+	std::cerr << "[LOG] OVERDUE READERS DATASHEET CREATED!\n";
+	std::cerr << "----------------------------------------------------\n";
 }
 
-void StatisticTab::Run() 
+void STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::Display()
 {
-	this->overdueReaderListButton.Display();
-	this->top10TitleButton.Display();
-
-	this->TitleButtonOnAction();
-
-	if (this->overdueReaderDatasheetController.DisplayStatus() == true)
+	if (this->overdueReaderDatasheetController.DisplayStatus() == false)
 	{
-		this->CreateOverdueReaderDatasheet();
-		this->overdueReaderDatasheetController.Display();
-		this->overdueReaderDatasheetController.DatasheetChangeButtonUpdate();
+		throw std::logic_error("[ERROR] DATASHEET NOT ACTIVATED!\n");
+		exit(1);
 	}
 
-	if (this->top10TitlesDatasheetController.DisplayStatus() == true)
-	{
-		this->CreateTop10TitlesDatasheet();
-		this->top10TitlesDatasheetController.Display(false);
-	}
+	this->overdueReaderDatasheetController.Display();
+	this->overdueReaderDatasheetController.DatasheetChangeButtonUpdate();
 }
 
-STATISTIC_TAB_MEMBER::OverdueReader::OverdueReader()
+void STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::Activate()
 {
-	this->reader_ = nullptr;
-	this->book_ = nullptr;
+	this->status = true;
+	this->overdueReaderDatasheetController.ActivateDatasheets();
 }
 
-STATISTIC_TAB_MEMBER::OverdueReader::OverdueReader(READER::Reader* reader, BOOK_CIRCULATION::BookCirculation* book)
+void STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::Deactivate()
 {
-	this->reader_ = reader;
-	this->book_ = book;
+	this->status = false;
+	this->overdueReaderDatasheetController.DeactivateDatasheets();
+}
+
+bool STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::GetStatus()
+{
+	return this->status;
 }

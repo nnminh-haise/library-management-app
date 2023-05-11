@@ -418,7 +418,7 @@ READER_TAB_MEMBERS::EditReaderInfoForm::EditReaderInfoForm(AVL_TREE::Pointer* re
 	this->readerGenderButton.SetPlaceholder("Reader's gender");
 
 	this->readerStatusButton = Button(HELPER::Coordinate(1500, 770), 230, 60);
-	this->readerStatusButton.SetPlaceholder("Reader's Status");
+	this->readerStatusButton.SetPlaceholder("Reader's GetStatus");
 
 	this->saveBtn = Button(HELPER::Coordinate(1455, 855), 150, 40);
 	this->saveBtn.SetPlaceholder("SAVE");
@@ -626,7 +626,7 @@ READER_TAB_MEMBERS::ReaderInfo::ReaderInfo()
 		rgb(244, 244, 242),
 		BLACK
 	);
-	this->readerStatus.SetPlaceholder("Reader Status");
+	this->readerStatus.SetPlaceholder("Reader GetStatus");
 
 
 }

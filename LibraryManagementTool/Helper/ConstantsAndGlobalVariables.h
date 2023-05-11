@@ -106,7 +106,7 @@ namespace STATISTIC_TAB_PROPERTIES
 		const int PROPERTIES_COUNT = 7;
 		const std::string LABEL_PLACEHOLDERS[] = { "ORDER", "READER ID", "FULL NAME", "BOOK ID", "TITLE", "BORROW DATE", "OVERDUE DATE" };
 		const int CHARACTER_LIMITS[] = { 5, 6, 40, 8, 30, 10, 10 };
-		const HELPER::Coordinate TOP_LEFT{ 20, 180 };
+		const HELPER::Coordinate TOP_LEFT{ 60, 180 };
 		const HELPER::Coordinate DATASHEET_CHANGE_BUTTON_TOP_LEFT{ 850, 952 };
 	}
 
@@ -117,7 +117,7 @@ namespace STATISTIC_TAB_PROPERTIES
 		const std::string LABEL_PLACEHOLDERS[] = { "ORDER", "ISBN", "TITLE", "AUTHOR", "CATEGORY", "BORROWED COUNT" };
 		const int CHARACTER_LIMITS[] = { 2, 4, 30, 20, 10, 6 };
 		const HELPER::Coordinate TOP_LEFT{ 300, 180 };
-		const HELPER::Coordinate DATASHEET_CHANGE_BUTTON_TOP_LEFT{ 36, 870 };
+		const HELPER::Coordinate DATASHEET_CHANGE_BUTTON_TOP_LEFT{ 300, 870 };
 	}
 }
 

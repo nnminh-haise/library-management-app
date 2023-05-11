@@ -22,9 +22,9 @@ public:
 
 	T PopBack();
 
-	T& operator[] (const int& index);
+	T& operator[] (int index);
 
-	T At(const int& index);
+	T At(int index);
 
 private:
 	struct Node
@@ -136,16 +136,18 @@ inline T DynamicArray<T>::PopBack()
 }
 
 template<typename T>
-inline T& DynamicArray<T>::operator[](const int& index)
+inline T& DynamicArray<T>::operator[](int index)
 {
 	if (this->Empty())
 	{
 		throw std::logic_error("[ERROR] EMPTY LIST!\n");
+		exit(1);
 	}
 
 	if (index >= this->Size())
 	{
 		throw std::logic_error("[ERROR] INDEX OUT OF RANGE!\n");
+		exit(1);
 	}
 
 	int counter = 0;
@@ -156,10 +158,13 @@ inline T& DynamicArray<T>::operator[](const int& index)
 			return p->info_;
 		}
 	}
+
+	throw std::logic_error("[ERROR] CANNOT ACCESS ANY VALUE! UNKNOWN ERROR!\n");
+	exit(1);
 }
 
 template<typename T>
-inline T DynamicArray<T>::At(const int& index)
+inline T DynamicArray<T>::At(int index)
 {
 	if (this->Empty())
 	{

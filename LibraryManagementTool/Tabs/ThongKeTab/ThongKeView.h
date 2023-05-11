@@ -13,7 +13,8 @@
 
 namespace STATISTIC_TAB_MEMBER
 {
-	struct OverdueReader {
+	struct OverdueReader
+	{
 		OverdueReader();
 
 		OverdueReader(READER::Reader* reader, BOOK_CIRCULATION::BookCirculation* book);
@@ -21,43 +22,84 @@ namespace STATISTIC_TAB_MEMBER
 		READER::Reader* reader_;
 		BOOK_CIRCULATION::BookCirculation* book_;
 	};
+
+	class Top10TitleDatasheet
+	{
+	public:
+		Top10TitleDatasheet();
+
+		Top10TitleDatasheet(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList);
+
+		void CreateDatasheet();
+
+		void Display();
+
+		void Activate();
+
+		void Deactivate();
+
+		bool GetStatus();
+
+	private:
+		bool status;
+
+		AVL_TREE::Pointer* readerList;
+		LINEAR_LIST::LinearList* titleList;
+
+		DATASHEET::Controller top10TitlesDatasheetController;
+	};
+
+	class OverdueReadersDatasheet
+	{
+	public:
+		OverdueReadersDatasheet();
+
+		OverdueReadersDatasheet(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList);
+
+		void CreateDatasheet();
+
+		void Display();
+
+		void Activate();
+
+		void Deactivate();
+
+		bool GetStatus();
+
+	private:
+		bool status;
+
+		AVL_TREE::Pointer* readerList;
+		LINEAR_LIST::LinearList* titleList;
+
+		DATASHEET::Controller overdueReaderDatasheetController;
+	};
 }
 
-class StatisticTab {
+class StatisticTab
+{
 public:
 	StatisticTab(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList);
 
 	void Run();
 
 private:
-	void TitleBorrowedCountProcess();
-
-	void OverdueReaderCountProcess();
+	void InittializeTitleButton();
 
 	void TitleButtonOnAction();
 
-	void CreateOverdueReaderDatasheet();
-
-	void CreateTop10TitlesDatasheet();
-
-	void InittializeTitleButton();
-
 private:
-	DATASHEET::Controller overdueReaderDatasheetController;
-	DATASHEET::Controller top10TitlesDatasheetController;
+	STATISTIC_TAB_MEMBER::Top10TitleDatasheet top10TitlesDatasheet;
+	STATISTIC_TAB_MEMBER::OverdueReadersDatasheet overdueReadersDatasheet;
 
 	Button overdueReaderListButton;
 	Button top10TitleButton;
 
-	int displayingDatasheet;
-
 	AVL_TREE::Pointer* readerList;
 	LINEAR_LIST::LinearList* titleList;
 
-	HashMap < int > titleBorrowedCountMap;
-	HashMap < BOOK_TITLE::BookTitle* > titleListMap;
-
-	DynamicArray <STATISTIC_TAB_MEMBER::OverdueReader> overdueReaders;
+	HashMap <int> titleBorrowedCountMap;
+	HashMap <BOOK_TITLE::BookTitle*> titleListMap;
 };
 
 #endif // !THONG_KE_VIEW
