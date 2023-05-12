@@ -52,21 +52,12 @@ inline DynamicArray<T>::DynamicArray()
 template<typename T>
 inline DynamicArray<T>::~DynamicArray()
 {
-	if (this->Empty())
-	{
-		delete this->first_;
-		delete this->last_;
-		return;
-	}
-
 	for (Pointer currentNode = this->first_; currentNode != nullptr;)
 	{
 		Pointer deleteNode = currentNode;
 		currentNode = currentNode->next_;
 		delete deleteNode;
 	}
-	delete this->first_;
-	delete this->last_;
 }
 
 template<typename T>

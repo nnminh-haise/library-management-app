@@ -110,18 +110,6 @@ void StatisticTab::Run()
 	}
 }
 
-STATISTIC_TAB_MEMBER::OverdueReader::OverdueReader()
-{
-	this->reader_ = nullptr;
-	this->book_ = nullptr;
-}
-
-STATISTIC_TAB_MEMBER::OverdueReader::OverdueReader(READER::Reader* reader, BOOK_CIRCULATION::BookCirculation* book)
-{
-	this->reader_ = reader;
-	this->book_ = book;
-}
-
 STATISTIC_TAB_MEMBER::Top10TitleDatasheet::Top10TitleDatasheet()
 {
 	this->readerList = nullptr;
@@ -308,64 +296,71 @@ void STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::CreateDatasheet()
 {
 	std::cerr << "[LOG] CREATING OVERDUE READERS DATASHEET!\n";
 
-	//HashMap <int> titleBorrowedCountMap(456976, -1);
-	//HashMap <BOOK_TITLE::BookTitle*> titleListMap(456976, nullptr);
-	//DynamicArray <STATISTIC_TAB_MEMBER::OverdueReader> overdueReaders;
+	HashMap <BOOK_TITLE::BookTitle*> titleListMap(456976, nullptr);
+	DynamicArray <STATISTIC_TAB_MEMBER::OverdueReader> overdueReaders;
 
-	//for (int i = 0; i < this->titleList->numberOfNode; ++i)
-	//{
-	//	titleBorrowedCountMap.Insert(this->titleList->nodes[i]->GetISBN(), 0);
-	//	titleListMap.Insert(this->titleList->nodes[i]->GetISBN(), this->titleList->nodes[i]);
-	//}
+	for (int i = 0; i < this->titleList->numberOfNode; ++i)
+	{
+		titleListMap.Insert(this->titleList->nodes[i]->GetISBN(), this->titleList->nodes[i]);
+	}
 
-	//STACK::Stack stk;
-	//STACK::Initialize(stk);
+	STACK::Stack stk;
+	STACK::Initialize(stk);
 
-	//AVL_TREE::Pointer currentReader = *this->readerList;
-	//do {
-	//	while (currentReader != nullptr) {
-	//		STACK::Push(stk, currentReader);
-	//		currentReader = currentReader->left;
-	//	}
+	STATISTIC_TAB_MEMBER::OverdueReader overdueReader;
 
-	//	if (STACK::IsEmpty(stk) == false) {
-	//		currentReader = STACK::Pop(stk);
-	//		//----------------------------------------
+	AVL_TREE::Pointer currentReader = *this->readerList;
+	do {
+		while (currentReader != nullptr) {
+			STACK::Push(stk, currentReader);
+			currentReader = currentReader->left;
+		}
 
-	//		DOUBLE_LINKED_LIST::Controller readerBookCirculationList = currentReader->info.GetBorrowedBooks();
+		if (STACK::IsEmpty(stk) == false) {
+			currentReader = STACK::Pop(stk);
+			//----------------------------------------
 
-	//		if (DOUBLE_LINKED_LIST::IsEmpty(readerBookCirculationList) == false)
-	//		{
-	//			for (DOUBLE_LINKED_LIST::Pointer currentBookCirculation = readerBookCirculationList.First; currentBookCirculation != nullptr; currentBookCirculation = currentBookCirculation->right)
-	//			{
-	//				if (currentBookCirculation->info.IsOverdue())
-	//				{
-	//					overdueReaders.PushBack(STATISTIC_TAB_MEMBER::OverdueReader(&currentReader->info, &currentBookCirculation->info));
-	//					break;
-	//				}
-	//			}
-	//		}
+			DOUBLE_LINKED_LIST::Controller readerBookCirculationList = currentReader->info.GetBorrowedBooks();
 
-	//		//----------------------------------------
-	//		currentReader = currentReader->right;
-	//	}
-	//	else {
-	//		break;
-	//	}
-	//} while (true);
+			if (!DOUBLE_LINKED_LIST::IsEmpty(readerBookCirculationList))
+			{
+				for (DOUBLE_LINKED_LIST::Pointer currentBookCirculation = readerBookCirculationList.First; currentBookCirculation != nullptr; currentBookCirculation = currentBookCirculation->right)
+				{
+					if (currentBookCirculation->info.IsOverdue())
+					{
+						overdueReader.bookID = currentBookCirculation->info.GetID();
+						overdueReader.bookTitle = titleListMap[currentBookCirculation->info.GetID().substr(0, 4)]->GetTitle();
+						overdueReader.borrowDate = currentBookCirculation->info.GetBorrowDate();
+						overdueReader.overdueDateCount = currentBookCirculation->info.CountOverdueDate();
+						overdueReader.readerID = std::to_string(currentReader->info.GetID());
+						overdueReader.readerFullname = currentReader->info.GetFullName();
 
-	////* Sort by overdue day count
-	//int overdueReadersCount = overdueReaders.Size();
-	//for (int i = 0; i < overdueReadersCount - 1; ++i)
-	//{
-	//	for (int j = i + 1; j < overdueReadersCount; ++j)
-	//	{
-	//		if (overdueReaders[i].book_->CountOverdueDate() > overdueReaders[j].book_->CountOverdueDate())
-	//		{
-	//			std::swap(overdueReaders[i], overdueReaders[j]);
-	//		}
-	//	}
-	//}
+						overdueReaders.PushBack(overdueReader);
+						break;
+					}
+				}
+			}
+
+			//----------------------------------------
+			currentReader = currentReader->right;
+		}
+		else {
+			break;
+		}
+	} while (true);
+
+	//* Sort by overdue day count
+	int overdueReadersCount = overdueReaders.Size();
+	for (int i = 0; i < overdueReadersCount - 1; ++i)
+	{
+		for (int j = i + 1; j < overdueReadersCount; ++j)
+		{
+			if (overdueReaders[i].overdueDateCount > overdueReaders[j].overdueDateCount)
+			{
+				std::swap(overdueReaders[i], overdueReaders[j]);
+			}
+		}
+	}
 
 	this->overdueReaderDatasheetController = DATASHEET::Controller(
 		STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::MAX_ROW,
@@ -375,10 +370,10 @@ void STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::CreateDatasheet()
 		STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::DATASHEET_CHANGE_BUTTON_TOP_LEFT
 	);
 
-	//int dataSize = overdueReaders.Size();
-	//this->overdueReaderDatasheetController.SetDatasheetCount(
-	//	max(1, dataSize / (STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::MAX_ROW - 1) + (dataSize % (STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::MAX_ROW - 1) == 0 ? 0 : 1))
-	//);
+	int dataSize = overdueReaders.Size();
+	this->overdueReaderDatasheetController.SetDatasheetCount(
+		max(1, dataSize / (STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::MAX_ROW - 1) + (dataSize % (STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::MAX_ROW - 1) == 0 ? 0 : 1))
+	);
 	this->overdueReaderDatasheetController.SetDatasheetCount(1);
 	this->overdueReaderDatasheetController.InitializeDatasheets();
 
@@ -394,40 +389,32 @@ void STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::CreateDatasheet()
 		);
 	}
 
-	//int recordIndex = 0;
-	//int sheetIndex = -1;
-	//int order = 0;
+	int recordIndex = 0;
+	int sheetIndex = -1;
+	int order = 0;
 
-	//for (int i = 0; i < dataSize; ++i)
-	//{
-	//	++recordIndex;
-	//	if (recordIndex > this->overdueReaderDatasheetController.GetRecordCount() - 1) {
-	//		recordIndex = 1;
-	//	}
-	//	if (recordIndex % (this->overdueReaderDatasheetController.GetRecordCount() - 1) == 1) {
-	//		sheetIndex += 1;
-	//	}
+	for (int i = 0; i < dataSize; ++i)
+	{
+		++recordIndex;
+		if (recordIndex > this->overdueReaderDatasheetController.GetRecordCount() - 1) {
+			recordIndex = 1;
+		}
+		if (recordIndex % (this->overdueReaderDatasheetController.GetRecordCount() - 1) == 1) {
+			sheetIndex += 1;
+		}
 
-	//	std::string* data = new std::string[this->overdueReaderDatasheetController.GetAttributeCount()];
+		std::string* data = new std::string[this->overdueReaderDatasheetController.GetAttributeCount()];
 
-	//	data[0] = std::to_string(++order);
-	//	data[1] = overdueReaders[i].reader_->GetID();
-	//	data[2] = overdueReaders[i].reader_->GetFullName();
-	//	data[3] = overdueReaders[i].book_->GetID();
+		data[0] = std::to_string(++order);
+		data[1] = overdueReaders[i].readerID;
+		data[2] = overdueReaders[i].readerFullname;
+		data[3] = overdueReaders[i].bookID;
+		data[4] = overdueReaders[i].bookTitle;
+		data[5] = overdueReaders[i].borrowDate.Stringify();
+		data[6] = std::to_string(overdueReaders[i].overdueDateCount);
 
-	//	/*try {
-	//		std::cout << (titleListMap[overdueReaders[i].book_->GetID().substr(0, 4)] == nullptr) << "\n";
-	//	}
-	//	catch (const std::exception& ex) {
-	//		std::cout << ex.what();
-	//	}*/
-
-	//	data[4] = titleListMap[overdueReaders[i].book_->GetID().substr(0, 4)]->GetTitle();
-	//	data[5] = overdueReaders[i].book_->GetBorrowDate().Stringify();
-	//	data[6] = std::to_string(overdueReaders[i].book_->CountOverdueDate());
-
-	//	this->overdueReaderDatasheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
-	//}
+		this->overdueReaderDatasheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
+	}
 
 	this->overdueReaderDatasheetController.ActivateDatasheets();
 

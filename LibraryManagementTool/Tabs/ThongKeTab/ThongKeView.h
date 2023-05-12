@@ -15,12 +15,12 @@ namespace STATISTIC_TAB_MEMBER
 {
 	struct OverdueReader
 	{
-		OverdueReader();
-
-		OverdueReader(READER::Reader* reader, BOOK_CIRCULATION::BookCirculation* book);
-
-		READER::Reader* reader_;
-		BOOK_CIRCULATION::BookCirculation* book_;
+		std::string readerID;
+		std::string readerFullname;
+		std::string bookID;
+		std::string bookTitle;
+		HELPER::Date borrowDate;
+		int overdueDateCount;
 	};
 
 	class Top10TitleDatasheet
