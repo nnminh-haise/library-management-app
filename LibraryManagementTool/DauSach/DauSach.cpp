@@ -64,7 +64,7 @@ void LINKED_LIST::Initialize(LINKED_LIST::Controller& controller) {
 	controller.first = nullptr;
 }
 
-bool LINKED_LIST::IsEmpty(const LINKED_LIST::Controller& controller) {
+bool LINKED_LIST::Empty(const LINKED_LIST::Controller& controller) {
 	return controller.first == nullptr;
 }
 
@@ -77,7 +77,7 @@ int LINKED_LIST::Size(const Controller& controller) {
 	return counter;
 }
 
-void LINKED_LIST::InsertFirst(Controller& controller, BOOK::Book item) {
+void LINKED_LIST::PushFront(Controller& controller, BOOK::Book item) {
 	LINKED_LIST::Pointer newNode = new LINKED_LIST::Node(item, nullptr);
 	controller.first = newNode;
 
@@ -90,9 +90,9 @@ void LINKED_LIST::InsertFirst(Controller& controller, BOOK::Book item) {
 	}
 }
 
-void LINKED_LIST::InsertLast(LINKED_LIST::Controller& controller, BOOK::Book item) {
-	if (LINKED_LIST::IsEmpty(controller)) {
-		LINKED_LIST::InsertFirst(controller, item);
+void LINKED_LIST::PushBack(LINKED_LIST::Controller& controller, BOOK::Book item) {
+	if (LINKED_LIST::Empty(controller)) {
+		LINKED_LIST::PushFront(controller, item);
 		return;
 	}
 
@@ -112,7 +112,7 @@ void LINKED_LIST::InsertLast(LINKED_LIST::Controller& controller, BOOK::Book ite
 }
 
 bool LINKED_LIST::DeleteAt(Controller& controller, BOOK::Book item) {
-	if (LINKED_LIST::IsEmpty(controller)) {
+	if (LINKED_LIST::Empty(controller)) {
 		return false;
 	}
 
@@ -252,7 +252,7 @@ void LINEAR_LIST::Initialize(LINEAR_LIST::LinearList& list) {
 	}
 }
 
-bool LINEAR_LIST::IsEmpty(const LinearList& list) {
+bool LINEAR_LIST::Empty(const LinearList& list) {
 	return list.numberOfNode == 0;
 }
 
@@ -260,7 +260,7 @@ bool LINEAR_LIST::IsFull(const LinearList& list) {
 	return list.numberOfNode == MAX_SIZE;
 }
 
-bool LINEAR_LIST::InsertFirst(LinearList& list, BOOK_TITLE::BookTitle* item) {
+bool LINEAR_LIST::PushFront(LinearList& list, BOOK_TITLE::BookTitle* item) {
 	if (LINEAR_LIST::IsFull(list)) {
 		return false;
 	}
@@ -295,7 +295,7 @@ bool LINEAR_LIST::InsertItem(LINEAR_LIST::LinearList& list, BOOK_TITLE::BookTitl
 	return true;
 }
 
-bool LINEAR_LIST::InsertLast(LinearList& list, BOOK_TITLE::BookTitle* item) {
+bool LINEAR_LIST::PushBack(LinearList& list, BOOK_TITLE::BookTitle* item) {
 	if (LINEAR_LIST::IsFull(list)) {
 		std::cerr << std::format("[ERROR] DANH BOOK DAU BOOK IS FULL!\n");
 		exit(1);
@@ -332,7 +332,7 @@ void LINEAR_LIST::Traversal(const LinearList& list) {
 }
 
 BOOK_TITLE::BookTitle* LINEAR_LIST::SearchByName(const LinearList& list, const std::string& titleName) {
-	if (LINEAR_LIST::IsEmpty(list)) {
+	if (LINEAR_LIST::Empty(list)) {
 		return nullptr;
 	}
 
@@ -464,7 +464,7 @@ bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LI
 							}
 							newBook.SetDescription(bookItems[2]);
 
-							LINKED_LIST::InsertLast(newBookList, newBook);
+							LINKED_LIST::PushBack(newBookList, newBook);
 						}
 
 						newTitle->SetCatalogue(newBookList);
@@ -474,9 +474,9 @@ bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LI
 			}
 		}
 
-		if (LINEAR_LIST::IsEmpty(danhSachDauSach)) 
+		if (LINEAR_LIST::Empty(danhSachDauSach)) 
 		{
-			LINEAR_LIST::InsertFirst(danhSachDauSach, newTitle);
+			LINEAR_LIST::PushFront(danhSachDauSach, newTitle);
 		}
 		else 
 		{
@@ -512,7 +512,7 @@ bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const L
 
 		LINKED_LIST::Controller danhMucSach = titleList.nodes[i]->GetCatalogue();
 		
-		if (LINKED_LIST::IsEmpty(danhMucSach)) 
+		if (LINKED_LIST::Empty(danhMucSach)) 
 		{
 			database << 0 << "\n";
 		}

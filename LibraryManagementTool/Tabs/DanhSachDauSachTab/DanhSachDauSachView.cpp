@@ -506,7 +506,7 @@ namespace DAU_SACH_TAB {
 						this->sachAddFieldController.items[i].inputField[3].GetPlaceholder(),
 						this->sachAddFieldController.items[i].inputField[4].GetPlaceholder()
 					));
-					LINKED_LIST::InsertLast(newBookList, newBook);
+					LINKED_LIST::PushBack(newBookList, newBook);
 				}
 				newTitle->SetCatalogue(newBookList);
 			}
@@ -836,11 +836,11 @@ namespace CATEGORY_LINKED_LIST {
 		First = nullptr;
 	}
 
-	bool IsEmpty(const Pointer& First) {
+	bool Empty(const Pointer& First) {
 		return First == nullptr;
 	}
 
-	void InsertFirst(Pointer& First, std::string info) {
+	void PushFront(Pointer& First, std::string info) {
 		Pointer newNode = new Node(info, First);
 		First = newNode;
 	}
@@ -849,14 +849,14 @@ namespace CATEGORY_LINKED_LIST {
 		Pointer newNode = new Node(info, nullptr);
 
 		//* Case the list does not have any item.
-		if (IsEmpty(First)) {
+		if (Empty(First)) {
 			First = newNode;
 			return;
 		}
 
 		//* If info is less than or equal then insert to the first element of the list.
 		if (First->info.compare(info) >= 0) {
-			InsertFirst(First, info);
+			PushFront(First, info);
 			return;
 		}
 
@@ -936,7 +936,7 @@ void DauSachTab::SortByCategory() {
 	CATEGORY_LINKED_LIST::Pointer categories;
 	CATEGORY_LINKED_LIST::Initialzie(categories);
 
-	CATEGORY_LINKED_LIST::InsertFirst(categories, this->titleList->nodes[0]->GetCategory());
+	CATEGORY_LINKED_LIST::PushFront(categories, this->titleList->nodes[0]->GetCategory());
 	bool flag = true;
 	int categoryCount = 1;
 	for (int i = 1; i < this->titleList->numberOfNode; ++i) {

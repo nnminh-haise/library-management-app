@@ -67,15 +67,15 @@ namespace DOUBLE_LINKED_LIST
 
 	void Initialize(DOUBLE_LINKED_LIST::Controller& list);
 
-	bool IsEmpty(const Controller& list);
+	bool Empty(const Controller& list);
 
 	int Size(const Controller& list);
 
 	void ClearList(Controller& list);
 
-	void InsertFirst(Controller& list, BOOK_CIRCULATION::BookCirculation info);
+	void PushFront(Controller& list, BOOK_CIRCULATION::BookCirculation info);
 
-	void InsertLast(Controller& list, BOOK_CIRCULATION::BookCirculation info);
+	void PushBack(Controller& list, BOOK_CIRCULATION::BookCirculation info);
 
 	void RemoveNode(Controller& list, DOUBLE_LINKED_LIST::Pointer targetNode);
 }
@@ -86,7 +86,7 @@ namespace BOOK_CIRCULATION_MODULES {
 
 namespace READER 
 {
-	enum Sex { MALE, FEMALE };
+	enum Gender { MALE, FEMALE };
 
 	enum ReaderStatus { BANNED, ACTIVE };
 
@@ -95,7 +95,7 @@ namespace READER
 	public:
 		Reader();
 
-		Reader(int id, std::string firstName, std::string lastName, Sex sex, ReaderStatus status, DOUBLE_LINKED_LIST::Controller borrowedBooks);
+		Reader(int id, std::string firstName, std::string lastName, Gender gender, ReaderStatus status, DOUBLE_LINKED_LIST::Controller borrowedBooks);
 
 		void SetID(int id);
 
@@ -109,13 +109,13 @@ namespace READER
 
 		std::string GetLastName();
 
-		void SetSex(Sex sex);
+		void SetGender(Gender sex);
 
-		Sex GetSex();
+		Gender GetGender();
 
 		std::string GetFullName();
 
-		std::string StringfySex();
+		std::string StringifyGender();
 
 		void SetStatus(ReaderStatus status);
 
@@ -123,9 +123,9 @@ namespace READER
 
 		std::string StringfyStatus();
 
-		void SetBorrowedBooks(DOUBLE_LINKED_LIST::Controller borrowedBooks);
+		void SetBooksCirculation(DOUBLE_LINKED_LIST::Controller borrowedBooks);
 
-		DOUBLE_LINKED_LIST::Controller GetBorrowedBooks();
+		DOUBLE_LINKED_LIST::Controller GetBooksCirculation();
 
 		void Log();
 
@@ -133,7 +133,7 @@ namespace READER
 		int id;
 		std::string firstName;
 		std::string lastName;
-		Sex sex;
+		Gender sex;
 		ReaderStatus status;
 		DOUBLE_LINKED_LIST::Controller borrowedBooks;
 	};
@@ -160,7 +160,7 @@ namespace AVL_TREE
 
 	void Initialize(Pointer& root);
 
-	bool IsEmpty(const Pointer& root);
+	bool Empty(const Pointer& root);
 
 	void PreOrderTraversal(const Pointer& root);
 
@@ -168,7 +168,7 @@ namespace AVL_TREE
 
 	void PostOrderTraversal(const Pointer& root);
 
-	void CountNode(const Pointer& root, int& counter);
+	void Size(const Pointer& root, int& counter);
 
 	void NonrecursiveInOrderTraversal(const Pointer& root);
 

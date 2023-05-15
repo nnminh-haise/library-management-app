@@ -224,7 +224,7 @@ void READER_TAB_MEMBERS::NewReaderForm::FormOnAction()
 	int fieldsCharacterLimit[3] = { 30, 15, 6 };
 
 	int readerListSize = 0;
-	AVL_TREE::CountNode(*this->readerList, readerListSize);
+	AVL_TREE::Size(*this->readerList, readerListSize);
 
 	IndexGenerator indexGenerator(500000);
 	this->readerIndex = indexGenerator.FromFileGetIndexAt(CONSTANTS::READER_INDICIES, readerListSize);
@@ -263,9 +263,9 @@ bool READER_TAB_MEMBERS::NewReaderForm::SubmitForm()
 		newreader.SetID(this->readerIndex);
 		newreader.SetFirstName(STR::Trim(this->readerFirstNameButton.GetPlaceholder()));
 		newreader.SetLastName(STR::Trim(this->readerLastNameButton.GetPlaceholder()));
-		newreader.SetSex(this->readerSexButton.GetPlaceholder() == "MALE" ? READER::Sex::MALE : READER::Sex::FEMALE);
+		newreader.SetGender(this->readerSexButton.GetPlaceholder() == "MALE" ? READER::Gender::MALE : READER::Gender::FEMALE);
 		newreader.SetStatus(READER::ReaderStatus::ACTIVE);
-		newreader.SetBorrowedBooks(DOUBLE_LINKED_LIST::Controller());
+		newreader.SetBooksCirculation(DOUBLE_LINKED_LIST::Controller());
 		delay(100);
 
 		bool res = AVL_TREE::Insert(*this->readerList, newreader);
@@ -346,7 +346,7 @@ void READER_TAB_MEMBERS::DeleteItemInListForm::Display(AVL_TREE::Pointer& danhSa
 	if (checker) {
 		this->searchResult = AVL_TREE::SearchByKey(danhSachTheDocGia, std::stoi(this->maThe->GetPlaceholder()));
 		if (this->searchResult != nullptr) {
-			int currentBorrowedBooksCount = BOOK_CIRCULATION_MODULES::CountBorrowedBooks(this->searchResult->info.GetBorrowedBooks());
+			int currentBorrowedBooksCount = BOOK_CIRCULATION_MODULES::CountBorrowedBooks(this->searchResult->info.GetBooksCirculation());
 			if (currentBorrowedBooksCount != 0) {
 				std::cerr << std::format("[ERROR] DOC GIA DANG MUON BOOK! KHONG THE XOA DOC GIA!\n");
 			}
@@ -355,7 +355,7 @@ void READER_TAB_MEMBERS::DeleteItemInListForm::Display(AVL_TREE::Pointer& danhSa
 			}
 
 			this->hoTen->SetPlaceholder(this->searchResult->info.GetFullName());
-			this->phai->SetPlaceholder(this->searchResult->info.StringfySex());
+			this->phai->SetPlaceholder(this->searchResult->info.StringifyGender());
 			this->trangThai->SetPlaceholder(this->searchResult->info.StringfyStatus());
 
 			this->hoTen->Display();
@@ -472,7 +472,7 @@ void READER_TAB_MEMBERS::EditReaderInfoForm::AssignReaderOldInfoToFields()
 	this->readerIDButton.SetPlaceholder(std::to_string(this->searchResult->info.GetID()));
 	this->readerFirstNameButton.SetPlaceholder(this->searchResult->info.GetFirstName());
 	this->readerLastNameButton.SetPlaceholder(this->searchResult->info.GetLastName());
-	this->readerGenderButton.SetPlaceholder(this->searchResult->info.StringfySex());
+	this->readerGenderButton.SetPlaceholder(this->searchResult->info.StringifyGender());
 	this->readerStatusButton.SetPlaceholder(this->searchResult->info.StringfyStatus());
 }
 
@@ -573,8 +573,8 @@ bool READER_TAB_MEMBERS::EditReaderInfoForm::SubmitForm()
 			{
 				this->searchResult->info.SetFirstName(this->readerFirstNameButton.GetPlaceholder());
 				this->searchResult->info.SetLastName(this->readerLastNameButton.GetPlaceholder());
-				this->searchResult->info.SetSex(
-					this->readerGenderButton.GetPlaceholder() == "MALE" ? READER::Sex::MALE : READER::Sex::FEMALE
+				this->searchResult->info.SetGender(
+					this->readerGenderButton.GetPlaceholder() == "MALE" ? READER::Gender::MALE : READER::Gender::FEMALE
 				);
 				this->searchResult->info.SetStatus(
 					this->readerStatusButton.GetPlaceholder() == "BANNED" ? READER::ReaderStatus::BANNED : READER::ReaderStatus::ACTIVE
@@ -937,7 +937,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 		return false;
 	}
 
-	DOUBLE_LINKED_LIST::Controller readerBorrowedBooks = this->reader->GetBorrowedBooks();
+	DOUBLE_LINKED_LIST::Controller readerBorrowedBooks = this->reader->GetBooksCirculation();
 
 	//* Check for number of targetedBook is borrowing!
 	int readerBorrowedBookCount = 0;
@@ -998,9 +998,9 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 		returningDate,
 		BOOK_CIRCULATION::CirculationStatus::BORROWING
 	);
-	DOUBLE_LINKED_LIST::InsertLast(readerBorrowedBooks, newBorrowedBook);
+	DOUBLE_LINKED_LIST::PushBack(readerBorrowedBooks, newBorrowedBook);
 	this->targetedBookID->SetStatus(BOOK::Status::UNAVAILABLE);
-	this->reader->SetBorrowedBooks(readerBorrowedBooks);
+	this->reader->SetBooksCirculation(readerBorrowedBooks);
 	return true;
 }
 
@@ -1016,7 +1016,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnBook()
 	//* VALIDATE USER INPUT (ended below) ----------------------------------------------------------------
 
 	//* Finding existance of the targetedBook's id in the user's borrowing targetedBook list.
-	DOUBLE_LINKED_LIST::Controller readerBookCirculationList = this->reader->GetBorrowedBooks();
+	DOUBLE_LINKED_LIST::Controller readerBookCirculationList = this->reader->GetBooksCirculation();
 
 	bool existReaderTargetBookCirculation = false;
 	DOUBLE_LINKED_LIST::Pointer targetBookCirculation = readerBookCirculationList.First;
@@ -1072,7 +1072,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnBook()
 	targetBookCirculation->info.SetReturnDate(HELPER::Date());
 	targetBookCirculation->info.SetStatus(BOOK_CIRCULATION::CirculationStatus::RETURNED);
 	//DOUBLE_LINKED_LIST::RemoveNode(readerBookCirculationList, targetBookCirculation);
-	this->reader->SetBorrowedBooks(readerBookCirculationList);
+	this->reader->SetBooksCirculation(readerBookCirculationList);
 	return true;
 }
 
@@ -1088,7 +1088,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::LostBook()
 	//* VALIDATE USER INPUT (ended below) ----------------------------------------------------------------
 
 	//* Finding existance of the targetedBook's id in the user's book circulations list.
-	DOUBLE_LINKED_LIST::Controller readerBookCirculationList = this->reader->GetBorrowedBooks();
+	DOUBLE_LINKED_LIST::Controller readerBookCirculationList = this->reader->GetBooksCirculation();
 
 	bool existReaderTargetBookCirculation = false;
 	DOUBLE_LINKED_LIST::Pointer targetBookCirculation = readerBookCirculationList.First;
@@ -1165,7 +1165,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateTitlesDatasheet()
 
 void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateBorrowBooksDatasheet()
 {
-	DOUBLE_LINKED_LIST::Controller readerBookCirculationList = this->reader->GetBorrowedBooks();
+	DOUBLE_LINKED_LIST::Controller readerBookCirculationList = this->reader->GetBooksCirculation();
 
 	int listSize = DOUBLE_LINKED_LIST::Size(readerBookCirculationList);
 	this->borrowedBooksDatassheetController.SetDatasheetCount(
@@ -1185,7 +1185,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateBorrowBooksDatasheet()
 		);
 	}
 
-	if (DOUBLE_LINKED_LIST::IsEmpty(readerBookCirculationList))
+	if (DOUBLE_LINKED_LIST::Empty(readerBookCirculationList))
 	{
 		return;
 	}
@@ -1272,7 +1272,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::ApplyHoverStyleForBookIDButton()
 void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSachThedocGia, DATASHEET::Controller* datasheetController) {
 
 	int attributeCount = 0;
-	AVL_TREE::CountNode(danhSachThedocGia, attributeCount);
+	AVL_TREE::Size(danhSachThedocGia, attributeCount);
 	datasheetController->SetDatasheetCount(
 		attributeCount / (CONSTANTS::MAX_ROW_COUNT - 1) + (attributeCount % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
 	);
@@ -1317,7 +1317,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 			data[1] = std::to_string(currentNode->info.GetID());
 			data[2] = currentNode->info.GetFirstName();
 			data[3] = currentNode->info.GetLastName();
-			data[4] = currentNode->info.StringfySex();
+			data[4] = currentNode->info.StringifyGender();
 			data[5] = currentNode->info.StringfyStatus();
 
 			(*datasheetController)[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
@@ -1367,7 +1367,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int 
 		data[1] = std::to_string(arr[i]->info.GetID());
 		data[2] = arr[i]->info.GetFirstName();
 		data[3] = arr[i]->info.GetLastName();
-		data[4] = arr[i]->info.StringfySex();
+		data[4] = arr[i]->info.StringifyGender();
 		data[5] = arr[i]->info.StringfyStatus();
 
 		(*datasheetController)[sheetIndex].UpdateNewPlaceholder(data, recordIndex);

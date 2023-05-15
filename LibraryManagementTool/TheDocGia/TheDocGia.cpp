@@ -104,12 +104,12 @@ void DOUBLE_LINKED_LIST::Initialize(Controller& list) {
 	list.First = list.Last = nullptr;
 }
 
-bool DOUBLE_LINKED_LIST::IsEmpty(const Controller& list) {
+bool DOUBLE_LINKED_LIST::Empty(const Controller& list) {
 	return list.First == nullptr;
 }
 
 int DOUBLE_LINKED_LIST::Size(const Controller& list) {
-    if (DOUBLE_LINKED_LIST::IsEmpty(list))
+    if (DOUBLE_LINKED_LIST::Empty(list))
     {
         return 0;
     }
@@ -131,14 +131,14 @@ void DOUBLE_LINKED_LIST::ClearList(Controller& list) {
     list.First = list.Last = nullptr;
 }
 
-void DOUBLE_LINKED_LIST::InsertFirst(Controller& list, BOOK_CIRCULATION::BookCirculation info)
+void DOUBLE_LINKED_LIST::PushFront(Controller& list, BOOK_CIRCULATION::BookCirculation info)
 {
     DOUBLE_LINKED_LIST::Pointer newNode = new DOUBLE_LINKED_LIST::Node;
     newNode->info = info;
     newNode->left = nullptr;
     newNode->right = list.First;
 
-    if (DOUBLE_LINKED_LIST::IsEmpty(list))
+    if (DOUBLE_LINKED_LIST::Empty(list))
     {
         list.First = newNode;
         return;
@@ -149,14 +149,14 @@ void DOUBLE_LINKED_LIST::InsertFirst(Controller& list, BOOK_CIRCULATION::BookCir
     list.First = newNode;
 }
 
-void DOUBLE_LINKED_LIST::InsertLast(Controller& list, BOOK_CIRCULATION::BookCirculation info)
+void DOUBLE_LINKED_LIST::PushBack(Controller& list, BOOK_CIRCULATION::BookCirculation info)
 {
     DOUBLE_LINKED_LIST::Pointer newNode = new DOUBLE_LINKED_LIST::Node;
     newNode->info = info;
     newNode->left = nullptr;
     newNode->right = nullptr;
     
-    if (DOUBLE_LINKED_LIST::IsEmpty(list))
+    if (DOUBLE_LINKED_LIST::Empty(list))
     {
         list.First = newNode;
         return;
@@ -175,7 +175,7 @@ void DOUBLE_LINKED_LIST::RemoveNode(Controller& list, DOUBLE_LINKED_LIST::Pointe
         return;
     }
 
-    if (DOUBLE_LINKED_LIST::IsEmpty(list))
+    if (DOUBLE_LINKED_LIST::Empty(list))
     {
         return;
     }
@@ -212,12 +212,12 @@ READER::Reader::Reader() {
 	this->id = -1;
 	this->firstName = std::string();
 	this->lastName = std::string();
-	this->sex = READER::Sex::MALE;
+	this->sex = READER::Gender::MALE;
 	this->status = READER::ReaderStatus::BANNED;
 	this->borrowedBooks = DOUBLE_LINKED_LIST::Controller();
 }
 
-READER::Reader::Reader(int MaThe, std::string Ho, std::string Ten, READER::Sex Phai, READER::ReaderStatus status, DOUBLE_LINKED_LIST::Controller DanhSachMuonTra) {
+READER::Reader::Reader(int MaThe, std::string Ho, std::string Ten, READER::Gender Phai, READER::ReaderStatus status, DOUBLE_LINKED_LIST::Controller DanhSachMuonTra) {
 	this->id = MaThe;
 	this->firstName = Ho;
 	this->lastName = Ten;
@@ -250,11 +250,11 @@ std::string READER::Reader::GetLastName() {
 	return this->lastName;
 }
 
-void READER::Reader::SetSex(READER::Sex Phai) {
+void READER::Reader::SetGender(READER::Gender Phai) {
 	this->sex = Phai;
 }
 
-READER::Sex READER::Reader::GetSex() {
+READER::Gender READER::Reader::GetGender() {
 	return this->sex;
 }
 
@@ -262,8 +262,8 @@ std::string READER::Reader::GetFullName() {
     return this->firstName + " " + this->lastName;
 }
 
-std::string READER::Reader::StringfySex() {
-    return (this->sex == READER::Sex::MALE ? "MALE" : "FEMALE");
+std::string READER::Reader::StringifyGender() {
+    return (this->sex == READER::Gender::MALE ? "MALE" : "FEMALE");
 }
 
 void READER::Reader::SetStatus(READER::ReaderStatus status) {
@@ -278,11 +278,11 @@ std::string READER::Reader::StringfyStatus() {
     return (this->status == READER::ReaderStatus::BANNED ? "BANNED" : "ACTIVE");
 }
 
-void READER::Reader::SetBorrowedBooks(DOUBLE_LINKED_LIST::Controller DanhSachMuonTra) {
+void READER::Reader::SetBooksCirculation(DOUBLE_LINKED_LIST::Controller DanhSachMuonTra) {
 	this->borrowedBooks = DanhSachMuonTra;
 }
 
-DOUBLE_LINKED_LIST::Controller READER::Reader::GetBorrowedBooks() {
+DOUBLE_LINKED_LIST::Controller READER::Reader::GetBooksCirculation() {
 	return this->borrowedBooks;
 }
 
@@ -291,9 +291,9 @@ void READER::Reader::Log() {
 	std::cerr << std::format("Ma the    : {}\n", this->id);
 	std::cerr << std::format("firstName        : {}\n", this->firstName);
 	std::cerr << std::format("lastName       : {}\n", this->lastName);
-	std::cerr << std::format("sex      : {}\n", this->sex == READER::Sex::MALE ? "Nam" : "Nu");
+	std::cerr << std::format("sex      : {}\n", this->sex == READER::Gender::MALE ? "Nam" : "Nu");
 	std::cerr << std::format("Trang thai: {}\n", this->status == READER::ReaderStatus::BANNED ? "Bi khoa" : "Hoat dong");
-	if (DOUBLE_LINKED_LIST::IsEmpty(this->borrowedBooks)) {
+	if (DOUBLE_LINKED_LIST::Empty(this->borrowedBooks)) {
 		std::cerr << std::format("Doc gia chua muon sach!\n");
 	}
 	else {
@@ -325,7 +325,7 @@ void AVL_TREE::Initialize(AVL_TREE::Pointer& node) {
 	node = nullptr;
 }
 
-bool AVL_TREE::IsEmpty(AVL_TREE::Pointer const& node) {
+bool AVL_TREE::Empty(AVL_TREE::Pointer const& node) {
 	return node == nullptr;
 }
 
@@ -353,11 +353,11 @@ void AVL_TREE::PostOrderTraversal(AVL_TREE::Pointer const& node) {
 	}
 }
 
-void AVL_TREE::CountNode(const AVL_TREE::Pointer& root, int& counter) {
+void AVL_TREE::Size(const AVL_TREE::Pointer& root, int& counter) {
     if (root != nullptr) {
         ++counter;
-        AVL_TREE::CountNode(root->left, counter);
-        AVL_TREE::CountNode(root->right, counter);
+        AVL_TREE::Size(root->left, counter);
+        AVL_TREE::Size(root->right, counter);
     }
 }
 
@@ -720,7 +720,7 @@ bool READER_MODULES::LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE:
                 break;
             }
             case (3): {
-                newReader.SetSex(data[i] == "MALE" ? READER::Sex::MALE : READER::Sex::FEMALE);
+                newReader.SetGender(data[i] == "MALE" ? READER::Gender::MALE : READER::Gender::FEMALE);
                 break;
             }
             case (4): {
@@ -731,7 +731,7 @@ bool READER_MODULES::LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE:
                 int borrowedBooksCount = std::stoi(data[i]);
                 if (borrowedBooksCount == 0) //* Case where the reader did not borrowed any book!
                 {
-                    newReader.SetBorrowedBooks(DOUBLE_LINKED_LIST::Controller());
+                    newReader.SetBooksCirculation(DOUBLE_LINKED_LIST::Controller());
                 }
                 else //* Case where the reader borrowed at least one book!
                 {
@@ -769,17 +769,17 @@ bool READER_MODULES::LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE:
                         {
                             newBorrowedBook.SetStatus(BOOK_CIRCULATION::CirculationStatus::LOSTED);
                         }
-                        DOUBLE_LINKED_LIST::InsertLast(newBorrowedBooksList, newBorrowedBook);
+                        DOUBLE_LINKED_LIST::PushBack(newBorrowedBooksList, newBorrowedBook);
                     }
 
-                    newReader.SetBorrowedBooks(newBorrowedBooksList);
+                    newReader.SetBooksCirculation(newBorrowedBooksList);
                 }
                 break;
             }
             }
         }
 
-        if (AVL_TREE::IsEmpty(node)) 
+        if (AVL_TREE::Empty(node)) 
         {
             AVL_TREE::Pointer firstNode = new AVL_TREE::Node;
             firstNode->info = newReader;
@@ -828,14 +828,14 @@ bool READER_MODULES::UpdateListToDatabase(const std::string& filename, AVL_TREE:
             database << p->info.GetID() << ", ";
             database << p->info.GetFirstName() << ", ";
             database << p->info.GetLastName() << ", ";
-            database << p->info.StringfySex() << ", ";
+            database << p->info.StringifyGender() << ", ";
             database << p->info.StringfyStatus() << ", ";
 
-            if (DOUBLE_LINKED_LIST::IsEmpty(p->info.GetBorrowedBooks())) {
+            if (DOUBLE_LINKED_LIST::Empty(p->info.GetBooksCirculation())) {
                 database << 0 << "\n";
             }
             else {
-                DOUBLE_LINKED_LIST::Controller lst = p->info.GetBorrowedBooks();
+                DOUBLE_LINKED_LIST::Controller lst = p->info.GetBooksCirculation();
 
                 std::cout << "debug\n";
                 int cnt = 0;
@@ -878,7 +878,7 @@ int READER_MODULES::GetIndex(const std::string& filename, AVL_TREE::Pointer& tre
     }
 
     int attributeCount = 0;
-    AVL_TREE::CountNode(tree, attributeCount);
+    AVL_TREE::Size(tree, attributeCount);
     std::istream database(&databaseBuffer);
 
     for (int i = 0, tmp = 0; i < attributeCount; ++i, database >> tmp);
@@ -899,7 +899,7 @@ int READER_MODULES::GetIndex(const std::string& filename, AVL_TREE::Pointer& tre
 void READER_MODULES::SortByName(AVL_TREE::Pointer const& node, AVL_TREE::Pointer*& pointerArr, int& arrSize) {
     
     //* If the array is empty at first, then create the array.
-    AVL_TREE::CountNode(node, arrSize);
+    AVL_TREE::Size(node, arrSize);
     pointerArr = new AVL_TREE::Pointer[arrSize];
 
     //* Create an array containing the pointer.

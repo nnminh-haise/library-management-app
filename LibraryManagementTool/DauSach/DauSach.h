@@ -58,13 +58,13 @@ namespace LINKED_LIST
 
 	void Initialize(Controller& controller);
 
-	bool IsEmpty(const Controller& controller);
+	bool Empty(const Controller& controller);
 
 	int Size(const Controller& controller);
 
-	void InsertFirst(Controller& controller, BOOK::Book item);
+	void PushFront(Controller& controller, BOOK::Book item);
 
-	void InsertLast(Controller& controller, BOOK::Book item);
+	void PushBack(Controller& controller, BOOK::Book item);
 
 	bool DeleteAt(Controller& controller, BOOK::Book item);
 
@@ -135,15 +135,15 @@ namespace LINEAR_LIST
 
 	void Initialize(LinearList& list);
 
-	bool IsEmpty(const LinearList& list);
+	bool Empty(const LinearList& list);
 
 	bool IsFull(const LinearList& list);
 
-	bool InsertFirst(LinearList& list, BOOK_TITLE::BookTitle* item);
+	bool PushFront(LinearList& list, BOOK_TITLE::BookTitle* item);
 
 	bool InsertItem(LinearList& list, BOOK_TITLE::BookTitle* item, int position);
 
-	bool InsertLast(LinearList& list, BOOK_TITLE::BookTitle* item);
+	bool PushBack(LinearList& list, BOOK_TITLE::BookTitle* item);
 
 	bool InsertOrder(LinearList& list, BOOK_TITLE::BookTitle* item);
 

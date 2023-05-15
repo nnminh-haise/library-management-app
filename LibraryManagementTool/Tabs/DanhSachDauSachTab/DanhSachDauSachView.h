@@ -203,9 +203,9 @@ namespace CATEGORY_LINKED_LIST {
 
 	void Initialzie(Pointer& First);
 
-	bool IsEmpty(const Pointer& First);
+	bool Empty(const Pointer& First);
 
-	void InsertFirst(Pointer& First, std::string info);
+	void PushFront(Pointer& First, std::string info);
 
 	void InsertOrder(Pointer& First, std::string info);
 

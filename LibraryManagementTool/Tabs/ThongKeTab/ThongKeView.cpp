@@ -153,7 +153,7 @@ void STATISTIC_TAB_MEMBER::Top10TitleDatasheet::CreateDatasheet()
 		{
 			reader = stk.Pop();
 
-			DOUBLE_LINKED_LIST::Controller readerBooksCirculation = reader->info.GetBorrowedBooks();
+			DOUBLE_LINKED_LIST::Controller readerBooksCirculation = reader->info.GetBooksCirculation();
 
 			std::string bookTitle = {};
 			for (DOUBLE_LINKED_LIST::Pointer bookCirculation = readerBooksCirculation.First; bookCirculation != nullptr; bookCirculation = bookCirculation->right)
@@ -317,9 +317,9 @@ void STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::CreateDatasheet()
 			currentReader = stk.Pop();
 			//----------------------------------------
 
-			DOUBLE_LINKED_LIST::Controller readerBookCirculationList = currentReader->info.GetBorrowedBooks();
+			DOUBLE_LINKED_LIST::Controller readerBookCirculationList = currentReader->info.GetBooksCirculation();
 
-			if (!DOUBLE_LINKED_LIST::IsEmpty(readerBookCirculationList))
+			if (!DOUBLE_LINKED_LIST::Empty(readerBookCirculationList))
 			{
 				for (DOUBLE_LINKED_LIST::Pointer currentBookCirculation = readerBookCirculationList.First; currentBookCirculation != nullptr; currentBookCirculation = currentBookCirculation->right)
 				{
