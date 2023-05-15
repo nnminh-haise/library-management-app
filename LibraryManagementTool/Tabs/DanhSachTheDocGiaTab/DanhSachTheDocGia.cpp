@@ -112,19 +112,18 @@ void READER_TAB_MEMBERS::SearchField::SearchBoxOnActionLogic()
 
 int READER_TAB_MEMBERS::SearchField::SearchReaderAlgorithm()
 {
-	STACK::Stack stk;
-	STACK::Initialize(stk);
+	Stack<AVL_TREE::Pointer> stk;
 
 	AVL_TREE::Pointer p = *this->readerList;
 	std::string searchValue{}, fullName{}, readerID{};
 	do {
 		while (p != nullptr) {
-			STACK::Push(stk, p);
+			stk.Push(p);
 			p = p->left;
 		}
 
-		if (STACK::IsEmpty(stk) == false) {
-			p = STACK::Pop(stk);
+		if (stk.Empty() == false) {
+			p = stk.Pop();
 			
 			//* Search logic here
 			searchValue = this->searchBox.GetPlaceholder();
@@ -1289,8 +1288,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 		);
 	}
 
-	STACK::Stack stk;
-	STACK::Initialize(stk);
+	Stack<AVL_TREE::Pointer> stk;
 	AVL_TREE::Pointer currentNode = danhSachThedocGia;
 	int recordIndex = 0;
 	int sheetIndex = -1;
@@ -1298,12 +1296,12 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 
 	do {
 		while (currentNode != nullptr) {
-			STACK::Push(stk, currentNode);
+			stk.Push(currentNode);
 			currentNode = currentNode->left;
 		}
 
-		if (STACK::IsEmpty(stk) == false) {
-			currentNode = STACK::Pop(stk);
+		if (stk.Empty() == false) {
+			currentNode = stk.Pop();
 			
 			//* Logic stays here
 			++recordIndex;

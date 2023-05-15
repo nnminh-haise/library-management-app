@@ -4,8 +4,9 @@
 #include <format>
 #include <iostream>
 
-template < typename HASH_VALUE >
-class HashMap {
+template<typename HASH_VALUE>
+class HashMap
+{
 public:
 	HashMap();
 
@@ -58,7 +59,6 @@ void HashMap<HASH_VALUE>::Insert(const std::string& key, HASH_VALUE value)
 	if (hashValueFromKey >= this->maxValue_)
 	{
 		throw std::logic_error(std::format("[ERROR] HASH VALUE OUT OF RANGE! HASH VALUE MUST FROM [{}, {}]! PLEASE CHANGE USER'S INPUT MAX VALUE", 0, this->maxValue_ - 1));
-		exit(1);
 	}
 
 	this->container_[hashValueFromKey] = value;

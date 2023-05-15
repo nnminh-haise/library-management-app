@@ -1,0 +1,539 @@
+#pragma once
+
+#include "Stack.h"
+#include <iostream>
+
+template<typename VALUE_TYPE, typename KEY_TYPE = int>
+class AVL_Tree
+{
+public:
+	struct Node
+	{
+		Node(KEY_TYPE key, VALUE_TYPE info, int balanceFactor, Node* left, Node* right) :
+			key_(key), info_(info), balanceFactor_(balanceFactor), left_(left), right_(right) {}
+
+		KEY_TYPE key_;
+		VALUE_TYPE info_;
+		Node* left_;
+		Node* right_;
+		int balanceFactor_;
+	};
+
+public:
+	AVL_Tree();
+
+	bool Empty() const;
+
+	int Size();
+
+	void RemoveNode(KEY_TYPE key);
+
+	void Insert(KEY_TYPE key, VALUE_TYPE info);
+
+	Node* Search(KEY_TYPE key);
+
+    Node& operator[] (KEY_TYPE key);
+
+    Node At(KEY_TYPE key);
+
+    Node* GetRoot();
+
+private:
+	void InOrderTraversal(Node* root);
+
+	void NonrecursiveInOrderTraversal();
+
+	Node* RotateLeft(Node* root);
+
+	Node* RotateRight(Node* root);
+
+	bool InsertAlgorithm(Node*& root, KEY_TYPE key, VALUE_TYPE info);
+
+    void RecursiveRemove(Node* root, KEY_TYPE key);
+
+	void InterchangeLeftMostNode(Node*& root, Node*& removeNode);
+
+private:
+	Node* root_;
+	int size_;
+};
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::AVL_Tree() : root_(nullptr), size_(0) {}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline bool AVL_Tree<VALUE_TYPE, KEY_TYPE>::Empty() const
+{
+	return this->root_ == nullptr;
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline int AVL_Tree<VALUE_TYPE, KEY_TYPE>::Size()
+{
+	return this->size_;
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline void AVL_Tree<VALUE_TYPE, KEY_TYPE>::RemoveNode(KEY_TYPE key)
+{
+    try {
+        this->root_ = this->RecursiveRemove(this->root_, key);
+    }
+    catch (const std::exception& ex) {
+        std::cerr << ex.what();
+    }
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline void AVL_Tree<VALUE_TYPE, KEY_TYPE>::Insert(KEY_TYPE key, VALUE_TYPE info)
+{
+	if (this->root_ == nullptr)
+	{
+		this->root_ = new AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node(key, info, 0, nullptr, nullptr);
+	}
+	else
+	{
+		try
+		{
+			this->InsertAlgorithm(this->root_, key, info);
+		}
+		catch (const std::exception& ex)
+		{
+			std::cerr << ex.what();
+		}
+	}
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* AVL_Tree<VALUE_TYPE, KEY_TYPE>::Search(KEY_TYPE key)
+{
+	AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* p = this->root_;
+	while (p != nullptr && p->key_ != key)
+	{
+		if (p->key_ < key)
+		{
+			p = p->right_;
+		}
+		else
+		{
+			p = p->left_;
+		}
+	}
+	return p;
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node& AVL_Tree<VALUE_TYPE, KEY_TYPE>::operator[](KEY_TYPE key)
+{
+    if (this->Empty())
+    {
+        throw std::logic_error("[ERROR] EMPTY TREE!");
+    }
+
+    Stack<AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node*> stk;
+    AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* currentNode = this->root_;
+    while (true)
+    {
+        while (currentNode != nullptr)
+        {
+            stk.Push(currentNode);
+            currentNode = currentNode->left_;
+        }
+
+        if (stk.Empty() == false)
+        {
+            currentNode = stk.Pop();
+            // NODE MANIPULATION LOGIC PERFORM HERE ------
+
+            if (currentNode->key_ == key)
+            {
+                return *currentNode;
+            }
+
+            //--------------------------------------------
+            currentNode = currentNode->right_;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    throw std::logic_error("[ERROR] KEY NOT EXIST IN TREE!\n");
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node AVL_Tree<VALUE_TYPE, KEY_TYPE>::At(KEY_TYPE key)
+{
+    if (this->Empty())
+    {
+        throw std::logic_error("[ERROR] EMPTY TREE!");
+    }
+
+    Stack<AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node*> stk;
+    AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* currentNode = this->root_;
+    while (true)
+    {
+        while (currentNode != nullptr)
+        {
+            stk.Push(currentNode);
+            currentNode = currentNode->left_;
+        }
+
+        if (stk.Empty() == false)
+        {
+            currentNode = stk.Pop();
+            // NODE MANIPULATION LOGIC PERFORM HERE ------
+
+            if (currentNode->key_ == key)
+            {
+                return *currentNode;
+            }
+
+            //--------------------------------------------
+            currentNode = currentNode->right_;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    throw std::logic_error("[ERROR] KEY NOT EXIST IN TREE!\n");
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* AVL_Tree<VALUE_TYPE, KEY_TYPE>::GetRoot()
+{
+    return this->root_;
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline void AVL_Tree<VALUE_TYPE, KEY_TYPE>::InOrderTraversal(AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* root)
+{
+	if (root != nullptr)
+	{
+		this->InOrderTraversal(root->left_);
+		// Do the work here!
+
+        std::cout << root->info_ << " ";
+
+		// -----------------
+		this->InOrderTraversal(root->right_);
+	}
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline void AVL_Tree<VALUE_TYPE, KEY_TYPE>::NonrecursiveInOrderTraversal()
+{
+	Stack <AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node*> stk;
+	AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* p = this->root_;
+	while (true)
+	{
+		while (p != nullptr)
+		{
+			stk.Push(p);
+			p = p->left_;
+		}
+
+		if (stk.Empty() == false)
+		{
+			p = stk.Pop();
+			// NODE MANIPULATION LOGIC PERFORM HERE ------
+
+			//--------------------------------------------
+			p = p->right_;
+		}
+		else
+		{
+			break;
+		}
+	}
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* AVL_Tree<VALUE_TYPE, KEY_TYPE>::RotateLeft(AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* root)
+{
+	if (root == nullptr)
+	{
+		throw std::logic_error("[ERROR] TREE IS EMPTY!\n");
+		return nullptr;
+	}
+
+	if (root->right_ == nullptr)
+	{
+		throw std::logic_error("[ERROR] CANNOT ROTATE LEFT BECAUSE THERE IS NO RIGHT TREE!\n");
+		return nullptr;
+	}
+
+	AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* p = root->right_;
+	root->right_ = p->left_;
+	p->left_ = root;
+
+	return p;
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* AVL_Tree<VALUE_TYPE, KEY_TYPE>::RotateRight(AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* root)
+{
+	if (root == nullptr)
+	{
+		throw std::logic_error("[ERROR] TREE IS EMPTY!\n");
+		return nullptr;
+	}
+
+	if (root->left_ == nullptr)
+	{
+		throw std::logic_error("[ERROR] CANNOT ROTATE RIGHT BECAUSE THERE IS NO LEFT TREE!\n");
+		return nullptr;
+	}
+
+	AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* s = root->left_;
+	root->left_ = s->right_;
+	s->right_ = root;
+
+	return s;
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline bool AVL_Tree<VALUE_TYPE, KEY_TYPE>::InsertAlgorithm(AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node*& root, KEY_TYPE key, VALUE_TYPE info)
+{
+    /*
+     * currentNode represent the node which is being manipulated.
+     * currentNodeParent is the parent node of the currentNode.
+     * currentNodeChild is the child of the currentNode.
+     * imbalancedNode is the node before the currentNode which can be an imbalanced node in the AVL Tree.
+     * imbalancedNodeParent is the parent of the imbalancedNode.
+     * imbalancedNodeChild is the child node of imbalancedNode which could be imbalanced in the AVL Tree.
+    */
+
+    AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* currentNode = root;
+    AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* currentNodeParent = nullptr;
+    AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* currentNodeChild = nullptr;
+    AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* imbalancedNode = currentNode;
+    AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* imbalancedNodeParent = nullptr;
+    AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* imbalancedNodeChild = nullptr;
+
+    int imbalancedFactor = 0;
+
+    /*
+    * We first find the parent node of the currentNode.
+    * Fint the imbalancedNode, the parent of the imbalancedNode.
+    */
+    while (currentNode != nullptr)
+    {
+        //* If the parameterized key is similar with the currentNode's key, then the parameterized key is not valid.
+        if (key == currentNode->key_)
+        {
+            throw std::logic_error("[ERROR] DUPLICATE KEY!");
+            return false;
+        }
+        //* If the parameterized key is smaller than the currentNode's key, then we move to the left child tree of the currentNode.
+        if (key < currentNode->key_)
+        {
+            currentNodeChild = currentNode->left_;
+        }
+        //* Otherwise we move to the right child tree of the currentNode.
+        else
+        {
+            currentNodeChild = currentNode->right_;
+        }
+
+        //! This if statement logic can be rewrite.
+        if (currentNodeChild != nullptr)
+        {
+            //* If the currentNode's child is an imbalanced node.
+            if (currentNodeChild->balanceFactor_ != 0)
+            {
+                imbalancedNodeParent = currentNode;
+                imbalancedNode = currentNodeChild;
+            }
+        }
+
+        currentNodeParent = currentNode;
+        currentNode = currentNodeChild;
+    }
+
+    /*
+     * Add a new node with the parameterized key and info as a child node of the currentNodeParent.
+    */
+    currentNodeChild = new AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node(key, info, 0, nullptr, nullptr);
+    currentNodeChild->left_ = currentNodeChild->right_ = nullptr;
+    if (key < currentNodeParent->key_)
+    {
+        currentNodeParent->left_ = currentNodeChild;
+    }
+    else
+    {
+        currentNodeParent->right_ = currentNodeChild;
+    }
+
+    /*
+     * We modify the balance factor of all the node between the imbalenced node and the currentNodeChild.
+     * If they were to the left, then all the balance factor of them are 1 and -1 in the otherhand.
+    */
+    if (key < imbalancedNode->key_)
+    {
+        currentNode = imbalancedNode->left_;
+    }
+    else
+    {
+        currentNode = imbalancedNode->right_;
+    }
+    imbalancedNodeChild = currentNode;
+    while (currentNode != currentNodeChild)
+    {
+        if (key < currentNode->key_)
+        {
+            currentNode->balanceFactor_ = 1;
+            currentNode = currentNode->left_;
+        }
+        else
+        {
+            currentNode->balanceFactor_ = -1;
+            currentNode = currentNode->right_;
+        }
+    }
+
+    /*
+     * Detecting the imbalanced direction, which means that the tree is left heavy or right heavy.
+    */
+    if (key < imbalancedNode->key_)
+    {
+        imbalancedFactor = 1; //* Left heavy
+    }
+    else
+    {
+        imbalancedFactor = -1; //* Right heavy
+    }
+
+    if (imbalancedNode->balanceFactor_ == 0)
+    {
+        imbalancedNode->balanceFactor_ = imbalancedFactor;
+        return false;
+    }
+
+    if (imbalancedNode->balanceFactor_ != imbalancedFactor)
+    {
+        imbalancedNode->balanceFactor_ = 0;
+        return false;
+    }
+
+    /*
+     * After inserting a new node, if the tree is imbalanced, we will balance it again.
+     * Case where we only need to rotate once.
+    */
+    if (imbalancedNodeChild->balanceFactor_ == imbalancedFactor)
+    {
+        //* Rotate right
+        if (imbalancedFactor == 1)
+        {
+            currentNode = this->RotateRight(imbalancedNode);
+        }
+        //* rotate left
+        else
+        {
+            currentNode = this->RotateLeft(imbalancedNode);
+        }
+
+        imbalancedNode->balanceFactor_ = 0;
+        imbalancedNodeChild->balanceFactor_ = 0;
+    }
+    else //* Case where we need to rotate twice
+    {
+        if (imbalancedFactor == 1) //* Rotate Left and Right
+        {
+            imbalancedNode->left_ = this->RotateLeft(imbalancedNodeChild);
+            currentNode = this->RotateRight(imbalancedNode);
+        }
+        else //* Rotate Right and Left
+        {
+            imbalancedNode->right_ = this->RotateRight(imbalancedNodeChild);
+            currentNode = this->RotateLeft(imbalancedNode);
+        }
+
+        //* If p is the inserted node
+        if (currentNode->balanceFactor_ == 0)
+        {
+            imbalancedNode->balanceFactor_ = 0;
+            imbalancedNodeChild->balanceFactor_ = 0;
+        }
+        else
+        {
+            if (currentNode->balanceFactor_ == imbalancedFactor)
+            {
+                imbalancedNode->balanceFactor_ = -imbalancedFactor;
+                imbalancedNodeChild->balanceFactor_ = 0;
+            }
+            else
+            {
+                imbalancedNode->balanceFactor_ = 0;
+                imbalancedNodeChild->balanceFactor_ = imbalancedFactor;
+            }
+        }
+        currentNode->balanceFactor_ = 0;
+    }
+
+    if (imbalancedNodeParent == nullptr)
+    {
+        root = currentNode;
+    }
+    else
+    {
+        if (imbalancedNode == imbalancedNodeParent->right_)
+        {
+            imbalancedNodeParent->right_ = currentNode;
+        }
+        else
+        {
+            imbalancedNodeParent->left_ = currentNode;
+        }
+    }
+
+    return true;
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline void AVL_Tree<VALUE_TYPE, KEY_TYPE>::RecursiveRemove(AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* root, KEY_TYPE key)
+{
+    if (root == nullptr) {
+        throw std::logic_error(std::format("[ERROR] CANNOT FIND KEY {}\n", key));
+    }
+    else {
+        if (key < root->key_) {
+            this->RemoveNode(root->left_, key);
+        }
+        else if (key > root->key_) {
+            this->RemoveNode(root->right_, key);
+        }
+        else {
+            AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* removeNode = root;
+            if (removeNode->left_ == nullptr) {
+                root = removeNode->right_;
+            }
+            else if (removeNode->right_ == nullptr) {
+                root = removeNode->left_;
+            }
+            else {
+                this->InterchangeLeftMostNode(root->right_, removeNode);
+            }
+            delete removeNode;
+        }
+    }
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline void AVL_Tree<VALUE_TYPE, KEY_TYPE>::InterchangeLeftMostNode(AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node*& root, AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node*& removeNode)
+{
+    if (root->left_ != nullptr)
+    {
+        this->InterchangeLeftMostNode(root->left_, removeNode);
+    }
+    else
+    {
+        removeNode->key_ = root->key_;
+        removeNode->info_ = root->key_;
+        removeNode = root;
+        root = removeNode->right_;
+    }
+}

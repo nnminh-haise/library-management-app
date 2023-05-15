@@ -362,19 +362,18 @@ void AVL_TREE::CountNode(const AVL_TREE::Pointer& root, int& counter) {
 }
 
 void AVL_TREE::NonrecursiveInOrderTraversal(const AVL_TREE::Pointer& root) {
-    STACK::Stack stk;
-    STACK::Initialize(stk);
+    Stack<AVL_TREE::Pointer> stk;
 
     AVL_TREE::Pointer p = root;
 
     do {
         while (p != nullptr) {
-            STACK::Push(stk, p);
+            stk.Push(p);
             p = p->left;
         }
 
-        if (STACK::IsEmpty(stk) == false) {
-            p = STACK::Pop(stk);
+        if (stk.Empty() == false) {
+            p = stk.Pop();
             p->info.Log();
             p = p->right;
         }
@@ -813,19 +812,18 @@ bool READER_MODULES::UpdateListToDatabase(const std::string& filename, AVL_TREE:
 
     std::ostream database(&databaseBuffer);
 
-    STACK::Stack stk;
-    STACK::Initialize(stk);
+    Stack<AVL_TREE::Pointer> stk;
 
     AVL_TREE::Pointer p = tree;
 
     do {
         while (p != nullptr) {
-            STACK::Push(stk, p);
+            stk.Push(p);
             p = p->left;
         }
 
-        if (STACK::IsEmpty(stk) == false) {
-            p = STACK::Pop(stk);
+        if (stk.Empty() == false) {
+            p = stk.Pop();
             
             database << p->info.GetID() << ", ";
             database << p->info.GetFirstName() << ", ";
@@ -905,18 +903,17 @@ void READER_MODULES::SortByName(AVL_TREE::Pointer const& node, AVL_TREE::Pointer
     pointerArr = new AVL_TREE::Pointer[arrSize];
 
     //* Create an array containing the pointer.
-    STACK::Stack stk;
-    STACK::Initialize(stk);
+    Stack<AVL_TREE::Pointer> stk;
     AVL_TREE::Pointer p = node;
     int index = 0;
     do {
         while (p != nullptr) {
-            STACK::Push(stk, p);
+            stk.Push(p);
             p = p->left;
         }
 
-        if (STACK::IsEmpty(stk) == false) {
-            p = STACK::Pop(stk);
+        if (stk.Empty() == false) {
+            p = stk.Pop();
             pointerArr[index++] = p;
             p = p->right;
         }
