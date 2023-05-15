@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-template <typename T>
+template<typename T>
 class DynamicArray
 {
 public:
@@ -41,6 +41,13 @@ private:
 	Pointer first_;
 	Pointer last_;
 };
+
+template<typename T>
+inline DynamicArray<T>::Node::Node(T value, Node* next)
+{
+	this->info_ = value;
+	this->next_ = next;
+}
 
 template<typename T>
 inline DynamicArray<T>::DynamicArray()
@@ -132,13 +139,11 @@ inline T& DynamicArray<T>::operator[](int index)
 	if (this->Empty())
 	{
 		throw std::logic_error("[ERROR] EMPTY LIST!\n");
-		exit(1);
 	}
 
 	if (index >= this->Size())
 	{
 		throw std::logic_error("[ERROR] INDEX OUT OF RANGE!\n");
-		exit(1);
 	}
 
 	int counter = 0;
@@ -151,7 +156,6 @@ inline T& DynamicArray<T>::operator[](int index)
 	}
 
 	throw std::logic_error("[ERROR] CANNOT ACCESS ANY VALUE! UNKNOWN ERROR!\n");
-	exit(1);
 }
 
 template<typename T>
@@ -175,11 +179,4 @@ inline T DynamicArray<T>::At(int index)
 			return p->info_;
 		}
 	}
-}
-
-template<typename T>
-inline DynamicArray<T>::Node::Node(T value, Node* next)
-{
-	this->info_ = value;
-	this->next_ = next;
 }

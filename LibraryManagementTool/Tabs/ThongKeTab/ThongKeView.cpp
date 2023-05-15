@@ -137,8 +137,7 @@ void STATISTIC_TAB_MEMBER::Top10TitleDatasheet::CreateDatasheet()
 		titleListMap.Insert(this->titleList->nodes[i]->GetISBN(), this->titleList->nodes[i]);
 	}
 
-	STACK::Stack stk;
-	STACK::Initialize(stk);
+	Stack<AVL_TREE::Pointer> stk;
 
 	AVL_TREE::Pointer reader = *this->readerList;
 
@@ -146,13 +145,13 @@ void STATISTIC_TAB_MEMBER::Top10TitleDatasheet::CreateDatasheet()
 	{
 		while (reader != nullptr)
 		{
-			STACK::Push(stk, reader);
+			stk.Push(reader);
 			reader = reader->left;
 		}
 
-		if (STACK::IsEmpty(stk) == false)
+		if (stk.Empty() == false)
 		{
-			reader = STACK::Pop(stk);
+			reader = stk.Pop();
 
 			DOUBLE_LINKED_LIST::Controller readerBooksCirculation = reader->info.GetBorrowedBooks();
 
@@ -253,8 +252,7 @@ void STATISTIC_TAB_MEMBER::Top10TitleDatasheet::Display()
 {
 	if (this->top10TitlesDatasheetController.DisplayStatus() == false)
 	{
-		throw std::logic_error("[ERROR] DATASHEET NOT ACTIVATED!\n");
-		exit(1);
+		throw std::logic_error("[ERROR] CANNOT DISPLAY DEACTIVATED DATASHEET!\n");
 	}
 
 	this->top10TitlesDatasheetController.Display();
@@ -304,20 +302,19 @@ void STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::CreateDatasheet()
 		titleListMap.Insert(this->titleList->nodes[i]->GetISBN(), this->titleList->nodes[i]);
 	}
 
-	STACK::Stack stk;
-	STACK::Initialize(stk);
+	Stack<AVL_TREE::Pointer> stk;
 
 	STATISTIC_TAB_MEMBER::OverdueReader overdueReader;
 
 	AVL_TREE::Pointer currentReader = *this->readerList;
 	do {
 		while (currentReader != nullptr) {
-			STACK::Push(stk, currentReader);
+			stk.Push(currentReader);
 			currentReader = currentReader->left;
 		}
 
-		if (STACK::IsEmpty(stk) == false) {
-			currentReader = STACK::Pop(stk);
+		if (stk.Empty() == false) {
+			currentReader = stk.Pop();
 			//----------------------------------------
 
 			DOUBLE_LINKED_LIST::Controller readerBookCirculationList = currentReader->info.GetBorrowedBooks();
@@ -426,8 +423,7 @@ void STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::Display()
 {
 	if (this->overdueReaderDatasheetController.DisplayStatus() == false)
 	{
-		throw std::logic_error("[ERROR] DATASHEET NOT ACTIVATED!\n");
-		exit(1);
+		throw std::logic_error("[ERROR] CANNOT DISPLAY DEACTIVATED DATASHEET!\n");
 	}
 
 	this->overdueReaderDatasheetController.Display();

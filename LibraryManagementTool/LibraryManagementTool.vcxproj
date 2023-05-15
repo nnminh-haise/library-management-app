@@ -131,7 +131,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DataStructures\Stack.cpp" />
     <ClCompile Include="Helper\IndexGenerator.cpp" />
     <ClCompile Include="Tabs\UI\Datasheet.cpp" />
     <ClCompile Include="Tabs\UI\Button.cpp" />
@@ -148,8 +147,12 @@
     <ClCompile Include="TheDocGia\TheDocGia.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DataStructures\AVL_Tree.h" />
+    <ClInclude Include="DataStructures\DoubleLinkedList.h" />
     <ClInclude Include="DataStructures\HashMap.h" />
     <ClInclude Include="DataStructures\DynamicArray.h" />
+    <ClInclude Include="DataStructures\LinearList.h" />
+    <ClInclude Include="DataStructures\LinkedList.h" />
     <ClInclude Include="Helper\IndexGenerator.h" />
     <ClInclude Include="Tabs\UI\Datasheet.h" />
     <ClInclude Include="Tabs\UI\Button.h" />

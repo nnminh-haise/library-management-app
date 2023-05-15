@@ -3,7 +3,7 @@
 #include <iostream>
 
 template<typename T>
-class Stack
+class LinkedList
 {
 public:
 	struct Node
@@ -20,9 +20,9 @@ public:
 	};
 
 public:
-	Stack();
+	LinkedList();
 
-	~Stack();
+	~LinkedList();
 
 	bool Empty() const;
 
@@ -34,31 +34,33 @@ public:
 
 	Node* End();
 
-	void Push(T value);
+	void PushFront(T value);
 
-	T Pop();
+	void PushBack(T value);
+
+	T PopFront();
+
+	T PopBack();
 
 private:
 	Node* first_;
-	int size_;
 };
 
 template<typename T>
-inline Stack<T>::Node::Node(T value, Node* next)
+inline LinkedList<T>::Node::Node(T value, Node* next)
 {
 	this->info_ = value;
 	this->next_ = next;
 }
 
 template<typename T>
-Stack<T>::Stack()
+LinkedList<T>::LinkedList()
 {
 	this->first_ = nullptr;
-	this->size_ = 0;
 }
 
 template<typename T>
-inline Stack<T>::~Stack()
+inline LinkedList<T>::~LinkedList()
 {
 	Node* currentNode = this->first_;
 	for (; currentNode != nullptr;)
@@ -70,32 +72,34 @@ inline Stack<T>::~Stack()
 }
 
 template<typename T>
-inline bool Stack<T>::Empty() const
+inline bool LinkedList<T>::Empty() const
 {
 	return this->first_ == nullptr;
 }
 
 template<typename T>
-inline int Stack<T>::Size() const
+inline int LinkedList<T>::Size() const
 {
-	return this->size_;
+	int counter = 0;
+	for (LinkedList<T>::Node* p = this->first_; p != nullptr; p = p->next_, ++counter);
+	return counter;
 }
 
 template<typename T>
-inline Stack<T>::Node& Stack<T>::operator[](int index)
+inline LinkedList<T>::Node& LinkedList<T>::operator[](int index)
 {
 	if (index < 0 || index >= this->Size())
 	{
 		throw std::logic_error("[ERROR] INDEX OUT OF RANGE!\n");
 	}
 
-	Stack<T>::Node* target = this->first_;
+	LinkedList<T>::Node* target = this->first_;
 	for (int i = 0; i != index && target != nullptr; target = target->next_, i++);
 	return *target;
 }
 
 template<typename T>
-inline Stack<T>::Node* Stack<T>::Begin()
+inline LinkedList<T>::Node* LinkedList<T>::Begin()
 {
 	if (this->Empty())
 	{
@@ -106,7 +110,7 @@ inline Stack<T>::Node* Stack<T>::Begin()
 }
 
 template<typename T>
-inline Stack<T>::Node* Stack<T>::End()
+inline LinkedList<T>::Node* LinkedList<T>::End()
 {
 	if (this->Empty())
 	{
@@ -119,25 +123,60 @@ inline Stack<T>::Node* Stack<T>::End()
 }
 
 template<typename T>
-inline void Stack<T>::Push(T value)
+inline void LinkedList<T>::PushFront(T value)
 {
-	this->size_ += 1;
 	Node* newNode = new Node(value, this->first_);
 	this->first_ = newNode;
 }
 
 template<typename T>
-inline T Stack<T>::Pop()
+inline void LinkedList<T>::PushBack(T value)
+{
+	if (this->Empty())
+	{
+		this->PushFront(value);
+		return;
+	}
+
+	Node* newNode = new Node(value, nullptr);
+	Node* lastNode = this->first_;
+	for (; lastNode->next_ != nullptr; lastNode = lastNode->next_);
+	lastNode->next_ = newNode;
+}
+
+template<typename T>
+inline T LinkedList<T>::PopFront()
 {
 	if (this->Empty())
 	{
 		throw std::logic_error("[ERROR] LIST IS EMPTY! CANNOT REMOVE ITEM!\n");
 	}
 
-	this->size_ -= 1;
 	T returnValue = this->first_->info_;
 	Node* deleteNode = this->first_;
 	this->first_ = this->first_->next_;
+	delete deleteNode;
+	return returnValue;
+}
+
+template<typename T>
+inline T LinkedList<T>::PopBack()
+{
+	if (this->Empty())
+	{
+		throw std::logic_error("[ERROR] LIST IS EMPTY! CANNOT REMOVE ITEM!\n");
+	}
+
+	if (this->first_->next_ == nullptr)
+	{
+		return this->PopFront();
+	}
+
+	Node* lastNode = this->first_;
+	for (; lastNode->next_->next_ != nullptr; lastNode = lastNode->next_);
+	Node* deleteNode = lastNode->next_;
+	T returnValue = deleteNode->info_;
+	lastNode->next_ = nullptr;
 	delete deleteNode;
 	return returnValue;
 }
