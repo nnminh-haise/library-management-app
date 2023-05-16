@@ -1335,7 +1335,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_Tree<READER::Reader, in
 void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_Tree<READER::Reader, int>* readerList, DATASHEET::Controller* datasheetController) {
 
 	LinearList< AVL_Tree<READER::Reader, int>::Node*> readerPointersArr;
-	readerList->CastToLinearList(readerPointersArr);
+	READER_MODULES::SortByName(*readerList, readerPointersArr);
 
 	int arrSize = readerPointersArr.Size();
 	datasheetController->SetDatasheetCount(
@@ -1535,7 +1535,7 @@ void DanhSachTheDocGiaView::Run()
 			}
 		}
 
-		//* Mathe label button
+		//* Reader's ID label button
 		if (this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][1].IsHover()) {
 			DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonHoverStyling(&this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][1]);
 		}
@@ -1548,12 +1548,13 @@ void DanhSachTheDocGiaView::Run()
 			DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonDefaultStyling(&this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][1]);
 		}
 
-		//* lastName label button
+		//* Reader's last name label button
 		if (this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][3].IsHover()) {
 			DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonHoverStyling(&this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][3]);
 		}
 		else if (this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][3].LeftMouseClicked()) {
 			delay(100);
+			std::cout << "bug: sorting by last name!\n";
 			DanhSachTheDocGiaView::CreateDatasheetsFromArr(this->readerList, &this->datasheetController);
 		}
 		else {

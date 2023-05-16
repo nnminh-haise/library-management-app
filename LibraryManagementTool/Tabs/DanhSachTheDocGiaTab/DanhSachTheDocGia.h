@@ -220,6 +220,15 @@ namespace READER_TAB_MEMBERS
 
 class DanhSachTheDocGiaView
 {
+public:
+	void CreateDatasheetsFromList(AVL_Tree<READER::Reader, int>* readerList, DATASHEET::Controller* controller);
+
+	void CreateDatasheetsFromArr(AVL_Tree<READER::Reader, int>* readerList, DATASHEET::Controller* controller);
+
+	DanhSachTheDocGiaView(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController);
+
+	void Run();
+
 private:
 	bool active;
 	DATASHEET::Controller datasheetController;
@@ -236,14 +245,5 @@ private:
 	AVL_Tree<READER::Reader, int>* readerList;
 	LINEAR_LIST::LinearList* titleList;
 	ELEMENTS::InputModeController* inputController;
-
-public:
-	void CreateDatasheetsFromList(AVL_Tree<READER::Reader, int>* readerList, DATASHEET::Controller* controller);
-
-	void CreateDatasheetsFromArr(AVL_Tree<READER::Reader, int>* readerList, DATASHEET::Controller* controller);
-
-	DanhSachTheDocGiaView(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController);
-
-	void Run();
 };
 
