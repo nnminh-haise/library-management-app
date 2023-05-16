@@ -152,14 +152,14 @@ void STATISTIC_TAB_MEMBER::Top10TitleDatasheet::CreateDatasheet()
 		{
 			reader = stk.Pop();
 
-			DOUBLE_LINKED_LIST::Controller readerBooksCirculation = reader->info_.GetBooksCirculation();
+			DoubleLinkedList<BOOK_CIRCULATION::BookCirculation> readerBooksCirculation = reader->info_.GetBooksCirculation();
 
 			std::string bookTitle = {};
-			for (DOUBLE_LINKED_LIST::Pointer bookCirculation = readerBooksCirculation.First; bookCirculation != nullptr; bookCirculation = bookCirculation->right)
+			for (DoubleLinkedList<BOOK_CIRCULATION::BookCirculation>::Node* bookCirculation = readerBooksCirculation.Begin(); bookCirculation != nullptr; bookCirculation = bookCirculation->right_)
 			{
-				if (bookCirculation->info.GetStatus() == BOOK_CIRCULATION::CirculationStatus::BORROWING || bookCirculation->info.GetStatus() == BOOK_CIRCULATION::CirculationStatus::RETURNED)
+				if (bookCirculation->info_.GetStatus() == BOOK_CIRCULATION::CirculationStatus::BORROWING || bookCirculation->info_.GetStatus() == BOOK_CIRCULATION::CirculationStatus::RETURNED)
 				{
-					bookTitle = bookCirculation->info.GetID().substr(0, 4);
+					bookTitle = bookCirculation->info_.GetID().substr(0, 4);
 					titleBorrowedCountMap[bookTitle] = titleBorrowedCountMap[bookTitle] + 1;
 				}
 			}
@@ -316,18 +316,18 @@ void STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::CreateDatasheet()
 			currentReader = stk.Pop();
 			//----------------------------------------
 
-			DOUBLE_LINKED_LIST::Controller readerBookCirculationList = currentReader->info_.GetBooksCirculation();
+			DoubleLinkedList<BOOK_CIRCULATION::BookCirculation> readerBookCirculationList = currentReader->info_.GetBooksCirculation();
 
-			if (!DOUBLE_LINKED_LIST::Empty(readerBookCirculationList))
+			if (!readerBookCirculationList.Empty())
 			{
-				for (DOUBLE_LINKED_LIST::Pointer currentBookCirculation = readerBookCirculationList.First; currentBookCirculation != nullptr; currentBookCirculation = currentBookCirculation->right)
+				for (DoubleLinkedList<BOOK_CIRCULATION::BookCirculation>::Node* currentBookCirculation = readerBookCirculationList.Begin(); currentBookCirculation != nullptr; currentBookCirculation = currentBookCirculation->right_)
 				{
-					if (currentBookCirculation->info.IsOverdue())
+					if (currentBookCirculation->info_.IsOverdue())
 					{
-						overdueReader.bookID = currentBookCirculation->info.GetID();
-						overdueReader.bookTitle = titleListMap[currentBookCirculation->info.GetID().substr(0, 4)]->GetTitle();
-						overdueReader.borrowDate = currentBookCirculation->info.GetBorrowDate();
-						overdueReader.overdueDateCount = currentBookCirculation->info.CountOverdueDate();
+						overdueReader.bookID = currentBookCirculation->info_.GetID();
+						overdueReader.bookTitle = titleListMap[currentBookCirculation->info_.GetID().substr(0, 4)]->GetTitle();
+						overdueReader.borrowDate = currentBookCirculation->info_.GetBorrowDate();
+						overdueReader.overdueDateCount = currentBookCirculation->info_.CountOverdueDate();
 						overdueReader.readerID = std::to_string(currentReader->info_.GetID());
 						overdueReader.readerFullname = currentReader->info_.GetFullName();
 

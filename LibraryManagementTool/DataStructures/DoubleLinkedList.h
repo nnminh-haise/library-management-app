@@ -10,6 +10,8 @@ public:
 	{
 		Node(T info, Node* left, Node* right);
 
+		~Node();
+
 		friend std::ostream& operator<<(std::ostream& os, const Node& node) {
 			os << node.info_;
 			return os;
@@ -33,9 +35,9 @@ public:
 
 	Node* NodeAt(int index);
 
-	Node* Begin();
+	Node* Begin() const;
 
-	Node* End();
+	Node* End() const;
 
 	void PushFront(T value);
 
@@ -56,6 +58,9 @@ template<typename T>
 inline DoubleLinkedList<T>::Node::Node(T value, Node* left, Node* right) : info_(value), left_(left), right_(right) {}
 
 template<typename T>
+inline DoubleLinkedList<T>::Node::~Node() {}
+
+template<typename T>
 DoubleLinkedList<T>::DoubleLinkedList()
 {
 	this->first_ = this->last_ = nullptr;
@@ -65,13 +70,16 @@ DoubleLinkedList<T>::DoubleLinkedList()
 template<typename T>
 inline DoubleLinkedList<T>::~DoubleLinkedList()
 {
-	Node* currentNode = this->first_;
-	for (; currentNode != nullptr;)
-	{
-		Node* deleteNode = currentNode;
-		currentNode = currentNode->right_;
-		delete deleteNode;
-	}
+	//TODO: Fix the destructor
+	//* Causion: When destructor running the loading database function is broken!
+
+	//Node* currentNode = this->first_;
+	//for (; currentNode != nullptr;)
+	//{
+	//	Node* deleteNode = currentNode;
+	//	currentNode = currentNode->right_;
+	//	delete deleteNode;
+	//}
 }
 
 template<typename T>
@@ -113,7 +121,7 @@ inline DoubleLinkedList<T>::Node* DoubleLinkedList<T>::NodeAt(int index)
 }
 
 template<typename T>
-inline DoubleLinkedList<T>::Node* DoubleLinkedList<T>::Begin()
+inline DoubleLinkedList<T>::Node* DoubleLinkedList<T>::Begin() const
 {
 	if (this->Empty())
 	{
@@ -124,7 +132,7 @@ inline DoubleLinkedList<T>::Node* DoubleLinkedList<T>::Begin()
 }
 
 template<typename T>
-inline DoubleLinkedList<T>::Node* DoubleLinkedList<T>::End()
+inline DoubleLinkedList<T>::Node* DoubleLinkedList<T>::End() const
 {
 	if (this->Empty())
 	{
