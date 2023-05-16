@@ -218,7 +218,8 @@ namespace READER_TAB_MEMBERS
 	};
 }
 
-class DanhSachTheDocGiaView {
+class DanhSachTheDocGiaView
+{
 private:
 	bool active;
 	DATASHEET::Controller datasheetController;

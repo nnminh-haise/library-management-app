@@ -56,7 +56,7 @@ READER_TAB_MEMBERS::SearchField::SearchField()
 	this->ResultBoxDefaultStyling();
 }
 
-READER_TAB_MEMBERS::SearchField::SearchField(AVL_TREE::Pointer* readerList, ELEMENTS::InputModeController* inputController)
+READER_TAB_MEMBERS::SearchField::SearchField(AVL_Tree<READER::Reader, int>* readerList, ELEMENTS::InputModeController* inputController)
 {
 	this->readerList = readerList;
 	this->inputController = inputController;
@@ -112,14 +112,14 @@ void READER_TAB_MEMBERS::SearchField::SearchBoxOnActionLogic()
 
 int READER_TAB_MEMBERS::SearchField::SearchReaderAlgorithm()
 {
-	Stack<AVL_TREE::Pointer> stk;
+	Stack<AVL_Tree<READER::Reader, int>::Node*> stk;
 
-	AVL_TREE::Pointer p = *this->readerList;
+	AVL_Tree<READER::Reader, int>::Node* p = this->readerList->GetRoot();
 	std::string searchValue{}, fullName{}, readerID{};
 	do {
 		while (p != nullptr) {
 			stk.Push(p);
-			p = p->left;
+			p = p->left_;
 		}
 
 		if (stk.Empty() == false) {
@@ -127,19 +127,20 @@ int READER_TAB_MEMBERS::SearchField::SearchReaderAlgorithm()
 			
 			//* Search logic here
 			searchValue = this->searchBox.GetPlaceholder();
-			fullName = p->info.GetFirstName() + p->info.GetLastName();
-			readerID = p->info.GetID();
+			fullName = p->info_.GetFullName();
+			readerID = p->info_.GetID();
 
 			if (readerID.find(searchValue) != std::string::npos) {
 				this->searchResult = p;
 				return 1;
 			}
-			else if (fullName.find(searchValue) != std::string::npos) {
+			
+			if (fullName.find(searchValue) != std::string::npos) {
 				this->searchResult = p;
 				return 2;
 			}
 
-			p = p->right;
+			p = p->right_;
 		}
 		else {
 			break;
@@ -174,7 +175,7 @@ void READER_TAB_MEMBERS::SearchField::Display()
 	this->resultBox.Display();
 }
 
-READER_TAB_MEMBERS::NewReaderForm::NewReaderForm(AVL_TREE::Pointer* readerList, ELEMENTS::InputModeController* inputController) {
+READER_TAB_MEMBERS::NewReaderForm::NewReaderForm(AVL_Tree<READER::Reader, int>* readerList, ELEMENTS::InputModeController* inputController) {
 	this->status = false;
 	this->background = HELPER::Fill(HELPER::Coordinate(1305, 420), 450, 500);
 
@@ -223,8 +224,7 @@ void READER_TAB_MEMBERS::NewReaderForm::FormOnAction()
 	Button* inputFields[3] = { &this->readerFirstNameButton, &this->readerLastNameButton, &this->readerSexButton };
 	int fieldsCharacterLimit[3] = { 30, 15, 6 };
 
-	int readerListSize = 0;
-	AVL_TREE::Size(*this->readerList, readerListSize);
+	int readerListSize = this->readerList->Size();
 
 	IndexGenerator indexGenerator(500000);
 	this->readerIndex = indexGenerator.FromFileGetIndexAt(CONSTANTS::READER_INDICIES, readerListSize);
@@ -268,7 +268,7 @@ bool READER_TAB_MEMBERS::NewReaderForm::SubmitForm()
 		newreader.SetBooksCirculation(DOUBLE_LINKED_LIST::Controller());
 		delay(100);
 
-		bool res = AVL_TREE::Insert(*this->readerList, newreader);
+		this->readerList->Insert(this->readerIndex, newreader);
 
 		return true;
 	}
@@ -344,9 +344,9 @@ void READER_TAB_MEMBERS::DeleteItemInListForm::Display(AVL_Tree<READER::Reader, 
 
 	bool checker = VALIDATOR::OnlyDigit(this->maThe->GetPlaceholder());
 	if (checker) {
-		this->searchResult = AVL_TREE::SearchByKey(danhSachTheDocGia, std::stoi(this->maThe->GetPlaceholder()));
+		this->searchResult = readerList->Search(std::stoi(this->maThe->GetPlaceholder()));
 		if (this->searchResult != nullptr) {
-			int currentBorrowedBooksCount = BOOK_CIRCULATION_MODULES::CountBorrowedBooks(this->searchResult->info.GetBooksCirculation());
+			int currentBorrowedBooksCount = BOOK_CIRCULATION_MODULES::CountBorrowedBooks(this->searchResult->info_.GetBooksCirculation());
 			if (currentBorrowedBooksCount != 0) {
 				std::cerr << std::format("[ERROR] DOC GIA DANG MUON BOOK! KHONG THE XOA DOC GIA!\n");
 			}
@@ -354,9 +354,9 @@ void READER_TAB_MEMBERS::DeleteItemInListForm::Display(AVL_Tree<READER::Reader, 
 				this->searchTargetFound = true;
 			}
 
-			this->hoTen->SetPlaceholder(this->searchResult->info.GetFullName());
-			this->phai->SetPlaceholder(this->searchResult->info.StringifyGender());
-			this->trangThai->SetPlaceholder(this->searchResult->info.StringfyStatus());
+			this->hoTen->SetPlaceholder(this->searchResult->info_.GetFullName());
+			this->phai->SetPlaceholder(this->searchResult->info_.StringifyGender());
+			this->trangThai->SetPlaceholder(this->searchResult->info_.StringfyStatus());
 
 			this->hoTen->Display();
 			this->phai->Display();
@@ -381,7 +381,7 @@ bool READER_TAB_MEMBERS::DeleteItemInListForm::SubmitForm(AVL_Tree<READER::Reade
 	else if (this->deleteBtn->LeftMouseClicked()) {
 		delay(100);
 		if (this->searchTargetFound == true) {
-			danhSachTheDocGia = AVL_TREE::RemoveNode(danhSachTheDocGia, this->searchResult->GetKey());
+			readerList->Remove(this->searchResult->key_);
 			std::cerr << std::format("[INFO] XOA THE DOC GIA THANH CONG!\n");
 			return true;
 		}
@@ -393,7 +393,7 @@ bool READER_TAB_MEMBERS::DeleteItemInListForm::SubmitForm(AVL_Tree<READER::Reade
 	return false;
 }
 
-READER_TAB_MEMBERS::EditReaderInfoForm::EditReaderInfoForm(AVL_TREE::Pointer* readerList, ELEMENTS::InputModeController* inputController) 
+READER_TAB_MEMBERS::EditReaderInfoForm::EditReaderInfoForm(AVL_Tree<READER::Reader, int>* readerList, ELEMENTS::InputModeController* inputController)
 {
 	this->readerList = readerList;
 	this->inputController = inputController;
@@ -469,11 +469,11 @@ void READER_TAB_MEMBERS::EditReaderInfoForm::Display()
 
 void READER_TAB_MEMBERS::EditReaderInfoForm::AssignReaderOldInfoToFields()
 {
-	this->readerIDButton.SetPlaceholder(std::to_string(this->searchResult->info.GetID()));
-	this->readerFirstNameButton.SetPlaceholder(this->searchResult->info.GetFirstName());
-	this->readerLastNameButton.SetPlaceholder(this->searchResult->info.GetLastName());
-	this->readerGenderButton.SetPlaceholder(this->searchResult->info.StringifyGender());
-	this->readerStatusButton.SetPlaceholder(this->searchResult->info.StringfyStatus());
+	this->readerIDButton.SetPlaceholder(std::to_string(this->searchResult->info_.GetID()));
+	this->readerFirstNameButton.SetPlaceholder(this->searchResult->info_.GetFirstName());
+	this->readerLastNameButton.SetPlaceholder(this->searchResult->info_.GetLastName());
+	this->readerGenderButton.SetPlaceholder(this->searchResult->info_.StringifyGender());
+	this->readerStatusButton.SetPlaceholder(this->searchResult->info_.StringfyStatus());
 }
 
 void READER_TAB_MEMBERS::EditReaderInfoForm::FormOnAction()
@@ -524,7 +524,7 @@ bool READER_TAB_MEMBERS::EditReaderInfoForm::SearchReaderProcess()
 	bool checker = VALIDATOR::OnlyDigit(this->readerIDButton.GetPlaceholder());
 	if (checker)
 	{
-		this->searchResult = AVL_TREE::SearchByKey(*this->readerList, std::stoi(this->readerIDButton.GetPlaceholder()));
+		this->searchResult = this->readerList->Search(std::stoi(this->readerIDButton.GetPlaceholder()));
 		if (this->searchResult != nullptr)
 		{
 			this->assignReaderOldInfo = true;
@@ -571,12 +571,12 @@ bool READER_TAB_MEMBERS::EditReaderInfoForm::SubmitForm()
 
 			if (checker) 
 			{
-				this->searchResult->info.SetFirstName(this->readerFirstNameButton.GetPlaceholder());
-				this->searchResult->info.SetLastName(this->readerLastNameButton.GetPlaceholder());
-				this->searchResult->info.SetGender(
+				this->searchResult->info_.SetFirstName(this->readerFirstNameButton.GetPlaceholder());
+				this->searchResult->info_.SetLastName(this->readerLastNameButton.GetPlaceholder());
+				this->searchResult->info_.SetGender(
 					this->readerGenderButton.GetPlaceholder() == "MALE" ? READER::Gender::MALE : READER::Gender::FEMALE
 				);
-				this->searchResult->info.SetStatus(
+				this->searchResult->info_.SetStatus(
 					this->readerStatusButton.GetPlaceholder() == "BANNED" ? READER::ReaderStatus::BANNED : READER::ReaderStatus::ACTIVE
 				);
 

@@ -328,8 +328,8 @@ void STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::CreateDatasheet()
 						overdueReader.bookTitle = titleListMap[currentBookCirculation->info.GetID().substr(0, 4)]->GetTitle();
 						overdueReader.borrowDate = currentBookCirculation->info.GetBorrowDate();
 						overdueReader.overdueDateCount = currentBookCirculation->info.CountOverdueDate();
-						overdueReader.readerID = std::to_string(currentReader->info.GetID());
-						overdueReader.readerFullname = currentReader->info.GetFullName();
+						overdueReader.readerID = std::to_string(currentReader->info_.GetID());
+						overdueReader.readerFullname = currentReader->info_.GetFullName();
 
 						overdueReaders.PushBack(overdueReader);
 						break;
