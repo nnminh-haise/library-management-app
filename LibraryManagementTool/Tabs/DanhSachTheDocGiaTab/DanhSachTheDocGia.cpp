@@ -912,7 +912,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 
 	//* FINDING CORRESPOND BOOK ID (start below) ---------------------------------------------------------
 	const std::string& borrowingTitleISBN = borrowingBookID.substr(0, 4); //* Taking the ISBN code of the targetedBook
-	BOOK_TITLE::BookTitle* correspondTitle = LINEAR_LIST::SearchByISBN(*this->titleList, borrowingTitleISBN);
+	BOOK_TITLE::BookTitle* correspondTitle = DAU_SACH_MODULES::SearchByISBN(*this->titleList, borrowingTitleISBN);
 	if (correspondTitle == nullptr)
 	{
 		throw std::logic_error(std::format("[ERROR] THE ISBN: {} NOT EXIST!\n", borrowingTitleISBN));
@@ -926,6 +926,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 		throw std::logic_error(std::format("[ERROR] CANNOT FIND THE CORRESPOND BOOK'S ID: {}!\n", borrowingBookID));
 		return false;
 	}
+
 	//* FINDING CORRESPOND BOOK ID (ended below) ---------------------------------------------------------
 
 

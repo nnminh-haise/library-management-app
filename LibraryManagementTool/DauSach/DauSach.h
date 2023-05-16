@@ -148,14 +148,14 @@ namespace LINEAR_LIST
 	bool InsertOrder(LinearList& list, BOOK_TITLE::BookTitle* item);
 
 	void Traversal(const LinearList& list);
-
-	BOOK_TITLE::BookTitle* SearchByName(const LinearList& list, const std::string& titleName);
-
-	BOOK_TITLE::BookTitle* SearchByISBN(const LinearList& list, const std::string& isbn);
 }
 
 namespace DAU_SACH_MODULES 
 {
+	BOOK_TITLE::BookTitle* SearchByName(const LINEAR_LIST::LinearList& list, const std::string& titleName);
+
+	BOOK_TITLE::BookTitle* SearchByISBN(const LINEAR_LIST::LinearList& list, const std::string& isbn);
+
 	bool LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LIST::LinearList& danhSachDauSach);
 
 	bool UpdateListToDatabase(const std::string& filename, const LINEAR_LIST::LinearList& titleList);

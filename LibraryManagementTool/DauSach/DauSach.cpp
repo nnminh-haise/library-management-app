@@ -331,7 +331,7 @@ void LINEAR_LIST::Traversal(const LinearList& list) {
 	}
 }
 
-BOOK_TITLE::BookTitle* LINEAR_LIST::SearchByName(const LinearList& list, const std::string& titleName) {
+BOOK_TITLE::BookTitle* DAU_SACH_MODULES::SearchByName(const LINEAR_LIST::LinearList& list, const std::string& titleName) {
 	if (LINEAR_LIST::Empty(list)) {
 		return nullptr;
 	}
@@ -345,7 +345,7 @@ BOOK_TITLE::BookTitle* LINEAR_LIST::SearchByName(const LinearList& list, const s
 	return nullptr;
 }
 
-BOOK_TITLE::BookTitle* LINEAR_LIST::SearchByISBN(const LinearList& list, const std::string& isbn)
+BOOK_TITLE::BookTitle* DAU_SACH_MODULES::SearchByISBN(const LINEAR_LIST::LinearList& list, const std::string& isbn)
 {
 	for (int i = 0; i < list.numberOfNode; ++i)
 	{

@@ -996,7 +996,7 @@ void DauSachTab::Run() {
 		this->searchField.Activate();
 		this->searchField.Display();
 		this->searchField.OnAction(this->inputController);
-		BOOK_TITLE::BookTitle* searchResult = LINEAR_LIST::SearchByName(*this->titleList, this->searchField.inputSearchBox->GetPlaceholder());
+		BOOK_TITLE::BookTitle* searchResult = DAU_SACH_MODULES::SearchByName(*this->titleList, this->searchField.inputSearchBox->GetPlaceholder());
 		
 		//* Title search logic
 		if (searchResult != nullptr) {

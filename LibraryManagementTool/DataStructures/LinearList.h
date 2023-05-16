@@ -38,7 +38,7 @@ public:
 
 	T& operator[](int index);
 
-	T At(int index);
+	T At(int index) const;
 
 private:
 	int MAX_SIZE = 100000;
@@ -227,7 +227,7 @@ inline T& LinearList<T>::operator[](int index)
 }
 
 template<typename T>
-inline T LinearList<T>::At(int index)
+inline T LinearList<T>::At(int index) const
 {
 	if (this->Empty())
 	{
