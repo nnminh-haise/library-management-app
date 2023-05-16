@@ -323,7 +323,7 @@ READER_TAB_MEMBERS::DeleteItemInListForm::~DeleteItemInListForm() {
 	delete this->deleteBtn;
 }
 
-void READER_TAB_MEMBERS::DeleteItemInListForm::Display(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController) {
+void READER_TAB_MEMBERS::DeleteItemInListForm::Display(AVL_Tree<READER::Reader, int>* readerList, ELEMENTS::InputModeController& InputController) {
 	this->searchTargetFound = false;
 	this->background->Draw();
 	this->title->Display();
@@ -372,7 +372,7 @@ void READER_TAB_MEMBERS::DeleteItemInListForm::Display(AVL_TREE::Pointer& danhSa
 	}
 }
 
-bool READER_TAB_MEMBERS::DeleteItemInListForm::SubmitForm(AVL_TREE::Pointer& danhSachTheDocGia, ELEMENTS::InputModeController& InputController) {
+bool READER_TAB_MEMBERS::DeleteItemInListForm::SubmitForm(AVL_Tree<READER::Reader, int>* readerList, ELEMENTS::InputModeController& InputController) {
 
 	//* Submit button
 	if (this->deleteBtn->IsHover()) {
@@ -1269,16 +1269,16 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::ApplyHoverStyleForBookIDButton()
 
 //----------------------------------------------------------------------------------------------------------------------------
 
-void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSachThedocGia, DATASHEET::Controller* datasheetController) {
-
-	int attributeCount = 0;
-	AVL_TREE::Size(danhSachThedocGia, attributeCount);
+void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_Tree<READER::Reader, int>* readerList, DATASHEET::Controller* datasheetController)
+{
+	int attributeCount = readerList->Size();
 	datasheetController->SetDatasheetCount(
-		attributeCount / (CONSTANTS::MAX_ROW_COUNT - 1) + (attributeCount % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
+	attributeCount / (CONSTANTS::MAX_ROW_COUNT - 1) + (attributeCount % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
 	);
 	datasheetController->InitializeDatasheets();
 
-	for (int i = 0; i < datasheetController->GetDatasheetCount(); ++i) {
+	for (int i = 0; i < datasheetController->GetDatasheetCount(); ++i)
+	{
 		(*datasheetController)[i] = DATASHEET::Datasheet(
 			datasheetController->GetRecordCount(),
 			datasheetController->GetAttributeCount(),
@@ -1288,8 +1288,8 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 		);
 	}
 
-	Stack<AVL_TREE::Pointer> stk;
-	AVL_TREE::Pointer currentNode = danhSachThedocGia;
+	Stack<AVL_Tree<READER::Reader, int>::Node*> stk;
+	AVL_Tree<READER::Reader, int>::Node* currentNode = readerList->GetRoot();
 	int recordIndex = 0;
 	int sheetIndex = -1;
 	int order = 0;
@@ -1297,7 +1297,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 	do {
 		while (currentNode != nullptr) {
 			stk.Push(currentNode);
-			currentNode = currentNode->left;
+			currentNode = currentNode->left_;
 		}
 
 		if (stk.Empty() == false) {
@@ -1314,17 +1314,17 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 
 			std::string* data = new std::string[datasheetController->GetAttributeCount()];
 			data[0] = std::to_string(++order);
-			data[1] = std::to_string(currentNode->info.GetID());
-			data[2] = currentNode->info.GetFirstName();
-			data[3] = currentNode->info.GetLastName();
-			data[4] = currentNode->info.StringifyGender();
-			data[5] = currentNode->info.StringfyStatus();
+			data[1] = std::to_string(currentNode->info_.GetID());
+			data[2] = currentNode->info_.GetFirstName();
+			data[3] = currentNode->info_.GetLastName();
+			data[4] = currentNode->info_.StringifyGender();
+			data[5] = currentNode->info_.StringfyStatus();
 
 			(*datasheetController)[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 
 			//---
 
-			currentNode = currentNode->right;
+			currentNode = currentNode->right_;
 		}
 		else {
 			break;
@@ -1332,7 +1332,12 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_TREE::Pointer& danhSach
 	} while (true);
 }
 
-void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int arrSize, DATASHEET::Controller* datasheetController) {
+void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_Tree<READER::Reader, int>* readerList, DATASHEET::Controller* datasheetController) {
+
+	LinearList< AVL_Tree<READER::Reader, int>::Node*> readerPointersArr;
+	readerList->CastToLinearList(readerPointersArr);
+
+	int arrSize = readerPointersArr.Size();
 	datasheetController->SetDatasheetCount(
 		arrSize / (CONSTANTS::MAX_ROW_COUNT - 1) + (arrSize % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
 	);
@@ -1364,11 +1369,11 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int 
 
 		std::string* data = new std::string[datasheetController->GetAttributeCount()];
 		data[0] = std::to_string(i + 1);
-		data[1] = std::to_string(arr[i]->info.GetID());
-		data[2] = arr[i]->info.GetFirstName();
-		data[3] = arr[i]->info.GetLastName();
-		data[4] = arr[i]->info.StringifyGender();
-		data[5] = arr[i]->info.StringfyStatus();
+		data[1] = std::to_string(readerPointersArr[i]->info_.GetID());
+		data[2] = readerPointersArr[i]->info_.GetFirstName();
+		data[3] = readerPointersArr[i]->info_.GetLastName();
+		data[4] = readerPointersArr[i]->info_.StringifyGender();
+		data[5] = readerPointersArr[i]->info_.StringfyStatus();
 
 		(*datasheetController)[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 
@@ -1382,7 +1387,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_TREE::Pointer* arr, int 
 * 
 * All the code in this method only run once in the program runtime!
 */
-DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController) {
+DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController) {
 	this->active = false;
 	this->defaultOrder = true;
 	this->readerList = readerList;
@@ -1399,7 +1404,7 @@ DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_TREE::Pointer* readerList, LINE
 	);
 	this->datasheetController.ActivateDatasheets();
 	if (this->defaultOrder) {
-		this->CreateDatasheetsFromList(*this->readerList, &this->datasheetController);
+		this->CreateDatasheetsFromList(this->readerList, &this->datasheetController);
 	}
 
 	//* List manipulation buttons
@@ -1459,7 +1464,7 @@ void DanhSachTheDocGiaView::Run()
 					this->searchField.Deactivate();
 					this->readerIndeptDetail.Activate();
 					this->readerIndeptDetail.SetInputController(this->inputController);
-					this->readerIndeptDetail.UpdateReader(&this->searchField.searchResult->info);
+					this->readerIndeptDetail.UpdateReader(&this->searchField.searchResult->info_);
 				}
 				else {
 					this->searchField.ResultBoxFoundedStyling();
@@ -1476,7 +1481,7 @@ void DanhSachTheDocGiaView::Run()
 				this->newItemForm->FormOnAction();
 				bool formSubmitted = this->newItemForm->SubmitForm();
 				if (formSubmitted) {
-					DanhSachTheDocGiaView::CreateDatasheetsFromList(*this->readerList, &this->datasheetController);
+					DanhSachTheDocGiaView::CreateDatasheetsFromList(this->readerList, &this->datasheetController);
 				}
 				break;
 			}
@@ -1485,15 +1490,15 @@ void DanhSachTheDocGiaView::Run()
 				this->editItemForm->FormOnAction();
 				bool confirmSave = this->editItemForm->SubmitForm();
 				if (confirmSave) {
-					DanhSachTheDocGiaView::CreateDatasheetsFromList(*this->readerList, &this->datasheetController);
+					DanhSachTheDocGiaView::CreateDatasheetsFromList(this->readerList, &this->datasheetController);
 				}
 				break;
 			}
 			case (2): {
-				this->deleteItemForm.Display(*this->readerList, *this->inputController);
-				bool confirmDelete = this->deleteItemForm.SubmitForm(*this->readerList, *this->inputController);
+				this->deleteItemForm.Display(this->readerList, *this->inputController);
+				bool confirmDelete = this->deleteItemForm.SubmitForm(this->readerList, *this->inputController);
 				if (confirmDelete) {
-					DanhSachTheDocGiaView::CreateDatasheetsFromList(*this->readerList, &this->datasheetController);
+					DanhSachTheDocGiaView::CreateDatasheetsFromList(this->readerList, &this->datasheetController);
 				}
 				break;
 			}
@@ -1537,7 +1542,7 @@ void DanhSachTheDocGiaView::Run()
 		else if (this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][1].LeftMouseClicked()) {
 			this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][1].SetFillColor(RED);
 			this->defaultOrder = true;
-			this->CreateDatasheetsFromList(*this->readerList, &this->datasheetController);
+			this->CreateDatasheetsFromList(this->readerList, &this->datasheetController);
 		}
 		else {
 			DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonDefaultStyling(&this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][1]);
@@ -1549,15 +1554,7 @@ void DanhSachTheDocGiaView::Run()
 		}
 		else if (this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][3].LeftMouseClicked()) {
 			delay(100);
-
-			this->defaultOrder = false;
-			AVL_TREE::Pointer* pointerArr{};
-			int arrSize = 0;
-			READER_MODULES::SortByName(*this->readerList, pointerArr, arrSize);
-
-			DanhSachTheDocGiaView::CreateDatasheetsFromArr(pointerArr, arrSize, &this->datasheetController);
-
-			delete[] pointerArr;
+			DanhSachTheDocGiaView::CreateDatasheetsFromArr(this->readerList, &this->datasheetController);
 		}
 		else {
 			DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonDefaultStyling(&this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][3]);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "../DataStructures/AVL_Tree.h"
 #include "../Helper/Helper.h"
 
 namespace BOOK_CIRCULATION 
@@ -139,59 +140,55 @@ namespace READER
 	};
 }
 
-namespace AVL_TREE 
-{
-	struct Node 
-	{
-		READER::Reader info;
-		int balanceFactor;
-		int height;
-		Node* left;
-		Node* right;
-
-		Node();
-
-		int GetKey();
-
-		void SetKey(const int key);
-	};
-
-	typedef Node* Pointer;
-
-	void Initialize(Pointer& root);
-
-	bool Empty(const Pointer& root);
-
-	void PreOrderTraversal(const Pointer& root);
-
-	void InOrderTraversal(const Pointer& root);
-
-	void PostOrderTraversal(const Pointer& root);
-
-	void Size(const Pointer& root, int& counter);
-
-	void NonrecursiveInOrderTraversal(const Pointer& root);
-
-	Pointer RotateLeft(Pointer root);
-
-	Pointer RotateRight(Pointer root);
-
-	bool Insert(Pointer& root, READER::Reader info);
-
-	Pointer SearchByKey(const Pointer& root, const int& key);
-
-	Pointer GetMinValueNode(Pointer const& node);
-
-	Pointer RemoveNode(Pointer& node, const int& key);
-}
+//namespace AVL_TREE 
+//{
+//	struct Node 
+//	{
+//		READER::Reader info;
+//		int balanceFactor;
+//		int height;
+//		Node* left;
+//		Node* right;
+//
+//		Node();
+//
+//		int GetKey();
+//
+//		void SetKey(const int key);
+//	};
+//
+//	typedef Node* Pointer;
+//
+//	void Initialize(Pointer& root);
+//
+//	bool Empty(const Pointer& root);
+//
+//	void InOrderTraversal(const Pointer& root);
+//
+//	void Size(const Pointer& root, int& counter);
+//
+//	void NonrecursiveInOrderTraversal(const Pointer& root);
+//
+//	Pointer RotateLeft(Pointer root);
+//
+//	Pointer RotateRight(Pointer root);
+//
+//	bool Insert(Pointer& root, READER::Reader info);
+//
+//	Pointer SearchByKey(const Pointer& root, const int& key);
+//
+//	Pointer GetMinValueNode(Pointer const& node);
+//
+//	Pointer RemoveNode(Pointer& node, const int& key);
+//}
 
 namespace READER_MODULES 
 {
-	bool LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE::Pointer& tree);
+	bool LoadDanhSachTheDocGiaFromDB(const std::string& filename, AVL_Tree<READER::Reader, int>* tree);
 
-	bool UpdateListToDatabase(const std::string& filename, AVL_TREE::Pointer& tree);
+	bool UpdateListToDatabase(const std::string& filename, AVL_Tree<READER::Reader, int>* tree);
 
-	int GetIndex(const std::string& filename, AVL_TREE::Pointer& tree);
+	int GetIndex(const std::string& filename, AVL_Tree<READER::Reader, int>* tree);
 
-	void SortByName(AVL_TREE::Pointer const& node, AVL_TREE::Pointer*& pointerArr, int& arrSize);
+	void SortByName(const AVL_Tree<READER::Reader, int>& tree, LinearList< AVL_Tree<READER::Reader, int>::Node*>& readerPointersArr);
 }

@@ -16,19 +16,19 @@ void LandingView::ConstructGraphicWindow() {
 
 void LandingView::ConstructNavigationBar() {
 
-	this->navigationBarBackground = new HELPER::Fill (
+	this->navigationBarBackground = HELPER::Fill (
 		NAVIGATION_BAR_PROPERTIES::COORDINATE, 
 		NAVIGATION_BAR_PROPERTIES::DIMENSION.width, NAVIGATION_BAR_PROPERTIES::DIMENSION.height,
 		NAVIGATION_BAR_PROPERTIES::FILL_COLOR, NAVIGATION_BAR_PROPERTIES::BORDER_COLOR
 	);
 
-	this->programTitle = new Button{
+	this->programTitle = Button{
 		NAVIGATION_BAR_PROPERTIES::PROGRAM_TITLE_COORDINATE, NAVIGATION_BAR_PROPERTIES::PROGRAM_TITLE_DIMENSION
 	};
-	this->programTitle->SetFillColor(NAVIGATION_BAR_PROPERTIES::PROGRAM_TITLE_FILL_COLOR);
-	this->programTitle->SetBorderColor(NAVIGATION_BAR_PROPERTIES::PROGRAM_TITLE_BORDER_COLOR);
-	this->programTitle->SetTextColor(NAVIGATION_BAR_PROPERTIES::PROGRAM_TITLE_TEXT_COLOR);
-	this->programTitle->SetPlaceholder(NAVIGATION_BAR_PROPERTIES::PROGRAM_TITLE_PLACEHOLDER);
+	this->programTitle.SetFillColor(NAVIGATION_BAR_PROPERTIES::PROGRAM_TITLE_FILL_COLOR);
+	this->programTitle.SetBorderColor(NAVIGATION_BAR_PROPERTIES::PROGRAM_TITLE_BORDER_COLOR);
+	this->programTitle.SetTextColor(NAVIGATION_BAR_PROPERTIES::PROGRAM_TITLE_TEXT_COLOR);
+	this->programTitle.SetPlaceholder(NAVIGATION_BAR_PROPERTIES::PROGRAM_TITLE_PLACEHOLDER);
 
 	this->tabs = new Button[3];
 	for (int i = 0; i < 3; ++i) {
@@ -44,14 +44,14 @@ void LandingView::ConstructNavigationBar() {
 	this->tabs[this->currentTab].SetBorderColor(NAVIGATION_BAR_PROPERTIES::TAB_ACTIVE_BORDER_COLOR);
 	this->tabs[this->currentTab].SetTextColor(NAVIGATION_BAR_PROPERTIES::TAB_ACTIVE_TEXT_COLOR);
 
-	this->closeBtn = new ELEMENTS::CloseButton(
+	this->closeBtn = ELEMENTS::CloseButton(
 		NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_COORDINATE, 
 		NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_DIMENSION.width,
 		NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_DIMENSION.height
 	);
-	this->closeBtn->SetPlaceholder(NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_PLACEHOLDER);
-	this->closeBtn->SetFillColor(NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_DEFAULT_FILL_COLOR);
-	this->closeBtn->SetBorderColor(NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_DEFAULT_BORDER_COLOR);
+	this->closeBtn.SetPlaceholder(NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_PLACEHOLDER);
+	this->closeBtn.SetFillColor(NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_DEFAULT_FILL_COLOR);
+	this->closeBtn.SetBorderColor(NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_DEFAULT_BORDER_COLOR);
 }
 
 void LandingView::TabsOnUpdate() {
@@ -75,27 +75,29 @@ void LandingView::TabsOnUpdate() {
 }
 
 void LandingView::CloseButtonOnUpdate() {
-	if (this->closeBtn->IsPointed() && this->closeBtn->LeftMouseClicked() == false) {
-		this->closeBtn->SetFillColor(NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_HOVER_FILL_COLOR);
+	if (this->closeBtn.IsPointed() && this->closeBtn.LeftMouseClicked() == false) {
+		this->closeBtn.SetFillColor(NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_HOVER_FILL_COLOR);
 	}
-	else if (closeBtn->LeftMouseClicked()) {
+	else if (closeBtn.LeftMouseClicked()) {
+		delay(100);
 		this->programStopFlag = true;
 	}
 	else {
-		this->closeBtn->SetFillColor(NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_DEFAULT_FILL_COLOR);
-		this->closeBtn->SetBorderColor(NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_DEFAULT_BORDER_COLOR);
+		this->closeBtn.SetFillColor(NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_DEFAULT_FILL_COLOR);
+		this->closeBtn.SetBorderColor(NAVIGATION_BAR_PROPERTIES::CLOSE_BUTTON_DEFAULT_BORDER_COLOR);
 	}
 }
 
 //* View Constructor function.
-LandingView::LandingView(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList) {
+LandingView::LandingView(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList)
+{
 	this->currentTab = 0;
 	this->programStopFlag = false;
 
 	this->readerList = readerList;
 	this->titleList = titleList;
 
-	READER_MODULES::LoadDanhSachTheDocGiaFromDB(CONSTANTS::READER_DATABASE, *this->readerList);
+	READER_MODULES::LoadDanhSachTheDocGiaFromDB(CONSTANTS::READER_DATABASE, this->readerList);
 	DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(CONSTANTS::TITLES_DATABASE, *this->titleList);
 
 	this->ConstructGraphicWindow();
@@ -109,26 +111,28 @@ LandingView::LandingView(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList*
 }
 
 //* View Run function
-void LandingView::Run() {
-
-	while (this->programStopFlag == false) {
-
-		while (!kbhit() && this->programStopFlag == false) {
-
+void LandingView::Run()
+{
+	while (this->programStopFlag == false) 
+	{
+		while (!kbhit() && this->programStopFlag == false)
+		{
 			//* Draw elements begin below
 			setactivepage(1 - getactivepage());
 
 			//* Draw elements
 			this->graphicWindow->RenderBackground();
-			this->navigationBarBackground->Draw();
-			this->programTitle->Display();
+			this->navigationBarBackground.Draw();
+			this->programTitle.Display();
 			
-			for (int i = 0; i < 3; ++i) {
+			for (int i = 0; i < 3; ++i)
+			{
 				this->tabs[i].Display();
 			}
-			this->closeBtn->Display();
+			this->closeBtn.Display();
 
-			switch (this->currentTab) {
+			switch (this->currentTab)
+			{
 				case (0):
 					this->dauSachView->Run();
 					break;
@@ -152,31 +156,28 @@ void LandingView::Run() {
 		}
 
 		//* Input processing start in this if statement
-		if (programStopFlag == false && this->inpController.InInputMode()) {
+		if (programStopFlag == false && this->inpController.InInputMode())
+		{
 			char tmp = std::toupper(getch());
 			this->inpController.ActionOnKey(tmp);
 		}
-
 		//* This currently filter out the case where input mode is not on but user still press some key.
-		else if (programStopFlag == false) {
+		else if (programStopFlag == false)
+		{
 			char emptychr = getch();//take an empty char then do nothing
 		}
 	}
 
 	//* Update databse before closing the program
-	READER_MODULES::UpdateListToDatabase(CONSTANTS::READER_DATABASE, *this->readerList);
+	READER_MODULES::UpdateListToDatabase(CONSTANTS::READER_DATABASE, this->readerList);
 	DAU_SACH_MODULES::UpdateListToDatabase(CONSTANTS::TITLES_DATABASE, *this->titleList);
 }
 
 //* View destructor
-LandingView::~LandingView() {
+LandingView::~LandingView()
+{
 	this->graphicWindow->Deactivate();
-	delete this->graphicWindow;
-	delete this->navigationBarBackground;
-	delete this->programTitle;
-	delete this->closeBtn;
 	delete this->dauSachView;
 	delete this->theDocGiaView;
 	delete this->thongKeView;
-	delete[3] this->tabs;
 }

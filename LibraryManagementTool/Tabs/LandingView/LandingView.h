@@ -18,7 +18,7 @@ private:
 	void CloseButtonOnUpdate();
 
 public:
-	LandingView(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList);
+	LandingView(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList);
 
 	~LandingView();
 
@@ -26,7 +26,7 @@ public:
 
 private:
 	//* Internal storage's pointer
-	AVL_TREE::Pointer* readerList;
+	AVL_Tree<READER::Reader, int>* readerList;
 	LINEAR_LIST::LinearList* titleList;
 
 	//* Tabs
@@ -35,11 +35,11 @@ private:
 	StatisticTab* thongKeView;
 
 	//* Landing view elements
-	ELEMENTS::Window* graphicWindow;
-	HELPER::Fill* navigationBarBackground;
-	Button* programTitle;
 	Button* tabs;
-	ELEMENTS::CloseButton* closeBtn;
+	ELEMENTS::Window* graphicWindow;
+	HELPER::Fill navigationBarBackground;
+	Button programTitle;
+	ELEMENTS::CloseButton closeBtn;
 	bool programStopFlag;
 	int currentTab;
 	

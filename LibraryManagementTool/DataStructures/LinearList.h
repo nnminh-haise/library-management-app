@@ -10,9 +10,13 @@ class LinearList
 public:
 	LinearList();
 
+	LinearList(int size);
+
 	~LinearList();
 
 	int Size() const;
+
+	int MaxSize() const;
 
 	bool Empty() const;
 
@@ -47,7 +51,15 @@ private:
 template<typename T>
 inline LinearList<T>::LinearList()
 {
-	this->nodes_ = new T [this->MAX_SIZE];
+	this->nodes_ = new T[this->MAX_SIZE];
+	this->nodeCount_ = 0;
+}
+
+template<typename T>
+inline LinearList<T>::LinearList(int size)
+{
+	this->MAX_SIZE = size;
+	this->nodes_ = new T[this->MAX_SIZE];
 	this->nodeCount_ = 0;
 }
 
@@ -61,6 +73,12 @@ template<typename T>
 inline int LinearList<T>::Size() const
 {
 	return this->nodeCount_;
+}
+
+template<typename T>
+inline int LinearList<T>::MaxSize() const
+{
+	return this->MAX_SIZE;
 }
 
 template<typename T>
@@ -88,7 +106,6 @@ inline void LinearList<T>::PushFront(T value)
 	if (this->Full())
 	{
 		throw std::logic_error(std::format("[ERROR] LIST IS FULL! CANNOT INSERT NEW ELEMENT!\n"));
-		exit(1);
 	}
 
 	for (int i = this->nodeCount_; i > 0; --i)
@@ -105,7 +122,6 @@ inline void LinearList<T>::PushBack(T value)
 	if (this->Full())
 	{
 		throw std::logic_error(std::format("[ERROR] LIST IS FULL! CANNOT INSERT NEW ELEMENT!\n"));
-		exit(1);
 	}
 
 	this->nodes_[this->nodeCount_] = value;
@@ -118,19 +134,16 @@ inline void LinearList<T>::PushAt(T value, int position)
 	if (this->Full())
 	{
 		throw std::logic_error(std::format("[ERROR] LIST IS FULL! CANNOT INSERT NEW ELEMENT!\n"));
-		exit(1);
 	}
 
 	if (position < 0)
 	{
 		throw std::logic_error("[ERROR] INDEX OUT OF RANGE!\n");
-		exit(1);
 	}
 
 	if (position > this->nodeCount_)
 	{
 		throw std::logic_error("[ERROR] INDEX OUT OF RANGE!\n");
-		exit(1);
 	}
 
 	for (int i = this->nodeCount_; i > position; --i)
@@ -147,7 +160,6 @@ inline T LinearList<T>::PopFront()
 	if (this->Empty())
 	{
 		throw std::logic_error(std::format("[ERROR] LIST IS EMPTY! CANNOT POP NEW ELEMENT!\n"));
-		exit(1);
 	}
 
 	T returnValue = this->nodes_[0];
@@ -165,7 +177,6 @@ inline T LinearList<T>::PopBack()
 	if (this->Empty())
 	{
 		throw std::logic_error(std::format("[ERROR] LIST IS EMPTY! CANNOT POP NEW ELEMENT!\n"));
-		exit(1);
 	}
 
 	T returnValue = this->nodes_[this->nodeCount_ - 1];
@@ -179,19 +190,16 @@ inline T LinearList<T>::PopAt(int position)
 	if (this->Empty())
 	{
 		throw std::logic_error(std::format("[ERROR] LIST IS EMPTY! CANNOT POP NEW ELEMENT!\n"));
-		exit(1);
 	}
 
 	if (position < 0)
 	{
 		throw std::logic_error("[ERROR] INDEX OUT OF RANGE!\n");
-		exit(1);
 	}
 
 	if (position > this->nodeCount_)
 	{
 		throw std::logic_error("[ERROR] INDEX OUT OF RANGE!\n");
-		exit(1);
 	}
 
 	T returnValue = this->nodes_[position];
@@ -208,13 +216,11 @@ inline T& LinearList<T>::operator[](int index)
 	if (this->Empty())
 	{
 		throw std::logic_error("[ERROR] EMPTY LIST\n");
-		exit(1);
 	}
 
 	if (index < 0 || index >= this->nodeCount_)
 	{
 		throw std::logic_error("[ERROR] INDEX OUT OF RANGE\n");
-		exit(1);
 	}
 
 	return this->nodes_[index];
@@ -226,13 +232,11 @@ inline T LinearList<T>::At(int index)
 	if (this->Empty())
 	{
 		throw std::logic_error("[ERROR] EMPTY LIST\n");
-		exit(1);
 	}
 
 	if (index < 0 || index >= this->nodeCount_)
 	{
 		throw std::logic_error("[ERROR] INDEX OUT OF RANGE\n");
-		exit(1);
 	}
 
 	return this->nodes_[index];

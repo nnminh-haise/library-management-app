@@ -78,7 +78,7 @@ void StatisticTab::TitleButtonOnAction()
 	}
 }
 
-StatisticTab::StatisticTab(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList) 
+StatisticTab::StatisticTab(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList)
 {
 	this->readerList = readerList;
 	this->titleList = titleList;
@@ -117,7 +117,7 @@ STATISTIC_TAB_MEMBER::Top10TitleDatasheet::Top10TitleDatasheet()
 	this->status = false;
 }
 
-STATISTIC_TAB_MEMBER::Top10TitleDatasheet::Top10TitleDatasheet(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList)
+STATISTIC_TAB_MEMBER::Top10TitleDatasheet::Top10TitleDatasheet(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList)
 {
 	this->readerList = readerList;
 	this->titleList = titleList;
@@ -137,23 +137,22 @@ void STATISTIC_TAB_MEMBER::Top10TitleDatasheet::CreateDatasheet()
 		titleListMap.Insert(this->titleList->nodes[i]->GetISBN(), this->titleList->nodes[i]);
 	}
 
-	Stack<AVL_TREE::Pointer> stk;
-
-	AVL_TREE::Pointer reader = *this->readerList;
+	Stack<AVL_Tree<READER::Reader, int>::Node*> stk;
+	AVL_Tree<READER::Reader, int>::Node* reader = this->readerList->GetRoot();
 
 	do
 	{
 		while (reader != nullptr)
 		{
 			stk.Push(reader);
-			reader = reader->left;
+			reader = reader->left_;
 		}
 
 		if (stk.Empty() == false)
 		{
 			reader = stk.Pop();
 
-			DOUBLE_LINKED_LIST::Controller readerBooksCirculation = reader->info.GetBooksCirculation();
+			DOUBLE_LINKED_LIST::Controller readerBooksCirculation = reader->info_.GetBooksCirculation();
 
 			std::string bookTitle = {};
 			for (DOUBLE_LINKED_LIST::Pointer bookCirculation = readerBooksCirculation.First; bookCirculation != nullptr; bookCirculation = bookCirculation->right)
@@ -165,7 +164,7 @@ void STATISTIC_TAB_MEMBER::Top10TitleDatasheet::CreateDatasheet()
 				}
 			}
 
-			reader = reader->right;
+			reader = reader->right_;
 		}
 		else
 		{
@@ -283,7 +282,7 @@ STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::OverdueReadersDatasheet()
 	this->status = false;
 }
 
-STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::OverdueReadersDatasheet(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList)
+STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::OverdueReadersDatasheet(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList)
 {
 	this->readerList = readerList;
 	this->titleList = titleList;
@@ -302,22 +301,22 @@ void STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::CreateDatasheet()
 		titleListMap.Insert(this->titleList->nodes[i]->GetISBN(), this->titleList->nodes[i]);
 	}
 
-	Stack<AVL_TREE::Pointer> stk;
+	Stack<AVL_Tree<READER::Reader, int>::Node*> stk;
 
 	STATISTIC_TAB_MEMBER::OverdueReader overdueReader;
 
-	AVL_TREE::Pointer currentReader = *this->readerList;
+	AVL_Tree<READER::Reader, int>::Node* currentReader = this->readerList->GetRoot();
 	do {
 		while (currentReader != nullptr) {
 			stk.Push(currentReader);
-			currentReader = currentReader->left;
+			currentReader = currentReader->left_;
 		}
 
 		if (stk.Empty() == false) {
 			currentReader = stk.Pop();
 			//----------------------------------------
 
-			DOUBLE_LINKED_LIST::Controller readerBookCirculationList = currentReader->info.GetBooksCirculation();
+			DOUBLE_LINKED_LIST::Controller readerBookCirculationList = currentReader->info_.GetBooksCirculation();
 
 			if (!DOUBLE_LINKED_LIST::Empty(readerBookCirculationList))
 			{
@@ -339,7 +338,7 @@ void STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::CreateDatasheet()
 			}
 
 			//----------------------------------------
-			currentReader = currentReader->right;
+			currentReader = currentReader->right_;
 		}
 		else {
 			break;

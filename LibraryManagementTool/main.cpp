@@ -6,8 +6,10 @@
 
 //* Program's entrance
 int main() {
-	AVL_TREE::Pointer readerList;
-	AVL_TREE::Initialize(readerList);
+	/*AVL_TREE::Pointer readerList;
+	AVL_TREE::Initialize(readerList);*/
+
+	AVL_Tree<READER::Reader, int> readerList;
 
 	LINEAR_LIST::LinearList titleList;
 	LINEAR_LIST::Initialize(titleList);
