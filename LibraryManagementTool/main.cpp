@@ -8,7 +8,7 @@
 int main()
 {
 	AVL_Tree<READER::Reader, int> readerList;
-	LinearList<BOOK_TITLE::BookTitle*> titleList;
+	TitleLinearList titleList;
 
 	//* Run program main function
 	LandingView mainView(&readerList, &titleList);

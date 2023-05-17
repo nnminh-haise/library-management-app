@@ -238,125 +238,48 @@ void BOOK_TITLE::BookTitle::Log() {
 	std::cerr << std::format("----------------\n");
 }
 
-LINEAR_LIST::LinearList::LinearList() {
-	this->numberOfNode = 0;
-	for (int i = 0; i < LINEAR_LIST::MAX_SIZE; ++i) {
-		this->nodes[i] = nullptr;
-	}
-}
-
-void LINEAR_LIST::Initialize(LINEAR_LIST::LinearList& list) {
-	list.numberOfNode = 0;
-	for (int i = 0; i < LINEAR_LIST::MAX_SIZE; ++i) {
-		list.nodes[i] = nullptr;
-	}
-}
-
-bool LINEAR_LIST::Empty(const LinearList& list) {
-	return list.numberOfNode == 0;
-}
-
-bool LINEAR_LIST::IsFull(const LinearList& list) {
-	return list.numberOfNode == MAX_SIZE;
-}
-
-bool LINEAR_LIST::PushFront(LinearList& list, BOOK_TITLE::BookTitle* item) {
-	if (LINEAR_LIST::IsFull(list)) {
-		return false;
-	}
-
-	list.nodes[0] = item;
-	list.numberOfNode = 1;
-	return true;
-}
-
-bool LINEAR_LIST::InsertItem(LINEAR_LIST::LinearList& list, BOOK_TITLE::BookTitle* item, int position) {
-	if (LINEAR_LIST::IsFull(list)) {
-		std::cerr << std::format("[ERROR] LIST IS FULL CANNOT INSERT NEW ELEMENT!\nSUGGEST CREATE A NEW LIST WITH BIGGER SIZE!\n");
-		exit(1);
-	}
-
-	if (position < 0 || position >= list.numberOfNode) {
-		std::cerr << std::format("[ERROR] POSITION OUT OF RANGE! INSERT POSITION MUST IN RANGE 0 TO {}\n", LINEAR_LIST::MAX_SIZE - 1);
-		exit(1);
-	}
-
-	//* Shift all item from position + 1 to the right by 1.
-	for (int i = list.numberOfNode; i > position; --i) {
-		list.nodes[i] = list.nodes[i - 1];
-	}
-	
-	//* Insert new item into the list.
-	list.nodes[position] = item;
-
-	//* Increase the size of the list by one.
-	++list.numberOfNode;
-
-	return true;
-}
-
-bool LINEAR_LIST::PushBack(LinearList& list, BOOK_TITLE::BookTitle* item) {
-	if (LINEAR_LIST::IsFull(list)) {
-		std::cerr << std::format("[ERROR] DANH BOOK DAU BOOK IS FULL!\n");
-		exit(1);
-	}
-
-	list.nodes[list.numberOfNode] = item;
-	++list.numberOfNode;
-
-	return false;
-}
-
-bool LINEAR_LIST::InsertOrder(LinearList& list, BOOK_TITLE::BookTitle* item) {
-	if (LINEAR_LIST::IsFull(list)) {
-		exit(1);
-	}
-
-	int index = 0;
-	for (; index < list.numberOfNode && item->GetTitle().compare(list.nodes[index]->GetTitle()) >= 0; ++index);
-
-	for (int i = list.numberOfNode; i > index; --i) {
-		list.nodes[i] = list.nodes[i - 1];
-	}
-
-	list.numberOfNode++;
-	list.nodes[index] = item;
-
-	return true;
-}
-
-BOOK_TITLE::BookTitle* DAU_SACH_MODULES::SearchByName(const LinearList<BOOK_TITLE::BookTitle*>* titleList, const std::string& titleName)
+BOOK_TITLE::BookTitle* DAU_SACH_MODULES::SearchByName(const TitleLinearList* titleList, const std::string& titleName)
 {
 	if (titleList->Empty())
 	{
 		return nullptr;
 	}
 
-	for (int i = 0; i < list->Size(); ++i) {
-		if (titleName.compare(list->At(i)->GetTitle()) == 0) {
-			return list->At(i);
-		}
-	}
-
-	return nullptr;
-}
-
-BOOK_TITLE::BookTitle* DAU_SACH_MODULES::SearchByISBN(const LinearList<BOOK_TITLE::BookTitle*>* titleList, const std::string& isbn)
-{
-	for (int i = 0; i < list->Size(); ++i)
+	BOOK_TITLE::BookTitle* searchTarget = nullptr;
+	for (int i = 0; i < titleList->Size(); ++i)
 	{
-		if (isbn.compare(list->At(i)->GetISBN()) == 0)
+		searchTarget = titleList->At(i);
+		if (titleName.compare(searchTarget->GetTitle()) == 0)
 		{
-			return list->At(i);
+			return searchTarget;
 		}
 	}
+
 	return nullptr;
 }
 
-bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LinearList<BOOK_TITLE::BookTitle*>* titleList)
+BOOK_TITLE::BookTitle* DAU_SACH_MODULES::SearchByISBN(const TitleLinearList* titleList, const std::string& isbn)
 {
-	LINEAR_LIST::Initialize(danhSachDauSach);
-	
+	if (titleList->Empty())
+	{
+		return nullptr;
+	}
+
+	BOOK_TITLE::BookTitle* searchTarget = nullptr;
+	for (int i = 0; i < titleList->Size(); ++i)
+	{
+		searchTarget = titleList->At(i);
+		if (isbn.compare(searchTarget->GetISBN()) == 0)
+		{
+			return searchTarget;
+		}
+	}
+
+	return nullptr;
+}
+
+bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, TitleLinearList* titleList)
+{	
 	std::filebuf databaseBuffer{};
 
 	if (!databaseBuffer.open(filename, std::ios::in)) 
@@ -476,8 +399,7 @@ bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LinearLis
 		}
 		else 
 		{
-			//TODO: implement insert order here
-			//titleList->InsertOrder(danhSachDauSach, newTitle);
+			titleList->PushFront(newTitle);
 		}
 	}
 
@@ -486,7 +408,7 @@ bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LinearLis
 	return true;
 }
 
-bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const LinearList<BOOK_TITLE::BookTitle*>* titleList)
+bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const TitleLinearList* titleList)
 {
 	std::filebuf databaseBuffer{};
 
@@ -498,7 +420,7 @@ bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const L
 
 	std::ostream database(&databaseBuffer);
 
-	for (int i = 0; i < titleList.numberOfNode; ++i) 
+	for (int i = 0; i < titleList->Size(); ++i) 
 	{
 		database << titleList->At(i)->GetISBN() << ", ";
 		database << titleList->At(i)->GetTitle() << ", ";
@@ -530,11 +452,32 @@ bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const L
 	return true;
 }
 
-void DAU_SACH_MODULES::DuplicateList(const LinearList<BOOK_TITLE::BookTitle*>* titleList, LinearList<BOOK_TITLE::BookTitle*>* destinationList)
+TitleLinearList::TitleLinearList() : LinearList<BOOK_TITLE::BookTitle*>() {}
+
+TitleLinearList::TitleLinearList(const TitleLinearList& other) : LinearList<BOOK_TITLE::BookTitle*>(other) {}
+
+TitleLinearList::~TitleLinearList() {}
+
+TitleLinearList& TitleLinearList::operator=(const TitleLinearList& other)
 {
-	destinationList.numberOfNode = titleList.numberOfNode;
-	for (int i = 0; i < titleList.numberOfNode; ++i)
+	if (this == &other)
 	{
-		destinationList.nodes[i] = titleList.nodes[i];
+		return *this;
 	}
+
+	LinearList<BOOK_TITLE::BookTitle*>::operator=(other);
+	return *this;
+}
+
+void TitleLinearList::PushOrder(BOOK_TITLE::BookTitle* value)
+{
+	if (this->Full())
+	{
+		throw std::logic_error("[ERROR] LIST IS FULL! CANNOT INSERT MORE TITLE!");
+	}
+
+	int index = 0;
+	for (; index < this->Size() && value->GetTitle().compare((*this)[index]->GetTitle()) >= 0; ++index);
+
+	LinearList<BOOK_TITLE::BookTitle*>::PushAt(value, index);
 }

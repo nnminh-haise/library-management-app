@@ -78,7 +78,7 @@ void StatisticTab::TitleButtonOnAction()
 	}
 }
 
-StatisticTab::StatisticTab(AVL_Tree<READER::Reader, int>* readerList, LinearList<BOOK_TITLE::BookTitle*>* titleList)
+StatisticTab::StatisticTab(AVL_Tree<READER::Reader, int>* readerList, TitleLinearList* titleList)
 {
 	this->readerList = readerList;
 	this->titleList = titleList;
@@ -117,7 +117,7 @@ STATISTIC_TAB_MEMBER::Top10TitleDatasheet::Top10TitleDatasheet()
 	this->status = false;
 }
 
-STATISTIC_TAB_MEMBER::Top10TitleDatasheet::Top10TitleDatasheet(AVL_Tree<READER::Reader, int>* readerList, LinearList<BOOK_TITLE::BookTitle*>* titleList)
+STATISTIC_TAB_MEMBER::Top10TitleDatasheet::Top10TitleDatasheet(AVL_Tree<READER::Reader, int>* readerList, TitleLinearList* titleList)
 {
 	this->readerList = readerList;
 	this->titleList = titleList;
@@ -282,7 +282,7 @@ STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::OverdueReadersDatasheet()
 	this->status = false;
 }
 
-STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::OverdueReadersDatasheet(AVL_Tree<READER::Reader, int>* readerList, LinearList<BOOK_TITLE::BookTitle*>* titleList)
+STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::OverdueReadersDatasheet(AVL_Tree<READER::Reader, int>* readerList, TitleLinearList* titleList)
 {
 	this->readerList = readerList;
 	this->titleList = titleList;
@@ -293,8 +293,8 @@ void STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::CreateDatasheet()
 {
 	std::cerr << "[LOG] CREATING OVERDUE READERS DATASHEET!\n";
 
-	HashMap <BOOK_TITLE::BookTitle*> titleListMap(456976, nullptr);
-	DynamicArray <STATISTIC_TAB_MEMBER::OverdueReader> overdueReaders;
+	HashMap<BOOK_TITLE::BookTitle*> titleListMap(456976, nullptr);
+	LinearList<STATISTIC_TAB_MEMBER::OverdueReader> overdueReaders;
 
 	for (int i = 0; i < this->titleList->Size(); ++i)
 	{

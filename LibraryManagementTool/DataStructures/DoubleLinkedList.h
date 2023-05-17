@@ -37,9 +37,9 @@ public:
 
 	Node* NodeAt(int index);
 
-	Node* Begin();
+	Node* Begin() const;
 
-	Node* End();
+	Node* End() const;
 
 	void PushFront(T value);
 
@@ -72,7 +72,7 @@ inline DoubleLinkedList<T>::DoubleLinkedList(const DoubleLinkedList<T>& other)
 	if (this != &other)
 	{
 		// Clear the current list
-		this->~DoubleLinkedList();
+		//this->~DoubleLinkedList();
 
 		// Copy the size
 		this->size_ = other.size_;
@@ -105,13 +105,13 @@ inline DoubleLinkedList<T>::DoubleLinkedList(const DoubleLinkedList<T>& other)
 template<typename T>
 inline DoubleLinkedList<T>::~DoubleLinkedList()
 {
-	Node* currentNode = this->first_;
-	for (; currentNode != nullptr;)
-	{
-		Node* deleteNode = currentNode;
-		currentNode = currentNode->right_;
-		delete deleteNode;
-	}
+	//Node* currentNode = this->first_;
+	//for (; currentNode != nullptr;)
+	//{
+	//	Node* deleteNode = currentNode;
+	//	currentNode = currentNode->right_;
+	//	delete deleteNode;
+	//}
 }
 
 template<typename T>
@@ -193,7 +193,7 @@ inline DoubleLinkedList<T>::Node* DoubleLinkedList<T>::NodeAt(int index)
 }
 
 template<typename T>
-inline DoubleLinkedList<T>::Node* DoubleLinkedList<T>::Begin()
+inline DoubleLinkedList<T>::Node* DoubleLinkedList<T>::Begin() const
 {
 	if (this->Empty())
 	{
@@ -204,7 +204,7 @@ inline DoubleLinkedList<T>::Node* DoubleLinkedList<T>::Begin()
 }
 
 template<typename T>
-inline DoubleLinkedList<T>::Node* DoubleLinkedList<T>::End()
+inline DoubleLinkedList<T>::Node* DoubleLinkedList<T>::End() const
 {
 	if (this->Empty())
 	{

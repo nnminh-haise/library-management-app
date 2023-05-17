@@ -656,7 +656,7 @@ READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail()
 	this->targetedBookID = nullptr;
 }
 
-READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail(LINEAR_LIST::LinearList* titleList, READER::Reader* reader)
+READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail(TitleLinearList* titleList, READER::Reader* reader)
 {
 	this->titleList = titleList;
 	this->reader = reader;
@@ -912,7 +912,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 
 	//* FINDING CORRESPOND BOOK ID (start below) ---------------------------------------------------------
 	const std::string& borrowingTitleISBN = borrowingBookID.substr(0, 4); //* Taking the ISBN code of the targetedBook
-	BOOK_TITLE::BookTitle* correspondTitle = DAU_SACH_MODULES::SearchByISBN(*this->titleList, borrowingTitleISBN);
+	BOOK_TITLE::BookTitle* correspondTitle = DAU_SACH_MODULES::SearchByISBN(this->titleList, borrowingTitleISBN);
 	if (correspondTitle == nullptr)
 	{
 		throw std::logic_error(std::format("[ERROR] THE ISBN: {} NOT EXIST!\n", borrowingTitleISBN));
@@ -1037,9 +1037,9 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnBook()
 
 	//* Finding the title which the targeted targetedBook belongs to.
 	int indexOfCoresspondTitle = -1;
-	for (int i = 0; i < this->titleList->numberOfNode; ++i)
+	for (int i = 0; i < this->titleList->Size(); ++i)
 	{
-		if (this->titleList->nodes[i]->GetISBN().compare(userTargetedReturnBookID.substr(0, 4)) == 0)
+		if ((*this->titleList)[i]->GetISBN().compare(userTargetedReturnBookID.substr(0, 4)) == 0)
 		{
 			indexOfCoresspondTitle = i;
 			break;
@@ -1051,7 +1051,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnBook()
 		return false;
 	}
 
-	LINKED_LIST::Controller targetedTitleCatalouge = this->titleList->nodes[indexOfCoresspondTitle]->GetCatalogue();
+	LINKED_LIST::Controller targetedTitleCatalouge = (*this->titleList)[indexOfCoresspondTitle]->GetCatalogue();
 	bool bookExist = false;
 	LINKED_LIST::Pointer targetedBook = targetedTitleCatalouge.first;
 	for (; targetedBook != nullptr; targetedBook = targetedBook->next)
@@ -1069,10 +1069,9 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnBook()
 	}
 
 	targetedBook->info.SetStatus(BOOK::Status::AVAILABLE);
-	this->titleList->nodes[indexOfCoresspondTitle]->SetCatalogue(targetedTitleCatalouge);
+	(*this->titleList)[indexOfCoresspondTitle]->SetCatalogue(targetedTitleCatalouge);
 	targetBookCirculation->info_.SetReturnDate(HELPER::Date());
 	targetBookCirculation->info_.SetStatus(BOOK_CIRCULATION::CirculationStatus::RETURNED);
-	//DOUBLE_LINKED_LIST::RemoveNode(readerBookCirculationList, targetBookCirculation);
 	this->reader->SetBooksCirculation(readerBookCirculationList);
 	return true;
 }
@@ -1119,7 +1118,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateTitlesDatasheet()
 	int characterLimits[] = {
 		3, 4, 30, 20, 10
 	};
-	int listSize = this->titleList->numberOfNode;
+	int listSize = this->titleList->Size();
 	this->titlesDatasheetController.SetDatasheetCount(
 		listSize / (CONSTANTS::MAX_ROW_COUNT - 1) + (listSize % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
 	);
@@ -1141,7 +1140,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateTitlesDatasheet()
 	int recordIndex = 0;
 	int sheetIndex = -1;
 
-	for (int i = 0; i < titleList->numberOfNode; ++i)
+	for (int i = 0; i < listSize; ++i)
 	{
 		++recordIndex;
 		if (recordIndex > this->titlesDatasheetController.GetRecordCount() - 1)
@@ -1155,10 +1154,10 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateTitlesDatasheet()
 
 		std::string* data = new std::string[this->titlesDatasheetController.GetAttributeCount()];
 		data[0] = std::to_string(i + 1);
-		data[1] = titleList->nodes[i]->GetISBN();
-		data[2] = titleList->nodes[i]->GetTitle();
-		data[3] = titleList->nodes[i]->GetAuthor();
-		data[4] = titleList->nodes[i]->GetCategory();
+		data[1] = (*this->titleList)[i]->GetISBN();
+		data[2] = (*this->titleList)[i]->GetTitle();
+		data[3] = (*this->titleList)[i]->GetAuthor();
+		data[4] = (*this->titleList)[i]->GetCategory();
 
 		this->titlesDatasheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 	}
@@ -1388,7 +1387,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_Tree<READER::Reader, int
 * 
 * All the code in this method only run once in the program runtime!
 */
-DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController) {
+DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_Tree<READER::Reader, int>* readerList, TitleLinearList* titleList, ELEMENTS::InputModeController* inputController) {
 	this->active = false;
 	this->defaultOrder = true;
 	this->readerList = readerList;

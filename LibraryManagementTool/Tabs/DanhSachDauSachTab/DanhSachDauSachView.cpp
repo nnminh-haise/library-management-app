@@ -15,7 +15,7 @@ namespace DAU_SACH_TAB {
 		* Function creates datasheet form the given list
 		! This function need to be rewrite!
 	*/
-	void CreateDatasheetsFromList(LinearList<BOOK_TITLE::BookTitle*>* titleList, DATASHEET::Controller& controler)
+	void CreateDatasheetsFromList(TitleLinearList* titleList, DATASHEET::Controller& controler)
 	{
 		int listSize = titleList->Size();
 		controler.SetDatasheetCount(
@@ -63,9 +63,9 @@ namespace DAU_SACH_TAB {
 		}
 	}
 
-	void CreateDatasheetsWithSortedCategory(LinearList<BOOK_TITLE::BookTitle*> titleListSortedByCategory, DATASHEET::Controller& datasheetController)
+	void CreateDatasheetsWithSortedCategory(TitleLinearList* titleListSortedByCategory, DATASHEET::Controller& datasheetController)
 	{
-		int listSize = titleListSortedByCategory.Size();
+		int listSize = titleListSortedByCategory->Size();
 		datasheetController.SetDatasheetCount(
 			listSize / (CONSTANTS::MAX_ROW_COUNT - 1) + (listSize % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
 		);
@@ -99,12 +99,12 @@ namespace DAU_SACH_TAB {
 
 			std::string* data = new std::string[datasheetController.GetAttributeCount()];
 			data[0] = std::to_string(i + 1);
-			data[1] = titleListSortedByCategory[i]->GetISBN();
-			data[2] = titleListSortedByCategory[i]->GetTitle();
-			data[3] = std::to_string(titleListSortedByCategory[i]->GetPageCount());
-			data[4] = titleListSortedByCategory[i]->GetAuthor();
-			data[5] = std::to_string(titleListSortedByCategory[i]->GetPublicationYear());
-			data[6] = titleListSortedByCategory[i]->GetCategory();
+			data[1] = (*titleListSortedByCategory)[i]->GetISBN();
+			data[2] = (*titleListSortedByCategory)[i]->GetTitle();
+			data[3] = std::to_string((*titleListSortedByCategory)[i]->GetPageCount());
+			data[4] = (*titleListSortedByCategory)[i]->GetAuthor();
+			data[5] = std::to_string((*titleListSortedByCategory)[i]->GetPublicationYear());
+			data[6] = (*titleListSortedByCategory)[i]->GetCategory();
 
 			datasheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 		}
@@ -277,7 +277,7 @@ namespace DAU_SACH_TAB {
 	}
 
 	// TODO: rework on this function
-	void SachAddFieldController::SachAddFieldOnUpdate(LinearList<BOOK_TITLE::BookTitle*>* titleList, ELEMENTS::InputModeController& inputController)
+	void SachAddFieldController::SachAddFieldOnUpdate(TitleLinearList* titleList, ELEMENTS::InputModeController& inputController)
 	{
 		if (this->active == false)
 		{
@@ -438,7 +438,7 @@ namespace DAU_SACH_TAB {
 		this->goBackButton.SetPlaceholder("<");
 	}
 
-	bool ItemAddField::ItemAddFieldOnUpdate(LinearList<BOOK_TITLE::BookTitle*>* titleList, ELEMENTS::InputModeController& InputController)
+	bool ItemAddField::ItemAddFieldOnUpdate(TitleLinearList* titleList, ELEMENTS::InputModeController& InputController)
 	{
 		if (this->active == false)
 		{
@@ -545,7 +545,8 @@ namespace DAU_SACH_TAB {
 				newTitle->SetCatalogue(newBookList);
 			}
 
-			LINEAR_LIST::InsertOrder(titleList, newTitle);
+			
+			titleList->PushOrder(newTitle);
 			std::cerr << "[INFO] Successfully insert a new item into title list!\n";
 			return true;
 		}
@@ -571,7 +572,7 @@ namespace DAU_SACH_TAB {
 	}
 
 	//TODO: rework!
-	void ItemAddField::Display(LinearList<BOOK_TITLE::BookTitle*>* titleList, ELEMENTS::InputModeController& InputController)
+	void ItemAddField::Display(TitleLinearList* titleList, ELEMENTS::InputModeController& InputController)
 	{
 		if (this->active == false)
 		{
@@ -872,11 +873,11 @@ namespace DAU_SACH_TAB {
 * DauSachTab constructor
 */
 
-DauSachTab::DauSachTab(LinearList<BOOK_TITLE::BookTitle*>* titleList, ELEMENTS::InputModeController* inputController)
+DauSachTab::DauSachTab(TitleLinearList* titleList, ELEMENTS::InputModeController* inputController)
 {
 	//* Initialize data
 	this->titleList = titleList;
-	this->titleListSortedByCategory = LinearList<BOOK_TITLE::BookTitle*>();
+	this->titleListSortedByCategory = TitleLinearList();
 	this->inputController = inputController;
 	this->datasheetDisplayFlag = true;
 	this->active = false;
@@ -1031,7 +1032,7 @@ void DauSachTab::Run() {
 		else if (categoryLabelButton.LeftMouseClicked()) {
 			delay(100);
 			this->SortByCategory();
-			DAU_SACH_TAB::CreateDatasheetsWithSortedCategory(this->titleListSortedByCategory, this->datasheetController);
+			DAU_SACH_TAB::CreateDatasheetsWithSortedCategory(&this->titleListSortedByCategory, this->datasheetController);
 		}
 		else {
 			categoryLabelButton.SetFillColor(rgb(210, 218, 255));

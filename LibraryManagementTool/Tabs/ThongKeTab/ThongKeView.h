@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "../../DataStructures/DynamicArray.h"
+#include "../../DataStructures/LinkedList.h"
 #include "../../DataStructures/HashMap.h"
 #include "../../DataStructures/Stack.h"
 #include "../../TheDocGia/TheDocGia.h"
@@ -28,7 +28,7 @@ namespace STATISTIC_TAB_MEMBER
 	public:
 		Top10TitleDatasheet();
 
-		Top10TitleDatasheet(AVL_Tree<READER::Reader, int>* readerList, LinearList<BOOK_TITLE::BookTitle*>* titleList);
+		Top10TitleDatasheet(AVL_Tree<READER::Reader, int>* readerList, TitleLinearList* titleList);
 
 		void CreateDatasheet();
 
@@ -44,7 +44,7 @@ namespace STATISTIC_TAB_MEMBER
 		bool status;
 
 		AVL_Tree<READER::Reader, int>* readerList;
-		LinearList<BOOK_TITLE::BookTitle*>* titleList;
+		TitleLinearList* titleList;
 
 		DATASHEET::Controller top10TitlesDatasheetController;
 	};
@@ -54,7 +54,7 @@ namespace STATISTIC_TAB_MEMBER
 	public:
 		OverdueReadersDatasheet();
 
-		OverdueReadersDatasheet(AVL_Tree<READER::Reader, int>* readerList, LinearList<BOOK_TITLE::BookTitle*>* titleList);
+		OverdueReadersDatasheet(AVL_Tree<READER::Reader, int>* readerList, TitleLinearList* titleList);
 
 		void CreateDatasheet();
 
@@ -79,7 +79,7 @@ namespace STATISTIC_TAB_MEMBER
 class StatisticTab
 {
 public:
-	StatisticTab(AVL_Tree<READER::Reader, int>* readerList, LinearList<BOOK_TITLE::BookTitle*>* titleList);
+	StatisticTab(AVL_Tree<READER::Reader, int>* readerList, TitleLinearList* titleList);
 
 	void Run();
 
@@ -96,7 +96,7 @@ private:
 	Button top10TitleButton;
 
 	AVL_Tree<READER::Reader, int>* readerList;
-	LinearList<BOOK_TITLE::BookTitle*>* titleList;
+	TitleLinearList* titleList;
 
 	HashMap <int> titleBorrowedCountMap;
 	HashMap <BOOK_TITLE::BookTitle*> titleListMap;

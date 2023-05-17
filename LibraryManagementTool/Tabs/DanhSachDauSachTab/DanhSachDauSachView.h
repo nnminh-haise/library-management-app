@@ -16,13 +16,13 @@ namespace DAU_SACH_TAB {
 	 * The second one is the datasheet's controller.
 	 * Function returns no value.
 	*/
-	void CreateDatasheetsFromList(LinearList<BOOK_TITLE::BookTitle*>* titleList, DATASHEET::Controller& datasheetController);
+	void CreateDatasheetsFromList(TitleLinearList* titleList, DATASHEET::Controller& datasheetController);
 
 	/**
 	 * * Function creates datasheets from a sortedList.
 	 * * The datasheets then stored inside the datasheet's controller.
 	*/
-	void CreateDatasheetsWithSortedCategory(LinearList<BOOK_TITLE::BookTitle*>* titleListSortedByCategory, DATASHEET::Controller& datasheetController);
+	void CreateDatasheetsWithSortedCategory(TitleLinearList* titleListSortedByCategory, DATASHEET::Controller& datasheetController);
 
 	/*
 	 * This is a graphical field, represented as a form, with the main purpose is for adding new item into the list.
@@ -69,7 +69,7 @@ namespace DAU_SACH_TAB {
 
 		void Initialize(int amount, std::string isbn);
 
-		void SachAddFieldOnUpdate(LinearList<BOOK_TITLE::BookTitle*>* titleList, ELEMENTS::InputModeController& InputController);
+		void SachAddFieldOnUpdate(TitleLinearList* titleList, ELEMENTS::InputModeController& InputController);
 
 		void IndexChangeButtonOnAction();
 
@@ -106,7 +106,7 @@ namespace DAU_SACH_TAB {
 
 		ItemAddField();
 
-		bool ItemAddFieldOnUpdate(LinearList<BOOK_TITLE::BookTitle*>* titleList, ELEMENTS::InputModeController& InputController);
+		bool ItemAddFieldOnUpdate(TitleLinearList* titleList, ELEMENTS::InputModeController& InputController);
 
 		void Activate();
 
@@ -114,7 +114,7 @@ namespace DAU_SACH_TAB {
 
 		bool DisplayStatus();
 
-		void Display(LinearList<BOOK_TITLE::BookTitle*>* titleList, ELEMENTS::InputModeController& InputController);
+		void Display(TitleLinearList* titleList, ELEMENTS::InputModeController& InputController);
 
 		bool GoBackButtonOnAction();
 	};
@@ -204,14 +204,15 @@ public:
 };
 
 
-class DauSachTab {
+class DauSachTab
+{
 private:
 	bool active;
 	bool datasheetDisplayFlag;
 	DATASHEET::Controller datasheetController;
 	ELEMENTS::InputModeController* inputController;
-	LinearList<BOOK_TITLE::BookTitle*>* titleList;
-	LinearList<BOOK_TITLE::BookTitle*> titleListSortedByCategory;
+	TitleLinearList* titleList;
+	TitleLinearList titleListSortedByCategory;
 	Button functionalButtons[3];
 
 private:
@@ -222,7 +223,7 @@ private:
 	DAU_SACH_TAB::TitleDetailDisplayField titleDetailField;
 
 public:
-	DauSachTab(LinearList<BOOK_TITLE::BookTitle*>* titleList, ELEMENTS::InputModeController* InputController);
+	DauSachTab(TitleLinearList* titleList, ELEMENTS::InputModeController* InputController);
 
 	void Destructor();
 
