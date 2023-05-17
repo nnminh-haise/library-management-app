@@ -22,6 +22,8 @@ public:
 public:
 	LinkedList();
 
+	LinkedList(const LinkedList<int>& other);
+
 	~LinkedList();
 
 	bool Empty() const;
@@ -29,6 +31,8 @@ public:
 	int Size() const;
 
 	Node& operator[] (int index);
+
+	LinkedList<T>& operator=(const LinkedList<T>& other);
 
 	Node* Begin();
 
@@ -44,6 +48,7 @@ public:
 
 private:
 	Node* first_;
+	int size_;
 };
 
 template<typename T>
@@ -57,6 +62,24 @@ template<typename T>
 LinkedList<T>::LinkedList()
 {
 	this->first_ = nullptr;
+	this->size_ = 0;
+}
+
+template<typename T>
+inline LinkedList<T>::LinkedList(const LinkedList<int>& other)
+{
+	if (this != &other)
+	{
+		this->first_ = nullptr;
+		this->size_ = 0;
+		LinkedList<T>::Node* current = other.first_;
+
+		while (current != nullptr)
+		{
+			this->PushBack(current->info_);
+			current = current->next_;
+		}
+	}
 }
 
 template<typename T>
@@ -80,9 +103,7 @@ inline bool LinkedList<T>::Empty() const
 template<typename T>
 inline int LinkedList<T>::Size() const
 {
-	int counter = 0;
-	for (LinkedList<T>::Node* p = this->first_; p != nullptr; p = p->next_, ++counter);
-	return counter;
+	return this->size_;
 }
 
 template<typename T>
@@ -96,6 +117,26 @@ inline LinkedList<T>::Node& LinkedList<T>::operator[](int index)
 	LinkedList<T>::Node* target = this->first_;
 	for (int i = 0; i != index && target != nullptr; target = target->next_, i++);
 	return *target;
+}
+
+template<typename T>
+inline LinkedList<T>& LinkedList<T>::operator=(const LinkedList<T>& other)
+{
+	if (this == &other)
+	{
+		return *this;
+	}
+
+	this->first_ = nullptr;
+	LinkedList<T>::Node* current = other.first_;
+
+	while (current != nullptr)
+	{
+		this->PushBack(current->info_);
+		current = current->next_;
+	}
+
+	return *this;
 }
 
 template<typename T>
@@ -127,6 +168,7 @@ inline void LinkedList<T>::PushFront(T value)
 {
 	Node* newNode = new Node(value, this->first_);
 	this->first_ = newNode;
+	this->size_ += 1;
 }
 
 template<typename T>
@@ -142,6 +184,7 @@ inline void LinkedList<T>::PushBack(T value)
 	Node* lastNode = this->first_;
 	for (; lastNode->next_ != nullptr; lastNode = lastNode->next_);
 	lastNode->next_ = newNode;
+	this->size_ += 1;
 }
 
 template<typename T>
@@ -152,6 +195,7 @@ inline T LinkedList<T>::PopFront()
 		throw std::logic_error("[ERROR] LIST IS EMPTY! CANNOT REMOVE ITEM!\n");
 	}
 
+	this->size_ -= 1;
 	T returnValue = this->first_->info_;
 	Node* deleteNode = this->first_;
 	this->first_ = this->first_->next_;
@@ -172,6 +216,7 @@ inline T LinkedList<T>::PopBack()
 		return this->PopFront();
 	}
 
+	this->size_ -= 1;
 	Node* lastNode = this->first_;
 	for (; lastNode->next_->next_ != nullptr; lastNode = lastNode->next_);
 	Node* deleteNode = lastNode->next_;

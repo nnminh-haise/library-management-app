@@ -12,17 +12,19 @@
 namespace DAU_SACH_TAB {
 
 	/*
-	 * Function creates datasheet form the given list
-	! This function need to be rewrite!
+		* Function creates datasheet form the given list
+		! This function need to be rewrite!
 	*/
-	void CreateDatasheetsFromList(LINEAR_LIST::LinearList* titleList, DATASHEET::Controller& controler) {
-		int listSize = titleList->numberOfNode;
+	void CreateDatasheetsFromList(LinearList<BOOK_TITLE::BookTitle*>* titleList, DATASHEET::Controller& controler)
+	{
+		int listSize = titleList->Size();
 		controler.SetDatasheetCount(
 			listSize / (CONSTANTS::MAX_ROW_COUNT - 1) + (listSize % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
 		);
 		controler.InitializeDatasheets();
 
-		for (int i = 0; i < controler.GetDatasheetCount(); ++i) {
+		for (int i = 0; i < controler.GetDatasheetCount(); ++i)
+		{
 			controler[i] = DATASHEET::Datasheet(
 				controler.GetRecordCount(), 
 				controler.GetAttributeCount(), 
@@ -36,36 +38,41 @@ namespace DAU_SACH_TAB {
 		int recordIndex = 0;
 		int sheetIndex = -1;
 
-		for (int i = 0; i < titleList->numberOfNode; ++i) {
-
+		for (int i = 0; i < titleList->Size(); ++i)
+		{
 			++recordIndex;
-			if (recordIndex > controler.GetRecordCount() - 1) {
+			if (recordIndex > controler.GetRecordCount() - 1)
+			{
 				recordIndex = 1;
 			}
-			if (recordIndex % (controler.GetRecordCount() - 1) == 1) {
+			if (recordIndex % (controler.GetRecordCount() - 1) == 1)
+			{
 				sheetIndex += 1;
 			}
 
 			std::string* data = new std::string[controler.GetAttributeCount()];
 			data[0] = std::to_string(i + 1);
-			data[1] = titleList->nodes[i]->GetISBN();
-			data[2] = titleList->nodes[i]->GetTitle();
-			data[3] = std::to_string(titleList->nodes[i]->GetPageCount());
-			data[4] = titleList->nodes[i]->GetAuthor();
-			data[5] = std::to_string(titleList->nodes[i]->GetPublicationYear());
-			data[6] = titleList->nodes[i]->GetCategory();		
+			data[1] = (*titleList)[i]->GetISBN();
+			data[2] = (*titleList)[i]->GetTitle();
+			data[3] = std::to_string((*titleList)[i]->GetPageCount());
+			data[4] = (*titleList)[i]->GetAuthor();
+			data[5] = std::to_string((*titleList)[i]->GetPublicationYear());
+			data[6] = (*titleList)[i]->GetCategory();
 
 			controler[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 		}
 	}
 
-	void CreateDatasheetsWithSortedCategory(BOOK_TITLE::BookTitle** sortedList, int listSize, DATASHEET::Controller& datasheetController) {
+	void CreateDatasheetsWithSortedCategory(LinearList<BOOK_TITLE::BookTitle*> titleListSortedByCategory, DATASHEET::Controller& datasheetController)
+	{
+		int listSize = titleListSortedByCategory.Size();
 		datasheetController.SetDatasheetCount(
 			listSize / (CONSTANTS::MAX_ROW_COUNT - 1) + (listSize % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
 		);
 		datasheetController.InitializeDatasheets();
 
-		for (int i = 0; i < datasheetController.GetDatasheetCount(); ++i) {
+		for (int i = 0; i < datasheetController.GetDatasheetCount(); ++i)
+		{
 			datasheetController[i] = DATASHEET::Datasheet(
 				datasheetController.GetRecordCount(), 
 				datasheetController.GetAttributeCount(), 
@@ -78,24 +85,26 @@ namespace DAU_SACH_TAB {
 		int recordIndex = 0;
 		int sheetIndex = -1;
 
-		for (int i = 0; i < listSize; ++i) {
-
+		for (int i = 0; i < listSize; ++i)
+		{
 			++recordIndex;
-			if (recordIndex > datasheetController.GetRecordCount() - 1) {
+			if (recordIndex > datasheetController.GetRecordCount() - 1)
+			{
 				recordIndex = 1;
 			}
-			if (recordIndex % (datasheetController.GetRecordCount() - 1) == 1) {
+			if (recordIndex % (datasheetController.GetRecordCount() - 1) == 1)
+			{
 				sheetIndex += 1;
 			}
 
 			std::string* data = new std::string[datasheetController.GetAttributeCount()];
 			data[0] = std::to_string(i + 1);
-			data[1] = sortedList[i]->GetISBN();
-			data[2] = sortedList[i]->GetTitle();
-			data[3] = std::to_string(sortedList[i]->GetPageCount());
-			data[4] = sortedList[i]->GetAuthor();
-			data[5] = std::to_string(sortedList[i]->GetPublicationYear());
-			data[6] = sortedList[i]->GetCategory();
+			data[1] = titleListSortedByCategory[i]->GetISBN();
+			data[2] = titleListSortedByCategory[i]->GetTitle();
+			data[3] = std::to_string(titleListSortedByCategory[i]->GetPageCount());
+			data[4] = titleListSortedByCategory[i]->GetAuthor();
+			data[5] = std::to_string(titleListSortedByCategory[i]->GetPublicationYear());
+			data[6] = titleListSortedByCategory[i]->GetCategory();
 
 			datasheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 		}
@@ -267,43 +276,56 @@ namespace DAU_SACH_TAB {
 		}
 	}
 
-	void SachAddFieldController::SachAddFieldOnUpdate(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& inputController) {
-		if (this->active == false) {
+	// TODO: rework on this function
+	void SachAddFieldController::SachAddFieldOnUpdate(LinearList<BOOK_TITLE::BookTitle*>* titleList, ELEMENTS::InputModeController& inputController)
+	{
+		if (this->active == false)
+		{
 			return;
 		}
 
-		for (int i = 2; i < 5; ++i) {
-			if (this->items[this->activeField].inputField[i].IsHover()) {
+		for (int i = 2; i < 5; ++i)
+		{
+			if (this->items[this->activeField].inputField[i].IsHover())
+			{
 				this->items[this->activeField].inputField[i].SetFillColor(rgb(233, 248, 249));
 				this->items[this->activeField].inputField[i].SetBorderColor(rgb(83, 127, 231));
 			}
-			else if (this->items[this->activeField].inputField[i].LeftMouseClicked()) {
+			else if (this->items[this->activeField].inputField[i].LeftMouseClicked())
+			{
+				delay(100);
 				inputController.Activate(
 					&this->items[this->activeField].inputField[i],
 					&this->items[this->activeField].inputField[i],
 					2, false, true, false
 				);
 			}
-			else {
+			else
+			{
 				this->items[this->activeField].inputField[i].SetFillColor(rgb(255, 251, 245));
 				this->items[this->activeField].inputField[i].SetBorderColor(rgb(24, 18, 43));
 			}
 		}
 
-		if (this->items[this->activeField].savebtn.IsHover()) {
+		if (this->items[this->activeField].savebtn.IsHover())
+		{
 			this->items[this->activeField].savebtn.SetFillColor(rgb(0, 255, 202));
 		}
-		else if (this->items[this->activeField].savebtn.LeftMouseClicked()){
+		else if (this->items[this->activeField].savebtn.LeftMouseClicked())
+		{
 			delay(100);
-			if (this->activeField == this->itemsCount - 1) {
+			if (this->activeField == this->itemsCount - 1)
+			{
 				this->activeField = 0;
 				std::cerr << std::format("[INFO] Press Save to save data into the list!\n");
 			}
-			else {
+			else
+			{
 				this->activeField++;
 			}
 		}
-		else {
+		else
+		{
 			this->items[this->activeField].savebtn.SetFillColor(rgb(145, 216, 228));
 		}
 
@@ -416,17 +438,21 @@ namespace DAU_SACH_TAB {
 		this->goBackButton.SetPlaceholder("<");
 	}
 
-	bool ItemAddField::ItemAddFieldOnUpdate(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController) {
-		if (this->active == false) {
+	bool ItemAddField::ItemAddFieldOnUpdate(LinearList<BOOK_TITLE::BookTitle*>* titleList, ELEMENTS::InputModeController& InputController)
+	{
+		if (this->active == false)
+		{
 			return false;
 		}
 
-		for (int i = 0; i < 7; ++i) {
+		for (int i = 0; i < 7; ++i)
+		{
 			if (this->inputField[i].IsHover()) {
 				this->inputField[i].SetBorderColor(rgb(83, 127, 231));
 				this->inputField[i].SetFillColor(rgb(233, 248, 249));
 			}
-			else if (this->inputField[i].LeftMouseClicked()) {
+			else if (this->inputField[i].LeftMouseClicked())
+			{
 				delay(100);
 				switch (i) {
 					case (0):
@@ -452,35 +478,43 @@ namespace DAU_SACH_TAB {
 						break;
 				}
 			}
-			else {
+			else
+			{
 				this->inputField[i].SetFillColor(rgb(255, 251, 245));
 				this->inputField[i].SetBorderColor(rgb(24, 18, 43));
 			}
 		}
 
-		if (this->createDanhMucSach.IsHover()) {
+		if (this->createDanhMucSach.IsHover())
+		{
 			this->createDanhMucSach.SetFillColor(rgb(89, 206, 143));
 		}
-		else if (this->createDanhMucSach.LeftMouseClicked()) {
+		else if (this->createDanhMucSach.LeftMouseClicked())
+		{
 			delay(100);
 
-			if (VALIDATOR::OnlyDigit(this->inputField[6].GetPlaceholder()) && std::stoi(this->inputField[6].GetPlaceholder()) > 0) {
+			if (VALIDATOR::OnlyDigit(this->inputField[6].GetPlaceholder()) && std::stoi(this->inputField[6].GetPlaceholder()) > 0)
+			{
 				this->sachAddFieldController.Activate();
 				this->sachAddFieldController.Initialize(std::stoi(this->inputField[6].GetPlaceholder()), this->inputField[0].GetPlaceholder());
 			}
-			else {
+			else
+			{
 				std::cerr << std::format("[ERROR] Thong tin cua truong \"kich thuoc danh muc sach readerSexButton la so nguyen khong am\"\n");
 				exit(1);
 			}
 		}
-		else {
+		else
+		{
 			this->createDanhMucSach.SetFillColor(rgb(145, 216, 228));
 		}
 
-		if (this->submit.IsHover()) {
+		if (this->submit.IsHover())
+		{
 			this->submit.SetFillColor(rgb(89, 206, 143));
 		}
-		else if (this->submit.LeftMouseClicked()) {
+		else if (this->submit.LeftMouseClicked())
+		{
 			delay(100);
 			BOOK_TITLE::BookTitle* newTitle = new BOOK_TITLE::BookTitle;
 
@@ -515,7 +549,8 @@ namespace DAU_SACH_TAB {
 			std::cerr << "[INFO] Successfully insert a new item into title list!\n";
 			return true;
 		}
-		else {
+		else
+		{
 			this->submit.SetFillColor(rgb(145, 216, 228));
 		}
 
@@ -535,22 +570,29 @@ namespace DAU_SACH_TAB {
 		return this->active;
 	}
 
-	void ItemAddField::Display(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController) {
-		if (this->active == false) {
+	//TODO: rework!
+	void ItemAddField::Display(LinearList<BOOK_TITLE::BookTitle*>* titleList, ELEMENTS::InputModeController& InputController)
+	{
+		if (this->active == false)
+		{
 			return;
 		}
 
 		this->backdrop.Draw();
 		this->background.Draw();
 		this->title.Display();
-		for (int i = 0; i < 7; ++i) {
+		
+		for (int i = 0; i < 7; ++i)
+		{
 			this->inputField[i].Display();
 		}
+		
 		this->createDanhMucSach.Display();
 		this->submit.Display();
 		this->goBackButton.Display();
 
-		if (this->sachAddFieldController.DisplayStatus() == true) {
+		if (this->sachAddFieldController.DisplayStatus() == true)
+		{
 			this->sachAddFieldController.Display();
 			this->sachAddFieldController.IndexChangeButtonOnAction();
 			this->sachAddFieldController.SachAddFieldOnUpdate(titleList, InputController);
@@ -826,77 +868,15 @@ namespace DAU_SACH_TAB {
 	}
 }
 
-namespace CATEGORY_LINKED_LIST {
-	Node::Node(std::string info, Node* next) {
-		this->info = info;
-		this->next = next;
-	}
-
-	void Initialzie(Pointer& First) {
-		First = nullptr;
-	}
-
-	bool Empty(const Pointer& First) {
-		return First == nullptr;
-	}
-
-	void PushFront(Pointer& First, std::string info) {
-		Pointer newNode = new Node(info, First);
-		First = newNode;
-	}
-
-	void InsertOrder(Pointer& First, std::string info) {
-		Pointer newNode = new Node(info, nullptr);
-
-		//* Case the list does not have any item.
-		if (Empty(First)) {
-			First = newNode;
-			return;
-		}
-
-		//* If info is less than or equal then insert to the first element of the list.
-		if (First->info.compare(info) >= 0) {
-			PushFront(First, info);
-			return;
-		}
-
-		//* Case the list has one item and the info is for sure greater then the first element.
-		if (First->next == nullptr) {
-			First->next = newNode;
-			return;
-		}
-
-		//* From now on the list must has more than one (or at least two elements) and the inserting item is greater than the first one.
-		Pointer previousNode = First;
-		for (; previousNode->next != nullptr && previousNode->next->info.compare(info) <= 0; previousNode = previousNode->next);
-
-		if (previousNode->next != nullptr) {
-			newNode->next = previousNode->next;
-			previousNode->next = newNode;
-		}
-		else {
-			previousNode->next = newNode;
-		}
-	}
-
-	void Traversal(const Pointer& First) {
-		Pointer p = First;
-		for (; p != nullptr; p = p->next) {
-			std::cout << p->info << " ";
-		}
-		std::cout << "\n";
-	}
-}
-
 /*
 * DauSachTab constructor
 */
 
-DauSachTab::DauSachTab(LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController) {
-
+DauSachTab::DauSachTab(LinearList<BOOK_TITLE::BookTitle*>* titleList, ELEMENTS::InputModeController* inputController)
+{
 	//* Initialize data
 	this->titleList = titleList;
-	this->titleListSortedByCategory = nullptr;
+	this->titleListSortedByCategory = LinearList<BOOK_TITLE::BookTitle*>();
 	this->inputController = inputController;
 	this->datasheetDisplayFlag = true;
 	this->active = false;
@@ -927,39 +907,44 @@ DauSachTab::DauSachTab(LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeCo
 }
 
 void DauSachTab::Destructor() {
-	delete[] this->titleListSortedByCategory;
+	//delete[] this->titleListSortedByCategory;
 	delete this->inputController;
 	delete this->titleList;
 }
 
-void DauSachTab::SortByCategory() {
-	CATEGORY_LINKED_LIST::Pointer categories;
-	CATEGORY_LINKED_LIST::Initialzie(categories);
+void DauSachTab::SortByCategory()
+{
+	CategoryLinkedList categories;
+	categories.PushFront((*this->titleList)[0]->GetCategory());
 
-	CATEGORY_LINKED_LIST::PushFront(categories, this->titleList->nodes[0]->GetCategory());
 	bool flag = true;
 	int categoryCount = 1;
-	for (int i = 1; i < this->titleList->numberOfNode; ++i) {
+	for (int i = 1; i < this->titleList->Size(); ++i)
+	{
 		flag = true;
-		for (int j = 0; j < i; ++j) {
-			if (this->titleList->nodes[j]->GetCategory().compare(this->titleList->nodes[i]->GetCategory()) == 0) {
+		for (int j = 0; j < i; ++j)
+		{
+			if ((*this->titleList)[j]->GetCategory().compare((*this->titleList)[i]->GetCategory()) == 0)
+			{
 				flag = false;
 				break;
 			}
 		}
 
-		if (flag) {
-			CATEGORY_LINKED_LIST::InsertOrder(categories, this->titleList->nodes[i]->GetCategory());
+		if (flag)
+		{
+			categories.PushOrder((*this->titleList)[i]->GetCategory());
 			++categoryCount;
 		}
 	}
 
-	this->titleListSortedByCategory = new BOOK_TITLE::BookTitle* [this->titleList->numberOfNode];
-	int index = 0;
-	for (CATEGORY_LINKED_LIST::Pointer p = categories; p != nullptr; p = p->next) {
-		for (int i = 0; i < this->titleList->numberOfNode; ++i) {
-			if (this->titleList->nodes[i]->GetCategory().compare(p->info) == 0) {
-				this->titleListSortedByCategory[index++] = this->titleList->nodes[i];
+	for (LinkedList<std::string>::Node* p = categories.Begin(); p != nullptr; p = p->next_)
+	{
+		for (int i = 0; i < this->titleList->Size(); ++i)
+		{
+			if ((*this->titleList)[i]->GetCategory().compare(p->info_) == 0)
+			{
+				this->titleListSortedByCategory.PushBack((*this->titleList)[i]);
 			}
 		}
 	}
@@ -967,8 +952,6 @@ void DauSachTab::SortByCategory() {
 	//for (int i = 0; i < this->titleList->numberOfNode; ++i) {
 	//	std::cerr << this->titleListSortedByCategory[i]->GetTitle() << " - " << this->titleListSortedByCategory[i]->GetCategory() << "\n";
 	//}
-
-	delete categories;
 }
 
 void DauSachTab::Run() {
@@ -996,7 +979,7 @@ void DauSachTab::Run() {
 		this->searchField.Activate();
 		this->searchField.Display();
 		this->searchField.OnAction(this->inputController);
-		BOOK_TITLE::BookTitle* searchResult = DAU_SACH_MODULES::SearchByName(*this->titleList, this->searchField.inputSearchBox->GetPlaceholder());
+		BOOK_TITLE::BookTitle* searchResult = DAU_SACH_MODULES::SearchByName(this->titleList, this->searchField.inputSearchBox->GetPlaceholder());
 		
 		//* Title search logic
 		if (searchResult != nullptr) {
@@ -1048,7 +1031,7 @@ void DauSachTab::Run() {
 		else if (categoryLabelButton.LeftMouseClicked()) {
 			delay(100);
 			this->SortByCategory();
-			DAU_SACH_TAB::CreateDatasheetsWithSortedCategory(this->titleListSortedByCategory, this->titleList->numberOfNode, this->datasheetController);
+			DAU_SACH_TAB::CreateDatasheetsWithSortedCategory(this->titleListSortedByCategory, this->datasheetController);
 		}
 		else {
 			categoryLabelButton.SetFillColor(rgb(210, 218, 255));
@@ -1073,7 +1056,7 @@ void DauSachTab::Run() {
 				this->datasheetController.DeactivateDatasheets();
 				this->titleDetailField.Activate();
 				this->titleDetailField.Initialize(
-					this->titleList->nodes[this->datasheetController.CurrentActiveDatasheet() * 15 + i - 1]
+					(*this->titleList)[this->datasheetController.CurrentActiveDatasheet() * 15 + i - 1]
 				);
 			}
 			else {
@@ -1146,18 +1129,74 @@ void DauSachTab::Run() {
 
 	//* Displaying the ADD function.
 	if (this->itemAddField.DisplayStatus() == true) {
-		this->itemAddField.Display(*this->titleList, *this->inputController);
+		this->itemAddField.Display(this->titleList, *this->inputController);
 
 		if (this->itemAddField.GoBackButtonOnAction()) {
 			this->itemAddField.Deactivate();
 			this->datasheetController.ActivateDatasheets();
 		}
 
-		bool regenerateDatasheet = this->itemAddField.ItemAddFieldOnUpdate(*this->titleList, *this->inputController);
+		bool regenerateDatasheet = this->itemAddField.ItemAddFieldOnUpdate(this->titleList, *this->inputController);
 		if (regenerateDatasheet) {
 			DAU_SACH_TAB::CreateDatasheetsFromList(this->titleList, this->datasheetController);
 		}
 	}
 
 
+}
+
+CategoryLinkedList::CategoryLinkedList() : LinkedList<std::string>() {}
+
+CategoryLinkedList::CategoryLinkedList(const CategoryLinkedList& other) : LinkedList<std::string>(other) {}
+
+CategoryLinkedList::~CategoryLinkedList() {}
+
+CategoryLinkedList& CategoryLinkedList::operator=(const CategoryLinkedList& other)
+{
+	if (this == &other)
+	{
+		return *this;
+	}
+
+	LinkedList<std::string>::operator=(other);
+	return *this;
+}
+
+void CategoryLinkedList::PushOrder(const std::string& value)
+{
+	LinkedList<std::string>::Node* newNode = new LinkedList<std::string>::Node(value, nullptr);
+
+	//* Case the list does not have any item.
+	if (this->Empty())
+	{
+		this->PushFront(value);
+		return;
+	}
+
+	//* If info is less than or equal then insert to the first element of the list.
+	if (this->Begin()->info_.compare(value) >= 0)
+	{
+		this->PushFront(value);
+		return;
+	}
+
+	//* Case the list has one item and the info is for sure greater then the first element.
+	if (this->Begin()->next_ == nullptr)
+	{
+		this->Begin()->next_ = newNode;
+		return;
+	}
+
+	//* From now on the list must has more than one (or at least two elements) and the inserting item is greater than the first one.
+	LinkedList<std::string>::Node* previousNode = this->Begin();
+	for (; previousNode->next_ != nullptr && previousNode->next_->info_.compare(value) <= 0; previousNode = previousNode->next_);
+
+	if (previousNode->next_ != nullptr)
+	{
+		newNode->next_ = previousNode->next_;
+		previousNode->next_ = newNode;
+	}
+	else {
+		previousNode->next_ = newNode;
+	}
 }

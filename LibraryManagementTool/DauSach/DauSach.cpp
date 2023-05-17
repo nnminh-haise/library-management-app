@@ -325,39 +325,35 @@ bool LINEAR_LIST::InsertOrder(LinearList& list, BOOK_TITLE::BookTitle* item) {
 	return true;
 }
 
-void LINEAR_LIST::Traversal(const LinearList& list) {
-	for (int i = 0; i < list.numberOfNode; ++i) {
-		list.nodes[i]->Log();
-	}
-}
-
-BOOK_TITLE::BookTitle* DAU_SACH_MODULES::SearchByName(const LINEAR_LIST::LinearList& list, const std::string& titleName) {
-	if (LINEAR_LIST::Empty(list)) {
+BOOK_TITLE::BookTitle* DAU_SACH_MODULES::SearchByName(const LinearList<BOOK_TITLE::BookTitle*>* titleList, const std::string& titleName)
+{
+	if (titleList->Empty())
+	{
 		return nullptr;
 	}
 
-	for (int i = 0; i < list.numberOfNode; ++i) {
-		if (titleName.compare(list.nodes[i]->GetTitle()) == 0) {
-			return list.nodes[i];
+	for (int i = 0; i < list->Size(); ++i) {
+		if (titleName.compare(list->At(i)->GetTitle()) == 0) {
+			return list->At(i);
 		}
 	}
 
 	return nullptr;
 }
 
-BOOK_TITLE::BookTitle* DAU_SACH_MODULES::SearchByISBN(const LINEAR_LIST::LinearList& list, const std::string& isbn)
+BOOK_TITLE::BookTitle* DAU_SACH_MODULES::SearchByISBN(const LinearList<BOOK_TITLE::BookTitle*>* titleList, const std::string& isbn)
 {
-	for (int i = 0; i < list.numberOfNode; ++i)
+	for (int i = 0; i < list->Size(); ++i)
 	{
-		if (isbn.compare(list.nodes[i]->GetISBN()) == 0)
+		if (isbn.compare(list->At(i)->GetISBN()) == 0)
 		{
-			return list.nodes[i];
+			return list->At(i);
 		}
 	}
 	return nullptr;
 }
 
-bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LIST::LinearList& danhSachDauSach) 
+bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LinearList<BOOK_TITLE::BookTitle*>* titleList)
 {
 	LINEAR_LIST::Initialize(danhSachDauSach);
 	
@@ -474,13 +470,14 @@ bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LI
 			}
 		}
 
-		if (LINEAR_LIST::Empty(danhSachDauSach)) 
+		if (titleList->Empty()) 
 		{
-			LINEAR_LIST::PushFront(danhSachDauSach, newTitle);
+			titleList->PushFront(newTitle);
 		}
 		else 
 		{
-			LINEAR_LIST::InsertOrder(danhSachDauSach, newTitle);
+			//TODO: implement insert order here
+			//titleList->InsertOrder(danhSachDauSach, newTitle);
 		}
 	}
 
@@ -489,7 +486,7 @@ bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LI
 	return true;
 }
 
-bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const LINEAR_LIST::LinearList& titleList) 
+bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const LinearList<BOOK_TITLE::BookTitle*>* titleList)
 {
 	std::filebuf databaseBuffer{};
 
@@ -503,14 +500,14 @@ bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const L
 
 	for (int i = 0; i < titleList.numberOfNode; ++i) 
 	{
-		database << titleList.nodes[i]->GetISBN() << ", ";
-		database << titleList.nodes[i]->GetTitle() << ", ";
-		database << titleList.nodes[i]->GetPageCount() << ", ";
-		database << titleList.nodes[i]->GetAuthor() << ", ";
-		database << titleList.nodes[i]->GetPublicationYear() << ", ";
-		database << titleList.nodes[i]->GetCategory() << ", ";
+		database << titleList->At(i)->GetISBN() << ", ";
+		database << titleList->At(i)->GetTitle() << ", ";
+		database << titleList->At(i)->GetPageCount() << ", ";
+		database << titleList->At(i)->GetAuthor() << ", ";
+		database << titleList->At(i)->GetPublicationYear() << ", ";
+		database << titleList->At(i)->GetCategory() << ", ";
 
-		LINKED_LIST::Controller danhMucSach = titleList.nodes[i]->GetCatalogue();
+		LINKED_LIST::Controller danhMucSach = titleList->At(i)->GetCatalogue();
 		
 		if (LINKED_LIST::Empty(danhMucSach)) 
 		{
@@ -533,7 +530,7 @@ bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const L
 	return true;
 }
 
-void DAU_SACH_MODULES::DuplicateList(const LINEAR_LIST::LinearList& titleList, LINEAR_LIST::LinearList& destinationList)
+void DAU_SACH_MODULES::DuplicateList(const LinearList<BOOK_TITLE::BookTitle*>* titleList, LinearList<BOOK_TITLE::BookTitle*>* destinationList)
 {
 	destinationList.numberOfNode = titleList.numberOfNode;
 	for (int i = 0; i < titleList.numberOfNode; ++i)

@@ -4,7 +4,7 @@
 #include "LinearList.h"
 #include <iostream>
 
-template<typename VALUE_TYPE, typename KEY_TYPE = int>
+template<typename VALUE_TYPE, typename KEY_TYPE>
 class AVL_Tree
 {
 public:
@@ -25,25 +25,35 @@ public:
 public:
     AVL_Tree();
 
+    AVL_Tree(const AVL_Tree<VALUE_TYPE, KEY_TYPE>& other);
+
+    ~AVL_Tree();
+
+    AVL_Tree<VALUE_TYPE, KEY_TYPE>& operator=(const AVL_Tree<VALUE_TYPE, KEY_TYPE>& other);
+
+    Node& operator[] (KEY_TYPE key);
+
     bool Empty() const;
 
-    int Size() const;
+    int Size();
 
     void Remove(KEY_TYPE key);
 
     void Insert(KEY_TYPE key, VALUE_TYPE info);
 
-    Node* Search(KEY_TYPE key) const;
+    Node* Search(KEY_TYPE key);
 
-    Node& operator[] (KEY_TYPE key);
+    Node At(KEY_TYPE key);
 
-    Node At(KEY_TYPE key) const;
-
-    Node* GetRoot() const;
+    Node* GetRoot();
 
     void CastToLinearList(LinearList<Node*>& list) const;
 
+    void InOrderPrint();
+
 private:
+    void RecursiveDestructor(Node* node);
+
     void InOrderTraversal(Node* root);
 
     void NonrecursiveInOrderTraversal();
@@ -69,68 +79,56 @@ template<typename VALUE_TYPE, typename KEY_TYPE>
 inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::AVL_Tree() : root_(nullptr), size_(0) {}
 
 template<typename VALUE_TYPE, typename KEY_TYPE>
-inline bool AVL_Tree<VALUE_TYPE, KEY_TYPE>::Empty() const
+inline AVL_Tree<VALUE_TYPE, KEY_TYPE>& AVL_Tree<VALUE_TYPE, KEY_TYPE>::operator=(const AVL_Tree<VALUE_TYPE, KEY_TYPE>& other)
 {
-    return this->root_ == nullptr;
-}
-
-template<typename VALUE_TYPE, typename KEY_TYPE>
-inline int AVL_Tree<VALUE_TYPE, KEY_TYPE>::Size() const
-{
-    return this->size_;
-}
-
-template<typename VALUE_TYPE, typename KEY_TYPE>
-inline void AVL_Tree<VALUE_TYPE, KEY_TYPE>::Remove(KEY_TYPE key)
-{
-    try {
-        this->root_ = this->RecursiveRemove(this->root_, key);
-    }
-    catch (const std::exception& ex) {
-        std::cerr << ex.what();
-    }
-    this->size_ -= 1;
-}
-
-template<typename VALUE_TYPE, typename KEY_TYPE>
-inline void AVL_Tree<VALUE_TYPE, KEY_TYPE>::Insert(KEY_TYPE key, VALUE_TYPE info)
-{
-    if (this->root_ == nullptr)
+    if (this == &other)
     {
-        this->size_ += 1;
-        this->root_ = new AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node(key, info, nullptr, nullptr);
+        return *this;
     }
-    else
-    {
-        try
-        {
-            this->InsertAlgorithm(this->root_, key, info);
-        }
-        catch (const std::exception& ex)
-        {
-            std::cerr << ex.what();
-        }
 
-        this->size_ += 1;
+    this->~AVL_Tree();
+
+    this->root_ = nullptr;
+    this->size_ = 0;
+    LinearList<Node*> nodeList;
+    other.CastToLinearList(nodeList);
+    for (int i = 0; i < nodeList.Size(); i++)
+    {
+        Node* currentNode = nodeList[i];
+        this->Insert(currentNode->key_, currentNode->info_);
     }
+
+    return *this;
 }
 
 template<typename VALUE_TYPE, typename KEY_TYPE>
-inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* AVL_Tree<VALUE_TYPE, KEY_TYPE>::Search(KEY_TYPE key) const
+inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::~AVL_Tree()
 {
-    AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* p = this->root_;
-    while (p != nullptr && p->key_ != key)
+    if (this->Empty())
     {
-        if (p->key_ < key)
+        return;
+    }
+
+    this->RecursiveDestructor(this->root_);
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::AVL_Tree(const AVL_Tree<VALUE_TYPE, KEY_TYPE>& other)
+{
+    if (this != &other)
+    {
+        this->~AVL_Tree();
+
+        this->root_ = nullptr;
+        this->size_ = 0;
+        LinearList<Node*> nodeList;
+        other.CastToLinearList(nodeList);
+        for (int i = 0; i < nodeList.Size(); i++)
         {
-            p = p->right_;
-        }
-        else
-        {
-            p = p->left_;
+            Node* currentNode = nodeList[i];
+            this->Insert(currentNode->key_, currentNode->info_);
         }
     }
-    return p;
 }
 
 template<typename VALUE_TYPE, typename KEY_TYPE>
@@ -174,7 +172,72 @@ inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node& AVL_Tree<VALUE_TYPE, KEY_TYPE>::ope
 }
 
 template<typename VALUE_TYPE, typename KEY_TYPE>
-inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node AVL_Tree<VALUE_TYPE, KEY_TYPE>::At(KEY_TYPE key) const
+inline bool AVL_Tree<VALUE_TYPE, KEY_TYPE>::Empty() const
+{
+    return this->root_ == nullptr;
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline int AVL_Tree<VALUE_TYPE, KEY_TYPE>::Size()
+{
+    return this->size_;
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline void AVL_Tree<VALUE_TYPE, KEY_TYPE>::Remove(KEY_TYPE key)
+{
+    try {
+        this->root_ = this->RecursiveRemove(this->root_, key);
+    }
+    catch (const std::exception& ex) {
+        std::cerr << ex.what();
+    }
+    this->size_ -= 1;
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline void AVL_Tree<VALUE_TYPE, KEY_TYPE>::Insert(KEY_TYPE key, VALUE_TYPE info)
+{
+    if (this->root_ == nullptr)
+    {
+        this->size_ += 1;
+        this->root_ = new AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node(key, info, nullptr, nullptr);
+    }
+    else
+    {
+        try
+        {
+            this->InsertAlgorithm(this->root_, key, info);
+        }
+        catch (const std::exception& ex)
+        {
+            std::cerr << ex.what();
+        }
+
+        this->size_ += 1;
+    }
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* AVL_Tree<VALUE_TYPE, KEY_TYPE>::Search(KEY_TYPE key)
+{
+    AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* p = this->root_;
+    while (p != nullptr && p->key_ != key)
+    {
+        if (p->key_ < key)
+        {
+            p = p->right_;
+        }
+        else
+        {
+            p = p->left_;
+        }
+    }
+    return p;
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node AVL_Tree<VALUE_TYPE, KEY_TYPE>::At(KEY_TYPE key)
 {
     if (this->Empty())
     {
@@ -214,7 +277,7 @@ inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node AVL_Tree<VALUE_TYPE, KEY_TYPE>::At(K
 }
 
 template<typename VALUE_TYPE, typename KEY_TYPE>
-inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* AVL_Tree<VALUE_TYPE, KEY_TYPE>::GetRoot() const
+inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* AVL_Tree<VALUE_TYPE, KEY_TYPE>::GetRoot()
 {
     return this->root_;
 }
@@ -253,6 +316,24 @@ inline void AVL_Tree<VALUE_TYPE, KEY_TYPE>::CastToLinearList(LinearList<AVL_Tree
 }
 
 template<typename VALUE_TYPE, typename KEY_TYPE>
+inline void AVL_Tree<VALUE_TYPE, KEY_TYPE>::InOrderPrint()
+{
+    InOrderTraversal(this->root_);
+    std::cout << "\b\n";
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline void AVL_Tree<VALUE_TYPE, KEY_TYPE>::RecursiveDestructor(AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* node)
+{
+    if (node != nullptr)
+    {
+        RecursiveDestructor(node->left_);
+        RecursiveDestructor(node->right_);
+        delete node;
+    }
+}
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
 inline void AVL_Tree<VALUE_TYPE, KEY_TYPE>::InOrderTraversal(AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* root)
 {
     if (root != nullptr)
@@ -260,7 +341,7 @@ inline void AVL_Tree<VALUE_TYPE, KEY_TYPE>::InOrderTraversal(AVL_Tree<VALUE_TYPE
         this->InOrderTraversal(root->left_);
         // Do the work here!
 
-        std::cout << root->info_ << " ";
+        std::cout << root->key_ << " ";
 
         // -----------------
         this->InOrderTraversal(root->right_);

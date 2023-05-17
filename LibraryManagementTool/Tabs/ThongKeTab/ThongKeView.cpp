@@ -78,7 +78,7 @@ void StatisticTab::TitleButtonOnAction()
 	}
 }
 
-StatisticTab::StatisticTab(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList)
+StatisticTab::StatisticTab(AVL_Tree<READER::Reader, int>* readerList, LinearList<BOOK_TITLE::BookTitle*>* titleList)
 {
 	this->readerList = readerList;
 	this->titleList = titleList;
@@ -117,7 +117,7 @@ STATISTIC_TAB_MEMBER::Top10TitleDatasheet::Top10TitleDatasheet()
 	this->status = false;
 }
 
-STATISTIC_TAB_MEMBER::Top10TitleDatasheet::Top10TitleDatasheet(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList)
+STATISTIC_TAB_MEMBER::Top10TitleDatasheet::Top10TitleDatasheet(AVL_Tree<READER::Reader, int>* readerList, LinearList<BOOK_TITLE::BookTitle*>* titleList)
 {
 	this->readerList = readerList;
 	this->titleList = titleList;
@@ -131,10 +131,10 @@ void STATISTIC_TAB_MEMBER::Top10TitleDatasheet::CreateDatasheet()
 	HashMap <int> titleBorrowedCountMap(456976, -1);
 	HashMap <BOOK_TITLE::BookTitle*> titleListMap(456976, nullptr);
 
-	for (int i = 0; i < this->titleList->numberOfNode; ++i)
+	for (int i = 0; i < this->titleList->Size(); ++i)
 	{
-		titleBorrowedCountMap.Insert(this->titleList->nodes[i]->GetISBN(), 0);
-		titleListMap.Insert(this->titleList->nodes[i]->GetISBN(), this->titleList->nodes[i]);
+		titleBorrowedCountMap.Insert(this->titleList->At(i)->GetISBN(), 0);
+		titleListMap.Insert(this->titleList->At(i)->GetISBN(), this->titleList->At(i));
 	}
 
 	Stack<AVL_Tree<READER::Reader, int>::Node*> stk;
@@ -172,15 +172,15 @@ void STATISTIC_TAB_MEMBER::Top10TitleDatasheet::CreateDatasheet()
 		}
 	} while (true);
 
-	BOOK_TITLE::BookTitle** newTitleList = new BOOK_TITLE::BookTitle * [this->titleList->numberOfNode];
-	for (int i = 0; i < this->titleList->numberOfNode; ++i)
+	BOOK_TITLE::BookTitle** newTitleList = new BOOK_TITLE::BookTitle * [this->titleList->Size()];
+	for (int i = 0; i < this->titleList->Size(); ++i)
 	{
-		newTitleList[i] = this->titleList->nodes[i];
+		newTitleList[i] = this->titleList->At(i);
 	}
 
-	for (int i = 0; i < this->titleList->numberOfNode - 1; ++i)
+	for (int i = 0; i < this->titleList->Size() - 1; ++i)
 	{
-		for (int j = i + 1; j < this->titleList->numberOfNode; ++j)
+		for (int j = i + 1; j < this->titleList->Size(); ++j)
 		{
 			if (titleBorrowedCountMap[newTitleList[i]->GetISBN()] < titleBorrowedCountMap[newTitleList[j]->GetISBN()])
 			{
@@ -282,7 +282,7 @@ STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::OverdueReadersDatasheet()
 	this->status = false;
 }
 
-STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::OverdueReadersDatasheet(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList)
+STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::OverdueReadersDatasheet(AVL_Tree<READER::Reader, int>* readerList, LinearList<BOOK_TITLE::BookTitle*>* titleList)
 {
 	this->readerList = readerList;
 	this->titleList = titleList;
@@ -296,9 +296,9 @@ void STATISTIC_TAB_MEMBER::OverdueReadersDatasheet::CreateDatasheet()
 	HashMap <BOOK_TITLE::BookTitle*> titleListMap(456976, nullptr);
 	DynamicArray <STATISTIC_TAB_MEMBER::OverdueReader> overdueReaders;
 
-	for (int i = 0; i < this->titleList->numberOfNode; ++i)
+	for (int i = 0; i < this->titleList->Size(); ++i)
 	{
-		titleListMap.Insert(this->titleList->nodes[i]->GetISBN(), this->titleList->nodes[i]);
+		titleListMap.Insert(this->titleList->At(i)->GetISBN(), this->titleList->At(i));
 	}
 
 	Stack<AVL_Tree<READER::Reader, int>::Node*> stk;

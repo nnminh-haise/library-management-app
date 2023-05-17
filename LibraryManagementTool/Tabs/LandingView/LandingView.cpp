@@ -89,7 +89,7 @@ void LandingView::CloseButtonOnUpdate() {
 }
 
 //* View Constructor function.
-LandingView::LandingView(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList)
+LandingView::LandingView(AVL_Tree<READER::Reader, int>* readerList, LinearList<BOOK_TITLE::BookTitle*>* titleList)
 {
 	this->currentTab = 0;
 	this->programStopFlag = false;

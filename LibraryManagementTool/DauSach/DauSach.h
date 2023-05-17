@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "../DataStructures/LinearList.h"
 
 namespace BOOK 
 {
@@ -121,44 +122,42 @@ namespace BOOK_TITLE
 	};
 }
 
-namespace LINEAR_LIST 
-{
-	const unsigned int MAX_SIZE = 10000;
-
-	struct LinearList 
-	{
-		unsigned int numberOfNode;
-		BOOK_TITLE::BookTitle* nodes[MAX_SIZE];
-
-		LinearList();
-	};
-
-	void Initialize(LinearList& list);
-
-	bool Empty(const LinearList& list);
-
-	bool IsFull(const LinearList& list);
-
-	bool PushFront(LinearList& list, BOOK_TITLE::BookTitle* item);
-
-	bool InsertItem(LinearList& list, BOOK_TITLE::BookTitle* item, int position);
-
-	bool PushBack(LinearList& list, BOOK_TITLE::BookTitle* item);
-
-	bool InsertOrder(LinearList& list, BOOK_TITLE::BookTitle* item);
-
-	void Traversal(const LinearList& list);
-}
+//namespace LINEAR_LIST 
+//{
+//	const unsigned int MAX_SIZE = 10000;
+//
+//	struct LinearList 
+//	{
+//		unsigned int numberOfNode;
+//		BOOK_TITLE::BookTitle* nodes[MAX_SIZE];
+//
+//		LinearList();
+//	};
+//
+//	void Initialize(LinearList& list);
+//
+//	bool Empty(const LinearList& list);
+//
+//	bool IsFull(const LinearList& list);
+//
+//	bool PushFront(LinearList& list, BOOK_TITLE::BookTitle* item);
+//
+//	bool InsertItem(LinearList& list, BOOK_TITLE::BookTitle* item, int position);
+//
+//	bool PushBack(LinearList& list, BOOK_TITLE::BookTitle* item);
+//
+//	bool InsertOrder(LinearList& list, BOOK_TITLE::BookTitle* item);
+//}
 
 namespace DAU_SACH_MODULES 
 {
-	BOOK_TITLE::BookTitle* SearchByName(const LINEAR_LIST::LinearList& list, const std::string& titleName);
+	BOOK_TITLE::BookTitle* SearchByName(const LinearList<BOOK_TITLE::BookTitle*>* titleList, const std::string& titleName);
 
-	BOOK_TITLE::BookTitle* SearchByISBN(const LINEAR_LIST::LinearList& list, const std::string& isbn);
+	BOOK_TITLE::BookTitle* SearchByISBN(const LinearList<BOOK_TITLE::BookTitle*>* titleList, const std::string& isbn);
 
-	bool LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LIST::LinearList& danhSachDauSach);
+	bool LoadDanhSachDauSachFromDB(std::string filename, LinearList<BOOK_TITLE::BookTitle*>* titleList);
 
-	bool UpdateListToDatabase(const std::string& filename, const LINEAR_LIST::LinearList& titleList);
+	bool UpdateListToDatabase(const std::string& filename, const LinearList<BOOK_TITLE::BookTitle*>* titleList);
 
-	void DuplicateList(const LINEAR_LIST::LinearList& titleList, LINEAR_LIST::LinearList& destinationList);
+	void DuplicateList(const LinearList<BOOK_TITLE::BookTitle*>* titleList, LinearList<BOOK_TITLE::BookTitle*>* destinationList);
 }

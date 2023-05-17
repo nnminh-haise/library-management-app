@@ -10,8 +10,6 @@ public:
 	{
 		Node(T info, Node* left, Node* right);
 
-		~Node();
-
 		friend std::ostream& operator<<(std::ostream& os, const Node& node) {
 			os << node.info_;
 			return os;
@@ -25,6 +23,8 @@ public:
 public:
 	DoubleLinkedList();
 
+	DoubleLinkedList(const DoubleLinkedList<T>& other);
+
 	~DoubleLinkedList();
 
 	bool Empty() const;
@@ -33,11 +33,13 @@ public:
 
 	Node& operator[] (int index);
 
+	DoubleLinkedList<T>& operator=(const DoubleLinkedList<T>& other);
+
 	Node* NodeAt(int index);
 
-	Node* Begin() const;
+	Node* Begin();
 
-	Node* End() const;
+	Node* End();
 
 	void PushFront(T value);
 
@@ -58,9 +60,6 @@ template<typename T>
 inline DoubleLinkedList<T>::Node::Node(T value, Node* left, Node* right) : info_(value), left_(left), right_(right) {}
 
 template<typename T>
-inline DoubleLinkedList<T>::Node::~Node() {}
-
-template<typename T>
 DoubleLinkedList<T>::DoubleLinkedList()
 {
 	this->first_ = this->last_ = nullptr;
@@ -68,18 +67,51 @@ DoubleLinkedList<T>::DoubleLinkedList()
 }
 
 template<typename T>
+inline DoubleLinkedList<T>::DoubleLinkedList(const DoubleLinkedList<T>& other)
+{
+	if (this != &other)
+	{
+		// Clear the current list
+		this->~DoubleLinkedList();
+
+		// Copy the size
+		this->size_ = other.size_;
+
+		// Copy the nodes
+		DoubleLinkedList<T>::Node* current = other.first_;
+		DoubleLinkedList<T>::Node* prev = nullptr;
+		while (current != nullptr)
+		{
+			DoubleLinkedList<T>::Node* newNode = new DoubleLinkedList<T>::Node(current->info_, prev, nullptr);
+
+			if (prev != nullptr)
+			{
+				prev->right_ = newNode;
+			}
+			else
+			{
+				this->first_ = newNode;
+			}
+
+			prev = newNode;
+			current = current->right_;
+		}
+
+		// Update the last node
+		this->last_ = prev;
+	}
+}
+
+template<typename T>
 inline DoubleLinkedList<T>::~DoubleLinkedList()
 {
-	//TODO: Fix the destructor
-	//* Causion: When destructor running the loading database function is broken!
-
-	//Node* currentNode = this->first_;
-	//for (; currentNode != nullptr;)
-	//{
-	//	Node* deleteNode = currentNode;
-	//	currentNode = currentNode->right_;
-	//	delete deleteNode;
-	//}
+	Node* currentNode = this->first_;
+	for (; currentNode != nullptr;)
+	{
+		Node* deleteNode = currentNode;
+		currentNode = currentNode->right_;
+		delete deleteNode;
+	}
 }
 
 template<typename T>
@@ -108,6 +140,46 @@ inline DoubleLinkedList<T>::Node& DoubleLinkedList<T>::operator[](int index)
 }
 
 template<typename T>
+inline DoubleLinkedList<T>& DoubleLinkedList<T>::operator=(const DoubleLinkedList<T>& other)
+{
+	if (this == &other)
+	{
+		return *this;
+	}
+
+	// Clear the current list
+	this->~DoubleLinkedList();
+
+	// Copy the size
+	this->size_ = other.size_;
+
+	// Copy the nodes
+	DoubleLinkedList<T>::Node* current = other.first_;
+	DoubleLinkedList<T>::Node* prev = nullptr;
+	while (current != nullptr)
+	{
+		DoubleLinkedList<T>::Node* newNode = new DoubleLinkedList<T>::Node(current->info_, prev, nullptr);
+
+		if (prev != nullptr)
+		{
+			prev->right_ = newNode;
+		}
+		else
+		{
+			this->first_ = newNode;
+		}
+
+		prev = newNode;
+		current = current->right_;
+	}
+
+	// Update the last node
+	this->last_ = prev;
+
+	return *this;
+}
+
+template<typename T>
 inline DoubleLinkedList<T>::Node* DoubleLinkedList<T>::NodeAt(int index)
 {
 	if (index < 0 || index >= this->Size())
@@ -121,7 +193,7 @@ inline DoubleLinkedList<T>::Node* DoubleLinkedList<T>::NodeAt(int index)
 }
 
 template<typename T>
-inline DoubleLinkedList<T>::Node* DoubleLinkedList<T>::Begin() const
+inline DoubleLinkedList<T>::Node* DoubleLinkedList<T>::Begin()
 {
 	if (this->Empty())
 	{
@@ -132,7 +204,7 @@ inline DoubleLinkedList<T>::Node* DoubleLinkedList<T>::Begin() const
 }
 
 template<typename T>
-inline DoubleLinkedList<T>::Node* DoubleLinkedList<T>::End() const
+inline DoubleLinkedList<T>::Node* DoubleLinkedList<T>::End()
 {
 	if (this->Empty())
 	{
@@ -199,7 +271,7 @@ inline T DoubleLinkedList<T>::PopBack()
 	{
 		return this->PopFront();
 	}
-	
+
 	T returnValue = this->last_->info_;
 	Node* deleteNode = this->last_;
 	this->last_ = this->last_->left_;

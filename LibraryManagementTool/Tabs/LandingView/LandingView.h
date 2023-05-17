@@ -18,7 +18,7 @@ private:
 	void CloseButtonOnUpdate();
 
 public:
-	LandingView(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList);
+	LandingView(AVL_Tree<READER::Reader, int>* readerList, LinearList<BOOK_TITLE::BookTitle*>* titleList);
 
 	~LandingView();
 
@@ -27,7 +27,7 @@ public:
 private:
 	//* Internal storage's pointer
 	AVL_Tree<READER::Reader, int>* readerList;
-	LINEAR_LIST::LinearList* titleList;
+	LinearList<BOOK_TITLE::BookTitle*>* titleList;
 
 	//* Tabs
 	DauSachTab* dauSachView;
