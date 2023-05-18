@@ -72,7 +72,7 @@ inline DoubleLinkedList<T>::DoubleLinkedList(const DoubleLinkedList<T>& other)
 	if (this != &other)
 	{
 		// Clear the current list
-		//this->~DoubleLinkedList();
+		this->~DoubleLinkedList();
 
 		// Copy the size
 		this->size_ = other.size_;

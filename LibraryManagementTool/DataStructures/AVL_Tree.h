@@ -11,8 +11,10 @@ public:
     struct Node
     {
         Node() : key_(KEY_TYPE()), info_(VALUE_TYPE()), left_(nullptr), right_(nullptr), balanceFactor_(0), height_(1) {}
+        
+        Node(KEY_TYPE key, VALUE_TYPE info, Node* left, Node* right);
 
-        Node(KEY_TYPE key, VALUE_TYPE info, Node* left, Node* right) : key_(key), info_(info), left_(left), right_(right), balanceFactor_(0), height_(0) {}
+        //Node(const KEY_TYPE& key, const VALUE_TYPE& info, Node* left, Node* right) : key_(key), info_(info), left_(left), right_(right), balanceFactor_(0), height_(0) {}
 
         KEY_TYPE key_;
         VALUE_TYPE info_;
@@ -62,7 +64,7 @@ private:
 
     Node* RotateRight(Node* root);
 
-    bool InsertAlgorithm(Node*& root, KEY_TYPE key, VALUE_TYPE info);
+    bool InsertAlgorithm(Node*& root, KEY_TYPE key, const VALUE_TYPE& info);
 
     Node* GetMinValueNode(Node* const& node);
 
@@ -421,7 +423,7 @@ inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* AVL_Tree<VALUE_TYPE, KEY_TYPE>::Rot
 }
 
 template<typename VALUE_TYPE, typename KEY_TYPE>
-inline bool AVL_Tree<VALUE_TYPE, KEY_TYPE>::InsertAlgorithm(AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node*& root, KEY_TYPE key, VALUE_TYPE info)
+inline bool AVL_Tree<VALUE_TYPE, KEY_TYPE>::InsertAlgorithm(AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node*& root, KEY_TYPE key, const VALUE_TYPE& info)
 {
     /*
      * currentNode represent the node which is being manipulated.
@@ -714,3 +716,7 @@ inline void AVL_Tree<VALUE_TYPE, KEY_TYPE>::InterchangeLeftMostNode(AVL_Tree<VAL
         root = removeNode->right_;
     }
 }
+
+template<typename VALUE_TYPE, typename KEY_TYPE>
+inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node::Node(KEY_TYPE key, VALUE_TYPE info, Node* left, Node* right) : 
+    key_(key), info_(info), left_(left), right_(right) {}

@@ -65,6 +65,8 @@ namespace READER
 
 		Reader(int id, std::string firstName, std::string lastName, Gender gender, ReaderStatus status, DoubleLinkedList<BOOK_CIRCULATION::BookCirculation> booksCirculation);
 
+		Reader& operator=(const Reader& other);
+
 		void SetID(int id);
 
 		int GetID();
@@ -91,7 +93,7 @@ namespace READER
 
 		std::string StringfyStatus();
 
-		void SetBooksCirculation(DoubleLinkedList<BOOK_CIRCULATION::BookCirculation> booksCirculation);
+		void SetBooksCirculation(const DoubleLinkedList<BOOK_CIRCULATION::BookCirculation>& booksCirculation);
 
 		DoubleLinkedList<BOOK_CIRCULATION::BookCirculation> GetBooksCirculation();
 

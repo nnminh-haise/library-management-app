@@ -8,19 +8,11 @@
 #include <format>
 #include <ctime>
 
-BOOK_CIRCULATION::BookCirculation::BookCirculation() {
-	this->id = std::string();
-	this->borrowDate = HELPER::Date();
-	this->returnDate = HELPER::Date();
-	this->status = BOOK_CIRCULATION::CirculationStatus::LOSTED;
-}
+BOOK_CIRCULATION::BookCirculation::BookCirculation() :
+    id(std::string()), borrowDate(HELPER::Date()), returnDate(HELPER::Date()), status(BOOK_CIRCULATION::CirculationStatus::LOSTED) {}
 
-BOOK_CIRCULATION::BookCirculation::BookCirculation(std::string id, HELPER::Date NgayMuon, HELPER::Date NgayTra, BOOK_CIRCULATION::CirculationStatus status) {
-	this->id = id;
-	this->borrowDate = NgayMuon;
-	this->returnDate = NgayTra;
-	this->status = status;
-}
+BOOK_CIRCULATION::BookCirculation::BookCirculation(std::string id, HELPER::Date NgayMuon, HELPER::Date NgayTra, BOOK_CIRCULATION::CirculationStatus status) :
+    id(id), borrowDate(borrowDate), returnDate(returnDate), status(status) {}
 
 BOOK_CIRCULATION::BookCirculation::~BookCirculation() {}
 
@@ -113,6 +105,21 @@ READER::Reader::Reader(int MaThe, std::string Ho, std::string Ten, READER::Gende
     this->booksCirculation = booksCirculation;
 }
 
+READER::Reader& READER::Reader::operator=(const READER::Reader& other)
+{
+    if (this != &other)
+    {
+        id = other.id;
+        firstName = other.firstName;
+        lastName = other.lastName;
+        sex = other.sex;
+        status = other.status;
+        booksCirculation = other.booksCirculation;
+    }
+
+    return *this;
+}
+
 void READER::Reader::SetID(int MaThe) {
 	this->id = MaThe;
 }
@@ -165,7 +172,8 @@ std::string READER::Reader::StringfyStatus() {
     return (this->status == READER::ReaderStatus::BANNED ? "BANNED" : "ACTIVE");
 }
 
-void READER::Reader::SetBooksCirculation(DoubleLinkedList<BOOK_CIRCULATION::BookCirculation> booksCirculation) {
+void READER::Reader::SetBooksCirculation(const DoubleLinkedList<BOOK_CIRCULATION::BookCirculation>& booksCirculation)
+{
 	this->booksCirculation = booksCirculation;
 }
 
@@ -300,7 +308,7 @@ bool READER_MODULES::LoadDanhSachTheDocGiaFromDB(const std::string& filename, AV
             }
         }
 
-        tree->Insert(newReader.GetID(), newReader);
+        tree->Insert(stoi(data[0]), newReader);
     }
 
     databaseBuffer.close();
