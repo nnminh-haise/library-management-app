@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "../DataStructures/LinearList.h"
 
 namespace BOOK 
 {
@@ -58,13 +59,13 @@ namespace LINKED_LIST
 
 	void Initialize(Controller& controller);
 
-	bool IsEmpty(const Controller& controller);
+	bool Empty(const Controller& controller);
 
 	int Size(const Controller& controller);
 
-	void InsertFirst(Controller& controller, BOOK::Book item);
+	void PushFront(Controller& controller, BOOK::Book item);
 
-	void InsertLast(Controller& controller, BOOK::Book item);
+	void PushBack(Controller& controller, BOOK::Book item);
 
 	bool DeleteAt(Controller& controller, BOOK::Book item);
 
@@ -121,44 +122,27 @@ namespace BOOK_TITLE
 	};
 }
 
-namespace LINEAR_LIST 
+class TitleLinearList : public LinearList<BOOK_TITLE::BookTitle*>
 {
-	const unsigned int MAX_SIZE = 10000;
+public:
+	TitleLinearList();
 
-	struct LinearList 
-	{
-		unsigned int numberOfNode;
-		BOOK_TITLE::BookTitle* nodes[MAX_SIZE];
+	TitleLinearList(const TitleLinearList& other);
 
-		LinearList();
-	};
+	~TitleLinearList();
 
-	void Initialize(LinearList& list);
+	TitleLinearList& operator= (const TitleLinearList& other);
 
-	bool IsEmpty(const LinearList& list);
-
-	bool IsFull(const LinearList& list);
-
-	bool InsertFirst(LinearList& list, BOOK_TITLE::BookTitle* item);
-
-	bool InsertItem(LinearList& list, BOOK_TITLE::BookTitle* item, int position);
-
-	bool InsertLast(LinearList& list, BOOK_TITLE::BookTitle* item);
-
-	bool InsertOrder(LinearList& list, BOOK_TITLE::BookTitle* item);
-
-	void Traversal(const LinearList& list);
-
-	BOOK_TITLE::BookTitle* SearchByName(const LinearList& list, const std::string& titleName);
-
-	BOOK_TITLE::BookTitle* SearchByISBN(const LinearList& list, const std::string& isbn);
-}
+	void PushOrder(BOOK_TITLE::BookTitle* value);
+};
 
 namespace DAU_SACH_MODULES 
 {
-	bool LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LIST::LinearList& danhSachDauSach);
+	BOOK_TITLE::BookTitle* SearchByName(const TitleLinearList* titleList, const std::string& titleName);
 
-	bool UpdateListToDatabase(const std::string& filename, const LINEAR_LIST::LinearList& titleList);
+	BOOK_TITLE::BookTitle* SearchByISBN(const TitleLinearList* titleList, const std::string& isbn);
 
-	void DuplicateList(const LINEAR_LIST::LinearList& titleList, LINEAR_LIST::LinearList& destinationList);
+	bool LoadDanhSachDauSachFromDB(std::string filename, TitleLinearList* titleList);
+
+	bool UpdateListToDatabase(const std::string& filename, const TitleLinearList* titleList);
 }

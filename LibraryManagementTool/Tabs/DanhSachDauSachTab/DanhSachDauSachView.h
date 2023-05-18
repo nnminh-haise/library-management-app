@@ -5,6 +5,7 @@
 #include "../UI/Elements.h"
 #include "../UI/Button.h"
 #include "../UI/Datasheet.h"
+#include "../../DataStructures/LinkedList.h"
 
 namespace DAU_SACH_TAB {
 	/*
@@ -15,13 +16,13 @@ namespace DAU_SACH_TAB {
 	 * The second one is the datasheet's controller.
 	 * Function returns no value.
 	*/
-	void CreateDatasheetsFromList(LINEAR_LIST::LinearList* titleList, DATASHEET::Controller& datasheetController);
+	void CreateDatasheetsFromList(TitleLinearList* titleList, DATASHEET::Controller& datasheetController);
 
 	/**
 	 * * Function creates datasheets from a sortedList.
 	 * * The datasheets then stored inside the datasheet's controller.
 	*/
-	void CreateDatasheetsWithSortedCategory(BOOK_TITLE::BookTitle** sortedList, int listSize, DATASHEET::Controller& datasheetController);
+	void CreateDatasheetsWithSortedCategory(TitleLinearList* titleListSortedByCategory, DATASHEET::Controller& datasheetController);
 
 	/*
 	 * This is a graphical field, represented as a form, with the main purpose is for adding new item into the list.
@@ -68,7 +69,7 @@ namespace DAU_SACH_TAB {
 
 		void Initialize(int amount, std::string isbn);
 
-		void SachAddFieldOnUpdate(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController);
+		void SachAddFieldOnUpdate(TitleLinearList* titleList, ELEMENTS::InputModeController& InputController);
 
 		void IndexChangeButtonOnAction();
 
@@ -105,7 +106,7 @@ namespace DAU_SACH_TAB {
 
 		ItemAddField();
 
-		bool ItemAddFieldOnUpdate(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController);
+		bool ItemAddFieldOnUpdate(TitleLinearList* titleList, ELEMENTS::InputModeController& InputController);
 
 		void Activate();
 
@@ -113,7 +114,7 @@ namespace DAU_SACH_TAB {
 
 		bool DisplayStatus();
 
-		void Display(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController);
+		void Display(TitleLinearList* titleList, ELEMENTS::InputModeController& InputController);
 
 		bool GoBackButtonOnAction();
 	};
@@ -188,39 +189,30 @@ namespace DAU_SACH_TAB {
 	};
 }
 
-/**
- * * Linked list data structure for storing title's category.
- * * Each element of the list is a node with a std::string info.
-*/
-namespace CATEGORY_LINKED_LIST {
-	struct Node {
-		std::string info;
-		Node* next;
+class CategoryLinkedList : public LinkedList<std::string>
+{
+public:
+	CategoryLinkedList();
 
-		Node(std::string info, Node* next);
-	};
-	typedef Node* Pointer;
+	CategoryLinkedList(const CategoryLinkedList& other);
 
-	void Initialzie(Pointer& First);
+	~CategoryLinkedList();
 
-	bool IsEmpty(const Pointer& First);
+	CategoryLinkedList& operator=(const CategoryLinkedList& other);
 
-	void InsertFirst(Pointer& First, std::string info);
-
-	void InsertOrder(Pointer& First, std::string info);
-
-	void Traversal(const Pointer& First);
-}
+	void PushOrder(const std::string& value);
+};
 
 
-class DauSachTab {
+class DauSachTab
+{
 private:
 	bool active;
 	bool datasheetDisplayFlag;
 	DATASHEET::Controller datasheetController;
 	ELEMENTS::InputModeController* inputController;
-	LINEAR_LIST::LinearList* titleList;
-	BOOK_TITLE::BookTitle** titleListSortedByCategory;
+	TitleLinearList* titleList;
+	TitleLinearList titleListSortedByCategory;
 	Button functionalButtons[3];
 
 private:
@@ -231,7 +223,7 @@ private:
 	DAU_SACH_TAB::TitleDetailDisplayField titleDetailField;
 
 public:
-	DauSachTab(LINEAR_LIST::LinearList* danhSachDauSach, ELEMENTS::InputModeController* InputController);
+	DauSachTab(TitleLinearList* titleList, ELEMENTS::InputModeController* InputController);
 
 	void Destructor();
 

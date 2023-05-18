@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "../../DataStructures/DynamicArray.h"
+#include "../../DataStructures/LinkedList.h"
 #include "../../DataStructures/HashMap.h"
 #include "../../DataStructures/Stack.h"
 #include "../../TheDocGia/TheDocGia.h"
@@ -28,7 +28,7 @@ namespace STATISTIC_TAB_MEMBER
 	public:
 		Top10TitleDatasheet();
 
-		Top10TitleDatasheet(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList);
+		Top10TitleDatasheet(AVL_Tree<READER::Reader, int>* readerList, TitleLinearList* titleList);
 
 		void CreateDatasheet();
 
@@ -43,8 +43,8 @@ namespace STATISTIC_TAB_MEMBER
 	private:
 		bool status;
 
-		AVL_TREE::Pointer* readerList;
-		LINEAR_LIST::LinearList* titleList;
+		AVL_Tree<READER::Reader, int>* readerList;
+		TitleLinearList* titleList;
 
 		DATASHEET::Controller top10TitlesDatasheetController;
 	};
@@ -54,7 +54,7 @@ namespace STATISTIC_TAB_MEMBER
 	public:
 		OverdueReadersDatasheet();
 
-		OverdueReadersDatasheet(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList);
+		OverdueReadersDatasheet(AVL_Tree<READER::Reader, int>* readerList, TitleLinearList* titleList);
 
 		void CreateDatasheet();
 
@@ -69,8 +69,8 @@ namespace STATISTIC_TAB_MEMBER
 	private:
 		bool status;
 
-		AVL_TREE::Pointer* readerList;
-		LINEAR_LIST::LinearList* titleList;
+		AVL_Tree<READER::Reader, int>* readerList;
+		LinearList<BOOK_TITLE::BookTitle*>* titleList;
 
 		DATASHEET::Controller overdueReaderDatasheetController;
 	};
@@ -79,7 +79,7 @@ namespace STATISTIC_TAB_MEMBER
 class StatisticTab
 {
 public:
-	StatisticTab(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList);
+	StatisticTab(AVL_Tree<READER::Reader, int>* readerList, TitleLinearList* titleList);
 
 	void Run();
 
@@ -95,8 +95,8 @@ private:
 	Button overdueReaderListButton;
 	Button top10TitleButton;
 
-	AVL_TREE::Pointer* readerList;
-	LINEAR_LIST::LinearList* titleList;
+	AVL_Tree<READER::Reader, int>* readerList;
+	TitleLinearList* titleList;
 
 	HashMap <int> titleBorrowedCountMap;
 	HashMap <BOOK_TITLE::BookTitle*> titleListMap;

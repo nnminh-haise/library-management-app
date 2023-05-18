@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include "../DataStructures/AVL_Tree.h"
+#include "../DataStructures/DoubleLinkedList.h"
 #include "../Helper/Helper.h"
 
 namespace BOOK_CIRCULATION 
@@ -13,6 +15,8 @@ namespace BOOK_CIRCULATION
 		BookCirculation();
 
 		BookCirculation(std::string id, HELPER::Date borrowDate, HELPER::Date returnDate, CirculationStatus status);
+
+		~BookCirculation();
 
 		void SetID(std::string id);
 
@@ -44,49 +48,13 @@ namespace BOOK_CIRCULATION
 	};
 }
 
-namespace DOUBLE_LINKED_LIST 
-{
-	struct Node 
-	{
-		Node();
-
-		BOOK_CIRCULATION::BookCirculation info;
-		Node* left;
-		Node* right;
-	};
-
-	typedef Node* Pointer;
-
-	struct Controller 
-	{
-		Controller();
-
-		Pointer First;
-		Pointer Last;
-	};
-
-	void Initialize(DOUBLE_LINKED_LIST::Controller& list);
-
-	bool IsEmpty(const Controller& list);
-
-	int Size(const Controller& list);
-
-	void ClearList(Controller& list);
-
-	void InsertFirst(Controller& list, BOOK_CIRCULATION::BookCirculation info);
-
-	void InsertLast(Controller& list, BOOK_CIRCULATION::BookCirculation info);
-
-	void RemoveNode(Controller& list, DOUBLE_LINKED_LIST::Pointer targetNode);
-}
-
 namespace BOOK_CIRCULATION_MODULES {
-	int CountBorrowedBooks(const DOUBLE_LINKED_LIST::Controller& list);
+	int CountBorrowedBooks(const DoubleLinkedList<BOOK_CIRCULATION::BookCirculation>& booksCirculation);
 }
 
 namespace READER 
 {
-	enum Sex { MALE, FEMALE };
+	enum Gender { MALE, FEMALE };
 
 	enum ReaderStatus { BANNED, ACTIVE };
 
@@ -95,7 +63,9 @@ namespace READER
 	public:
 		Reader();
 
-		Reader(int id, std::string firstName, std::string lastName, Sex sex, ReaderStatus status, DOUBLE_LINKED_LIST::Controller borrowedBooks);
+		Reader(int id, std::string firstName, std::string lastName, Gender gender, ReaderStatus status, DoubleLinkedList<BOOK_CIRCULATION::BookCirculation> booksCirculation);
+
+		Reader& operator=(const Reader& other);
 
 		void SetID(int id);
 
@@ -109,13 +79,13 @@ namespace READER
 
 		std::string GetLastName();
 
-		void SetSex(Sex sex);
+		void SetGender(Gender sex);
 
-		Sex GetSex();
+		Gender GetGender();
 
 		std::string GetFullName();
 
-		std::string StringfySex();
+		std::string StringifyGender();
 
 		void SetStatus(ReaderStatus status);
 
@@ -123,9 +93,9 @@ namespace READER
 
 		std::string StringfyStatus();
 
-		void SetBorrowedBooks(DOUBLE_LINKED_LIST::Controller borrowedBooks);
+		void SetBooksCirculation(const DoubleLinkedList<BOOK_CIRCULATION::BookCirculation>& booksCirculation);
 
-		DOUBLE_LINKED_LIST::Controller GetBorrowedBooks();
+		DoubleLinkedList<BOOK_CIRCULATION::BookCirculation> GetBooksCirculation();
 
 		void Log();
 
@@ -133,65 +103,19 @@ namespace READER
 		int id;
 		std::string firstName;
 		std::string lastName;
-		Sex sex;
+		Gender sex;
 		ReaderStatus status;
-		DOUBLE_LINKED_LIST::Controller borrowedBooks;
+		DoubleLinkedList<BOOK_CIRCULATION::BookCirculation> booksCirculation;
 	};
-}
-
-namespace AVL_TREE 
-{
-	struct Node 
-	{
-		READER::Reader info;
-		int balanceFactor;
-		int height;
-		Node* left;
-		Node* right;
-
-		Node();
-
-		int GetKey();
-
-		void SetKey(const int key);
-	};
-
-	typedef Node* Pointer;
-
-	void Initialize(Pointer& root);
-
-	bool IsEmpty(const Pointer& root);
-
-	void PreOrderTraversal(const Pointer& root);
-
-	void InOrderTraversal(const Pointer& root);
-
-	void PostOrderTraversal(const Pointer& root);
-
-	void CountNode(const Pointer& root, int& counter);
-
-	void NonrecursiveInOrderTraversal(const Pointer& root);
-
-	Pointer RotateLeft(Pointer root);
-
-	Pointer RotateRight(Pointer root);
-
-	bool Insert(Pointer& root, READER::Reader info);
-
-	Pointer SearchByKey(const Pointer& root, const int& key);
-
-	Pointer GetMinValueNode(Pointer const& node);
-
-	Pointer RemoveNode(Pointer& node, const int& key);
 }
 
 namespace READER_MODULES 
 {
-	bool LoadDanhSachTheDocGiaFromDB(std::string filename, AVL_TREE::Pointer& tree);
+	bool LoadDanhSachTheDocGiaFromDB(const std::string& filename, AVL_Tree<READER::Reader, int>* tree);
 
-	bool UpdateListToDatabase(const std::string& filename, AVL_TREE::Pointer& tree);
+	bool UpdateListToDatabase(const std::string& filename, AVL_Tree<READER::Reader, int>* tree);
 
-	int GetIndex(const std::string& filename, AVL_TREE::Pointer& tree);
+	int GetIndex(const std::string& filename, AVL_Tree<READER::Reader, int>* tree);
 
-	void SortByName(AVL_TREE::Pointer const& node, AVL_TREE::Pointer*& pointerArr, int& arrSize);
+	void SortByName(const AVL_Tree<READER::Reader, int>& tree, LinearList< AVL_Tree<READER::Reader, int>::Node*>& readerPointersArr);
 }
