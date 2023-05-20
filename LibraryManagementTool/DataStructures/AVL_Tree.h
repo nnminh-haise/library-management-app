@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef AVL_TREE
+#define AVL_TREE
+
 #include "Stack.h"
 #include "LinearList.h"
 #include <iostream>
@@ -588,10 +591,27 @@ inline AVL_Tree<VALUE_TYPE, KEY_TYPE>::Node* AVL_Tree<VALUE_TYPE, KEY_TYPE>::Rec
         return node;
     }
 
-    node->height_ = 1 + std::max(
+    if (node->left_ != nullptr && node->right_ != nullptr)
+    {
+        node->height_ = 1 + (node->left_->height_ > node->right_->height_ ? node->left_->height_ : node->right_->height_);
+    }
+    else if (node->left_ != nullptr && node->right_ == nullptr)
+    {
+        node->height_ = 1 + node->left_->height_;
+    }
+    else if (node->left_ == nullptr && node->right_ != nullptr)
+    {
+        node->height_ = 1 + node->right_->height_;
+    }
+    else
+    {
+        node->height_ = 1;
+    }
+
+    /*node->height_ = 1 + std::max(
         (node->left_ != nullptr ? node->left_->height_ : 0),
         (node->right_ != nullptr ? node->right_->height_ : 0)
-    );
+    );*/
 
     if (node->balanceFactor_ > 1 && node->left_->balanceFactor_ >= 0)
     {
@@ -633,3 +653,6 @@ inline void AVL_Tree<VALUE_TYPE, KEY_TYPE>::InterchangeLeftMostNode(AVL_Tree<VAL
         root = removeNode->right_;
     }
 }
+
+
+#endif // !AVL_TREE

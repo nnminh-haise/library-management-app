@@ -2,6 +2,7 @@
 
 #include "DanhSachDauSachStyling.h"
 #include "../../DauSach/DauSach.h"
+#include "../../Helper/Package.h"
 #include "../UI/Elements.h"
 #include "../UI/Button.h"
 #include "../UI/Datasheet.h"
@@ -12,40 +13,56 @@ namespace DAU_SACH_TAB
 
 	void CreateDatasheetsWithSortedCategory(BOOK_TITLE::BookTitle** sortedList, int listSize, DATASHEET::Controller& datasheetController);
 
-	struct SachAddField
+	/**
+	 * TODO: Change this struct into a class
+	 * 1. Create necessary member access methods
+	 * 2. Re-design the UI
+	 * 3. Optimize member's life cycle
+	 * 4. Memory optimization
+	*/
+	struct BookCreatingSection
 	{
-		bool active;
-		HELPER::Fill background;
-		Button title;
-		Button savebtn;
-		Button inputField[5];
-
-		SachAddField();
+		BookCreatingSection();
 
 		void Activate();
 
 		void Deactivate();
 
-		bool DisplayStatus();
+		bool GetStatus();
 
 		void Display();
+
+	private:
+		void InitializeElements();
+
+	public:
+		bool active_;
+		HELPER::Fill background_;
+		Button titleButton_;
+		Button saveButton_;
+		Button inputField_[5];
 	};
 
-	struct SachAddFieldController
+	/**
+	 * TODO: Change this struct into a class
+	 * 1. Create necessary member access methods
+	 * 2. Re-design the UI
+	 * 3. Optimize member's life cycle
+	 * 4. Memory optimization
+	*/
+	struct CatalogueCreatingSection
 	{
-		bool active;
-		SachAddField* items;
-		int itemsCount;
-		int activeField;
-		Button indexChangeButtons[2];
+		CatalogueCreatingSection();
 
-		SachAddFieldController();
+		CatalogueCreatingSection(LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController);
 
-		~SachAddFieldController();
+		~CatalogueCreatingSection();
 
-		void Initialize(int amount, std::string isbn);
+		void InitializeCatalogue(int amount, std::string isbn);
 
-		void SachAddFieldOnUpdate(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController);
+		void InputFieldOnUpdate();
+
+		void SaveButtonOnUpdate();
 
 		void IndexChangeButtonOnAction();
 
@@ -53,38 +70,72 @@ namespace DAU_SACH_TAB
 
 		void Deactivate();
 
-		bool DisplayStatus();
+		bool GetStatus();
 
 		void Display();
+
+	private:
+		void InitializeElements();
+
+	public:
+		LINEAR_LIST::LinearList* titleList_;
+		ELEMENTS::InputModeController* inputController_;
+
+		bool active;
+		BookCreatingSection* items;
+		int itemsCount;
+		int activeField;
+		Button indexChangeButtons[2];
 	};
 
-	struct ItemAddField
+	/**
+	 * TODO: Change this struct into a class
+	 * 1. Create necessary member access methods
+	 * 2. Re-design the UI
+	 * 3. Optimize member's life cycle
+	 * 4. Memory optimization
+	*/
+	struct TitleCreatingSection
 	{
-		bool active;
-		bool sachAddFieldDisplay;
-		HELPER::Fill background;
-		HELPER::Fill backdrop;
-		Button title;
-		Button createDanhMucSach;
-		Button inputField[7];
-		Button goBackButton;
-		Button submit;
+	public:
+		TitleCreatingSection();
 
-		SachAddFieldController sachAddFieldController;
+		TitleCreatingSection(LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController);
 
-		ItemAddField();
+		void InputFieldOnUpdate();
 
-		bool ItemAddFieldOnUpdate(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController);
+		void CreateCatalogueButtonOnUpdate();
+
+		bool SubmitButtonOnUpdate();
 
 		void Activate();
 
 		void Deactivate();
 
-		bool DisplayStatus();
+		bool GetStatus();
 
 		void Display(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController);
 
 		bool GoBackButtonOnAction();
+
+	private:
+		void InitializeElements();
+
+	public:
+		LINEAR_LIST::LinearList* titleList_;
+		ELEMENTS::InputModeController* inputController_;
+
+		bool active;
+		bool sachAddFieldDisplay;
+		HELPER::Fill background;
+		HELPER::Fill backdrop;
+		Button title;
+		Button createCatalogueButton_;
+		Button inputField_[7];
+		Button goBackButton;
+		Button submit;
+
+		CatalogueCreatingSection catalogueCreatingSection;
 	};
 
 	struct TitleDetailDisplayField
@@ -111,7 +162,7 @@ namespace DAU_SACH_TAB
 
 		void Deactivate();
 
-		bool DisplayStatus();
+		bool GetStatus();
 
 		void Display();
 
@@ -138,7 +189,7 @@ namespace DAU_SACH_TAB
 
 		void Deactivate();
 
-		bool DisplayStatus();
+		bool GetStatus();
 
 		void OnAction(ELEMENTS::InputModeController* InputController);
 
@@ -170,6 +221,15 @@ namespace CATEGORY_LINKED_LIST {
 
 class DauSachTab
 {
+public:
+	DauSachTab(Package* package);
+
+	void Destructor();
+
+	void SortByCategory();
+
+	void Run();
+
 private:
 	bool active;
 	bool datasheetDisplayFlag;
@@ -182,17 +242,11 @@ private:
 private:
 	DAU_SACH_TAB::SearchField searchField;
 
-	DAU_SACH_TAB::ItemAddField itemAddField;
+	DAU_SACH_TAB::TitleCreatingSection titleCreatingSection;
 
 	DAU_SACH_TAB::TitleDetailDisplayField titleDetailField;
 
-public:
-	DauSachTab(LINEAR_LIST::LinearList* danhSachDauSach, ELEMENTS::InputModeController* InputController);
-
-	void Destructor();
-
-	void SortByCategory();
-
-	void Run();
+private:
+	Package* package_;
 };
 

@@ -24,11 +24,11 @@ namespace DAU_SACH_TAB {
 
 		for (int i = 0; i < controler.GetDatasheetCount(); ++i) {
 			controler[i] = DATASHEET::Datasheet(
-				controler.GetRecordCount(), 
-				controler.GetAttributeCount(), 
-				controler.GetRowHeight(), 
+				controler.GetRecordCount(),
+				controler.GetAttributeCount(),
+				controler.GetRowHeight(),
 				controler.GetTopLeft(),
-				(std::string*)DAU_SACH_PROPERTIES::LABEL_PLACEHOLDERS, 
+				(std::string*)DAU_SACH_PROPERTIES::LABEL_PLACEHOLDERS,
 				(int*)DAU_SACH_PROPERTIES::CHARACTER_LIMITS
 			);
 		}
@@ -53,7 +53,7 @@ namespace DAU_SACH_TAB {
 			data[3] = std::to_string(titleList->nodes[i]->GetPageCount());
 			data[4] = titleList->nodes[i]->GetAuthor();
 			data[5] = std::to_string(titleList->nodes[i]->GetPublicationYear());
-			data[6] = titleList->nodes[i]->GetCategory();		
+			data[6] = titleList->nodes[i]->GetCategory();
 
 			controler[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 		}
@@ -67,8 +67,8 @@ namespace DAU_SACH_TAB {
 
 		for (int i = 0; i < datasheetController.GetDatasheetCount(); ++i) {
 			datasheetController[i] = DATASHEET::Datasheet(
-				datasheetController.GetRecordCount(), 
-				datasheetController.GetAttributeCount(), 
+				datasheetController.GetRecordCount(),
+				datasheetController.GetAttributeCount(),
 				datasheetController.GetRowHeight(),
 				datasheetController.GetTopLeft(),
 				(std::string*)DAU_SACH_PROPERTIES::LABEL_PLACEHOLDERS, (int*)DAU_SACH_PROPERTIES::CHARACTER_LIMITS
@@ -127,7 +127,7 @@ namespace DAU_SACH_TAB {
 		this->active = false;
 	}
 
-	bool SearchField::DisplayStatus() {
+	bool SearchField::GetStatus() {
 		return this->active;
 	}
 
@@ -163,19 +163,56 @@ namespace DAU_SACH_TAB {
 	/**
 	* Book add filed constructor
 	*/
-	SachAddField::SachAddField() {
-		this->active = false;
+	BookCreatingSection::BookCreatingSection()
+	{
+		this->active_ = false;
 
-		this->background = HELPER::Fill(
-			HELPER::Coordinate(670, 121), 300, 617,
-			rgb(238, 238, 238), rgb(24, 18, 43)
+		this->InitializeElements();
+	}
+
+	void BookCreatingSection::Activate()
+	{
+		this->active_ = true;
+	}
+
+	void BookCreatingSection::Deactivate()
+	{
+		this->active_ = false;
+	}
+
+	bool BookCreatingSection::GetStatus()
+	{
+		return this->active_;
+	}
+
+	void BookCreatingSection::Display()
+	{
+		if (!this->active_) { return; }
+
+		this->background_.Draw();
+		this->titleButton_.Display();
+		for (int i = 0; i < 5; ++i)
+		{
+			this->inputField_[i].Display();
+		}
+		this->saveButton_.Display();
+	}
+
+	// TODO: Clean up this section
+	void BookCreatingSection::InitializeElements()
+	{
+		this->background_ = HELPER::Fill(
+			HELPER::Coordinate(670, 121),
+			300, 617,
+			rgb(238, 238, 238),
+			rgb(24, 18, 43)
 		);
 
-		this->title = Button(HELPER::Coordinate(670, 121), 300, 50);
-		this->title.SetPlaceholder("BOOK");
-		this->title.SetFillColor(rgb(87, 108, 188));
-		this->title.SetBorderColor(rgb(24, 18, 43));
-		this->title.SetTextColor(rgb(239, 245, 245));
+		this->titleButton_ = Button(HELPER::Coordinate(670, 121), 300, 50);
+		this->titleButton_.SetPlaceholder("BOOK");
+		this->titleButton_.SetFillColor(rgb(87, 108, 188));
+		this->titleButton_.SetBorderColor(rgb(24, 18, 43));
+		this->titleButton_.SetTextColor(rgb(239, 245, 245));
 
 		HELPER::Coordinate inputFieldCoordinates[5] = {
 			HELPER::Coordinate(695, 194),
@@ -184,66 +221,170 @@ namespace DAU_SACH_TAB {
 			HELPER::Coordinate(695, 503),
 			HELPER::Coordinate(695, 586)
 		};
-		std::string inputFiledPlaceholders[5] = {
-			"Ma sach", "Trang thai", "Vi tri hang", "Vi tri cot", "Vi tri tu"
-		};
-		for (int i = 0; i < 5; ++i) {
-			this->inputField[i] = Button(inputFieldCoordinates[i], 250, 60);
-			this->inputField[i].SetPlaceholder(inputFiledPlaceholders[i]);
-			this->inputField[i].SetFillColor(rgb(255, 251, 245));
-			this->inputField[i].SetBorderColor(rgb(24, 18, 43));
-			this->inputField[i].SetTextColor(rgb(24, 18, 43));
+		std::string inputFiledPlaceholders[5] = { "Book's ID", "Book's status", "Row", "Column", "Section" };
+
+		for (int i = 0; i < 5; ++i)
+		{
+			this->inputField_[i] = Button(inputFieldCoordinates[i], 250, 60);
+			this->inputField_[i].SetPlaceholder(inputFiledPlaceholders[i]);
+			this->inputField_[i].SetFillColor(rgb(255, 251, 245));
+			this->inputField_[i].SetBorderColor(rgb(24, 18, 43));
+			this->inputField_[i].SetTextColor(rgb(24, 18, 43));
 		}
 
-		this->savebtn = Button(
+		this->saveButton_ = Button(
 			HELPER::Coordinate(745, 672), 150, 40,
 			rgb(24, 18, 43), rgb(145, 216, 228), rgb(24, 18, 43)
 		);
-		this->savebtn.SetPlaceholder("NEXT");
+		this->saveButton_.SetPlaceholder("NEXT");
 	}
 
-	void SachAddField::Activate() {
-		this->active = true;
-	}
-
-	void SachAddField::Deactivate() {
+	CatalogueCreatingSection::CatalogueCreatingSection()
+	{
+		this->titleList_ = nullptr;
+		this->inputController_ = nullptr;
 		this->active = false;
-	}
-
-	bool SachAddField::DisplayStatus() {
-		return this->active;
-	}
-
-	void SachAddField::Display() {
-		if (this->active == false) {
-			return;
-		}
-
-		this->background.Draw();
-		this->title.Display();
-		for (int i = 0; i < 5; ++i) {
-			this->inputField[i].Display();
-		}
-		this->savebtn.Display();
-	}
-
-	/**
-	* Book add field controller constructor
-	*/
-	SachAddFieldController::SachAddFieldController() {
-		this->active = false;
-		
 		this->items = nullptr;
-		this->activeField = -1;
 		this->itemsCount = 0;
+		this->activeField = -1;
+	}
 
-		HELPER::Coordinate buttonCoordinates[] = {
-			HELPER::Coordinate(670, 756),
-			HELPER::Coordinate(720, 756)
-		};
+	CatalogueCreatingSection::CatalogueCreatingSection(LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController)
+	{
+		this->titleList_ = titleList;
+		this->inputController_ = inputController;
+		this->active = false;
+		this->items = nullptr;
+		this->itemsCount = 0;
+		this->activeField = -1;
+
+		this->InitializeElements();
+	}
+
+	// @CatalogueCreatingSection::Destructor
+	CatalogueCreatingSection::~CatalogueCreatingSection()
+	{
+		delete[this->itemsCount] this->items;
+	}
+
+	void CatalogueCreatingSection::InitializeCatalogue(int catalogueSize, std::string ISBN)
+	{
+		this->itemsCount = catalogueSize;
+		this->items = new DAU_SACH_TAB::BookCreatingSection[catalogueSize];
+		this->activeField = 0;
+
+		for (int i = 1; i <= catalogueSize; ++i)
+		{
+			this->items[i - 1].inputField_[0].SetPlaceholder(ISBN + std::to_string(i));
+			this->items[i - 1].inputField_[1].SetPlaceholder("AVAILABLE");
+		}
+	}
+
+	void CatalogueCreatingSection::InputFieldOnUpdate()
+	{
+		if (!this->active) { return; }
+
+		for (int i = 2; i < 5; ++i)
+		{
+			if (this->items[this->activeField].inputField_[i].IsHover())
+			{
+				this->items[this->activeField].inputField_[i].SetFillColor(rgb(233, 248, 249));
+				this->items[this->activeField].inputField_[i].SetBorderColor(rgb(83, 127, 231));
+			}
+			else if (this->items[this->activeField].inputField_[i].LeftMouseClicked())
+			{
+				this->inputController_->Activate(
+					&this->items[this->activeField].inputField_[i],
+					&this->items[this->activeField].inputField_[i],
+					2, false, true, false
+				);
+			}
+			else
+			{
+				this->items[this->activeField].inputField_[i].SetFillColor(rgb(255, 251, 245));
+				this->items[this->activeField].inputField_[i].SetBorderColor(rgb(24, 18, 43));
+			}
+		}
+	}
+
+	void CatalogueCreatingSection::SaveButtonOnUpdate()
+	{
+		if (!this->active) { return; }
+
+		if (this->items[this->activeField].saveButton_.IsHover())
+		{
+			this->items[this->activeField].saveButton_.SetFillColor(rgb(0, 255, 202));
+		}
+		else if (this->items[this->activeField].saveButton_.LeftMouseClicked())
+		{
+			delay(100);
+			if (this->activeField == this->itemsCount - 1)
+			{
+				this->activeField = 0;
+
+				//TODO: Throw error log here
+				std::cerr << std::format("[INFO] Press Save to save data into the list!\n");
+			}
+			else
+			{
+				this->activeField++;
+			}
+		}
+		else
+		{
+			this->items[this->activeField].saveButton_.SetFillColor(rgb(145, 216, 228));
+		}
+	}
+
+	void CatalogueCreatingSection::IndexChangeButtonOnAction()
+	{
+		if (!this->active) { return; }
+
+		int movement[2] = { -1, +1 };
+		for (int i = 0; i < 2; ++i)
+		{
+			if (this->indexChangeButtons[i].IsHover())
+			{
+				this->indexChangeButtons[i].SetFillColor(rgb(130, 170, 227));
+			}
+			else if (this->indexChangeButtons[i].LeftMouseClicked())
+			{
+				delay(100);
+				this->activeField = (this->activeField + movement[i] + this->itemsCount) % this->itemsCount;
+			}
+			else
+			{
+				this->indexChangeButtons[i].SetFillColor(rgb(236, 242, 255));
+			}
+		}
+	}
+
+	void CatalogueCreatingSection::Activate() { this->active = true; }
+
+	void CatalogueCreatingSection::Deactivate() { this->active = false; }
+
+	bool CatalogueCreatingSection::GetStatus() { return this->active; }
+
+	void CatalogueCreatingSection::Display()
+	{
+		if (!this->active) { return; }
+
+		this->items[this->activeField].Activate();
+		this->items[this->activeField].Display();
+
+		for (int i = 0; i < 2; ++i)
+		{
+			this->indexChangeButtons[i].Display();
+		}
+	}
+
+	void CatalogueCreatingSection::InitializeElements()
+	{
+		HELPER::Coordinate buttonCoordinates[] = { HELPER::Coordinate(670, 756), HELPER::Coordinate(720, 756) };
 		std::string placeholder[] = { "<", ">" };
 
-		for (int i = 0; i < 2; ++i) {
+		for (int i = 0; i < 2; ++i)
+		{
 			this->indexChangeButtons[i] = Button(buttonCoordinates[i], 50, 30);
 			this->indexChangeButtons[i].SetPlaceholder(placeholder[i]);
 			this->indexChangeButtons[i].SetFillColor(rgb(236, 242, 255));
@@ -252,127 +393,204 @@ namespace DAU_SACH_TAB {
 		}
 	}
 
-	SachAddFieldController::~SachAddFieldController() {
-		delete[this->itemsCount] this->items;
-	}
-
-	void SachAddFieldController::Initialize(int amount, std::string isbn) {
-		this->itemsCount = amount;
-		this->items = new DAU_SACH_TAB::SachAddField[amount];
-		this->activeField = 0;
-
-		for (int i = 1; i <= amount; ++i) {
-			this->items[i - 1].inputField[0].SetPlaceholder(isbn + std::to_string(i));
-			this->items[i - 1].inputField[1].SetPlaceholder("CHO MUON DUOC");
-		}
-	}
-
-	void SachAddFieldController::SachAddFieldOnUpdate(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& inputController) {
-		if (this->active == false) {
-			return;
-		}
-
-		for (int i = 2; i < 5; ++i) {
-			if (this->items[this->activeField].inputField[i].IsHover()) {
-				this->items[this->activeField].inputField[i].SetFillColor(rgb(233, 248, 249));
-				this->items[this->activeField].inputField[i].SetBorderColor(rgb(83, 127, 231));
-			}
-			else if (this->items[this->activeField].inputField[i].LeftMouseClicked()) {
-				inputController.Activate(
-					&this->items[this->activeField].inputField[i],
-					&this->items[this->activeField].inputField[i],
-					2, false, true, false
-				);
-			}
-			else {
-				this->items[this->activeField].inputField[i].SetFillColor(rgb(255, 251, 245));
-				this->items[this->activeField].inputField[i].SetBorderColor(rgb(24, 18, 43));
-			}
-		}
-
-		if (this->items[this->activeField].savebtn.IsHover()) {
-			this->items[this->activeField].savebtn.SetFillColor(rgb(0, 255, 202));
-		}
-		else if (this->items[this->activeField].savebtn.LeftMouseClicked()){
-			delay(100);
-			if (this->activeField == this->itemsCount - 1) {
-				this->activeField = 0;
-				std::cerr << std::format("[INFO] Press Save to save data into the list!\n");
-			}
-			else {
-				this->activeField++;
-			}
-		}
-		else {
-			this->items[this->activeField].savebtn.SetFillColor(rgb(145, 216, 228));
-		}
-
-	}
-
-	void SachAddFieldController::IndexChangeButtonOnAction() {
-		if (this->active == false) {
-			return;
-		}
-
-		int movement[2] = { -1, +1 };
-		for (int i = 0; i < 2; ++i) {
-			if (this->indexChangeButtons[i].IsHover()) {
-				this->indexChangeButtons[i].SetFillColor(rgb(130, 170, 227));
-			}
-			else if (this->indexChangeButtons[i].LeftMouseClicked()) {
-				this->activeField = (this->activeField + movement[i] + this->itemsCount) % this->itemsCount;
-				delay(100);
-			}
-			else {
-				this->indexChangeButtons[i].SetFillColor(rgb(236, 242, 255));
-			}
-		}
-	}
-
-	void SachAddFieldController::Activate() {
-		this->active = true;
-	}
-
-	void SachAddFieldController::Deactivate() {
+	TitleCreatingSection::TitleCreatingSection()
+	{
+		this->titleList_ = nullptr;
+		this->inputController_ = nullptr;
 		this->active = false;
+		this->sachAddFieldDisplay = false;
 	}
 
-	bool SachAddFieldController::DisplayStatus() {
-		return this->active;
-	}
+	TitleCreatingSection::TitleCreatingSection(LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController)
+	{
+		this->titleList_ = titleList;
+		this->inputController_ = inputController;
 
-	void SachAddFieldController::Display() {
-		if (this->active == false) {
-			return;
-		}
-		
-		this->items[this->activeField].Activate();
-		this->items[this->activeField].Display();
-
-		for (int i = 0; i < 2; ++i) {
-			this->indexChangeButtons[i].Display();
-		}
-	}
-
-	/**
-	* Add new item to list
-	*/
-	ItemAddField::ItemAddField() {
 		this->active = false;
 		this->sachAddFieldDisplay = false;
 
+		this->InitializeElements();
+	}
+	
+	void TitleCreatingSection::InputFieldOnUpdate()
+	{
+		if (this->active == false) { return; }
+
+		int characterLimits[] = { 4, 50, 4, 50, 4, 30, 5 };
+		bool acceptAlphas[] = { true, true, false, true, false, true, false };
+		bool acceptNums[] = { false, true, true, false, true, false, true };
+		bool acceptSpaces[] = { false, true, false, true, false, true, false };
+
+		for (int i = 0; i < 7; ++i)
+		{
+			if (this->inputField_[i].IsHover())
+			{
+				this->inputField_[i].SetBorderColor(rgb(83, 127, 231));
+				this->inputField_[i].SetFillColor(rgb(233, 248, 249));
+			}
+			else if (this->inputField_[i].LeftMouseClicked())
+			{
+				delay(100);
+				this->inputController_->Activate(
+					&this->inputField_[i],
+					&this->inputField_[i],
+					characterLimits[i],
+					acceptAlphas[i],
+					acceptNums[i],
+					acceptSpaces[i]
+				);
+
+				//TODO: implement isbn check here
+			}
+			else
+			{
+				this->inputField_[i].SetFillColor(rgb(255, 251, 245));
+				this->inputField_[i].SetBorderColor(rgb(24, 18, 43));
+			}
+		}
+	}
+
+	void TitleCreatingSection::CreateCatalogueButtonOnUpdate()
+	{
+		if (this->active == false) { return; }
+
+		if (this->createCatalogueButton_.IsHover())
+		{
+			this->createCatalogueButton_.SetFillColor(rgb(89, 206, 143));
+		}
+		else if (this->createCatalogueButton_.LeftMouseClicked())
+		{
+			delay(100);
+
+			const std::string& catalogueSize = this->inputField_[6].GetPlaceholder();
+			if (VALIDATOR::OnlyDigit(catalogueSize) && std::stoi(catalogueSize) > 0)
+			{
+				this->catalogueCreatingSection = DAU_SACH_TAB::CatalogueCreatingSection(this->titleList_, this->inputController_);
+				this->catalogueCreatingSection.Activate();
+				this->catalogueCreatingSection.InitializeCatalogue(std::stoi(catalogueSize), catalogueSize);
+			}
+			else
+			{
+				//TODO: throw error here
+				std::cerr << std::format("[ERROR] Catalogue's size error\n");
+				exit(1);
+			}
+		}
+		else
+		{
+			this->createCatalogueButton_.SetFillColor(rgb(145, 216, 228));
+		}
+	}
+
+	bool TitleCreatingSection::SubmitButtonOnUpdate()
+	{
+		if (this->active == false) { return false; }
+
+		if (this->submit.IsHover())
+		{
+			this->submit.SetFillColor(rgb(89, 206, 143));
+		}
+		else if (this->submit.LeftMouseClicked())
+		{
+			delay(100);
+		
+			BOOK_TITLE::BookTitle* newTitle = new BOOK_TITLE::BookTitle;
+
+			newTitle->SetISBN(this->inputField_[0].GetPlaceholder());
+			newTitle->SetTitle(this->inputField_[1].GetPlaceholder());
+			newTitle->SetPageCount(std::stoi(this->inputField_[2].GetPlaceholder()));
+			newTitle->SetAuthor(this->inputField_[3].GetPlaceholder());
+			newTitle->SetPublicationYear(std::stoi(this->inputField_[4].GetPlaceholder()));
+			newTitle->SetCategory(this->inputField_[5].GetPlaceholder());
+
+			if (std::stoi(this->inputField_[6].GetPlaceholder()) == 0)
+			{
+				newTitle->SetCatalogue(LINKED_LIST::Controller());
+			}
+			else
+			{
+				LINKED_LIST::Controller newBookList;
+				LINKED_LIST::Initialize(newBookList);
+
+				for (int i = 0; i < this->catalogueCreatingSection.itemsCount; ++i)
+				{
+					BOOK::Book newBook;
+					newBook.SetID(this->catalogueCreatingSection.items[i].inputField_[0].GetPlaceholder());
+					newBook.SetStatus(BOOK::Status::AVAILABLE);
+					newBook.SetDescription(std::format("ROW {} COL {} SECTION {}",
+						this->catalogueCreatingSection.items[i].inputField_[2].GetPlaceholder(),
+						this->catalogueCreatingSection.items[i].inputField_[3].GetPlaceholder(),
+						this->catalogueCreatingSection.items[i].inputField_[4].GetPlaceholder()
+					));
+
+					LINKED_LIST::PushBack(newBookList, newBook);
+				}
+
+				newTitle->SetCatalogue(newBookList);
+			}
+
+			LINEAR_LIST::InsertOrder(*this->titleList_, newTitle);
+
+			//TODO: throw alert info
+			std::cerr << "[INFO] Successfully insert a new item into title list!\n";
+			return true;
+		}
+		else
+		{
+			this->submit.SetFillColor(rgb(145, 216, 228));
+		}
+
+
+		return false;
+	}
+
+	void TitleCreatingSection::Activate() { this->active = true; }
+
+	void TitleCreatingSection::Deactivate() { this->active = false; }
+
+	bool TitleCreatingSection::GetStatus() { return this->active; }
+
+	void TitleCreatingSection::Display(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController) {
+		if (this->active == false) {
+			return;
+		}
+
+		this->backdrop.Draw();
+		this->background.Draw();
+		this->title.Display();
+		for (int i = 0; i < 7; ++i) {
+			this->inputField_[i].Display();
+		}
+		this->createCatalogueButton_.Display();
+		this->submit.Display();
+		this->goBackButton.Display();
+
+		if (this->catalogueCreatingSection.GetStatus() == true) {
+			this->catalogueCreatingSection.Display();
+			this->catalogueCreatingSection.IndexChangeButtonOnAction();
+			this->catalogueCreatingSection.InputFieldOnUpdate();
+			this->catalogueCreatingSection.SaveButtonOnUpdate();
+		}
+	}
+
+	void TitleCreatingSection::InitializeElements()
+	{
 		this->background = HELPER::Fill(
-			HELPER::Coordinate(36, 121), 600, 700,
-			rgb(238, 238, 238), rgb(24, 18, 43)
+			HELPER::Coordinate(36, 121),
+			600, 700,
+			rgb(238, 238, 238),
+			rgb(24, 18, 43)
 		);
 
 		this->backdrop = HELPER::Fill(
-			HELPER::Coordinate(36, 121), 934, 800,
-			rgb(216, 216, 216), rgb(24, 24, 35)
+			HELPER::Coordinate(36, 121),
+			934, 800,
+			rgb(216, 216, 216),
+			rgb(24, 24, 35)
 		);
 
 		this->title = Button(HELPER::Coordinate(36, 120), 600, 50);
-		this->title.SetPlaceholder("DAU BOOK");
+		this->title.SetPlaceholder("TITLE");
 		this->title.SetFillColor(rgb(87, 108, 188));
 		this->title.SetBorderColor(rgb(24, 18, 43));
 		this->title.SetTextColor(rgb(239, 245, 245));
@@ -387,27 +605,28 @@ namespace DAU_SACH_TAB {
 			HELPER::Coordinate(61, 692)
 		};
 		std::string inputFiledPlaceholders[7] = {
-			"isbn", "lastName sach", "So trang", "Tac gia", "Nam xuat ban", "The loai", "Kich thuoc danh muc sach"
+			"ISBN", "Title", "Page number", "Author", "Public year", "Category", "Catalogue's size"
 		};
-		for (int i = 0; i < 7; ++i) {
-			this->inputField[i] = Button(inputFieldCoordinates[i], 550, 60);
-			this->inputField[i].SetPlaceholder(inputFiledPlaceholders[i]);
-			this->inputField[i].SetFillColor(rgb(255, 251, 245));
-			this->inputField[i].SetBorderColor(rgb(24, 18, 43));
-			this->inputField[i].SetTextColor(rgb(24, 18, 43));
+		for (int i = 0; i < 7; ++i)
+		{
+			this->inputField_[i] = Button(inputFieldCoordinates[i], 550, 60);
+			this->inputField_[i].SetPlaceholder(inputFiledPlaceholders[i]);
+			this->inputField_[i].SetFillColor(rgb(255, 251, 245));
+			this->inputField_[i].SetBorderColor(rgb(24, 18, 43));
+			this->inputField_[i].SetTextColor(rgb(24, 18, 43));
 		}
 
-		this->createDanhMucSach = Button(
+		this->createCatalogueButton_ = Button(
 			HELPER::Coordinate(261, 766), 150, 40,
 			rgb(24, 18, 43), rgb(145, 216, 228), rgb(24, 18, 43)
 		);
-		this->createDanhMucSach.SetPlaceholder("Create book list");
+		this->createCatalogueButton_.SetPlaceholder("CREATE CATALOGUE");
 
 		this->submit = Button(
 			HELPER::Coordinate(428, 842), 250, 60,
 			rgb(24, 18, 43), rgb(145, 216, 228), rgb(24, 18, 43)
 		);
-		this->submit.SetPlaceholder("CREATE BOOK_TITLE");
+		this->submit.SetPlaceholder("CREATE NEW TITLE");
 
 		this->goBackButton = Button(
 			HELPER::Coordinate(36, 942), 70, 40,
@@ -416,148 +635,7 @@ namespace DAU_SACH_TAB {
 		this->goBackButton.SetPlaceholder("<");
 	}
 
-	bool ItemAddField::ItemAddFieldOnUpdate(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController) {
-		if (this->active == false) {
-			return false;
-		}
-
-		for (int i = 0; i < 7; ++i) {
-			if (this->inputField[i].IsHover()) {
-				this->inputField[i].SetBorderColor(rgb(83, 127, 231));
-				this->inputField[i].SetFillColor(rgb(233, 248, 249));
-			}
-			else if (this->inputField[i].LeftMouseClicked()) {
-				delay(100);
-				switch (i) {
-					case (0):
-						InputController.Activate(&this->inputField[i], &this->inputField[i], 4, true, false, false);
-						break;
-					case (1):
-						InputController.Activate(&this->inputField[i], &this->inputField[i], 50, true, true, true);
-						break;
-					case (2):
-						InputController.Activate(&this->inputField[i], &this->inputField[i], 4, false, true, false);
-						break;
-					case (3):
-						InputController.Activate(&this->inputField[i], &this->inputField[i], 50, true, false, true);
-						break;
-					case (4):
-						InputController.Activate(&this->inputField[i], &this->inputField[i], 4, false, true, false);
-						break;
-					case (5):
-						InputController.Activate(&this->inputField[i], &this->inputField[i], 30, true, false, true);
-						break;
-					case (6):
-						InputController.Activate(&this->inputField[i], &this->inputField[i], 5, false, true, false);
-						break;
-				}
-			}
-			else {
-				this->inputField[i].SetFillColor(rgb(255, 251, 245));
-				this->inputField[i].SetBorderColor(rgb(24, 18, 43));
-			}
-		}
-
-		if (this->createDanhMucSach.IsHover()) {
-			this->createDanhMucSach.SetFillColor(rgb(89, 206, 143));
-		}
-		else if (this->createDanhMucSach.LeftMouseClicked()) {
-			delay(100);
-
-			if (VALIDATOR::OnlyDigit(this->inputField[6].GetPlaceholder()) && std::stoi(this->inputField[6].GetPlaceholder()) > 0) {
-				this->sachAddFieldController.Activate();
-				this->sachAddFieldController.Initialize(std::stoi(this->inputField[6].GetPlaceholder()), this->inputField[0].GetPlaceholder());
-			}
-			else {
-				std::cerr << std::format("[ERROR] Thong tin cua truong \"kich thuoc danh muc sach readerSexButton la so nguyen khong am\"\n");
-				exit(1);
-			}
-		}
-		else {
-			this->createDanhMucSach.SetFillColor(rgb(145, 216, 228));
-		}
-
-		if (this->submit.IsHover()) {
-			this->submit.SetFillColor(rgb(89, 206, 143));
-		}
-		else if (this->submit.LeftMouseClicked()) {
-			delay(100);
-			BOOK_TITLE::BookTitle* newTitle = new BOOK_TITLE::BookTitle;
-
-			newTitle->SetISBN(this->inputField[0].GetPlaceholder());
-			newTitle->SetTitle(this->inputField[1].GetPlaceholder());
-			newTitle->SetPageCount(std::stoi(this->inputField[2].GetPlaceholder()));
-			newTitle->SetAuthor(this->inputField[3].GetPlaceholder());
-			newTitle->SetPublicationYear(std::stoi(this->inputField[4].GetPlaceholder()));
-			newTitle->SetCategory(this->inputField[5].GetPlaceholder());
-
-			if (std::stoi(this->inputField[6].GetPlaceholder()) == 0) {
-				newTitle->SetCatalogue(LINKED_LIST::Controller());
-			}
-			else {
-				LINKED_LIST::Controller newBookList;
-				LINKED_LIST::Initialize(newBookList);
-				for (int i = 0; i < this->sachAddFieldController.itemsCount; ++i) {
-					BOOK::Book newBook;
-					newBook.SetID(this->sachAddFieldController.items[i].inputField[0].GetPlaceholder());
-					newBook.SetStatus(BOOK::Status::AVAILABLE);
-					newBook.SetDescription(std::format("HANG {} COT {} TU {}", 
-						this->sachAddFieldController.items[i].inputField[2].GetPlaceholder(),
-						this->sachAddFieldController.items[i].inputField[3].GetPlaceholder(),
-						this->sachAddFieldController.items[i].inputField[4].GetPlaceholder()
-					));
-					LINKED_LIST::PushBack(newBookList, newBook);
-				}
-				newTitle->SetCatalogue(newBookList);
-			}
-
-			LINEAR_LIST::InsertOrder(titleList, newTitle);
-			std::cerr << "[INFO] Successfully insert a new item into title list!\n";
-			return true;
-		}
-		else {
-			this->submit.SetFillColor(rgb(145, 216, 228));
-		}
-
-
-		return false;
-	}
-
-	void ItemAddField::Activate() {
-		this->active = true;
-	}
-
-	void ItemAddField::Deactivate() {
-		this->active = false;
-	}
-
-	bool ItemAddField::DisplayStatus() {
-		return this->active;
-	}
-
-	void ItemAddField::Display(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController) {
-		if (this->active == false) {
-			return;
-		}
-
-		this->backdrop.Draw();
-		this->background.Draw();
-		this->title.Display();
-		for (int i = 0; i < 7; ++i) {
-			this->inputField[i].Display();
-		}
-		this->createDanhMucSach.Display();
-		this->submit.Display();
-		this->goBackButton.Display();
-
-		if (this->sachAddFieldController.DisplayStatus() == true) {
-			this->sachAddFieldController.Display();
-			this->sachAddFieldController.IndexChangeButtonOnAction();
-			this->sachAddFieldController.SachAddFieldOnUpdate(titleList, InputController);
-		}
-	}
-
-	bool ItemAddField::GoBackButtonOnAction() {
+	bool TitleCreatingSection::GoBackButtonOnAction() {
 		if (this->active == false) {
 			return false;
 		}
@@ -568,7 +646,7 @@ namespace DAU_SACH_TAB {
 		else if (this->goBackButton.LeftMouseClicked()) {
 			delay(100);
 			this->active = false;
-			this->sachAddFieldController.Deactivate();
+			this->catalogueCreatingSection.Deactivate();
 			return true;
 		}
 		else {
@@ -648,7 +726,7 @@ namespace DAU_SACH_TAB {
 	void TitleDetailDisplayField::CreateBookListDatasheet() {
 		std::string labels[] = { "STT", "MA BOOK", "TRANG THAI", "VI TRI" };
 		int chrLimits[] = { 3, 8, 18, 20 };
-		
+
 		int listSize = LINKED_LIST::Size(this->targetedTitle->GetCatalogue());
 
 		this->bookListDatasheetController.SetDatasheetCount(
@@ -700,10 +778,10 @@ namespace DAU_SACH_TAB {
 		this->active = false;
 	}
 
-	bool TitleDetailDisplayField::DisplayStatus() {
+	bool TitleDetailDisplayField::GetStatus() {
 		return this->active;
 	}
-	
+
 	void TitleDetailDisplayField::Display() {
 		if (this->active == false) {
 			return;
@@ -727,7 +805,7 @@ namespace DAU_SACH_TAB {
 			}
 			else if (this->deleteBookBtn.LeftMouseClicked()) {
 				//todo: LINKED_LIST::DeleteAt function is not working!
-				
+
 				LINKED_LIST::Controller buffer = this->targetedTitle->GetCatalogue();
 				if (LINKED_LIST::DeleteAt(buffer, this->deleteBook->info)) {
 					std::cerr << "delete!\n";
@@ -753,7 +831,7 @@ namespace DAU_SACH_TAB {
 			return;
 		}
 
-		for (int i = 1; i < this->bookListDatasheetController.GetRecordCount(); ++i) {	
+		for (int i = 1; i < this->bookListDatasheetController.GetRecordCount(); ++i) {
 			Button& bookIdButton = this->bookListDatasheetController[this->bookListDatasheetController.CurrentActiveDatasheet()][i][1];
 
 			if (bookIdButton.IsHover()) {
@@ -888,22 +966,21 @@ namespace CATEGORY_LINKED_LIST {
 	}
 }
 
-/*
-* DauSachTab constructor
-*/
 
-DauSachTab::DauSachTab(LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController) {
-
+DauSachTab::DauSachTab(Package* package)
+{
 	//* Initialize data
-	this->titleList = titleList;
+	this->titleList = package->titleList;
+	this->inputController = package->inputController;
+
 	this->titleListSortedByCategory = nullptr;
-	this->inputController = inputController;
 	this->datasheetDisplayFlag = true;
 	this->active = false;
+	
 	this->datasheetController = DATASHEET::Controller(
-		CONSTANTS::MAX_ROW_COUNT, 
-		DAU_SACH_PROPERTIES::PROPERTIES_COUNT, 
-		DAU_SACH_PROPERTIES::ROW_HEIGHT, 
+		CONSTANTS::MAX_ROW_COUNT,
+		DAU_SACH_PROPERTIES::PROPERTIES_COUNT,
+		DAU_SACH_PROPERTIES::ROW_HEIGHT,
 		HELPER::Coordinate(36, 120)
 	);
 
@@ -918,7 +995,7 @@ DauSachTab::DauSachTab(LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeCo
 		HELPER::Coordinate(750, 940)
 	};
 	HELPER::Dimension listManipulateButtonDimension(150, 30);
-	std::string listManipulateButtonPlaceholders[] = {"NEW", "EDIT", "REMOVE"};
+	std::string listManipulateButtonPlaceholders[] = { "NEW", "EDIT", "REMOVE" };
 	for (int i = 0; i < 3; ++i) {
 		this->functionalButtons[i] = Button(listManipulateButtonCoordinates[i], listManipulateButtonDimension);
 		this->functionalButtons[i].SetPlaceholder(listManipulateButtonPlaceholders[i]);
@@ -954,7 +1031,7 @@ void DauSachTab::SortByCategory() {
 		}
 	}
 
-	this->titleListSortedByCategory = new BOOK_TITLE::BookTitle* [this->titleList->numberOfNode];
+	this->titleListSortedByCategory = new BOOK_TITLE::BookTitle * [this->titleList->numberOfNode];
 	int index = 0;
 	for (CATEGORY_LINKED_LIST::Pointer p = categories; p != nullptr; p = p->next) {
 		for (int i = 0; i < this->titleList->numberOfNode; ++i) {
@@ -978,7 +1055,7 @@ void DauSachTab::Run() {
 	 * * Follow up with the avalable function such as CREATE/UPDATE/DELETE to the Titles database.
 	 * * There will be a Search session for users to search for the needed title by searching by it's name.
 	 * * User can press the datasheet's label in order to sort the items by the corresponding label.
-	 * 
+	 *
 	 * ! Currently, the datasheets are sorted by the title's names and can be sorted by the title's category.
 	*/
 	if (this->datasheetController.DisplayStatus() == true) {
@@ -997,7 +1074,7 @@ void DauSachTab::Run() {
 		this->searchField.Display();
 		this->searchField.OnAction(this->inputController);
 		BOOK_TITLE::BookTitle* searchResult = LINEAR_LIST::SearchByName(*this->titleList, this->searchField.inputSearchBox->GetPlaceholder());
-		
+
 		//* Title search logic
 		if (searchResult != nullptr) {
 			this->searchField.searchStatusBox->SetPlaceholder("SHOW DETAILS");
@@ -1059,7 +1136,7 @@ void DauSachTab::Run() {
 		 * * Book list on action logic
 		 * * When hovering the mouse on the title's name, change the pointing button's fill color.
 		 * * When pressed at the title's name button, display the title's details.
-		 * 
+		 *
 		 * ! Currently, the UI design of this function is not very good!
 		*/
 		for (int i = 1; i < this->datasheetController.GetRecordCount(); ++i) {
@@ -1100,16 +1177,17 @@ void DauSachTab::Run() {
 			else if (currentBtn.LeftMouseClicked()) {
 				switch (i) {
 					delay(100);
-				case (0):
-					this->datasheetController.DeactivateDatasheets();
-					this->itemAddField.Activate();
-					break;
-				case (1):
-					std::cerr << "edit item!\n";
-					break;
-				case (2):
-					std::cerr << "remove item!\n";
-					break;
+					case (0):
+						this->datasheetController.DeactivateDatasheets();
+						this->titleCreatingSection = DAU_SACH_TAB::TitleCreatingSection(this->titleList, this->inputController);
+						this->titleCreatingSection.Activate();
+						break;
+					case (1):
+						std::cerr << "edit item!\n";
+						break;
+					case (2):
+						std::cerr << "remove item!\n";
+						break;
 				}
 			}
 			else {
@@ -1119,7 +1197,7 @@ void DauSachTab::Run() {
 	}
 
 	//* Displaying founded search target
-	if (this->searchField.targetDetails.DisplayStatus()) {
+	if (this->searchField.targetDetails.GetStatus()) {
 		this->datasheetController.DeactivateDatasheets();
 		this->searchField.targetDetails.Display();
 		this->searchField.targetDetails.DeleteBookButtonOnAction();
@@ -1134,7 +1212,7 @@ void DauSachTab::Run() {
 	}
 
 	//* Displaying title's details field
-	if (this->titleDetailField.DisplayStatus() == true) {
+	if (this->titleDetailField.GetStatus() == true) {
 		this->titleDetailField.Display();
 		if (this->titleDetailField.GoBackButtonOnAction() == true) {
 			this->datasheetController.ActivateDatasheets();
@@ -1145,15 +1223,18 @@ void DauSachTab::Run() {
 	}
 
 	//* Displaying the ADD function.
-	if (this->itemAddField.DisplayStatus() == true) {
-		this->itemAddField.Display(*this->titleList, *this->inputController);
+	if (this->titleCreatingSection.GetStatus() == true) {
+		this->titleCreatingSection.Display(*this->titleList, *this->inputController);
 
-		if (this->itemAddField.GoBackButtonOnAction()) {
-			this->itemAddField.Deactivate();
+		if (this->titleCreatingSection.GoBackButtonOnAction()) {
+			this->titleCreatingSection.Deactivate();
 			this->datasheetController.ActivateDatasheets();
 		}
 
-		bool regenerateDatasheet = this->itemAddField.ItemAddFieldOnUpdate(*this->titleList, *this->inputController);
+		//WORKING
+		this->titleCreatingSection.InputFieldOnUpdate();
+		this->titleCreatingSection.CreateCatalogueButtonOnUpdate();
+		bool regenerateDatasheet = this->titleCreatingSection.SubmitButtonOnUpdate();
 		if (regenerateDatasheet) {
 			DAU_SACH_TAB::CreateDatasheetsFromList(this->titleList, this->datasheetController);
 		}

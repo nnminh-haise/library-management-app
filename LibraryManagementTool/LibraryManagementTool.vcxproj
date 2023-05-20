@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Helper\IndexGenerator.cpp" />
+    <ClCompile Include="Helper\Package.cpp" />
     <ClCompile Include="Tabs\UI\Datasheet.cpp" />
     <ClCompile Include="Tabs\UI\Button.cpp" />
     <ClCompile Include="Tabs\DanhSachDauSachTab\DanhSachDauSachStyling.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="DataStructures\LinearList.h" />
     <ClInclude Include="DataStructures\LinkedList.h" />
     <ClInclude Include="Helper\IndexGenerator.h" />
+    <ClInclude Include="Helper\Package.h" />
     <ClInclude Include="Tabs\UI\Datasheet.h" />
     <ClInclude Include="Tabs\UI\Button.h" />
     <ClInclude Include="Tabs\DanhSachDauSachTab\DanhSachDauSachStyling.h" />

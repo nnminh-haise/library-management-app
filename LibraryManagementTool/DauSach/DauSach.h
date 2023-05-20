@@ -161,4 +161,6 @@ namespace DAU_SACH_MODULES
 	bool UpdateListToDatabase(const std::string& filename, const LINEAR_LIST::LinearList& titleList);
 
 	void DuplicateList(const LINEAR_LIST::LinearList& titleList, LINEAR_LIST::LinearList& destinationList);
+
+	
 }
