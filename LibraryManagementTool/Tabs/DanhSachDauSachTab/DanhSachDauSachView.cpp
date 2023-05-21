@@ -137,7 +137,14 @@ namespace DAU_SACH_TAB {
 		}
 		else if (this->inputSearchBox->LeftMouseClicked()) {
 			this->searchFound = false;
-			inputController->Activate(this->inputSearchBox, this->inputSearchBox, 30, true, true, true);
+			inputController->Activate(
+				this->inputSearchBox,
+				this->inputSearchBox,
+				30,
+				true,
+				true,
+				true
+			);
 		}
 		else {
 			DANH_SACH_DAU_SACH_SEARCH_FIELD_STYLING::SearchBoxStyling(this->inputSearchBox);
@@ -160,9 +167,7 @@ namespace DAU_SACH_TAB {
 		this->searchStatusBox->Display();
 	}
 
-	/**
-	* Book add filed constructor
-	*/
+	
 	BookCreatingSection::BookCreatingSection()
 	{
 		this->active_ = false;
@@ -170,27 +175,17 @@ namespace DAU_SACH_TAB {
 		this->InitializeElements();
 	}
 
-	void BookCreatingSection::Activate()
-	{
-		this->active_ = true;
-	}
+	void BookCreatingSection::Activate() { this->active_ = true; }
 
-	void BookCreatingSection::Deactivate()
-	{
-		this->active_ = false;
-	}
+	void BookCreatingSection::Deactivate() { this->active_ = false; }
 
-	bool BookCreatingSection::GetStatus()
-	{
-		return this->active_;
-	}
+	bool BookCreatingSection::GetStatus() { return this->active_; }
 
 	void BookCreatingSection::Display()
 	{
 		if (!this->active_) { return; }
 
 		this->background_.Draw();
-		this->titleButton_.Display();
 		for (int i = 0; i < 5; ++i)
 		{
 			this->inputField_[i].Display();
@@ -202,30 +197,31 @@ namespace DAU_SACH_TAB {
 	void BookCreatingSection::InitializeElements()
 	{
 		this->background_ = HELPER::Fill(
-			HELPER::Coordinate(670, 121),
-			300, 617,
+			HELPER::Coordinate(36, 616),
+			600, 180,
 			rgb(238, 238, 238),
 			rgb(24, 18, 43)
 		);
 
-		this->titleButton_ = Button(HELPER::Coordinate(670, 121), 300, 50);
-		this->titleButton_.SetPlaceholder("BOOK");
-		this->titleButton_.SetFillColor(rgb(87, 108, 188));
-		this->titleButton_.SetBorderColor(rgb(24, 18, 43));
-		this->titleButton_.SetTextColor(rgb(239, 245, 245));
-
 		HELPER::Coordinate inputFieldCoordinates[5] = {
-			HELPER::Coordinate(695, 194),
-			HELPER::Coordinate(695, 277),
-			HELPER::Coordinate(695, 420),
-			HELPER::Coordinate(695, 503),
-			HELPER::Coordinate(695, 586)
+			HELPER::Coordinate(61, 646),
+			HELPER::Coordinate(398, 646),
+			HELPER::Coordinate(61, 717),
+			HELPER::Coordinate(229, 717),
+			HELPER::Coordinate(398, 717)
 		};
 		std::string inputFiledPlaceholders[5] = { "Book's ID", "Book's status", "Row", "Column", "Section" };
+		HELPER::Dimension inputFieldDimension[] = {
+			HELPER::Dimension(308, 50),
+			HELPER::Dimension(215, 50),
+			HELPER::Dimension(140, 50),
+			HELPER::Dimension(140, 50),
+			HELPER::Dimension(140, 50)
+		};
 
 		for (int i = 0; i < 5; ++i)
 		{
-			this->inputField_[i] = Button(inputFieldCoordinates[i], 250, 60);
+			this->inputField_[i] = Button(inputFieldCoordinates[i], inputFieldDimension[i]);
 			this->inputField_[i].SetPlaceholder(inputFiledPlaceholders[i]);
 			this->inputField_[i].SetFillColor(rgb(255, 251, 245));
 			this->inputField_[i].SetBorderColor(rgb(24, 18, 43));
@@ -233,16 +229,20 @@ namespace DAU_SACH_TAB {
 		}
 
 		this->saveButton_ = Button(
-			HELPER::Coordinate(745, 672), 150, 40,
-			rgb(24, 18, 43), rgb(145, 216, 228), rgb(24, 18, 43)
+			HELPER::Coordinate(561, 717),
+			50, 50,
+			rgb(24, 18, 43),
+			rgb(145, 216, 228),
+			rgb(24, 18, 43)
 		);
-		this->saveButton_.SetPlaceholder("NEXT");
+		this->saveButton_.SetPlaceholder(">");
 	}
 
 	CatalogueCreatingSection::CatalogueCreatingSection()
 	{
 		this->titleList_ = nullptr;
 		this->inputController_ = nullptr;
+
 		this->active = false;
 		this->items = nullptr;
 		this->itemsCount = 0;
@@ -253,6 +253,7 @@ namespace DAU_SACH_TAB {
 	{
 		this->titleList_ = titleList;
 		this->inputController_ = inputController;
+
 		this->active = false;
 		this->items = nullptr;
 		this->itemsCount = 0;
@@ -275,7 +276,7 @@ namespace DAU_SACH_TAB {
 
 		for (int i = 1; i <= catalogueSize; ++i)
 		{
-			this->items[i - 1].inputField_[0].SetPlaceholder(ISBN + std::to_string(i));
+			this->items[i - 1].inputField_[0].SetPlaceholder(ISBN + "-" + std::to_string(i));
 			this->items[i - 1].inputField_[1].SetPlaceholder("AVAILABLE");
 		}
 	}
@@ -293,10 +294,15 @@ namespace DAU_SACH_TAB {
 			}
 			else if (this->items[this->activeField].inputField_[i].LeftMouseClicked())
 			{
+				//!DELAY_SECTION
+				delay(150);
 				this->inputController_->Activate(
 					&this->items[this->activeField].inputField_[i],
 					&this->items[this->activeField].inputField_[i],
-					2, false, true, false
+					2,
+					false,
+					true,
+					false
 				);
 			}
 			else
@@ -317,13 +323,14 @@ namespace DAU_SACH_TAB {
 		}
 		else if (this->items[this->activeField].saveButton_.LeftMouseClicked())
 		{
-			delay(100);
+			//!DELAY_SECTION
+			delay(150);
 			if (this->activeField == this->itemsCount - 1)
 			{
 				this->activeField = 0;
 
 				//TODO: Throw error log here
-				std::cerr << std::format("[INFO] Press Save to save data into the list!\n");
+				//std::cerr << std::format("[INFO] Press Save to save data into the list!\n");
 			}
 			else
 			{
@@ -349,7 +356,8 @@ namespace DAU_SACH_TAB {
 			}
 			else if (this->indexChangeButtons[i].LeftMouseClicked())
 			{
-				delay(100);
+				//!DELAY_SECTION
+				delay(150);
 				this->activeField = (this->activeField + movement[i] + this->itemsCount) % this->itemsCount;
 			}
 			else
@@ -380,7 +388,10 @@ namespace DAU_SACH_TAB {
 
 	void CatalogueCreatingSection::InitializeElements()
 	{
-		HELPER::Coordinate buttonCoordinates[] = { HELPER::Coordinate(670, 756), HELPER::Coordinate(720, 756) };
+		HELPER::Coordinate buttonCoordinates[] = {
+			HELPER::Coordinate(36, 811),
+			HELPER::Coordinate(86, 811)
+		};
 		std::string placeholder[] = { "<", ">" };
 
 		for (int i = 0; i < 2; ++i)
@@ -395,31 +406,28 @@ namespace DAU_SACH_TAB {
 
 	TitleCreatingSection::TitleCreatingSection()
 	{
-		this->titleList_ = nullptr;
-		this->inputController_ = nullptr;
 		this->active = false;
 		this->sachAddFieldDisplay = false;
 	}
 
-	TitleCreatingSection::TitleCreatingSection(LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController)
+	TitleCreatingSection::TitleCreatingSection(Package* package)
 	{
-		this->titleList_ = titleList;
-		this->inputController_ = inputController;
+		this->package_ = package;
 
 		this->active = false;
 		this->sachAddFieldDisplay = false;
 
 		this->InitializeElements();
 	}
-	
-	void TitleCreatingSection::InputFieldOnUpdate()
-	{
-		if (this->active == false) { return; }
 
-		int characterLimits[] = { 4, 50, 4, 50, 4, 30, 5 };
-		bool acceptAlphas[] = { true, true, false, true, false, true, false };
-		bool acceptNums[] = { false, true, true, false, true, false, true };
-		bool acceptSpaces[] = { false, true, false, true, false, true, false };
+	bool TitleCreatingSection::InputFieldOnUpdate()
+	{
+		if (this->active == false) { return false; }
+
+		int characterLimits[] = { 4, 50, 50, 30, 4, 4, 5 };
+		bool acceptAlphas[] = { true, true, true, true, false, false, false };
+		bool acceptNums[] = { false, true, true, true, true, true, true };
+		bool acceptSpaces[] = { false, true, true, true, false, false, false };
 
 		for (int i = 0; i < 7; ++i)
 		{
@@ -431,7 +439,7 @@ namespace DAU_SACH_TAB {
 			else if (this->inputField_[i].LeftMouseClicked())
 			{
 				delay(100);
-				this->inputController_->Activate(
+				this->package_->inputController->Activate(
 					&this->inputField_[i],
 					&this->inputField_[i],
 					characterLimits[i],
@@ -439,8 +447,6 @@ namespace DAU_SACH_TAB {
 					acceptNums[i],
 					acceptSpaces[i]
 				);
-
-				//TODO: implement isbn check here
 			}
 			else
 			{
@@ -448,11 +454,41 @@ namespace DAU_SACH_TAB {
 				this->inputField_[i].SetBorderColor(rgb(24, 18, 43));
 			}
 		}
+
+		std::string defaultInputValues[7] = {
+			" ISBN ", " Title ", " Author ", " Category ", " Page number ", " Public year ", " Catalogue's size "
+		};
+		bool userInputed = true;
+		std::string userInputValue{};
+		for (int i = 0; i < 7; ++i)
+		{
+			userInputValue = this->inputField_[i].GetPlaceholder();
+			if (userInputValue.compare(defaultInputValues[i]) == 0 || userInputValue.length() == 0)
+			{
+				userInputed = false;
+				break;
+			}
+		}
+
+		this->ISBNCheckProcessResult_ = this->ISBNInputFieldCheckProcess();
+
+		this->catalogueSizeProcessResult_ = this->CatalogueSizeCheckProcess();
+
+		if (this->ISBNCheckProcessResult_ && this->catalogueSizeProcessResult_ && userInputed)
+		{
+			this->goodInputFieldCheckResult_ = true;
+			return true;
+		}
+
+		this->goodInputFieldCheckResult_ = false;
+		return false;
 	}
 
-	void TitleCreatingSection::CreateCatalogueButtonOnUpdate()
+	bool TitleCreatingSection::CreateCatalogueButtonOnUpdate()
 	{
-		if (this->active == false) { return; }
+		if (this->active == false) { return false; }
+
+		if (!this->goodInputFieldCheckResult_) { return false; }
 
 		if (this->createCatalogueButton_.IsHover())
 		{
@@ -463,23 +499,19 @@ namespace DAU_SACH_TAB {
 			delay(100);
 
 			const std::string& catalogueSize = this->inputField_[6].GetPlaceholder();
-			if (VALIDATOR::OnlyDigit(catalogueSize) && std::stoi(catalogueSize) > 0)
-			{
-				this->catalogueCreatingSection = DAU_SACH_TAB::CatalogueCreatingSection(this->titleList_, this->inputController_);
-				this->catalogueCreatingSection.Activate();
-				this->catalogueCreatingSection.InitializeCatalogue(std::stoi(catalogueSize), catalogueSize);
-			}
-			else
-			{
-				//TODO: throw error here
-				std::cerr << std::format("[ERROR] Catalogue's size error\n");
-				exit(1);
-			}
+			const std::string& titleISBN = this->inputField_[0].GetPlaceholder();
+			this->catalogueCreatingSection = DAU_SACH_TAB::CatalogueCreatingSection(this->package_->titleList, this->package_->inputController);
+			this->catalogueCreatingSection.Activate();
+			this->catalogueCreatingSection.InitializeCatalogue(std::stoi(catalogueSize), titleISBN);
+
+			return true;
 		}
 		else
 		{
 			this->createCatalogueButton_.SetFillColor(rgb(145, 216, 228));
 		}
+
+		return false;
 	}
 
 	bool TitleCreatingSection::SubmitButtonOnUpdate()
@@ -493,15 +525,15 @@ namespace DAU_SACH_TAB {
 		else if (this->submit.LeftMouseClicked())
 		{
 			delay(100);
-		
+
 			BOOK_TITLE::BookTitle* newTitle = new BOOK_TITLE::BookTitle;
 
 			newTitle->SetISBN(this->inputField_[0].GetPlaceholder());
 			newTitle->SetTitle(this->inputField_[1].GetPlaceholder());
-			newTitle->SetPageCount(std::stoi(this->inputField_[2].GetPlaceholder()));
-			newTitle->SetAuthor(this->inputField_[3].GetPlaceholder());
+			newTitle->SetAuthor(this->inputField_[2].GetPlaceholder());
+			newTitle->SetCategory(this->inputField_[3].GetPlaceholder());
 			newTitle->SetPublicationYear(std::stoi(this->inputField_[4].GetPlaceholder()));
-			newTitle->SetCategory(this->inputField_[5].GetPlaceholder());
+			newTitle->SetPageCount(std::stoi(this->inputField_[5].GetPlaceholder()));
 
 			if (std::stoi(this->inputField_[6].GetPlaceholder()) == 0)
 			{
@@ -529,7 +561,7 @@ namespace DAU_SACH_TAB {
 				newTitle->SetCatalogue(newBookList);
 			}
 
-			LINEAR_LIST::InsertOrder(*this->titleList_, newTitle);
+			LINEAR_LIST::InsertOrder(*this->package_->titleList, newTitle);
 
 			//TODO: throw alert info
 			std::cerr << "[INFO] Successfully insert a new item into title list!\n";
@@ -550,22 +582,25 @@ namespace DAU_SACH_TAB {
 
 	bool TitleCreatingSection::GetStatus() { return this->active; }
 
-	void TitleCreatingSection::Display(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController) {
-		if (this->active == false) {
-			return;
-		}
+	void TitleCreatingSection::Display(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController)
+	{
+		if (this->active == false) { return; }
 
-		this->backdrop.Draw();
+		//this->backdrop.Draw();
 		this->background.Draw();
 		this->title.Display();
-		for (int i = 0; i < 7; ++i) {
+		for (int i = 0; i < 7; ++i)
+		{
 			this->inputField_[i].Display();
 		}
 		this->createCatalogueButton_.Display();
 		this->submit.Display();
 		this->goBackButton.Display();
 
-		if (this->catalogueCreatingSection.GetStatus() == true) {
+		for (int i = 0; i < 2; ++i) { this->alertField_[i].Display(); }
+
+		if (this->catalogueCreatingSection.GetStatus() == true)
+		{
 			this->catalogueCreatingSection.Display();
 			this->catalogueCreatingSection.IndexChangeButtonOnAction();
 			this->catalogueCreatingSection.InputFieldOnUpdate();
@@ -577,39 +612,41 @@ namespace DAU_SACH_TAB {
 	{
 		this->background = HELPER::Fill(
 			HELPER::Coordinate(36, 121),
-			600, 700,
+			600, 480,
 			rgb(238, 238, 238),
 			rgb(24, 18, 43)
 		);
 
-		this->backdrop = HELPER::Fill(
-			HELPER::Coordinate(36, 121),
-			934, 800,
-			rgb(216, 216, 216),
-			rgb(24, 24, 35)
-		);
-
-		this->title = Button(HELPER::Coordinate(36, 120), 600, 50);
-		this->title.SetPlaceholder("TITLE");
+		this->title = Button(HELPER::Coordinate(36, 121), 600, 50);
+		this->title.SetPlaceholder("CREATING NEW TITLE");
 		this->title.SetFillColor(rgb(87, 108, 188));
 		this->title.SetBorderColor(rgb(24, 18, 43));
 		this->title.SetTextColor(rgb(239, 245, 245));
 
 		HELPER::Coordinate inputFieldCoordinates[7] = {
-			HELPER::Coordinate(61, 194),
-			HELPER::Coordinate(61, 277),
-			HELPER::Coordinate(61, 360),
-			HELPER::Coordinate(61, 443),
-			HELPER::Coordinate(61, 526),
-			HELPER::Coordinate(61, 609),
-			HELPER::Coordinate(61, 692)
+			HELPER::Coordinate(61, 196),
+			HELPER::Coordinate(61, 267),
+			HELPER::Coordinate(61, 338),
+			HELPER::Coordinate(61, 409),
+			HELPER::Coordinate(61, 480),
+			HELPER::Coordinate(229, 480),
+			HELPER::Coordinate(398, 480)
+		};
+		HELPER::Dimension inputFieldDimensions[7] = {
+			HELPER::Dimension(200, 50),
+			HELPER::Dimension(550, 50),
+			HELPER::Dimension(550, 50),
+			HELPER::Dimension(550, 50),
+			HELPER::Dimension(140, 50),
+			HELPER::Dimension(140, 50),
+			HELPER::Dimension(140, 50)
 		};
 		std::string inputFiledPlaceholders[7] = {
-			"ISBN", "Title", "Page number", "Author", "Public year", "Category", "Catalogue's size"
+			" ISBN ", " Title ", " Author ", " Category ", " Page number ", " Public year ", " Catalogue's size "
 		};
 		for (int i = 0; i < 7; ++i)
 		{
-			this->inputField_[i] = Button(inputFieldCoordinates[i], 550, 60);
+			this->inputField_[i] = Button(inputFieldCoordinates[i], inputFieldDimensions[i]);
 			this->inputField_[i].SetPlaceholder(inputFiledPlaceholders[i]);
 			this->inputField_[i].SetFillColor(rgb(255, 251, 245));
 			this->inputField_[i].SetBorderColor(rgb(24, 18, 43));
@@ -617,41 +654,136 @@ namespace DAU_SACH_TAB {
 		}
 
 		this->createCatalogueButton_ = Button(
-			HELPER::Coordinate(261, 766), 150, 40,
-			rgb(24, 18, 43), rgb(145, 216, 228), rgb(24, 18, 43)
+			HELPER::Coordinate(561, 480),
+			50, 50,
+			rgb(24, 18, 43),
+			rgb(145, 216, 228),
+			rgb(24, 18, 43)
 		);
-		this->createCatalogueButton_.SetPlaceholder("CREATE CATALOGUE");
+		this->createCatalogueButton_.SetPlaceholder("V");
 
 		this->submit = Button(
-			HELPER::Coordinate(428, 842), 250, 60,
-			rgb(24, 18, 43), rgb(145, 216, 228), rgb(24, 18, 43)
+			HELPER::Coordinate(211, 861),
+			250, 60,
+			rgb(24, 18, 43),
+			rgb(145, 216, 228),
+			rgb(24, 18, 43)
 		);
 		this->submit.SetPlaceholder("CREATE NEW TITLE");
 
+		HELPER::Coordinate alertFieldCoordinates[] = {
+			HELPER::Coordinate(273, 201),
+			HELPER::Coordinate(61, 551)
+		};
+		HELPER::Dimension alertFieldDimensions[] = {
+			HELPER::Dimension(338, 40),
+			HELPER::Dimension(550, 40)
+		};
+		for (int i = 0; i < 2; ++i)
+		{
+			this->alertField_[i] = Button(alertFieldCoordinates[i], alertFieldDimensions[i]);
+			this->alertField_[i].SetFillColor(rgb(238,238,238));
+			this->alertField_[i].SetBorderColor(rgb(238,238,238));
+			this->alertField_[i].SetTextColor(rgb(120, 122, 145));
+		}
+		this->alertField_[0].SetPlaceholder("Input a unique ISBN code for the new title!");
+		this->alertField_[1].SetPlaceholder("Fill out all input field then press [V] to create catalogue!");
+
 		this->goBackButton = Button(
-			HELPER::Coordinate(36, 942), 70, 40,
-			rgb(24, 18, 43), rgb(236, 242, 255), rgb(24, 18, 43)
+			HELPER::Coordinate(1685, 942),
+			70, 40,
+			rgb(24, 18, 43),
+			rgb(236, 242, 255),
+			rgb(24, 18, 43)
 		);
 		this->goBackButton.SetPlaceholder("<");
 	}
+	
+	bool TitleCreatingSection::CatalogueSizeCheckProcess()
+	{
+		std::string catalogueSizeStringValue = this->inputField_[6].GetPlaceholder();
+		if (catalogueSizeStringValue.length() == 0)
+		{
+			this->alertField_[1].SetFillColor(rgb(238,238,238));
+			this->alertField_[1].SetBorderColor(rgb(238,238,238));
+			this->alertField_[1].SetTextColor(rgb(120, 122, 145));
+			this->alertField_[1].SetPlaceholder("Don't let the catalogue's size input field empty!");
 
-	bool TitleCreatingSection::GoBackButtonOnAction() {
-		if (this->active == false) {
 			return false;
 		}
 
-		if (this->goBackButton.IsHover()) {
+		if (VALIDATOR::OnlyDigit(catalogueSizeStringValue))
+		{
+			int catalogueSize = std::stoi(catalogueSizeStringValue);
+
+			return true;
+		}
+		
+		this->alertField_[1].SetFillColor(rgb(238,238,238));
+		this->alertField_[1].SetBorderColor(rgb(238,238,238));
+		this->alertField_[1].SetTextColor(rgb(120, 122, 145));
+		this->alertField_[1].SetPlaceholder("Fill out all input field then press [V] to create catalogue!");
+
+		return false;
+	}
+
+	bool TitleCreatingSection::GoBackButtonOnAction()
+	{
+		if (this->active == false) { return false; }
+
+		if (this->goBackButton.IsHover())
+		{
 			this->goBackButton.SetFillColor(rgb(130, 170, 227));
 		}
-		else if (this->goBackButton.LeftMouseClicked()) {
+		else if (this->goBackButton.LeftMouseClicked())
+		{
 			delay(100);
 			this->active = false;
 			this->catalogueCreatingSection.Deactivate();
 			return true;
 		}
-		else {
+		else
+		{
 			this->goBackButton.SetFillColor(rgb(236, 242, 255));
 		}
+		return false;
+	}
+	
+	bool TitleCreatingSection::ISBNInputFieldCheckProcess()
+	{
+		if (!this->active) { return false; }
+
+		std::string inputISBN = this->inputField_[0].GetPlaceholder();
+		if (inputISBN.length() == 4) // ISBN Input value at input field of index 0
+		{
+			if (this->package_->titleMap->At(inputISBN) != nullptr)
+			{
+				this->alertField_[0].SetTextColor(rgb(231, 70, 70));
+				this->alertField_[0].SetBorderColor(rgb(231, 70, 70));
+				this->alertField_[0].SetPlaceholder("DUPLICATED ISBN!");
+
+				return false;
+			}
+			else
+			{
+				this->alertField_[0].SetFillColor(rgb(95, 208, 104));
+				this->alertField_[0].SetTextColor(WHITE);
+				this->alertField_[0].SetBorderColor(rgb(95, 208, 104));
+				this->alertField_[0].SetPlaceholder("QUALIFIED ISBN!");
+
+				return true;
+			}
+		}
+		else if (inputISBN.length() != 4)
+		{
+			this->alertField_[0].SetFillColor(rgb(238,238,238));
+			this->alertField_[0].SetBorderColor(rgb(238,238,238));
+			this->alertField_[0].SetTextColor(rgb(120, 122, 145));
+			this->alertField_[0].SetPlaceholder("Input a unique ISBN code for the new title!");
+
+			return false;
+		}
+
 		return false;
 	}
 
@@ -970,13 +1102,14 @@ namespace CATEGORY_LINKED_LIST {
 DauSachTab::DauSachTab(Package* package)
 {
 	//* Initialize data
+	this->package_ = package;
 	this->titleList = package->titleList;
 	this->inputController = package->inputController;
 
 	this->titleListSortedByCategory = nullptr;
 	this->datasheetDisplayFlag = true;
 	this->active = false;
-	
+
 	this->datasheetController = DATASHEET::Controller(
 		CONSTANTS::MAX_ROW_COUNT,
 		DAU_SACH_PROPERTIES::PROPERTIES_COUNT,
@@ -1179,7 +1312,7 @@ void DauSachTab::Run() {
 					delay(100);
 					case (0):
 						this->datasheetController.DeactivateDatasheets();
-						this->titleCreatingSection = DAU_SACH_TAB::TitleCreatingSection(this->titleList, this->inputController);
+						this->titleCreatingSection = DAU_SACH_TAB::TitleCreatingSection(this->package_);
 						this->titleCreatingSection.Activate();
 						break;
 					case (1):
@@ -1232,10 +1365,11 @@ void DauSachTab::Run() {
 		}
 
 		//WORKING
-		this->titleCreatingSection.InputFieldOnUpdate();
-		this->titleCreatingSection.CreateCatalogueButtonOnUpdate();
+		bool goodInput = this->titleCreatingSection.InputFieldOnUpdate();
+		bool allowCreateCatalogue = this->titleCreatingSection.CreateCatalogueButtonOnUpdate();
 		bool regenerateDatasheet = this->titleCreatingSection.SubmitButtonOnUpdate();
-		if (regenerateDatasheet) {
+		if (goodInput && allowCreateCatalogue && regenerateDatasheet)
+		{
 			DAU_SACH_TAB::CreateDatasheetsFromList(this->titleList, this->datasheetController);
 		}
 	}

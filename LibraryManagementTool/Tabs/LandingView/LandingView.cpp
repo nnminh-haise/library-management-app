@@ -200,6 +200,8 @@ void LandingView::CreateTitleHashMap()
 		key = this->titleList->nodes[i]->GetISBN();
 		this->titleMap_.Insert(key, this->titleList->nodes[i]);
 	}
+
+	std::cerr << "[LOG] TITLE MAP CREATED!\n";
 }
 
 void LandingView::CreatePackage()
