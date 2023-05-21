@@ -102,11 +102,7 @@ namespace DAU_SACH_TAB
 
 		TitleCreatingSection(Package* package);
 
-		bool InputFieldOnUpdate();
-
-		bool CreateCatalogueButtonOnUpdate();
-
-		bool SubmitButtonOnUpdate();
+		bool Run();
 
 		void Activate();
 
@@ -114,16 +110,24 @@ namespace DAU_SACH_TAB
 
 		bool GetStatus();
 
-		void Display(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController);
+		void Display();
 
 		bool GoBackButtonOnAction();
 
 	private:
 		void InitializeElements();
 
+		bool InputFieldOnUpdate();
+
+		bool CreateCatalogueButtonOnUpdate();
+
+		bool SubmitButtonOnUpdate();
+
 		bool ISBNInputFieldCheckProcess();
 
 		bool CatalogueSizeCheckProcess();
+
+		bool CatalogueInputFieldCheckProcess();
 
 	public:
 		Package* package_;
@@ -142,6 +146,7 @@ namespace DAU_SACH_TAB
 		bool ISBNCheckProcessResult_ = false;
 		bool catalogueSizeProcessResult_ = false;
 		bool goodInputFieldCheckResult_ = false;
+		bool allowCreatingNewTitle_ = false;
 
 		CatalogueCreatingSection catalogueCreatingSection;
 	};

@@ -167,7 +167,7 @@ namespace DAU_SACH_TAB {
 		this->searchStatusBox->Display();
 	}
 
-	
+
 	BookCreatingSection::BookCreatingSection()
 	{
 		this->active_ = false;
@@ -490,6 +490,9 @@ namespace DAU_SACH_TAB {
 
 		if (!this->goodInputFieldCheckResult_) { return false; }
 
+		this->alertField_[1].SetTextColor(rgb(104, 185, 132));
+		this->alertField_[1].SetPlaceholder("Press the [V] button to create title's catalogue!");
+
 		if (this->createCatalogueButton_.IsHover())
 		{
 			this->createCatalogueButton_.SetFillColor(rgb(89, 206, 143));
@@ -517,6 +520,8 @@ namespace DAU_SACH_TAB {
 	bool TitleCreatingSection::SubmitButtonOnUpdate()
 	{
 		if (this->active == false) { return false; }
+
+		if (!this->allowCreatingNewTitle_) { return false; }
 
 		if (this->submit.IsHover())
 		{
@@ -565,6 +570,21 @@ namespace DAU_SACH_TAB {
 
 			//TODO: throw alert info
 			std::cerr << "[INFO] Successfully insert a new item into title list!\n";
+
+			this->alertField_[1].SetTextColor(rgb(104, 185, 132));
+			this->alertField_[1].SetPlaceholder("New title has created successfully!");
+
+			ELEMENTS::Window notificationWindow(HELPER::Dimension(300, 70), "NOTIFICATION");
+			notificationWindow.Activate();
+
+			Button notification(HELPER::Coordinate(150, 50), HELPER::Dimension(100, 70));
+			notification.SetTextColor(rgb(104, 185, 132));
+			notification.SetPlaceholder("New title has created successfully!");
+
+			getch();
+
+			notificationWindow.Deactivate();
+
 			return true;
 		}
 		else
@@ -576,13 +596,25 @@ namespace DAU_SACH_TAB {
 		return false;
 	}
 
+	bool TitleCreatingSection::Run()
+	{
+		bool goodTitleData = this->InputFieldOnUpdate();
+		bool allowCreateCatalogue = this->CreateCatalogueButtonOnUpdate();
+		bool goodCatalogueData = this->CatalogueInputFieldCheckProcess();
+		bool newTittleCreated = this->SubmitButtonOnUpdate();
+
+		if (goodTitleData && allowCreateCatalogue && goodCatalogueData && newTittleCreated) { return true; }
+
+		return false;
+	}
+
 	void TitleCreatingSection::Activate() { this->active = true; }
 
 	void TitleCreatingSection::Deactivate() { this->active = false; }
 
 	bool TitleCreatingSection::GetStatus() { return this->active; }
 
-	void TitleCreatingSection::Display(LINEAR_LIST::LinearList& titleList, ELEMENTS::InputModeController& InputController)
+	void TitleCreatingSection::Display()
 	{
 		if (this->active == false) { return; }
 
@@ -682,8 +714,8 @@ namespace DAU_SACH_TAB {
 		for (int i = 0; i < 2; ++i)
 		{
 			this->alertField_[i] = Button(alertFieldCoordinates[i], alertFieldDimensions[i]);
-			this->alertField_[i].SetFillColor(rgb(238,238,238));
-			this->alertField_[i].SetBorderColor(rgb(238,238,238));
+			this->alertField_[i].SetFillColor(rgb(238, 238, 238));
+			this->alertField_[i].SetBorderColor(rgb(238, 238, 238));
 			this->alertField_[i].SetTextColor(rgb(120, 122, 145));
 		}
 		this->alertField_[0].SetPlaceholder("Input a unique ISBN code for the new title!");
@@ -698,14 +730,14 @@ namespace DAU_SACH_TAB {
 		);
 		this->goBackButton.SetPlaceholder("<");
 	}
-	
+
 	bool TitleCreatingSection::CatalogueSizeCheckProcess()
 	{
 		std::string catalogueSizeStringValue = this->inputField_[6].GetPlaceholder();
 		if (catalogueSizeStringValue.length() == 0)
 		{
-			this->alertField_[1].SetFillColor(rgb(238,238,238));
-			this->alertField_[1].SetBorderColor(rgb(238,238,238));
+			this->alertField_[1].SetFillColor(rgb(238, 238, 238));
+			this->alertField_[1].SetBorderColor(rgb(238, 238, 238));
 			this->alertField_[1].SetTextColor(rgb(120, 122, 145));
 			this->alertField_[1].SetPlaceholder("Don't let the catalogue's size input field empty!");
 
@@ -718,9 +750,9 @@ namespace DAU_SACH_TAB {
 
 			return true;
 		}
-		
-		this->alertField_[1].SetFillColor(rgb(238,238,238));
-		this->alertField_[1].SetBorderColor(rgb(238,238,238));
+
+		this->alertField_[1].SetFillColor(rgb(238, 238, 238));
+		this->alertField_[1].SetBorderColor(rgb(238, 238, 238));
 		this->alertField_[1].SetTextColor(rgb(120, 122, 145));
 		this->alertField_[1].SetPlaceholder("Fill out all input field then press [V] to create catalogue!");
 
@@ -748,7 +780,7 @@ namespace DAU_SACH_TAB {
 		}
 		return false;
 	}
-	
+
 	bool TitleCreatingSection::ISBNInputFieldCheckProcess()
 	{
 		if (!this->active) { return false; }
@@ -776,8 +808,8 @@ namespace DAU_SACH_TAB {
 		}
 		else if (inputISBN.length() != 4)
 		{
-			this->alertField_[0].SetFillColor(rgb(238,238,238));
-			this->alertField_[0].SetBorderColor(rgb(238,238,238));
+			this->alertField_[0].SetFillColor(rgb(238, 238, 238));
+			this->alertField_[0].SetBorderColor(rgb(238, 238, 238));
 			this->alertField_[0].SetTextColor(rgb(120, 122, 145));
 			this->alertField_[0].SetPlaceholder("Input a unique ISBN code for the new title!");
 
@@ -785,6 +817,50 @@ namespace DAU_SACH_TAB {
 		}
 
 		return false;
+	}
+
+	bool TitleCreatingSection::CatalogueInputFieldCheckProcess()
+	{
+		if (!this->active) { return false; }
+
+		if (!this->catalogueSizeProcessResult_) { return false; }
+
+		if (this->catalogueCreatingSection.itemsCount == 0) { return false; }
+
+		std::string defaultValues[] = { "Row", "Column", "Section" };
+
+		for (int i = 0; i < this->catalogueCreatingSection.itemsCount; ++i)
+		{
+			bool allFilled = true;
+			for (int j = 2; j < 5; ++j)
+			{
+				if (this->catalogueCreatingSection.items[i].inputField_[j].GetPlaceholder().length() == 0 ||
+					this->catalogueCreatingSection.items[i].inputField_[j].GetPlaceholder().compare(defaultValues[j - 2]) == 0)
+				{
+					allFilled = false;
+					break;
+				}
+			}
+
+			if (!allFilled)
+			{
+				this->alertField_[1].SetFillColor(rgb(238, 238, 238));
+				this->alertField_[1].SetBorderColor(rgb(238, 238, 238));
+				this->alertField_[1].SetTextColor(rgb(120, 122, 145));
+				this->alertField_[1].SetPlaceholder("Fill out all input field of title's catalogue then press CREATE button!");
+
+				this->allowCreatingNewTitle_ = false;
+
+				return false;
+			}
+		}
+
+		this->alertField_[1].SetTextColor(rgb(104, 185, 132));
+		this->alertField_[1].SetPlaceholder("Press CREATE button to create new title!");
+
+		this->allowCreatingNewTitle_ = true;
+
+		return true;
 	}
 
 	TitleDetailDisplayField::TitleDetailDisplayField() {
@@ -1357,7 +1433,7 @@ void DauSachTab::Run() {
 
 	//* Displaying the ADD function.
 	if (this->titleCreatingSection.GetStatus() == true) {
-		this->titleCreatingSection.Display(*this->titleList, *this->inputController);
+		this->titleCreatingSection.Display();
 
 		if (this->titleCreatingSection.GoBackButtonOnAction()) {
 			this->titleCreatingSection.Deactivate();
@@ -1365,10 +1441,8 @@ void DauSachTab::Run() {
 		}
 
 		//WORKING
-		bool goodInput = this->titleCreatingSection.InputFieldOnUpdate();
-		bool allowCreateCatalogue = this->titleCreatingSection.CreateCatalogueButtonOnUpdate();
-		bool regenerateDatasheet = this->titleCreatingSection.SubmitButtonOnUpdate();
-		if (goodInput && allowCreateCatalogue && regenerateDatasheet)
+		bool newTitleListCreated = this->titleCreatingSection.Run();
+		if (newTitleListCreated)
 		{
 			DAU_SACH_TAB::CreateDatasheetsFromList(this->titleList, this->datasheetController);
 		}
