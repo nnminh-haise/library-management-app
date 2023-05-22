@@ -32,10 +32,10 @@ namespace DAU_SACH_TAB
 
 		void Display();
 
-	private:
+		private:
 		void InitializeElements();
 
-	public:
+		public:
 		bool active_;
 		HELPER::Fill background_;
 		Button titleButton_;
@@ -74,10 +74,10 @@ namespace DAU_SACH_TAB
 
 		void Display();
 
-	private:
+		private:
 		void InitializeElements();
 
-	public:
+		public:
 		LINEAR_LIST::LinearList* titleList_;
 		ELEMENTS::InputModeController* inputController_;
 
@@ -97,7 +97,7 @@ namespace DAU_SACH_TAB
 	*/
 	struct TitleCreatingSection
 	{
-	public:
+		public:
 		TitleCreatingSection();
 
 		TitleCreatingSection(Package* package);
@@ -114,7 +114,7 @@ namespace DAU_SACH_TAB
 
 		bool GoBackButtonOnAction();
 
-	private:
+		private:
 		void InitializeElements();
 
 		bool InputFieldOnUpdate();
@@ -129,7 +129,7 @@ namespace DAU_SACH_TAB
 
 		bool CatalogueInputFieldCheckProcess();
 
-	public:
+		public:
 		Package* package_;
 
 		bool active;
@@ -188,14 +188,6 @@ namespace DAU_SACH_TAB
 
 	struct SearchField
 	{
-		bool active;
-		bool searchFound;
-		HELPER::Fill* background;
-		Button* title;
-		Button* inputSearchBox;
-		Button* searchStatusBox;
-		TitleDetailDisplayField targetDetails;
-
 		SearchField();
 
 		void Activate();
@@ -207,6 +199,14 @@ namespace DAU_SACH_TAB
 		void OnAction(ELEMENTS::InputModeController* InputController);
 
 		void Display();
+
+		bool active;
+		bool searchFound;
+		HELPER::Fill* background;
+		Button* title;
+		Button* inputSearchBox;
+		Button* searchStatusBox;
+		TitleDetailDisplayField targetDetails;
 	};
 }
 
@@ -234,7 +234,7 @@ namespace CATEGORY_LINKED_LIST {
 
 class DauSachTab
 {
-public:
+	public:
 	DauSachTab(Package* package);
 
 	void Destructor();
@@ -243,7 +243,7 @@ public:
 
 	void Run();
 
-private:
+	private:
 	bool active;
 	bool datasheetDisplayFlag;
 	DATASHEET::Controller datasheetController;
@@ -252,14 +252,14 @@ private:
 	BOOK_TITLE::BookTitle** titleListSortedByCategory;
 	Button functionalButtons[3];
 
-private:
+	private:
 	DAU_SACH_TAB::SearchField searchField;
 
 	DAU_SACH_TAB::TitleCreatingSection titleCreatingSection;
 
 	DAU_SACH_TAB::TitleDetailDisplayField titleDetailField;
 
-private:
+	private:
 	Package* package_;
 };
 

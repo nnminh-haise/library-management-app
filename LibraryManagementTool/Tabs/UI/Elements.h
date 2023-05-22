@@ -19,12 +19,15 @@ namespace ELEMENTS {
 
         void RenderBackground();
 
-        void Deactivate();
+        void Deactivate(int windowID = -1);
         
         HELPER::Dimension dimension;
         std::string title;
         bool active;
         int backgroundColor;
+
+    private:
+        int id_;
     };
 
     struct Padding {

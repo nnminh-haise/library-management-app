@@ -568,22 +568,31 @@ namespace DAU_SACH_TAB {
 
 			LINEAR_LIST::InsertOrder(*this->package_->titleList, newTitle);
 
-			//TODO: throw alert info
+			//TODO: Add a notification window here
 			std::cerr << "[INFO] Successfully insert a new item into title list!\n";
 
 			this->alertField_[1].SetTextColor(rgb(104, 185, 132));
 			this->alertField_[1].SetPlaceholder("New title has created successfully!");
 
-			ELEMENTS::Window notificationWindow(HELPER::Dimension(300, 70), "NOTIFICATION");
-			notificationWindow.Activate();
+			int defaultWindowID = getcurrentwindow();
 
-			Button notification(HELPER::Coordinate(150, 50), HELPER::Dimension(100, 70));
+			ELEMENTS::Window notificationWindow(HELPER::Dimension(500, 150), "NOTIFICATION");
+			notificationWindow.backgroundColor = WHITE;
+			int notificationWindowID = notificationWindow.Activate();
+			notificationWindow.RenderBackground();
+
+			Button notification(HELPER::Coordinate(100, 70), HELPER::Dimension(100, 70));
 			notification.SetTextColor(rgb(104, 185, 132));
-			notification.SetPlaceholder("New title has created successfully!");
+			notification.SetBorderColor(WHITE);
+			notification.SetFillColor(WHITE);
+			notification.SetPlaceholder("SUCCESSFULLY CREATED A NEW TITLE!");
+			notification.Display();
 
 			getch();
 
 			notificationWindow.Deactivate();
+
+			setcurrentwindow(defaultWindowID);
 
 			return true;
 		}
@@ -618,7 +627,6 @@ namespace DAU_SACH_TAB {
 	{
 		if (this->active == false) { return; }
 
-		//this->backdrop.Draw();
 		this->background.Draw();
 		this->title.Display();
 		for (int i = 0; i < 7; ++i)
@@ -626,8 +634,6 @@ namespace DAU_SACH_TAB {
 			this->inputField_[i].Display();
 		}
 		this->createCatalogueButton_.Display();
-		this->submit.Display();
-		this->goBackButton.Display();
 
 		for (int i = 0; i < 2; ++i) { this->alertField_[i].Display(); }
 
@@ -638,6 +644,12 @@ namespace DAU_SACH_TAB {
 			this->catalogueCreatingSection.InputFieldOnUpdate();
 			this->catalogueCreatingSection.SaveButtonOnUpdate();
 		}
+
+		if (this->allowCreatingNewTitle_)
+		{
+			this->submit.Display();
+		}
+		this->goBackButton.Display();
 	}
 
 	void TitleCreatingSection::InitializeElements()
@@ -722,7 +734,7 @@ namespace DAU_SACH_TAB {
 		this->alertField_[1].SetPlaceholder("Fill out all input field then press [V] to create catalogue!");
 
 		this->goBackButton = Button(
-			HELPER::Coordinate(1685, 942),
+			HELPER::Coordinate(36, 937),
 			70, 40,
 			rgb(24, 18, 43),
 			rgb(236, 242, 255),
