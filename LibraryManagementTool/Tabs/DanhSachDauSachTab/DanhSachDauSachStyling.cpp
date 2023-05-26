@@ -3,25 +3,25 @@
 
 namespace DANH_SACH_DAU_SACH_SEARCH_FIELD_STYLING {
 	void BackgroundStyling(HELPER::Fill* background) {
-		background->fillColor = rgb(238, 238, 238);
-		background->borderColor = BLACK;
+		background->fillColor = rgb(33, 42, 62);
+		background->borderColor = rgb(33, 42, 62);
 	}
 
 	void TitleStyling(Button* title) {
-		title->SetFillColor(rgb(87, 108, 188));
+		/*title->SetFillColor(rgb(87, 108, 188));
 		title->SetBorderColor(BLACK);
-		title->SetTextColor(rgb(247, 247, 247));
+		title->SetTextColor(rgb(247, 247, 247));*/
 	}
 
 	void SearchBoxStyling(Button* bx) {
-		bx->SetFillColor(rgb(255, 251, 245));
-		bx->SetBorderColor(BLACK);
+		bx->SetFillColor(rgb(241, 246, 249));
+		bx->SetBorderColor(rgb(241, 246, 249));
 		bx->SetTextColor(rgb(57, 62, 70));
 	}
 
 	void StatusBoxStyling(Button* bx) {
-		bx->SetFillColor(rgb(238, 238, 238));
-		bx->SetBorderColor(bx->GetFillColor());
+		bx->SetFillColor(rgb(248, 246, 244));
+		bx->SetBorderColor(rgb(155, 164, 181));
 		bx->SetTextColor(rgb(57, 62, 70));
 	}
 }

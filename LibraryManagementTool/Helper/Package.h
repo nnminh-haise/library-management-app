@@ -8,6 +8,14 @@
 #include "../TheDocGia/TheDocGia.h"
 #include "../Tabs/UI/Elements.h"
 #include "../DataStructures/HashMap.h"
+#include "../DataStructures/LinearList.h"
+
+struct DataFilter
+{
+	bool* filters_ = nullptr;
+	int filterSize_ = 0;
+	int keep_ = 0;
+};
 
 struct Package
 {

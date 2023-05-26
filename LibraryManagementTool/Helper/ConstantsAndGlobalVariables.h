@@ -70,7 +70,7 @@ namespace GLOBAL_VARIABLES {
 
 namespace DATASHEET_DEFAULT_PROPERTIES
 {
-	const int ROW_HEIGHT = 50;
+	const int ROW_HEIGHT = 45;
 	const int MAX_ROW = 16;
 	const int PROPERTIES_COUNT = 6;
 	const std::string LABEL_PLACEHOLDERS[] = { "ORDER", "PROP 1", "PROP 2", "PROP 3", "PROP 4", "PROP 5" };
@@ -115,7 +115,7 @@ namespace STATISTIC_TAB_PROPERTIES
 		const int MAX_ROW = 11;
 		const int PROPERTIES_COUNT = 6;
 		const std::string LABEL_PLACEHOLDERS[] = { "ORDER", "ISBN", "TITLE", "AUTHOR", "CATEGORY", "BORROWED COUNT" };
-		const int CHARACTER_LIMITS[] = { 2, 4, 30, 20, 10, 6 };
+		const int CHARACTER_LIMITS[] = { 2, 4, 50, 40, 20, 6 };
 		const HELPER::Coordinate TOP_LEFT{ 300, 180 };
 		const HELPER::Coordinate DATASHEET_CHANGE_BUTTON_TOP_LEFT{ 300, 870 };
 	}
@@ -123,7 +123,7 @@ namespace STATISTIC_TAB_PROPERTIES
 
 namespace DAU_SACH_PROPERTIES {
 	const int PROPERTIES_COUNT = 7;
-	const int CHARACTER_LIMITS[] = { 3, 4, 30, 3, 20, 4, 10 };
+	const int CHARACTER_LIMITS[] = { 3, 4, 50, 3, 40, 4, 20 };
 	const int ROW_HEIGHT = 50;
 	const std::string LABEL_PLACEHOLDERS[] = { "ORDER", "ISBN", "TITLE", "PAGE COUNT", "AUTHOR", "PUBLICATION", "CATEGORY" };
 }

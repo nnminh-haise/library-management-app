@@ -9,9 +9,45 @@
 
 namespace DAU_SACH_TAB
 {
-	void CreateDatasheetsFromList(LINEAR_LIST::LinearList* titleList, DATASHEET::Controller& datasheetController);
+	/**
+	* TODO: Rewrite this class into an template interface
+	*/
+	class DatasheetProcessor
+	{
+	public:
+		DatasheetProcessor();
 
-	void CreateDatasheetsWithSortedCategory(BOOK_TITLE::BookTitle** sortedList, int listSize, DATASHEET::Controller& datasheetController);
+		DatasheetProcessor(LINEAR_LIST::LinearList* dataList, DataFilter* dataFilter);
+
+		void AllowCreateDatasheet();
+
+		void CreateDatasheet();
+
+		void SetDataFilter(DataFilter* dataFilter);
+
+		DataFilter* GetDataFilter();
+
+		DataFilter*& AccessDataFilter();
+
+		void Display();
+
+		void Activate();
+
+		void Deactivate();
+
+		bool InActive();
+
+	public:
+		bool active_;
+
+		bool allowCreateDatasheet_;
+
+		DATASHEET::Controller datasheetController_;
+		
+		DataFilter* dataFilter_;
+		
+		LINEAR_LIST::LinearList* dataList_;
+	};
 
 	/**
 	 * TODO: Change this struct into a class
@@ -153,16 +189,6 @@ namespace DAU_SACH_TAB
 
 	struct TitleDetailDisplayField
 	{
-		bool active;
-		BOOK_TITLE::BookTitle* targetedTitle;
-		HELPER::Fill background;
-		Button title;
-		Button titleDetails[5];
-		Button goBackBtn;
-		DATASHEET::Controller bookListDatasheetController;
-		Button deleteBookBtn;
-		LINKED_LIST::Pointer deleteBook;
-
 		TitleDetailDisplayField();
 
 		void Destructor();
@@ -184,11 +210,24 @@ namespace DAU_SACH_TAB
 		void ResetDeleteBookButton();
 
 		bool GoBackButtonOnAction();
+
+		bool active;
+		BOOK_TITLE::BookTitle* targetedTitle;
+		HELPER::Fill background;
+		Button title;
+		Button titleDetails[5];
+		Button goBackBtn;
+		DATASHEET::Controller bookListDatasheetController;
+		Button deleteBookBtn;
+		LINKED_LIST::Pointer deleteBook;
 	};
 
 	struct SearchField
 	{
+	public:
 		SearchField();
+
+		SearchField(Package* package, DAU_SACH_TAB::DatasheetProcessor* titleDatasheetPackage);
 
 		void Activate();
 
@@ -196,23 +235,38 @@ namespace DAU_SACH_TAB
 
 		bool GetStatus();
 
-		void OnAction(ELEMENTS::InputModeController* InputController);
+		bool SearchOperation();
+
+		void SearchBoxOnAction();
 
 		void Display();
 
-		bool active;
-		bool searchFound;
-		HELPER::Fill* background;
-		Button* title;
-		Button* inputSearchBox;
-		Button* searchStatusBox;
-		TitleDetailDisplayField targetDetails;
+		bool Run();
+
+	public:
+		bool active = false;
+		bool searchFound = false;
+
+		Button title;
+		Button inputSearchBox;
+		Button searchStatusBox;
+
+	private:
+		bool searchByTitle_ = true;
+		bool searchByISBN_ = true;
+		bool searchByCategory_ = false;
+		bool searchByPublicationYear_ = false;
+
+		Package* package_;
+		DAU_SACH_TAB::DatasheetProcessor* titleDatasheetPackage_;
 	};
 }
 
 
-namespace CATEGORY_LINKED_LIST {
-	struct Node {
+namespace CATEGORY_LINKED_LIST
+{
+	struct Node
+	{
 		std::string info;
 		Node* next;
 
@@ -234,7 +288,7 @@ namespace CATEGORY_LINKED_LIST {
 
 class DauSachTab
 {
-	public:
+public:
 	DauSachTab(Package* package);
 
 	void Destructor();
@@ -243,23 +297,33 @@ class DauSachTab
 
 	void Run();
 
-	private:
-	bool active;
+private:
+	void InitializeFilters();
+
+	void Initialize();
+
+private:
 	bool datasheetDisplayFlag;
-	DATASHEET::Controller datasheetController;
-	ELEMENTS::InputModeController* inputController;
-	LINEAR_LIST::LinearList* titleList;
-	BOOK_TITLE::BookTitle** titleListSortedByCategory;
 	Button functionalButtons[3];
 
-	private:
-	DAU_SACH_TAB::SearchField searchField;
+private:
+	DAU_SACH_TAB::SearchField titleSearchSection_;
 
 	DAU_SACH_TAB::TitleCreatingSection titleCreatingSection;
 
 	DAU_SACH_TAB::TitleDetailDisplayField titleDetailField;
 
-	private:
+private:
+	bool defaultView_ = true;
+
 	Package* package_;
+
+	DataFilter defaultTitleListFilter_;
+
+	LINEAR_LIST::LinearList sortedByCategoryTitleList_;
+
+	DataFilter sortedByCategoryTitleListFilter_;
+
+	DAU_SACH_TAB::DatasheetProcessor titleDatasheetPackage_;
 };
 

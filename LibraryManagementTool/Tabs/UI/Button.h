@@ -10,6 +10,10 @@ public:
 
     Button(HELPER::Coordinate topLeft, HELPER::Dimension dimension, int textColor = BLACK, int fillcolor = WHITE, int borderColor = BLACK);
 
+    void SetDefaultValue(const std::string& defaultValue = "button");
+
+    std::string GetDefalutValue();
+
     void SetTopLeft(HELPER::Coordinate topLeft);
 
     HELPER::Coordinate GetTopLeft();
@@ -55,6 +59,7 @@ public:
     bool RightMouseClicked();
 
 private:
+    std::string defaultValue_;
     std::string placeholder;
     HELPER::Coordinate topLeft;
     HELPER::Coordinate bottomRight;

@@ -9,164 +9,233 @@
 #include <string>
 
 
-namespace DAU_SACH_TAB {
+namespace DAU_SACH_TAB
+{
+	DatasheetProcessor::DatasheetProcessor()
+	{
+		this->dataList_ = nullptr;
+		this->active_ = false;
+		this->allowCreateDatasheet_ = false;
+	}
 
-	/*
-	 * Function creates datasheet form the given list
-	! This function need to be rewrite!
-	*/
-	void CreateDatasheetsFromList(LINEAR_LIST::LinearList* titleList, DATASHEET::Controller& controler) {
-		int listSize = titleList->numberOfNode;
-		controler.SetDatasheetCount(
-			listSize / (CONSTANTS::MAX_ROW_COUNT - 1) + (listSize % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
+	DatasheetProcessor::DatasheetProcessor(LINEAR_LIST::LinearList* dataList, DataFilter* dataFilter_)
+	{
+		this->dataList_ = dataList;
+		this->dataFilter_ = dataFilter_;
+
+		this->active_ = false;
+		this->allowCreateDatasheet_ = false;
+
+		this->datasheetController_ = {
+			DATASHEET_DEFAULT_PROPERTIES::MAX_ROW,
+			DAU_SACH_PROPERTIES::PROPERTIES_COUNT,
+			DATASHEET_DEFAULT_PROPERTIES::ROW_HEIGHT,
+			HELPER::Coordinate(36, 210),
+			HELPER::Coordinate(36, 950)
+		};
+	}
+
+	void DatasheetProcessor::AllowCreateDatasheet() { this->allowCreateDatasheet_ = true; }
+
+	void DatasheetProcessor::CreateDatasheet()
+	{
+		//* Filtering out all cases where cannot create datasheet
+		if (!this->active_) { return; }
+
+		if (!this->allowCreateDatasheet_) { return; }
+
+		if (this->dataFilter_->filters_ == nullptr) { return; }
+
+		//* Creating datasheet
+		int listSize = this->dataFilter_->keep_;
+		this->datasheetController_.SetDatasheetCount(
+			listSize / (DATASHEET_DEFAULT_PROPERTIES::MAX_ROW - 1) + (listSize % (DATASHEET_DEFAULT_PROPERTIES::MAX_ROW - 1) == 0 ? 0 : 1)
 		);
-		controler.InitializeDatasheets();
+		this->datasheetController_.InitializeDatasheets();
 
-		for (int i = 0; i < controler.GetDatasheetCount(); ++i) {
-			controler[i] = DATASHEET::Datasheet(
-				controler.GetRecordCount(),
-				controler.GetAttributeCount(),
-				controler.GetRowHeight(),
-				controler.GetTopLeft(),
+		for (int i = 0; i < this->datasheetController_.GetDatasheetCount(); ++i)
+		{
+			this->datasheetController_[i] = {
+				this->datasheetController_.GetRecordCount(),
+				this->datasheetController_.GetAttributeCount(),
+				this->datasheetController_.GetRowHeight(),
+				this->datasheetController_.GetTopLeft(),
 				(std::string*)DAU_SACH_PROPERTIES::LABEL_PLACEHOLDERS,
 				(int*)DAU_SACH_PROPERTIES::CHARACTER_LIMITS
-			);
+			};
 		}
 
 		int recordIndex = 0;
 		int sheetIndex = -1;
+		int order = 0;
 
-		for (int i = 0; i < titleList->numberOfNode; ++i) {
+		for (int i = 0; i < this->dataFilter_->filterSize_; ++i)
+		{
+			if (this->dataFilter_->filters_[i] == true)
+			{
+				++recordIndex;
+				if (recordIndex > this->datasheetController_.GetRecordCount() - 1) {
+					recordIndex = 1;
+				}
+				if (recordIndex % (this->datasheetController_.GetRecordCount() - 1) == 1) {
+					sheetIndex += 1;
+				}
 
-			++recordIndex;
-			if (recordIndex > controler.GetRecordCount() - 1) {
-				recordIndex = 1;
+				std::string* data = new std::string[this->datasheetController_.GetAttributeCount()];
+				data[0] = std::to_string(++order);
+				data[1] = this->dataList_->nodes[i]->GetISBN();
+				data[2] = this->dataList_->nodes[i]->GetTitle();
+				data[3] = std::to_string(this->dataList_->nodes[i]->GetPageCount());
+				data[4] = this->dataList_->nodes[i]->GetAuthor();
+				data[5] = std::to_string(this->dataList_->nodes[i]->GetPublicationYear());
+				data[6] = this->dataList_->nodes[i]->GetCategory();
+
+				this->datasheetController_[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 			}
-			if (recordIndex % (controler.GetRecordCount() - 1) == 1) {
-				sheetIndex += 1;
-			}
-
-			std::string* data = new std::string[controler.GetAttributeCount()];
-			data[0] = std::to_string(i + 1);
-			data[1] = titleList->nodes[i]->GetISBN();
-			data[2] = titleList->nodes[i]->GetTitle();
-			data[3] = std::to_string(titleList->nodes[i]->GetPageCount());
-			data[4] = titleList->nodes[i]->GetAuthor();
-			data[5] = std::to_string(titleList->nodes[i]->GetPublicationYear());
-			data[6] = titleList->nodes[i]->GetCategory();
-
-			controler[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 		}
+		this->datasheetController_.ActivateDatasheets();
+
+		//* Completed creating datasheet
+		this->allowCreateDatasheet_ = false;
 	}
 
-	void CreateDatasheetsWithSortedCategory(BOOK_TITLE::BookTitle** sortedList, int listSize, DATASHEET::Controller& datasheetController) {
-		datasheetController.SetDatasheetCount(
-			listSize / (CONSTANTS::MAX_ROW_COUNT - 1) + (listSize % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
-		);
-		datasheetController.InitializeDatasheets();
+	void DatasheetProcessor::SetDataFilter(DataFilter* dataFilter) { this->dataFilter_ = dataFilter; }
 
-		for (int i = 0; i < datasheetController.GetDatasheetCount(); ++i) {
-			datasheetController[i] = DATASHEET::Datasheet(
-				datasheetController.GetRecordCount(),
-				datasheetController.GetAttributeCount(),
-				datasheetController.GetRowHeight(),
-				datasheetController.GetTopLeft(),
-				(std::string*)DAU_SACH_PROPERTIES::LABEL_PLACEHOLDERS, (int*)DAU_SACH_PROPERTIES::CHARACTER_LIMITS
-			);
-		}
+	DataFilter* DatasheetProcessor::GetDataFilter() { return this->dataFilter_; }
 
-		int recordIndex = 0;
-		int sheetIndex = -1;
+	DataFilter*& DatasheetProcessor::AccessDataFilter() { return this->dataFilter_; }
 
-		for (int i = 0; i < listSize; ++i) {
+	void DatasheetProcessor::Display()
+	{
+		if (!this->active_) { return; }
 
-			++recordIndex;
-			if (recordIndex > datasheetController.GetRecordCount() - 1) {
-				recordIndex = 1;
-			}
-			if (recordIndex % (datasheetController.GetRecordCount() - 1) == 1) {
-				sheetIndex += 1;
-			}
-
-			std::string* data = new std::string[datasheetController.GetAttributeCount()];
-			data[0] = std::to_string(i + 1);
-			data[1] = sortedList[i]->GetISBN();
-			data[2] = sortedList[i]->GetTitle();
-			data[3] = std::to_string(sortedList[i]->GetPageCount());
-			data[4] = sortedList[i]->GetAuthor();
-			data[5] = std::to_string(sortedList[i]->GetPublicationYear());
-			data[6] = sortedList[i]->GetCategory();
-
-			datasheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
-		}
+		this->datasheetController_.Display();
 	}
 
-	/**
-	* Search field
-	*/
-	SearchField::SearchField() {
+	void DatasheetProcessor::Activate() { this->active_ = true; }
+
+	void DatasheetProcessor::Deactivate() { this->active_ = false; }
+
+	bool DatasheetProcessor::InActive() { return this->active_; }
+
+	SearchField::SearchField()
+	{
+		this->package_ = nullptr;
+		this->titleDatasheetPackage_ = nullptr;
+		this->active = false;
+		this->searchFound = false;
+	}
+
+	SearchField::SearchField(Package* package, DAU_SACH_TAB::DatasheetProcessor* titleDatasheetPackage)
+	{
+		this->package_ = package;
+		this->titleDatasheetPackage_ = titleDatasheetPackage;
 		this->active = false;
 		this->searchFound = false;
 
-		this->background = new HELPER::Fill(HELPER::Coordinate(1405, 120), 350, 250);
-		this->title = new Button(HELPER::Coordinate(1405, 120), 350, 50);
-		this->title->SetPlaceholder("SEARCH");
+		this->title = Button(HELPER::Coordinate(1405, 120), 350, 50);
+		this->title.SetDefaultValue("SEARCH");
 
-		this->inputSearchBox = new Button(HELPER::Coordinate(1430, 200), 300, 70);
-		this->inputSearchBox->SetPlaceholder("Type here to search");
+		this->inputSearchBox = Button(HELPER::Coordinate(41, 125), 490, 60);
+		this->inputSearchBox.SetDefaultValue("Type here to search!");
 
-		this->searchStatusBox = new Button(HELPER::Coordinate(1430, 295), 300, 50);
-		this->searchStatusBox->SetPlaceholder("Result: NOT FOUND!");
+		this->searchStatusBox = Button(HELPER::Coordinate(562, 130), 980, 50);
+		this->searchStatusBox.SetDefaultValue("");
 	}
 
-	void SearchField::Activate() {
-		this->active = true;
-	}
+	void SearchField::Activate() { this->active = true; }
 
-	void SearchField::Deactivate() {
-		this->active = false;
-	}
+	void SearchField::Deactivate() { this->active = false; }
 
-	bool SearchField::GetStatus() {
-		return this->active;
-	}
+	bool SearchField::GetStatus() { return this->active; }
 
-	void SearchField::OnAction(ELEMENTS::InputModeController* inputController) {
-		if (this->inputSearchBox->IsHover()) {
-			this->inputSearchBox->SetFillColor(rgb(246, 241, 241));
+	bool SearchField::SearchOperation()
+	{
+		const std::string inputSearchBoxDefaultValue = this->inputSearchBox.GetDefalutValue();
+		const std::string searchTarget = this->inputSearchBox.GetPlaceholder();
+
+		if (!this->active) { return false; }
+
+		if (inputSearchBoxDefaultValue.compare(searchTarget) == 0 || searchTarget.length() == 0) { return false; }
+
+		int dataSetSize = this->package_->titleList->numberOfNode;
+		DataFilter*& dataFilter = this->titleDatasheetPackage_->AccessDataFilter();
+
+		//TODO: change this into a ResetFilter method
+		dataFilter->keep_ = 0;
+		for (int i = 0; i < dataFilter->filterSize_; ++i)
+		{
+			dataFilter->filters_[i] = false;
 		}
-		else if (this->inputSearchBox->LeftMouseClicked()) {
+		//---
+
+		std::string titleISBN{};
+		std::string titleName{};
+		bool existSubstringInTitle = false;
+		bool existSubstringInISBN = false;
+
+		for (int i = 0; i < dataSetSize; ++i)
+		{
+			existSubstringInISBN = false;
+			existSubstringInTitle = false;
+			titleName = this->package_->titleList->nodes[i]->GetTitle();
+			titleISBN = this->package_->titleList->nodes[i]->GetISBN();
+
+			if (titleName.find(searchTarget) != std::string::npos) { existSubstringInTitle = true; }
+			if (titleISBN.find(searchTarget) != std::string::npos) { existSubstringInISBN = true; }
+
+			if (existSubstringInISBN || existSubstringInTitle)
+			{
+				dataFilter->filters_[i] = true;
+				dataFilter->keep_ += 1;
+			}
+			else
+			{
+				dataFilter->filters_[i] = false;
+			}
+		}
+	}
+
+	void SearchField::SearchBoxOnAction()
+	{
+		if (this->inputSearchBox.IsHover())
+		{
+			this->inputSearchBox.SetFillColor(rgb(246, 241, 241));
+		}
+		else if (this->inputSearchBox.LeftMouseClicked())
+		{
 			this->searchFound = false;
-			inputController->Activate(
-				this->inputSearchBox,
-				this->inputSearchBox,
-				30,
+			this->package_->inputController->Activate(
+				&this->inputSearchBox,
+				&this->inputSearchBox,
+				50,
 				true,
 				true,
 				true
 			);
 		}
-		else {
-			DANH_SACH_DAU_SACH_SEARCH_FIELD_STYLING::SearchBoxStyling(this->inputSearchBox);
+		else
+		{
+			DANH_SACH_DAU_SACH_SEARCH_FIELD_STYLING::SearchBoxStyling(&this->inputSearchBox);
 		}
 	}
 
-	void SearchField::Display() {
-		if (this->active == false) {
-			return;
-		}
+	void SearchField::Display()
+	{
+		if (this->active == false) { return; }
 
-		DANH_SACH_DAU_SACH_SEARCH_FIELD_STYLING::BackgroundStyling(this->background);
-		DANH_SACH_DAU_SACH_SEARCH_FIELD_STYLING::TitleStyling(this->title);
-		DANH_SACH_DAU_SACH_SEARCH_FIELD_STYLING::SearchBoxStyling(this->inputSearchBox);
-		DANH_SACH_DAU_SACH_SEARCH_FIELD_STYLING::StatusBoxStyling(this->searchStatusBox);
-
-		this->background->Draw();
-		this->title->Display();
-		this->inputSearchBox->Display();
-		this->searchStatusBox->Display();
+		this->title.Display();
+		this->inputSearchBox.Display();
+		this->searchStatusBox.Display();
 	}
 
+	bool SearchField::Run()
+	{
+		this->SearchBoxOnAction();
+		this->SearchOperation();
+
+		return true;
+	}
 
 	BookCreatingSection::BookCreatingSection()
 	{
@@ -424,7 +493,7 @@ namespace DAU_SACH_TAB {
 	{
 		if (this->active == false) { return false; }
 
-		int characterLimits[] = { 4, 50, 50, 30, 4, 4, 5 };
+		int characterLimits[] = { 4, 50, 30, 20, 4, 4, 5 };
 		bool acceptAlphas[] = { true, true, true, true, false, false, false };
 		bool acceptNums[] = { false, true, true, true, true, true, true };
 		bool acceptSpaces[] = { false, true, true, true, false, false, false };
@@ -1191,167 +1260,122 @@ DauSachTab::DauSachTab(Package* package)
 {
 	//* Initialize data
 	this->package_ = package;
-	this->titleList = package->titleList;
-	this->inputController = package->inputController;
 
-	this->titleListSortedByCategory = nullptr;
-	this->datasheetDisplayFlag = true;
-	this->active = false;
+	this->defaultView_ = true;
 
-	this->datasheetController = DATASHEET::Controller(
-		CONSTANTS::MAX_ROW_COUNT,
-		DAU_SACH_PROPERTIES::PROPERTIES_COUNT,
-		DAU_SACH_PROPERTIES::ROW_HEIGHT,
-		HELPER::Coordinate(36, 120)
-	);
-
-	//* Create datasheet form the list
-	DAU_SACH_TAB::CreateDatasheetsFromList(this->titleList, this->datasheetController);
-	this->datasheetController.ActivateDatasheets(); //* Activate datasheet by default.
-
-	//* Creating Button for adding or editting or removing item of the list
-	HELPER::Coordinate listManipulateButtonCoordinates[] = {
-		HELPER::Coordinate(380, 940),
-		HELPER::Coordinate(565, 940),
-		HELPER::Coordinate(750, 940)
-	};
-	HELPER::Dimension listManipulateButtonDimension(150, 30);
-	std::string listManipulateButtonPlaceholders[] = { "NEW", "EDIT", "REMOVE" };
-	for (int i = 0; i < 3; ++i) {
-		this->functionalButtons[i] = Button(listManipulateButtonCoordinates[i], listManipulateButtonDimension);
-		this->functionalButtons[i].SetPlaceholder(listManipulateButtonPlaceholders[i]);
-		DANH_SACH_DAU_SACH_STYLING::ListManipulateButtonDefaultProperties(this->functionalButtons[i]);
-	}
+	this->Initialize();
 }
 
-void DauSachTab::Destructor() {
-	delete[] this->titleListSortedByCategory;
-	delete this->inputController;
-	delete this->titleList;
-}
+void DauSachTab::Destructor() {}
 
-void DauSachTab::SortByCategory() {
-	CATEGORY_LINKED_LIST::Pointer categories;
-	CATEGORY_LINKED_LIST::Initialzie(categories);
+void DauSachTab::SortByCategory()
+{
+	//CATEGORY_LINKED_LIST::Pointer categories;
+	//CATEGORY_LINKED_LIST::Initialzie(categories);
 
-	CATEGORY_LINKED_LIST::PushFront(categories, this->titleList->nodes[0]->GetCategory());
-	bool flag = true;
-	int categoryCount = 1;
-	for (int i = 1; i < this->titleList->numberOfNode; ++i) {
-		flag = true;
-		for (int j = 0; j < i; ++j) {
-			if (this->titleList->nodes[j]->GetCategory().compare(this->titleList->nodes[i]->GetCategory()) == 0) {
-				flag = false;
-				break;
-			}
-		}
+	//CATEGORY_LINKED_LIST::PushFront(categories, this->titleList->nodes[0]->GetCategory());
+	//bool flag = true;
+	//int categoryCount = 1;
+	//for (int i = 1; i < this->titleList->numberOfNode; ++i) {
+	//	flag = true;
+	//	for (int j = 0; j < i; ++j) {
+	//		if (this->titleList->nodes[j]->GetCategory().compare(this->titleList->nodes[i]->GetCategory()) == 0) {
+	//			flag = false;
+	//			break;
+	//		}
+	//	}
 
-		if (flag) {
-			CATEGORY_LINKED_LIST::InsertOrder(categories, this->titleList->nodes[i]->GetCategory());
-			++categoryCount;
-		}
-	}
-
-	this->titleListSortedByCategory = new BOOK_TITLE::BookTitle * [this->titleList->numberOfNode];
-	int index = 0;
-	for (CATEGORY_LINKED_LIST::Pointer p = categories; p != nullptr; p = p->next) {
-		for (int i = 0; i < this->titleList->numberOfNode; ++i) {
-			if (this->titleList->nodes[i]->GetCategory().compare(p->info) == 0) {
-				this->titleListSortedByCategory[index++] = this->titleList->nodes[i];
-			}
-		}
-	}
-
-	//for (int i = 0; i < this->titleList->numberOfNode; ++i) {
-	//	std::cerr << this->titleListSortedByCategory[i]->GetTitle() << " - " << this->titleListSortedByCategory[i]->GetCategory() << "\n";
+	//	if (flag) {
+	//		CATEGORY_LINKED_LIST::InsertOrder(categories, this->titleList->nodes[i]->GetCategory());
+	//		++categoryCount;
+	//	}
 	//}
 
-	delete categories;
+	//this->titleListSortedByCategory = new BOOK_TITLE::BookTitle * [this->titleList->numberOfNode];
+	//int index = 0;
+	//for (CATEGORY_LINKED_LIST::Pointer p = categories; p != nullptr; p = p->next) {
+	//	for (int i = 0; i < this->titleList->numberOfNode; ++i) {
+	//		if (this->titleList->nodes[i]->GetCategory().compare(p->info) == 0) {
+	//			this->titleListSortedByCategory[index++] = this->titleList->nodes[i];
+	//		}
+	//	}
+	//}
+
+	//delete categories;
 }
 
-void DauSachTab::Run() {
+void DauSachTab::Run()
+{
+	if (this->defaultView_ == true)
+	{
 
-	/**
-	 * * The tab will displays the Titles's datasheets by default.
-	 * * Follow up with the avalable function such as CREATE/UPDATE/DELETE to the Titles database.
-	 * * There will be a Search session for users to search for the needed title by searching by it's name.
-	 * * User can press the datasheet's label in order to sort the items by the corresponding label.
-	 *
-	 * ! Currently, the datasheets are sorted by the title's names and can be sorted by the title's category.
-	*/
-	if (this->datasheetController.DisplayStatus() == true) {
+		this->titleDatasheetPackage_.Display();
 
-		//* Display datasheets
-		this->datasheetController.Display();
-		this->datasheetController.DatasheetChangeButtonUpdate();
-
-		//* Display functional buttons
-		for (int i = 0; i < 3; ++i) {
+		for (int i = 0; i < 3; ++i)
+		{
 			this->functionalButtons[i].Display();
 		}
 
 		//* Display search field
-		this->searchField.Activate();
-		this->searchField.Display();
-		this->searchField.OnAction(this->inputController);
-		BOOK_TITLE::BookTitle* searchResult = LINEAR_LIST::SearchByName(*this->titleList, this->searchField.inputSearchBox->GetPlaceholder());
+		this->titleSearchSection_.Display();
+		this->titleSearchSection_.Run();
 
-		//* Title search logic
-		if (searchResult != nullptr) {
-			this->searchField.searchStatusBox->SetPlaceholder("SHOW DETAILS");
-			this->searchField.searchStatusBox->SetFillColor(rgb(97, 177, 90));
-			this->searchField.searchStatusBox->SetBorderColor(rgb(182, 227, 136));
-			this->searchField.searchStatusBox->SetTextColor(WHITE);
-			this->searchField.searchStatusBox->Display();
+		// //* Title search logic
+		// if (searchResult != nullptr) {
+		// 	this->searchField.searchStatusBox->SetPlaceholder("SHOW DETAILS");
+		// 	this->searchField.searchStatusBox->SetFillColor(rgb(97, 177, 90));
+		// 	this->searchField.searchStatusBox->SetBorderColor(rgb(182, 227, 136));
+		// 	this->searchField.searchStatusBox->SetTextColor(WHITE);
+		// 	this->searchField.searchStatusBox->Display();
 
-			//* Shor detail button logic
-			if (this->searchField.searchStatusBox->IsHover()) {
-				this->searchField.searchStatusBox->SetFillColor(rgb(199, 242, 164));
-			}
-			else if (this->searchField.searchStatusBox->LeftMouseClicked()) {
-				this->searchField.targetDetails.Activate();
-				this->searchField.targetDetails.Initialize(searchResult);
-			}
-			else {
-				this->searchField.searchStatusBox->SetFillColor(rgb(97, 177, 90));
-			}
-		}
-		else {
-			this->searchField.targetDetails.Deactivate();
-			this->datasheetController.ActivateDatasheets();
-			DANH_SACH_DAU_SACH_SEARCH_FIELD_STYLING::StatusBoxStyling(this->searchField.searchStatusBox);
-		}
+		// 	//* Shor detail button logic
+		// 	if (this->searchField.searchStatusBox->IsHover()) {
+		// 		this->searchField.searchStatusBox->SetFillColor(rgb(199, 242, 164));
+		// 	}
+		// 	else if (this->searchField.searchStatusBox->LeftMouseClicked()) {
+		// 		this->searchField.targetDetails.Activate();
+		// 		this->searchField.targetDetails.Initialize(searchResult);
+		// 	}
+		// 	else {
+		// 		this->searchField.searchStatusBox->SetFillColor(rgb(97, 177, 90));
+		// 	}
+		// }
+		// else {
+		// 	this->searchField.targetDetails.Deactivate();
+		// 	this->datasheetController.ActivateDatasheets();
+		// 	DANH_SACH_DAU_SACH_SEARCH_FIELD_STYLING::StatusBoxStyling(this->searchField.searchStatusBox);
+		// }
 
-		//* Sort by name (default option)
-		Button& titleLabelButton = this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][2];
+		//TODO: Sort by name (default option)
+		/*Button& titleLabelButton = this->titleDatasheetPackage_.datasheet_[this->titleDatasheetPackage_.datasheet_.CurrentActiveDatasheet()][0][2];
 		if (titleLabelButton.IsHover()) {
 			titleLabelButton.SetFillColor(rgb(83, 127, 231));
 			titleLabelButton.SetTextColor(rgb(233, 248, 249));
 		}
 		else if (titleLabelButton.LeftMouseClicked()) {
 			delay(100);
-			DAU_SACH_TAB::CreateDatasheetsFromList(this->titleList, this->datasheetController);
+			DAU_SACH_TAB::CreateDatasheetsFromList(this->package_->titleList, this->titleDatasheetPackage_.datasheet_);
 		}
 		else {
 			titleLabelButton.SetFillColor(rgb(210, 218, 255));
 			titleLabelButton.SetTextColor(BLACK);
-		}
+		}*/
 
-		//* Sort by category logic
-		Button& categoryLabelButton = this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][6];
-		if (categoryLabelButton.IsHover()) {
-			categoryLabelButton.SetFillColor(rgb(83, 127, 231));
-			categoryLabelButton.SetTextColor(rgb(233, 248, 249));
-		}
-		else if (categoryLabelButton.LeftMouseClicked()) {
-			delay(100);
-			this->SortByCategory();
-			DAU_SACH_TAB::CreateDatasheetsWithSortedCategory(this->titleListSortedByCategory, this->titleList->numberOfNode, this->datasheetController);
-		}
-		else {
-			categoryLabelButton.SetFillColor(rgb(210, 218, 255));
-			categoryLabelButton.SetTextColor(BLACK);
-		}
+		//TODO: Sort by category logic
+		//Button& categoryLabelButton = this->titleDatasheetPackage_.datasheet_[this->titleDatasheetPackage_.datasheet_.CurrentActiveDatasheet()][0][6];
+		//if (categoryLabelButton.IsHover()) {
+		//	categoryLabelButton.SetFillColor(rgb(83, 127, 231));
+		//	categoryLabelButton.SetTextColor(rgb(233, 248, 249));
+		//}
+		//else if (categoryLabelButton.LeftMouseClicked()) {
+		//	delay(100);
+		//	this->SortByCategory();
+		//	//DAU_SACH_TAB::CreateDatasheetsWithSortedCategory(this->titleListSortedByCategory, this->titleList->numberOfNode, this->datasheetController);
+		//}
+		//else {
+		//	categoryLabelButton.SetFillColor(rgb(210, 218, 255));
+		//	categoryLabelButton.SetTextColor(BLACK);
+		//}
 
 		/**
 		 * * Book list on action logic
@@ -1360,29 +1384,29 @@ void DauSachTab::Run() {
 		 *
 		 * ! Currently, the UI design of this function is not very good!
 		*/
-		for (int i = 1; i < this->datasheetController.GetRecordCount(); ++i) {
-			Button& titleNameButton = this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][i][2];
+		//for (int i = 1; i < this->datasheetController.GetRecordCount(); ++i) {
+		//	Button& titleNameButton = this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][i][2];
 
-			if (titleNameButton.IsHover()) {
-				titleNameButton.SetFillColor(rgb(244, 249, 249));
-			}
-			else if (titleNameButton.LeftMouseClicked()) {
-				delay(100);
-				this->datasheetController.DeactivateDatasheets();
-				this->titleDetailField.Activate();
-				this->titleDetailField.Initialize(
-					this->titleList->nodes[this->datasheetController.CurrentActiveDatasheet() * 15 + i - 1]
-				);
-			}
-			else {
-				if (i % 2 != 0) {
-					titleNameButton.SetFillColor(rgb(255, 251, 245));
-				}
-				else {
-					titleNameButton.SetFillColor(rgb(238, 238, 238));
-				}
-			}
-		}
+		//	if (titleNameButton.IsHover()) {
+		//		titleNameButton.SetFillColor(rgb(244, 249, 249));
+		//	}
+		//	else if (titleNameButton.LeftMouseClicked()) {
+		//		delay(100);
+		//		this->datasheetController.DeactivateDatasheets();
+		//		this->titleDetailField.Activate();
+		//		this->titleDetailField.Initialize(
+		//			this->titleList->nodes[this->datasheetController.CurrentActiveDatasheet() * 15 + i - 1]
+		//		);
+		//	}
+		//	else {
+		//		if (i % 2 != 0) {
+		//			titleNameButton.SetFillColor(rgb(255, 251, 245));
+		//		}
+		//		else {
+		//			titleNameButton.SetFillColor(rgb(238, 238, 238));
+		//		}
+		//	}
+		//}
 
 		/**
 		 * * Functional buttons on action logic
@@ -1399,7 +1423,7 @@ void DauSachTab::Run() {
 				switch (i) {
 					delay(100);
 					case (0):
-						this->datasheetController.DeactivateDatasheets();
+						this->defaultView_ = false;
 						this->titleCreatingSection = DAU_SACH_TAB::TitleCreatingSection(this->package_);
 						this->titleCreatingSection.Activate();
 						break;
@@ -1418,47 +1442,88 @@ void DauSachTab::Run() {
 	}
 
 	//* Displaying founded search target
-	if (this->searchField.targetDetails.GetStatus()) {
+	/*if (this->titleSearchSection_.targetDetails.GetStatus()) {
 		this->datasheetController.DeactivateDatasheets();
-		this->searchField.targetDetails.Display();
-		this->searchField.targetDetails.DeleteBookButtonOnAction();
+		this->titleSearchSection_.targetDetails.Display();
+		this->titleSearchSection_.targetDetails.DeleteBookButtonOnAction();
 
-		if (this->searchField.targetDetails.GoBackButtonOnAction()) {
+		if (this->titleSearchSection_.targetDetails.GoBackButtonOnAction()) {
 			this->datasheetController.ActivateDatasheets();
-			this->searchField.targetDetails.Deactivate();
-			this->searchField.inputSearchBox->SetPlaceholder("Type here to search");
-			this->searchField.searchStatusBox->SetPlaceholder("Result: NOT FOUND!");
-			DANH_SACH_DAU_SACH_SEARCH_FIELD_STYLING::StatusBoxStyling(this->searchField.searchStatusBox);
+			this->titleSearchSection_.targetDetails.Deactivate();
+			this->titleSearchSection_.inputSearchBox->SetPlaceholder("Type here to search");
+			this->titleSearchSection_.searchStatusBox->SetPlaceholder("Result: NOT FOUND!");
+			DANH_SACH_DAU_SACH_SEARCH_FIELD_STYLING::StatusBoxStyling(this->titleSearchSection_.searchStatusBox);
 		}
-	}
+	}*/
 
 	//* Displaying title's details field
-	if (this->titleDetailField.GetStatus() == true) {
+	if (this->titleDetailField.GetStatus() == true)
+	{
 		this->titleDetailField.Display();
-		if (this->titleDetailField.GoBackButtonOnAction() == true) {
-			this->datasheetController.ActivateDatasheets();
+		if (this->titleDetailField.GoBackButtonOnAction() == true)
+		{
+			this->defaultView_ = true;
 		}
-		else {
-			this->datasheetController.DeactivateDatasheets();
+		else
+		{
+			this->defaultView_ = false;
 		}
 	}
 
 	//* Displaying the ADD function.
-	if (this->titleCreatingSection.GetStatus() == true) {
+	if (this->titleCreatingSection.GetStatus() == true)
+	{
 		this->titleCreatingSection.Display();
 
-		if (this->titleCreatingSection.GoBackButtonOnAction()) {
+		if (this->titleCreatingSection.GoBackButtonOnAction())
+		{
 			this->titleCreatingSection.Deactivate();
-			this->datasheetController.ActivateDatasheets();
+			this->defaultView_ = true;
 		}
 
 		//WORKING
 		bool newTitleListCreated = this->titleCreatingSection.Run();
 		if (newTitleListCreated)
 		{
-			DAU_SACH_TAB::CreateDatasheetsFromList(this->titleList, this->datasheetController);
+			//DAU_SACH_TAB::CreateDatasheetsFromList(this->titleList, this->datasheetController);
 		}
 	}
+}
 
+void DauSachTab::InitializeFilters()
+{
+	int listSize = this->package_->titleList->numberOfNode;
 
+	this->defaultTitleListFilter_.filterSize_ = listSize;
+	this->defaultTitleListFilter_.keep_ = listSize;
+	this->defaultTitleListFilter_.filters_ = new bool[listSize];
+	for (int i = 0; i < listSize; ++i) { this->defaultTitleListFilter_.filters_[i] = true; }
+
+	this->sortedByCategoryTitleListFilter_.filterSize_ = listSize;
+	this->sortedByCategoryTitleListFilter_.keep_ = listSize;
+	this->sortedByCategoryTitleListFilter_.filters_ = new bool[listSize];
+	for (int i = 0; i < listSize; ++i) { this->sortedByCategoryTitleListFilter_.filters_[i] = true; }
+}
+
+void DauSachTab::Initialize()
+{
+	this->InitializeFilters();
+
+	this->titleDatasheetPackage_ = DAU_SACH_TAB::DatasheetProcessor(this->package_->titleList, &this->defaultTitleListFilter_);
+
+	HELPER::Coordinate listManipulateButtonCoordinates[] = {
+		HELPER::Coordinate(1585, 210),
+		HELPER::Coordinate(1585, 300),
+		HELPER::Coordinate(1585, 390)
+	};
+	HELPER::Dimension listManipulateButtonDimension(170, 70);
+	std::string listManipulateButtonPlaceholders[] = { "NEW", "EDIT", "REMOVE" };
+	for (int i = 0; i < 3; ++i) {
+		this->functionalButtons[i] = Button(listManipulateButtonCoordinates[i], listManipulateButtonDimension);
+		this->functionalButtons[i].SetPlaceholder(listManipulateButtonPlaceholders[i]);
+		DANH_SACH_DAU_SACH_STYLING::ListManipulateButtonDefaultProperties(this->functionalButtons[i]);
+	}
+
+	this->titleSearchSection_ = DAU_SACH_TAB::SearchField(this->package_, &this->titleDatasheetPackage_);
+	this->titleSearchSection_.Activate();
 }

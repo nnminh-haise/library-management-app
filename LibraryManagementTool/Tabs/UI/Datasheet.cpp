@@ -1,15 +1,17 @@
 #include "Datasheet.h"
 
-namespace DATASHEET {
-
-	Row::Row() {
+namespace DATASHEET
+{
+	Row::Row()
+	{
 		this->topLeft = this->bottomRight = HELPER::Coordinate();
 		this->attributeCount = 0;
 		this->items = nullptr;
 		this->rowHeight = 0;
 	}
 
-	Row::Row(int attributeCount, int rowHeight, HELPER::Coordinate topLeft, std::string* data, int* characterLimits) {
+	Row::Row(int attributeCount, int rowHeight, HELPER::Coordinate topLeft, std::string* data, int* characterLimits)
+	{
 		this->attributeCount = attributeCount;
 		this->topLeft = topLeft;
 		this->rowHeight = rowHeight;
@@ -18,7 +20,10 @@ namespace DATASHEET {
 		this->items = new Button[this->attributeCount];
 		HELPER::Dimension boxDimension;
 		for (int i = 0; i < this->attributeCount; ++i) {
-			boxDimension.width = max(textwidth((char*)data[i].c_str()), textwidth((char*)"W") * characterLimits[i]) + padding.left + padding.right;
+			boxDimension.width = max(
+				textwidth((char*)data[i].c_str()),
+				textwidth((char*)"H") * characterLimits[i]
+			) + padding.left + padding.right;
 			boxDimension.height = this->rowHeight;
 			if (i == 0) {
 				this->items[i].SetTopLeft(this->topLeft);
