@@ -160,7 +160,7 @@ namespace DATASHEET
 
 	Row& Datasheet::operator[](int index) {
 		if (index < 0 || index >= this->recordCount) {
-			std::cerr << "[ERROR] Datasheet index violation!\n";
+			std::cerr << "[ERROR] Datasheet index violation! (operator[])\n";
 			exit(1);
 		}
 
@@ -262,14 +262,20 @@ namespace DATASHEET
 
 	Datasheet& Controller::operator[](int index) {
 		if (index < 0 || index >= this->datasheetCount) {
-			std::cerr << "[ERROR] Datasheet controller index violation!\n";
+			std::cerr << "[ERROR] Datasheet controller index violation! (Controller operator[])\n";
 			exit(1);
 		}
 
 		return this->sheets[index];
 	}
 
-	void Controller::InitializeDatasheets() {
+	void Controller::InitializeDatasheets()
+	{
+		if (this->datasheetCount <= 0)
+		{
+			throw std::logic_error("[ERROR] Invalid datasheet count! (Initialize datasheet method)");
+		}
+
 		this->sheets = new DATASHEET::Datasheet[this->datasheetCount];
 		this->activeSheet = 0;
 	}
@@ -323,21 +329,28 @@ namespace DATASHEET
 		this->activeSheet = indicator;
 	}
 
-	void Controller::DatasheetChangeButtonUpdate() {
-		if (this->active == false) {
-			return;
-		}
+	void Controller::DatasheetChangeButtonUpdate()
+	{
+		if (this->active == false) { return; }
 
 		int movement[2] = { -1, +1 };
-		for (int i = 0; i < 2; ++i) {
-			if (this->datasheetChangeButton[i].IsHover()) {
+		for (int i = 0; i < 2; ++i)
+		{
+			if (this->datasheetChangeButton[i].IsHover())
+			{
 				this->DatasheetChangeBTNHover(this->datasheetChangeButton[i]);
 			}
-			else if (this->datasheetChangeButton[i].LeftMouseClicked()) {
-				this->activeSheet = (this->activeSheet + movement[i] + this->datasheetCount) % this->datasheetCount;
+			else if (this->datasheetChangeButton[i].LeftMouseClicked())
+			{
 				delay(100);
+
+				std::cerr << "clicked!\n";
+				std::cerr << "previous: " << this->activeSheet << "\n";
+				this->activeSheet = (this->activeSheet + movement[i] + this->datasheetCount) % this->datasheetCount;
+				std::cerr << "after: " << this->activeSheet << "\n";
 			}
-			else {
+			else
+			{
 				this->DatasheetChangeBTNProperties(this->datasheetChangeButton[i]);
 			}
 		}

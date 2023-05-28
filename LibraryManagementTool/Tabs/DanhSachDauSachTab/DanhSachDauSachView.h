@@ -29,6 +29,8 @@ namespace DAU_SACH_TAB
 
 		DataFilter*& AccessDataFilter();
 
+		DATASHEET::Datasheet& AccessCurrentDatasheet();
+
 		void Display();
 
 		void Activate();
@@ -245,6 +247,7 @@ namespace DAU_SACH_TAB
 
 	public:
 		bool active = false;
+		bool searching_ = false;
 		bool searchFound = false;
 
 		Button title;
@@ -293,14 +296,16 @@ public:
 
 	void Destructor();
 
-	void SortByCategory();
-
 	void Run();
 
 private:
 	void InitializeFilters();
 
+	void CreateSortedByCategoryTitleList();
+
 	void Initialize();
+
+	void FunctionalButtonOnAction();
 
 private:
 	bool datasheetDisplayFlag;
