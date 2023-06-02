@@ -58,6 +58,10 @@ public:
 
     bool RightMouseClicked();
 
+    bool OutsideLeftMouseClick();
+
+    bool OutsideRightMouseClick();
+
 private:
     std::string defaultValue_;
     std::string placeholder;

@@ -343,11 +343,7 @@ namespace DATASHEET
 			else if (this->datasheetChangeButton[i].LeftMouseClicked())
 			{
 				delay(100);
-
-				std::cerr << "clicked!\n";
-				std::cerr << "previous: " << this->activeSheet << "\n";
 				this->activeSheet = (this->activeSheet + movement[i] + this->datasheetCount) % this->datasheetCount;
-				std::cerr << "after: " << this->activeSheet << "\n";
 			}
 			else
 			{

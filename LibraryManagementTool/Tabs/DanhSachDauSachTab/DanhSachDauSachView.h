@@ -27,6 +27,10 @@ namespace DAU_SACH_TAB
 
 		DataFilter* GetDataFilter();
 
+		void SetDataList(LINEAR_LIST::LinearList* dataList);
+
+		LINEAR_LIST::LinearList* GetDataList();
+
 		DataFilter*& AccessDataFilter();
 
 		DATASHEET::Datasheet& AccessCurrentDatasheet();
@@ -231,6 +235,8 @@ namespace DAU_SACH_TAB
 
 		SearchField(Package* package, DAU_SACH_TAB::DatasheetProcessor* titleDatasheetPackage);
 
+		void SetSearchData(LINEAR_LIST::LinearList* data);
+
 		void Activate();
 
 		void Deactivate();
@@ -246,13 +252,12 @@ namespace DAU_SACH_TAB
 		bool Run();
 
 	public:
-		bool active = false;
+		bool active_ = false;
 		bool searching_ = false;
 		bool searchFound = false;
 
 		Button title;
-		Button inputSearchBox;
-		Button searchStatusBox;
+		Button searchBox_;
 
 	private:
 		bool searchByTitle_ = true;
@@ -260,6 +265,7 @@ namespace DAU_SACH_TAB
 		bool searchByCategory_ = false;
 		bool searchByPublicationYear_ = false;
 
+		LINEAR_LIST::LinearList* data_;
 		Package* package_;
 		DAU_SACH_TAB::DatasheetProcessor* titleDatasheetPackage_;
 	};
@@ -306,6 +312,8 @@ private:
 	void Initialize();
 
 	void FunctionalButtonOnAction();
+
+	void DatasheetSortingFunctionality();
 
 private:
 	bool datasheetDisplayFlag;

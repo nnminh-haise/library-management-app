@@ -148,3 +148,17 @@ bool Button::RightMouseClicked()
 	}
 	return false;
 }
+
+bool Button::OutsideLeftMouseClick()
+{
+	if (!this->IsPointed() && GetAsyncKeyState(VK_LBUTTON) & 0x8000) { return true; }
+	return false;
+}
+
+bool Button::OutsideRightMouseClick()
+{
+	if (!this->IsPointed() && GetAsyncKeyState(VK_RBUTTON) & 0x8000) { return true; }
+	return false;
+}
+
+

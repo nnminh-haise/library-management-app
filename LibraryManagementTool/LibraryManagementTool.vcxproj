@@ -156,6 +156,7 @@
     <ClInclude Include="DataStructures\LinkedList.h" />
     <ClInclude Include="Helper\IndexGenerator.h" />
     <ClInclude Include="Helper\Package.h" />
+    <ClInclude Include="Tabs\DanhSachDauSachTab\SearchFilters.h" />
     <ClInclude Include="Tabs\UI\Datasheet.h" />
     <ClInclude Include="Tabs\UI\Button.h" />
     <ClInclude Include="Tabs\DanhSachDauSachTab\DanhSachDauSachStyling.h" />
