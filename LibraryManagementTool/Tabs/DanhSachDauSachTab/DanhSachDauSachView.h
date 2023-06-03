@@ -6,6 +6,7 @@
 #include "../UI/Elements.h"
 #include "../UI/Button.h"
 #include "../UI/Datasheet.h"
+#include "../UI/SearchFilters.h"
 
 namespace DAU_SACH_TAB
 {
@@ -228,12 +229,12 @@ namespace DAU_SACH_TAB
 		LINKED_LIST::Pointer deleteBook;
 	};
 
-	struct SearchField
+	struct SearchSection
 	{
 	public:
-		SearchField();
+		SearchSection();
 
-		SearchField(Package* package, DAU_SACH_TAB::DatasheetProcessor* titleDatasheetPackage);
+		SearchSection(Package* package, DAU_SACH_TAB::DatasheetProcessor* titleDatasheetPackage);
 
 		void SetSearchData(LINEAR_LIST::LinearList* data);
 
@@ -251,23 +252,25 @@ namespace DAU_SACH_TAB
 
 		bool Run();
 
-	public:
-		bool active_ = false;
-		bool searching_ = false;
-		bool searchFound = false;
+	private:
+		void Initialize();
 
-		Button title;
-		Button searchBox_;
+		void InitializeSearchFilters();
 
 	private:
-		bool searchByTitle_ = true;
-		bool searchByISBN_ = true;
-		bool searchByCategory_ = false;
-		bool searchByPublicationYear_ = false;
+		bool active_ = false;
+
+		Button title_;
+
+		Button searchBox_;
 
 		LINEAR_LIST::LinearList* data_;
+
 		Package* package_;
+
 		DAU_SACH_TAB::DatasheetProcessor* titleDatasheetPackage_;
+
+		SearchFilters searchFilters_;
 	};
 }
 
@@ -320,7 +323,7 @@ private:
 	Button functionalButtons[3];
 
 private:
-	DAU_SACH_TAB::SearchField titleSearchSection_;
+	DAU_SACH_TAB::SearchSection titleSearchSection_;
 
 	DAU_SACH_TAB::TitleCreatingSection titleCreatingSection;
 

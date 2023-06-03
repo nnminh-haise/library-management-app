@@ -134,7 +134,7 @@
     <ClInclude Include="Helper\Package.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tabs\DanhSachDauSachTab\SearchFilters.h">
+    <ClInclude Include="Tabs\UI\SearchFilters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

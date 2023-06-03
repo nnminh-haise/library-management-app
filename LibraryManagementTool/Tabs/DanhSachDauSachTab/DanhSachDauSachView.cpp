@@ -135,45 +135,35 @@ namespace DAU_SACH_TAB
 
 	bool DatasheetProcessor::InActive() { return this->active_; }
 
-	SearchField::SearchField()
+	SearchSection::SearchSection()
 	{
 		this->data_ = nullptr;
 		this->package_ = nullptr;
 		this->titleDatasheetPackage_ = nullptr;
 		this->active_ = false;
-		this->searchFound = false;
 	}
 
-	SearchField::SearchField(Package* package, DAU_SACH_TAB::DatasheetProcessor* titleDatasheetPackage)
+	SearchSection::SearchSection(Package* package, DAU_SACH_TAB::DatasheetProcessor* titleDatasheetPackage)
 	{
 		this->package_ = package;
 		this->titleDatasheetPackage_ = titleDatasheetPackage;
 		this->active_ = false;
-		this->searchFound = false;
 
-		this->title = Button(HELPER::Coordinate(1405, 120), 350, 50);
-		this->title.SetPlaceholder("Search for title?");
-
-		this->searchBox_ = Button(HELPER::Coordinate(41, 125), 490, 60);
-		this->searchBox_.SetPlaceholder("Type here to search!");
+		this->Initialize();
 	}
 
-	void SearchField::SetSearchData(LINEAR_LIST::LinearList* data) { this->data_ = data; }
+	void SearchSection::SetSearchData(LINEAR_LIST::LinearList* data) { this->data_ = data; }
 
-	void SearchField::Activate() { this->active_ = true; }
+	void SearchSection::Activate() { this->active_ = true; }
 
-	void SearchField::Deactivate() { this->active_ = false; }
+	void SearchSection::Deactivate() { this->active_ = false; }
 
-	bool SearchField::GetStatus() { return this->active_; }
+	bool SearchSection::GetStatus() { return this->active_; }
 
 	/** SEACH ALGORITHM
 	* There are some cases where we don't need to seach:
 	* 0. The seach section is inactive
-	* 1. The value of the seach box is empty -> length == 0
-	* 2. The value of the seach box is equal to the default value.
-	*
-	* The cases number 1 and 2 will reset the filter to show all the data.
-	* Therefore the return value is true.
+	* 1. The value of the seach box is equal to the default value
 	*
 	* After passing the above guard, the search algorithm start.
 	* The function return true, if there is a change in the filter, otherwise return false.
@@ -184,7 +174,7 @@ namespace DAU_SACH_TAB
 	* (3): Compare the original filter with new filter, if there are any changes then return true to allow re-generate the datasheet.
 	* Otherwise, return false.
 	*/
-	bool SearchField::SearchOperation()
+	bool SearchSection::SearchOperation()
 	{
 		const std::string searchTarget = this->searchBox_.GetPlaceholder();
 
@@ -206,8 +196,14 @@ namespace DAU_SACH_TAB
 		DataFilter*& dataFilter = this->titleDatasheetPackage_->AccessDataFilter();
 		std::string titleISBN{};
 		std::string titleName{};
-		bool existSubstringInTitle = false;
-		bool existSubstringInISBN = false;
+		std::string titleCategory{};
+		std::string titleAuthor{};
+		std::string titlePublication{};
+
+		//* Initialize filter's checkers
+		int filterCount = this->searchFilters_.Size();
+		bool* filterCheckers = new bool[filterCount];
+		for (int i = 0; i < filterCount; ++i) { filterCheckers[i] = false; }
 
 		//* (1) Create a temperary version of the current filter!
 		DataFilter orignalFilter;
@@ -219,16 +215,28 @@ namespace DAU_SACH_TAB
 		//* (2) Search and update filter.
 		for (int i = 0; i < dataSetSize; ++i)
 		{
-			existSubstringInISBN = false;
-			existSubstringInTitle = false;
+			for (int i = 0; i < filterCount; ++i) { filterCheckers[i] = false; }
 			titleName = this->data_->nodes[i]->GetTitle();
 			titleISBN = this->data_->nodes[i]->GetISBN();
+			titleCategory = this->data_->nodes[i]->GetCategory();
+			titleAuthor = this->data_->nodes[i]->GetAuthor();
+			titlePublication = std::to_string(this->data_->nodes[i]->GetPublicationYear());
 
-			if (titleName.find(searchTarget) != std::string::npos) { existSubstringInTitle = true; }
-			if (titleISBN.find(searchTarget) != std::string::npos) { existSubstringInISBN = true; }
+			if (titleName.find(searchTarget) != std::string::npos) { filterCheckers[0] = true; }
+			if (titleISBN.find(searchTarget) != std::string::npos) { filterCheckers[1] = true; }
+			if (titleCategory.find(searchTarget) != std::string::npos) { filterCheckers[2] = true; }
+			if (titleAuthor.find(searchTarget) != std::string::npos) { filterCheckers[3] = true; }
+			if (titlePublication.find(searchTarget) != std::string::npos) { filterCheckers[4] = true; }
+
+			bool res = false;
+			for (int i = 0; i < 5; ++i)
+			{
+				res = res || (filterCheckers[i] * this->searchFilters_.FilterValue(i));
+			}
 
 			//* Only update filter if there are any changes
-			if (existSubstringInISBN || existSubstringInTitle)
+			//if (existSubstringInISBN || existSubstringInTitle)
+			if (res)
 			{
 				// The current filter is already correct, therefore we don't need to update the filter
 				if (dataFilter->filters_[i]) { continue; }
@@ -260,11 +268,12 @@ namespace DAU_SACH_TAB
 		}
 
 		delete orignalFilter.filters_;
+		delete[] filterCheckers;
 
 		return existChanges;
 	}
 
-	void SearchField::SearchBoxOnAction()
+	void SearchSection::SearchBoxOnAction()
 	{
 		if (this->searchBox_.IsHover())
 		{
@@ -273,8 +282,6 @@ namespace DAU_SACH_TAB
 		else if (this->searchBox_.LeftMouseClicked())
 		{
 			delay(100);
-			this->searching_ = true;
-			this->searchFound = false;
 			this->package_->inputController->Activate(
 				&this->searchBox_,
 				&this->searchBox_,
@@ -290,19 +297,48 @@ namespace DAU_SACH_TAB
 		}
 	}
 
-	void SearchField::Display()
+	void SearchSection::Display()
 	{
 		if (this->active_ == false) { return; }
 
-		// TODO: Debug search bar section design
-		//this->title.Display();
+		this->title_.Display();
 		this->searchBox_.Display();
+		this->searchFilters_.Display();
 	}
 
-	bool SearchField::Run()
+	bool SearchSection::Run()
 	{
+		this->Display();
 		this->SearchBoxOnAction();
 		return this->SearchOperation();
+	}
+
+	void SearchSection::Initialize()
+	{
+		this->title_ = Button(HELPER::Coordinate(36, 120), 750, 70);
+		this->title_.SetFillColor(rgb(33, 42, 62));
+		this->title_.SetBorderColor(rgb(33, 42, 62));
+
+		this->searchBox_ = Button(HELPER::Coordinate(41, 125), 740, 60);
+		this->searchBox_.SetPlaceholder("Type here to search!");
+
+		this->InitializeSearchFilters();
+	}
+
+	void SearchSection::InitializeSearchFilters()
+	{
+		this->searchFilters_ = SearchFilters(5);
+
+		std::string filterPlaceholders[] = { "Title", "ISBN", "Category", "Author", "Publication" };
+		HELPER::Coordinate filterCoordinates[] = { {822, 120}, {946, 120}, {1070, 120}, {1194, 120}, {1318, 120} };
+		bool filterDefaultValues[] = { true, true, true, false, false };
+		for (int i = 0; i < 5; ++i)
+		{
+			this->searchFilters_[i].SetPlaceholder(filterPlaceholders[i]);
+			this->searchFilters_[i].SetTopLeft(filterCoordinates[i]);
+			this->searchFilters_[i].SetValue(filterDefaultValues[i]);
+		}
+		this->searchFilters_.Activate();
 	}
 
 	BookCreatingSection::BookCreatingSection()
@@ -330,7 +366,6 @@ namespace DAU_SACH_TAB
 		this->saveButton_.Display();
 	}
 
-	// TODO: Clean up this section
 	void BookCreatingSection::InitializeElements()
 	{
 		this->background_ = HELPER::Fill(
@@ -1346,7 +1381,6 @@ void DauSachTab::Run()
 		this->FunctionalButtonOnAction();
 
 		//* Display search field
-		this->titleSearchSection_.Display();
 		bool allowUpdateTitleDatesheet = this->titleSearchSection_.Run();
 		if (allowUpdateTitleDatesheet)
 		{
@@ -1520,7 +1554,7 @@ void DauSachTab::Initialize()
 		DANH_SACH_DAU_SACH_STYLING::ListManipulateButtonDefaultProperties(this->functionalButtons[i]);
 	}
 
-	this->titleSearchSection_ = DAU_SACH_TAB::SearchField(this->package_, &this->titleDatasheetPackage_);
+	this->titleSearchSection_ = DAU_SACH_TAB::SearchSection(this->package_, &this->titleDatasheetPackage_);
 	this->titleSearchSection_.SetSearchData(this->package_->titleList);
 	this->titleSearchSection_.Activate();
 }
