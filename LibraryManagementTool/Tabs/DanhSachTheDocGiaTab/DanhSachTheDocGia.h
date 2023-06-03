@@ -149,7 +149,7 @@ namespace READER_TAB_MEMBERS
 	public:
 		ReaderIndeptDetail();
 
-		ReaderIndeptDetail(LINEAR_LIST::LinearList* titleList, READER::Reader* reader);
+		ReaderIndeptDetail(TitleLinearList* titleList, READER::Reader* reader);
 
 		void SetInputController(ELEMENTS::InputModeController* inputController);
 
@@ -199,7 +199,7 @@ namespace READER_TAB_MEMBERS
 
 	private:
 		bool active;
-		LINEAR_LIST::LinearList* titleList;
+		TitleLinearList* titleList;
 		READER::Reader* reader;
 
 		DATASHEET::Controller titlesDatasheetController;
@@ -225,7 +225,7 @@ public:
 
 	void CreateDatasheetsFromArr(AVL_Tree<READER::Reader, int>* readerList, DATASHEET::Controller* controller);
 
-	DanhSachTheDocGiaView(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController);
+	DanhSachTheDocGiaView(AVL_Tree<READER::Reader, int>* readerList, TitleLinearList* titleList, ELEMENTS::InputModeController* inputController);
 
 	void Run();
 
@@ -243,7 +243,7 @@ private:
 	READER_TAB_MEMBERS::ReaderIndeptDetail readerIndeptDetail;
 
 	AVL_Tree<READER::Reader, int>* readerList;
-	LINEAR_LIST::LinearList* titleList;
+	TitleLinearList* titleList;
 	ELEMENTS::InputModeController* inputController;
 };
 

@@ -5,14 +5,10 @@
 #pragma comment(lib, "Graphics/graphics.lib")
 
 //* Program's entrance
-int main() {
-	/*AVL_TREE::Pointer readerList;
-	AVL_TREE::Initialize(readerList);*/
-
+int main()
+{
 	AVL_Tree<READER::Reader, int> readerList;
-
-	LINEAR_LIST::LinearList titleList;
-	LINEAR_LIST::Initialize(titleList);
+	TitleLinearList titleList;
 
 	//* Run program main function
 	LandingView mainView(&readerList, &titleList);

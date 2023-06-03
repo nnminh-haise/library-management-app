@@ -151,7 +151,6 @@
     <ClInclude Include="DataStructures\AVL_Tree.h" />
     <ClInclude Include="DataStructures\DoubleLinkedList.h" />
     <ClInclude Include="DataStructures\HashMap.h" />
-    <ClInclude Include="DataStructures\DynamicArray.h" />
     <ClInclude Include="DataStructures\LinearList.h" />
     <ClInclude Include="DataStructures\LinkedList.h" />
     <ClInclude Include="Helper\IndexGenerator.h" />

@@ -10,13 +10,17 @@ class LinearList
 public:
 	LinearList();
 
-	LinearList(int size);
+	LinearList(int capacity);
+
+	LinearList(const LinearList<T>& other);
 
 	~LinearList();
 
+	LinearList<T>& operator=(const LinearList<T>& other);
+
 	int Size() const;
 
-	int MaxSize() const;
+	int Capacity() const;
 
 	bool Empty() const;
 
@@ -38,29 +42,45 @@ public:
 
 	T& operator[](int index);
 
-	T At(int index);
-
-private:
-	int MAX_SIZE = 100000;
+	T At(int index) const;
 
 private:
 	T* nodes_;
-	int nodeCount_;
+	int size_;
+	int capacity_ = 100000;
 };
 
 template<typename T>
 inline LinearList<T>::LinearList()
 {
-	this->nodes_ = new T[this->MAX_SIZE];
-	this->nodeCount_ = 0;
+	this->nodes_ = new T [this->capacity_];
+	this->size_ = 0;
 }
 
 template<typename T>
-inline LinearList<T>::LinearList(int size)
+inline LinearList<T>::LinearList(int capacity)
 {
-	this->MAX_SIZE = size;
-	this->nodes_ = new T[this->MAX_SIZE];
-	this->nodeCount_ = 0;
+	this->capacity_ = capacity;
+	this->nodes_ = new T[this->capacity_];
+	this->size_ = 0;
+}
+
+template<typename T>
+inline LinearList<T>::LinearList(const LinearList<T>& other)
+{
+	if (this != &other)
+	{
+		delete[] this->nodes_;
+
+		this->size_ = other.size_;
+		this->capacity_ = other.capacity_;
+		this->nodes_ = new T[this->capacity_];
+
+		for (int i = 0; i < this->size_; ++i)
+		{
+			this->nodes_[i] = other.nodes_[i];
+		}
+	}
 }
 
 template<typename T>
@@ -70,34 +90,56 @@ inline LinearList<T>::~LinearList()
 }
 
 template<typename T>
-inline int LinearList<T>::Size() const
+LinearList<T>& LinearList<T>::operator=(const LinearList<T>& other)
 {
-	return this->nodeCount_;
+	if (this == &other)
+	{
+		return *this;
+	}
+
+	delete[] nodes_;
+
+	size_ = other.size_;
+	capacity_ = other.capacity_;
+	nodes_ = new T[capacity_];
+
+	for (int i = 0; i < size_; ++i)
+	{
+		nodes_[i] = other.nodes_[i];
+	}
+
+	return *this;
 }
 
 template<typename T>
-inline int LinearList<T>::MaxSize() const
+inline int LinearList<T>::Size() const
 {
-	return this->MAX_SIZE;
+	return this->size_;
+}
+
+template<typename T>
+inline int LinearList<T>::Capacity() const
+{
+	return this->capacity_;
 }
 
 template<typename T>
 inline bool LinearList<T>::Empty() const
 {
-	return this->nodeCount_ == 0;
+	return this->size_ == 0;
 }
 
 template<typename T>
 inline bool LinearList<T>::Full() const
 {
-	return this->nodeCount_ == this->MAX_SIZE;
+	return this->size_ == this->capacity_;
 }
 
 template<typename T>
 inline void LinearList<T>::Clear() noexcept
 {
-	std::destroy(this->nodes_, this->nodes_ + this->nodeCount_);
-	this->nodeCount_ = 0;
+	std::destroy(this->nodes_, this->nodes_ + this->size_);
+	this->size_ = 0;
 }
 
 template<typename T>
@@ -108,12 +150,12 @@ inline void LinearList<T>::PushFront(T value)
 		throw std::logic_error(std::format("[ERROR] LIST IS FULL! CANNOT INSERT NEW ELEMENT!\n"));
 	}
 
-	for (int i = this->nodeCount_; i > 0; --i)
+	for (int i = this->size_; i > 0; --i)
 	{
 		this->nodes_[i] = this->nodes_[i - 1];
 	}
 	this->nodes_[0] = value;
-	this->nodeCount_ += 1;
+	this->size_ += 1;
 }
 
 template<typename T>
@@ -124,8 +166,8 @@ inline void LinearList<T>::PushBack(T value)
 		throw std::logic_error(std::format("[ERROR] LIST IS FULL! CANNOT INSERT NEW ELEMENT!\n"));
 	}
 
-	this->nodes_[this->nodeCount_] = value;
-	this->nodeCount_ += 1;
+	this->nodes_[this->size_] = value;
+	this->size_ += 1;
 }
 
 template<typename T>
@@ -141,17 +183,17 @@ inline void LinearList<T>::PushAt(T value, int position)
 		throw std::logic_error("[ERROR] INDEX OUT OF RANGE!\n");
 	}
 
-	if (position > this->nodeCount_)
+	if (position > this->size_)
 	{
 		throw std::logic_error("[ERROR] INDEX OUT OF RANGE!\n");
 	}
 
-	for (int i = this->nodeCount_; i > position; --i)
+	for (int i = this->size_; i > position; --i)
 	{
 		this->nodes_[i] = this->nodes_[i - 1];
 	}
 	this->nodes_[position] = value;
-	this->nodeCount_ += 1;
+	this->size_ += 1;
 }
 
 template<typename T>
@@ -163,11 +205,11 @@ inline T LinearList<T>::PopFront()
 	}
 
 	T returnValue = this->nodes_[0];
-	for (int i = 0; i < this->nodeCount_ - 1; ++i)
+	for (int i = 0; i < this->size_ - 1; ++i)
 	{
 		this->nodes_[i] = this->nodes_[i + 1];
 	}
-	this->nodeCount_ -= 1;
+	this->size_ -= 1;
 	return returnValue;
 }
 
@@ -179,8 +221,8 @@ inline T LinearList<T>::PopBack()
 		throw std::logic_error(std::format("[ERROR] LIST IS EMPTY! CANNOT POP NEW ELEMENT!\n"));
 	}
 
-	T returnValue = this->nodes_[this->nodeCount_ - 1];
-	this->nodeCount_ -= 1;
+	T returnValue = this->nodes_[this->size_ - 1];
+	this->size_ -= 1;
 	return returnValue;
 }
 
@@ -197,13 +239,13 @@ inline T LinearList<T>::PopAt(int position)
 		throw std::logic_error("[ERROR] INDEX OUT OF RANGE!\n");
 	}
 
-	if (position > this->nodeCount_)
+	if (position > this->size_)
 	{
 		throw std::logic_error("[ERROR] INDEX OUT OF RANGE!\n");
 	}
 
 	T returnValue = this->nodes_[position];
-	for (int i = position; i < this->nodeCount_ - 1; ++i)
+	for (int i = position; i < this->size_ - 1; ++i)
 	{
 		this->nodes_[i] = this->nodes_[i + 1];
 	}
@@ -218,7 +260,7 @@ inline T& LinearList<T>::operator[](int index)
 		throw std::logic_error("[ERROR] EMPTY LIST\n");
 	}
 
-	if (index < 0 || index >= this->nodeCount_)
+	if (index < 0 || index >= this->size_)
 	{
 		throw std::logic_error("[ERROR] INDEX OUT OF RANGE\n");
 	}
@@ -227,14 +269,14 @@ inline T& LinearList<T>::operator[](int index)
 }
 
 template<typename T>
-inline T LinearList<T>::At(int index)
+inline T LinearList<T>::At(int index) const
 {
 	if (this->Empty())
 	{
 		throw std::logic_error("[ERROR] EMPTY LIST\n");
 	}
 
-	if (index < 0 || index >= this->nodeCount_)
+	if (index < 0 || index >= this->size_)
 	{
 		throw std::logic_error("[ERROR] INDEX OUT OF RANGE\n");
 	}

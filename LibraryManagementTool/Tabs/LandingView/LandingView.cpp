@@ -103,7 +103,7 @@ void LandingView::CloseButtonOnUpdate()
 }
 
 //* View Constructor function.
-LandingView::LandingView(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList)
+LandingView::LandingView(AVL_Tree<READER::Reader, int>* readerList, TitleLinearList* titleList)
 {
 	this->currentTab = 0;
 	this->programStopFlag = false;
@@ -112,7 +112,7 @@ LandingView::LandingView(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST:
 	this->titleList = titleList;
 
 	READER_MODULES::LoadDanhSachTheDocGiaFromDB(CONSTANTS::READER_DATABASE, this->readerList);
-	DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(CONSTANTS::TITLES_DATABASE, *this->titleList);
+	DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(CONSTANTS::TITLES_DATABASE, this->titleList);
 
 	this->CreateTitleHashMap();
 	this->CreatePackage();
@@ -187,7 +187,7 @@ void LandingView::Run()
 
 	//* Update databse before closing the program
 	READER_MODULES::UpdateListToDatabase(CONSTANTS::READER_DATABASE, this->readerList);
-	DAU_SACH_MODULES::UpdateListToDatabase(CONSTANTS::TITLES_DATABASE, *this->titleList);
+	DAU_SACH_MODULES::UpdateListToDatabase(CONSTANTS::TITLES_DATABASE, this->titleList);
 }
 
 void LandingView::CreateTitleHashMap()
