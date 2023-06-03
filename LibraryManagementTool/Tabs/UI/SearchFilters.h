@@ -165,21 +165,6 @@ class SearchFilters
 
     inline int Size() { return this->filterCount_; }
 
-    //! This method is under development
-    // inline int GetFilters()
-    // {
-    //     int decimal = 0;
-    //     int power = 0;
-
-    //     for (int i = this->filterCount_ - 1; i >= 0; --i)
-    //     {
-    //         if (this->filters_[i]) { decimal += pow(2, power); }
-    //         power++;
-    //     }
-
-    //     return decimal;
-    // }
-
     inline void Display()
     {
         if (!this->active_) { return; }
