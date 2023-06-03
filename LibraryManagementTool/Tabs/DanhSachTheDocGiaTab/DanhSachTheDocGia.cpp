@@ -265,7 +265,7 @@ bool READER_TAB_MEMBERS::NewReaderForm::SubmitForm()
 		newreader.SetLastName(STR::Trim(this->readerLastNameButton.GetPlaceholder()));
 		newreader.SetGender(this->readerSexButton.GetPlaceholder() == "MALE" ? READER::Gender::MALE : READER::Gender::FEMALE);
 		newreader.SetStatus(READER::ReaderStatus::ACTIVE);
-		newreader.SetBooksCirculation(DoubleLinkedList<BOOK_CIRCULATION::BookCirculation>());
+		newreader.SetBooksCirculation(DOUBLE_LINKED_LIST::Controller());
 		delay(100);
 
 		this->readerList->Insert(this->readerIndex, newreader);
@@ -656,7 +656,7 @@ READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail()
 	this->targetedBookID = nullptr;
 }
 
-READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail(TitleLinearList* titleList, READER::Reader* reader)
+READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail(LINEAR_LIST::LinearList* titleList, READER::Reader* reader)
 {
 	this->titleList = titleList;
 	this->reader = reader;
@@ -912,7 +912,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 
 	//* FINDING CORRESPOND BOOK ID (start below) ---------------------------------------------------------
 	const std::string& borrowingTitleISBN = borrowingBookID.substr(0, 4); //* Taking the ISBN code of the targetedBook
-	BOOK_TITLE::BookTitle* correspondTitle = DAU_SACH_MODULES::SearchByISBN(this->titleList, borrowingTitleISBN);
+	BOOK_TITLE::BookTitle* correspondTitle = LINEAR_LIST::SearchByISBN(*this->titleList, borrowingTitleISBN);
 	if (correspondTitle == nullptr)
 	{
 		throw std::logic_error(std::format("[ERROR] THE ISBN: {} NOT EXIST!\n", borrowingTitleISBN));
@@ -926,7 +926,6 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 		throw std::logic_error(std::format("[ERROR] CANNOT FIND THE CORRESPOND BOOK'S ID: {}!\n", borrowingBookID));
 		return false;
 	}
-
 	//* FINDING CORRESPOND BOOK ID (ended below) ---------------------------------------------------------
 
 
@@ -938,13 +937,13 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 		return false;
 	}
 
-	DoubleLinkedList<BOOK_CIRCULATION::BookCirculation> readerBorrowedBooks = this->reader->GetBooksCirculation();
+	DOUBLE_LINKED_LIST::Controller readerBorrowedBooks = this->reader->GetBooksCirculation();
 
 	//* Check for number of targetedBook is borrowing!
 	int readerBorrowedBookCount = 0;
-	for (DoubleLinkedList<BOOK_CIRCULATION::BookCirculation>::Node* readerBorrowedBook = readerBorrowedBooks.Begin(); readerBorrowedBook != nullptr; readerBorrowedBook = readerBorrowedBook->right_)
+	for (DOUBLE_LINKED_LIST::Pointer readerBorrowedBook = readerBorrowedBooks.First; readerBorrowedBook != nullptr; readerBorrowedBook = readerBorrowedBook->right)
 	{
-		if (readerBorrowedBook->info_.GetStatus() == BOOK_CIRCULATION::CirculationStatus::BORROWING)
+		if (readerBorrowedBook->info.GetStatus() == BOOK_CIRCULATION::CirculationStatus::BORROWING)
 		{
 			readerBorrowedBookCount += 1;
 		}
@@ -957,10 +956,10 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 
 	//* Check if there is any targetedBook at did not return on date!
 	bool allReturnedInTime = true;
-	for (DoubleLinkedList<BOOK_CIRCULATION::BookCirculation>::Node* currentNode = readerBorrowedBooks.Begin(); currentNode != nullptr; currentNode = currentNode->right_)
+	for (DOUBLE_LINKED_LIST::Pointer currentNode = readerBorrowedBooks.First; currentNode != nullptr; currentNode = currentNode->right)
 	{
 		//* Check for targetedBook did not return in time!
-		if (currentNode->info_.IsOverdue())
+		if (currentNode->info.IsOverdue())
 		{
 			allReturnedInTime = false;
 			break;
@@ -975,10 +974,10 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 
 	//* Check for duplicate title!
 	bool noDuplicateTitle = true;
-	for (DoubleLinkedList<BOOK_CIRCULATION::BookCirculation>::Node* currentNode = readerBorrowedBooks.Begin(); currentNode != nullptr; currentNode = currentNode->right_)
+	for (DOUBLE_LINKED_LIST::Pointer currentNode = readerBorrowedBooks.First; currentNode != nullptr; currentNode = currentNode->right)
 	{
 		//* Check for duplicate ISBN code -> duplicate title!
-		if (currentNode->info_.GetStatus() == BOOK_CIRCULATION::CirculationStatus::BORROWING && borrowingTitleISBN.substr(0, 4).compare(currentNode->info_.GetID().substr(0, 4)) == 0)
+		if (currentNode->info.GetStatus() == BOOK_CIRCULATION::CirculationStatus::BORROWING && borrowingTitleISBN.substr(0, 4).compare(currentNode->info.GetID().substr(0, 4)) == 0)
 		{
 			noDuplicateTitle = false;
 			break;
@@ -999,7 +998,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 		returningDate,
 		BOOK_CIRCULATION::CirculationStatus::BORROWING
 	);
-	readerBorrowedBooks.PushBack(newBorrowedBook);
+	DOUBLE_LINKED_LIST::PushBack(readerBorrowedBooks, newBorrowedBook);
 	this->targetedBookID->SetStatus(BOOK::Status::UNAVAILABLE);
 	this->reader->SetBooksCirculation(readerBorrowedBooks);
 	return true;
@@ -1017,13 +1016,13 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnBook()
 	//* VALIDATE USER INPUT (ended below) ----------------------------------------------------------------
 
 	//* Finding existance of the targetedBook's id in the user's borrowing targetedBook list.
-	DoubleLinkedList<BOOK_CIRCULATION::BookCirculation> readerBookCirculationList = this->reader->GetBooksCirculation();
+	DOUBLE_LINKED_LIST::Controller readerBookCirculationList = this->reader->GetBooksCirculation();
 
 	bool existReaderTargetBookCirculation = false;
-	DoubleLinkedList<BOOK_CIRCULATION::BookCirculation>::Node* targetBookCirculation = readerBookCirculationList.Begin();
-	for (; targetBookCirculation != nullptr; targetBookCirculation = targetBookCirculation->right_)
+	DOUBLE_LINKED_LIST::Pointer targetBookCirculation = readerBookCirculationList.First;
+	for (; targetBookCirculation != nullptr; targetBookCirculation = targetBookCirculation->right)
 	{
-		if (targetBookCirculation->info_.GetID().compare(userTargetedReturnBookID) == 0)
+		if (targetBookCirculation->info.GetID().compare(userTargetedReturnBookID) == 0)
 		{
 			existReaderTargetBookCirculation = true;
 			break;
@@ -1037,9 +1036,9 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnBook()
 
 	//* Finding the title which the targeted targetedBook belongs to.
 	int indexOfCoresspondTitle = -1;
-	for (int i = 0; i < this->titleList->Size(); ++i)
+	for (int i = 0; i < this->titleList->numberOfNode; ++i)
 	{
-		if ((*this->titleList)[i]->GetISBN().compare(userTargetedReturnBookID.substr(0, 4)) == 0)
+		if (this->titleList->nodes[i]->GetISBN().compare(userTargetedReturnBookID.substr(0, 4)) == 0)
 		{
 			indexOfCoresspondTitle = i;
 			break;
@@ -1051,7 +1050,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnBook()
 		return false;
 	}
 
-	LINKED_LIST::Controller targetedTitleCatalouge = (*this->titleList)[indexOfCoresspondTitle]->GetCatalogue();
+	LINKED_LIST::Controller targetedTitleCatalouge = this->titleList->nodes[indexOfCoresspondTitle]->GetCatalogue();
 	bool bookExist = false;
 	LINKED_LIST::Pointer targetedBook = targetedTitleCatalouge.first;
 	for (; targetedBook != nullptr; targetedBook = targetedBook->next)
@@ -1069,9 +1068,10 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnBook()
 	}
 
 	targetedBook->info.SetStatus(BOOK::Status::AVAILABLE);
-	(*this->titleList)[indexOfCoresspondTitle]->SetCatalogue(targetedTitleCatalouge);
-	targetBookCirculation->info_.SetReturnDate(HELPER::Date());
-	targetBookCirculation->info_.SetStatus(BOOK_CIRCULATION::CirculationStatus::RETURNED);
+	this->titleList->nodes[indexOfCoresspondTitle]->SetCatalogue(targetedTitleCatalouge);
+	targetBookCirculation->info.SetReturnDate(HELPER::Date());
+	targetBookCirculation->info.SetStatus(BOOK_CIRCULATION::CirculationStatus::RETURNED);
+	//DOUBLE_LINKED_LIST::RemoveNode(readerBookCirculationList, targetBookCirculation);
 	this->reader->SetBooksCirculation(readerBookCirculationList);
 	return true;
 }
@@ -1088,13 +1088,13 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::LostBook()
 	//* VALIDATE USER INPUT (ended below) ----------------------------------------------------------------
 
 	//* Finding existance of the targetedBook's id in the user's book circulations list.
-	DoubleLinkedList<BOOK_CIRCULATION::BookCirculation> readerBookCirculationList = this->reader->GetBooksCirculation();
+	DOUBLE_LINKED_LIST::Controller readerBookCirculationList = this->reader->GetBooksCirculation();
 
 	bool existReaderTargetBookCirculation = false;
-	DoubleLinkedList<BOOK_CIRCULATION::BookCirculation>::Node* targetBookCirculation = readerBookCirculationList.Begin();
-	for (; targetBookCirculation != nullptr; targetBookCirculation = targetBookCirculation->right_)
+	DOUBLE_LINKED_LIST::Pointer targetBookCirculation = readerBookCirculationList.First;
+	for (; targetBookCirculation != nullptr; targetBookCirculation = targetBookCirculation->right)
 	{
-		if (targetBookCirculation->info_.GetID().compare(userTargetedLostedBookID) == 0)
+		if (targetBookCirculation->info.GetID().compare(userTargetedLostedBookID) == 0)
 		{
 			existReaderTargetBookCirculation = true;
 			break;
@@ -1106,7 +1106,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::LostBook()
 		return false;
 	}
 
-	targetBookCirculation->info_.SetStatus(BOOK_CIRCULATION::CirculationStatus::LOSTED);
+	targetBookCirculation->info.SetStatus(BOOK_CIRCULATION::CirculationStatus::LOSTED);
 	return true;
 }
 
@@ -1118,7 +1118,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateTitlesDatasheet()
 	int characterLimits[] = {
 		3, 4, 30, 20, 10
 	};
-	int listSize = this->titleList->Size();
+	int listSize = this->titleList->numberOfNode;
 	this->titlesDatasheetController.SetDatasheetCount(
 		listSize / (CONSTANTS::MAX_ROW_COUNT - 1) + (listSize % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
 	);
@@ -1140,7 +1140,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateTitlesDatasheet()
 	int recordIndex = 0;
 	int sheetIndex = -1;
 
-	for (int i = 0; i < listSize; ++i)
+	for (int i = 0; i < titleList->numberOfNode; ++i)
 	{
 		++recordIndex;
 		if (recordIndex > this->titlesDatasheetController.GetRecordCount() - 1)
@@ -1154,10 +1154,10 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateTitlesDatasheet()
 
 		std::string* data = new std::string[this->titlesDatasheetController.GetAttributeCount()];
 		data[0] = std::to_string(i + 1);
-		data[1] = (*this->titleList)[i]->GetISBN();
-		data[2] = (*this->titleList)[i]->GetTitle();
-		data[3] = (*this->titleList)[i]->GetAuthor();
-		data[4] = (*this->titleList)[i]->GetCategory();
+		data[1] = titleList->nodes[i]->GetISBN();
+		data[2] = titleList->nodes[i]->GetTitle();
+		data[3] = titleList->nodes[i]->GetAuthor();
+		data[4] = titleList->nodes[i]->GetCategory();
 
 		this->titlesDatasheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 	}
@@ -1165,9 +1165,9 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateTitlesDatasheet()
 
 void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateBorrowBooksDatasheet()
 {
-	DoubleLinkedList<BOOK_CIRCULATION::BookCirculation> readerBookCirculationList = this->reader->GetBooksCirculation();
+	DOUBLE_LINKED_LIST::Controller readerBookCirculationList = this->reader->GetBooksCirculation();
 
-	int listSize = readerBookCirculationList.Size();
+	int listSize = DOUBLE_LINKED_LIST::Size(readerBookCirculationList);
 	this->borrowedBooksDatassheetController.SetDatasheetCount(
 		listSize / (CONSTANTS::MAX_ROW_COUNT - 1) + (listSize % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
 	);
@@ -1185,7 +1185,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateBorrowBooksDatasheet()
 		);
 	}
 
-	if (readerBookCirculationList.Empty())
+	if (DOUBLE_LINKED_LIST::Empty(readerBookCirculationList))
 	{
 		return;
 	}
@@ -1194,7 +1194,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateBorrowBooksDatasheet()
 	int sheetIndex = -1;
 	int order = 0;
 
-	for (DoubleLinkedList<BOOK_CIRCULATION::BookCirculation>::Node* currentNode = readerBookCirculationList.Begin(); currentNode != nullptr; currentNode = currentNode->right_)
+	for (DOUBLE_LINKED_LIST::Pointer currentNode = readerBookCirculationList.First; currentNode != nullptr; currentNode = currentNode->right)
 	{
 		++recordIndex;
 		if (recordIndex > this->borrowedBooksDatassheetController.GetRecordCount() - 1)
@@ -1208,10 +1208,10 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateBorrowBooksDatasheet()
 
 		std::string* data = new std::string[this->borrowedBooksDatassheetController.GetAttributeCount()];
 		data[0] = std::to_string(++order);
-		data[1] = currentNode->info_.GetID();
-		data[2] = currentNode->info_.GetBorrowDate().Stringify();
-		data[3] = currentNode->info_.GetReturnDate().Stringify();
-		data[4] = currentNode->info_.StringfyStatus();
+		data[1] = currentNode->info.GetID();
+		data[2] = currentNode->info.GetBorrowDate().Stringify();
+		data[3] = currentNode->info.GetReturnDate().Stringify();
+		data[4] = currentNode->info.StringfyStatus();
 
 		this->borrowedBooksDatassheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 	}
@@ -1387,7 +1387,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_Tree<READER::Reader, int
 * 
 * All the code in this method only run once in the program runtime!
 */
-DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_Tree<READER::Reader, int>* readerList, TitleLinearList* titleList, ELEMENTS::InputModeController* inputController) {
+DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController) {
 	this->active = false;
 	this->defaultOrder = true;
 	this->readerList = readerList;
@@ -1514,18 +1514,18 @@ void DanhSachTheDocGiaView::Run()
 			else if (this->listManipulateButton[i].LeftMouseClicked()) {
 				delay(100);
 				switch (i) {
-					case (0): {//* Pressed new button
-						this->listManipulationButtonStatus = 0;
-						break;
-					}
-					case (1): {
-						this->listManipulationButtonStatus = 1;
-						break;
-					}
-					case (2): {
-						this->listManipulationButtonStatus = 2;
-						break;
-					}
+				case (0): {//* Pressed new button
+					this->listManipulationButtonStatus = 0;
+					break;
+				}
+				case (1): {
+					this->listManipulationButtonStatus = 1;
+					break;
+				}
+				case (2): {
+					this->listManipulationButtonStatus = 2;
+					break;
+				}
 				}
 			}
 			else {
@@ -1540,7 +1540,6 @@ void DanhSachTheDocGiaView::Run()
 			DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonHoverStyling(&this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][1]);
 		}
 		else if (this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][1].LeftMouseClicked()) {
-			delay(100);
 			this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][1].SetFillColor(RED);
 			this->defaultOrder = true;
 			this->CreateDatasheetsFromList(this->readerList, &this->datasheetController);
@@ -1555,6 +1554,7 @@ void DanhSachTheDocGiaView::Run()
 		}
 		else if (this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][3].LeftMouseClicked()) {
 			delay(100);
+			std::cout << "bug: sorting by last name!\n";
 			DanhSachTheDocGiaView::CreateDatasheetsFromArr(this->readerList, &this->datasheetController);
 		}
 		else {
