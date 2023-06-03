@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include "../DataStructures/LinearList.h"
 
 namespace BOOK 
 {
@@ -122,27 +121,46 @@ namespace BOOK_TITLE
 	};
 }
 
-class TitleLinearList : public LinearList<BOOK_TITLE::BookTitle*>
+namespace LINEAR_LIST 
 {
-public:
-	TitleLinearList();
+	const unsigned int MAX_SIZE = 10000;
 
-	TitleLinearList(const TitleLinearList& other);
+	struct LinearList 
+	{
+		unsigned int numberOfNode;
+		BOOK_TITLE::BookTitle* nodes[MAX_SIZE];
 
-	~TitleLinearList();
+		LinearList();
+	};
 
-	TitleLinearList& operator= (const TitleLinearList& other);
+	void Initialize(LinearList& list);
 
-	void PushOrder(BOOK_TITLE::BookTitle* value);
-};
+	bool Empty(const LinearList& list);
+
+	bool IsFull(const LinearList& list);
+
+	bool PushFront(LinearList& list, BOOK_TITLE::BookTitle* item);
+
+	bool InsertItem(LinearList& list, BOOK_TITLE::BookTitle* item, int position);
+
+	bool PushBack(LinearList& list, BOOK_TITLE::BookTitle* item);
+
+	bool InsertOrder(LinearList& list, BOOK_TITLE::BookTitle* item);
+
+	void Traversal(const LinearList& list);
+
+	BOOK_TITLE::BookTitle* SearchByName(const LinearList& list, const std::string& titleName);
+
+	BOOK_TITLE::BookTitle* SearchByISBN(const LinearList& list, const std::string& isbn);
+}
 
 namespace DAU_SACH_MODULES 
 {
-	BOOK_TITLE::BookTitle* SearchByName(const TitleLinearList* titleList, const std::string& titleName);
+	bool LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LIST::LinearList& danhSachDauSach);
 
-	BOOK_TITLE::BookTitle* SearchByISBN(const TitleLinearList* titleList, const std::string& isbn);
-
-	bool LoadDanhSachDauSachFromDB(std::string filename, TitleLinearList* titleList);
+	bool UpdateListToDatabase(const std::string& filename, const LINEAR_LIST::LinearList& titleList);
 
 	void DuplicateList(const LINEAR_LIST::LinearList& titleList, LINEAR_LIST::LinearList& destinationList);
+
+	
 }
