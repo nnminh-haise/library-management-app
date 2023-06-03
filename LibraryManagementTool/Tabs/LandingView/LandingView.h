@@ -6,9 +6,22 @@
 #include "../DanhSachTheDocGiaTab/DanhSachTheDocGia.h"
 #include "../DanhSachDauSachTab/DanhSachDauSachView.h"
 #include "../ThongKeTab/ThongKeView.h"
+#include "../../Helper/Package.h"
 
-class LandingView {
+class LandingView
+{
+public:
+	LandingView(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList);
+
+	~LandingView();
+
+	void Run();
+
 private:
+	void CreateTitleHashMap();
+
+	void CreatePackage();
+
 	void ConstructGraphicWindow();
 
 	void ConstructNavigationBar();
@@ -17,17 +30,10 @@ private:
 
 	void CloseButtonOnUpdate();
 
-public:
-	LandingView(AVL_Tree<READER::Reader, int>* readerList, TitleLinearList* titleList);
-
-	~LandingView();
-
-	void Run();
-
 private:
 	//* Internal storage's pointer
 	AVL_Tree<READER::Reader, int>* readerList;
-	TitleLinearList* titleList;
+	LINEAR_LIST::LinearList* titleList;
 
 	//* Tabs
 	DauSachTab* dauSachView;
@@ -45,6 +51,9 @@ private:
 	
 	//* Core
 	ELEMENTS::InputModeController inpController;
+	HashMap<BOOK_TITLE::BookTitle*> titleMap_;
+
+	Package package_;
 };
 
 

@@ -144,5 +144,5 @@ namespace DAU_SACH_MODULES
 
 	bool LoadDanhSachDauSachFromDB(std::string filename, TitleLinearList* titleList);
 
-	bool UpdateListToDatabase(const std::string& filename, const TitleLinearList* titleList);
+	void DuplicateList(const LINEAR_LIST::LinearList& titleList, LINEAR_LIST::LinearList& destinationList);
 }

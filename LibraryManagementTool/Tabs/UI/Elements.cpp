@@ -8,30 +8,41 @@
 #include <format>
 #include <thread>
 
-ELEMENTS::Window::Window(const HELPER::Dimension& dimension, const std::string& title) {
+ELEMENTS::Window::Window(const HELPER::Dimension& dimension, const std::string& title)
+{
 	this->dimension = dimension;
 	this->title = title;
-	this->active = false;
 	this->backgroundColor = WHITE;
+	this->active = false;
 }
 
-int ELEMENTS::Window::Activate() {
+int ELEMENTS::Window::Activate()
+{
 	this->active = true;
-	return initwindow(
+	this->id_ = initwindow(
 		this->dimension.width, this->dimension.height, 
 		(const char*)this->title.c_str(), 
-		(getmaxwidth() - this->dimension.width) / 2, (getmaxheight() - this->dimension.height) / 2
+		(getmaxwidth() - this->dimension.width) / 2,
+		(getmaxheight() - this->dimension.height) / 2
 	);
+	setcurrentwindow(this->id_);
+	return this->id_;
 }
 
-void ELEMENTS::Window::RenderBackground() {
+void ELEMENTS::Window::RenderBackground()
+{
 	setfillstyle(SOLID_FILL, this->backgroundColor);
 	bar(0, 0, this->dimension.width, this->dimension.height);
 }
 
-void ELEMENTS::Window::Deactivate() {
+void ELEMENTS::Window::Deactivate(int windowID)
+{
+	if (windowID == -1)
+	{
+		windowID = this->id_;
+	}
 	this->active = false;
-	closegraph();
+	closegraph(windowID);
 }
 
 //---

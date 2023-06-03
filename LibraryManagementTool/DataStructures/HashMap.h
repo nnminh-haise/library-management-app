@@ -12,6 +12,10 @@ public:
 
 	HashMap(int maxValue, HASH_VALUE defaultValue);
 
+	HashMap(const HashMap& other);
+
+	HashMap& operator=(const HashMap& other);
+
 	void Insert(const std::string& key, HASH_VALUE value);
 
 	HASH_VALUE At(const std::string& key);
@@ -49,6 +53,43 @@ HashMap<HASH_VALUE>::HashMap(int maxValue, HASH_VALUE defaultValue)
 	{
 		this->container_[i] = defaultValue;
 	}
+}
+
+template<typename HASH_VALUE>
+HashMap<HASH_VALUE>::HashMap(const HashMap& other)
+{
+	this->maxValue_ = other.maxValue_;
+	this->size_ = other.size_;
+
+	this->container_ = new HASH_VALUE[this->maxValue_];
+
+	for (int i = 0; i < this->maxValue_; ++i)
+	{
+		this->container_[i] = other.container_[i];
+	}
+}
+
+template<typename HASH_VALUE>
+HashMap<HASH_VALUE>& HashMap<HASH_VALUE>::operator=(const HashMap& other)
+{
+	if (this == &other)
+	{
+		return *this;
+	}
+
+	delete[] this->container_;
+
+	this->maxValue_ = other.maxValue_;
+	this->size_ = other.size_;
+
+	this->container_ = new HASH_VALUE[this->maxValue_];
+
+	for (int i = 0; i < this->maxValue_; ++i)
+	{
+		this->container_[i] = other.container_[i];
+	}
+
+	return *this;
 }
 
 template<typename HASH_VALUE>

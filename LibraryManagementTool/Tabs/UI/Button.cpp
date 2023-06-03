@@ -38,26 +38,30 @@ Button::Button(HELPER::Coordinate topLeft, HELPER::Dimension dimension, int text
 	this->leftClicked = false;
 }
 
-void Button::SetTopLeft(HELPER::Coordinate topLeft) {
+void Button::SetDefaultValue(const std::string& defaultValue) { this->defaultValue_ = defaultValue; }
+
+std::string Button::GetDefalutValue() { return this->defaultValue_; }
+
+void Button::SetTopLeft(HELPER::Coordinate topLeft)
+{
 	this->topLeft = topLeft;
 	this->fill.topLeft = topLeft;
 }
 
-HELPER::Coordinate Button::GetTopLeft() {
-	return this->topLeft;
-}
+HELPER::Coordinate Button::GetTopLeft() { return this->topLeft; }
 
-void Button::SetDimension(HELPER::Dimension newDimension) {
+void Button::SetDimension(HELPER::Dimension newDimension)
+{
 	this->dimension = newDimension;
 	this->fill.dimension = newDimension;
 }
 
-HELPER::Dimension Button::GetDimension() {
-	return this->fill.dimension;
-}
+HELPER::Dimension Button::GetDimension() { return this->fill.dimension; }
 
-bool Button::UpdateWithNewTopLeft() {
-	if (this->dimension.width == 0 && this->dimension.height == 0) {
+bool Button::UpdateWithNewTopLeft()
+{
+	if (this->dimension.width == 0 && this->dimension.height == 0)
+	{
 		return false;
 	}
 
@@ -65,58 +69,36 @@ bool Button::UpdateWithNewTopLeft() {
 	this->bottomRight.y = this->topLeft.y + this->dimension.height;
 	this->fill.bottomRight.x = this->topLeft.x + this->dimension.width;
 	this->fill.bottomRight.y = this->topLeft.y + this->dimension.height;
+
 	return true;
 }
 
-HELPER::Coordinate Button::GetBottomRight() {
-	return this->bottomRight;
-}
+HELPER::Coordinate Button::GetBottomRight() { return this->bottomRight; }
 
-void Button::SetFillColor(int color) {
-	this->fill.fillColor = color;
-}
+void Button::SetFillColor(int color) { this->fill.fillColor = color; }
 
-int Button::GetFillColor() {
-	return this->fill.fillColor;
-}
+int Button::GetFillColor() { return this->fill.fillColor; }
 
-void Button::SetTextColor(int color) {
-	this->textColor = color;
-}
+void Button::SetTextColor(int color) { this->textColor = color; }
 
-int Button::GetTextColor() {
-	return this->textColor;
-}
+int Button::GetTextColor() { return this->textColor; }
 
-void Button::SetBorderColor(int color) {
-	this->fill.borderColor = color;
-}
+void Button::SetBorderColor(int color) { this->fill.borderColor = color; }
 
-int Button::GetBorderColor() {
-	return this->fill.borderColor;
-}
+int Button::GetBorderColor() { return this->fill.borderColor; }
 
-void Button::SetPlaceholder(std::string placeholder) {
-	this->placeholder = placeholder;
-}
+void Button::SetPlaceholder(std::string placeholder) { this->placeholder = placeholder; }
 
-std::string Button::GetPlaceholder() {
-	return this->placeholder;
-}
+std::string Button::GetPlaceholder() { return this->placeholder; }
 
-void Button::Activate() {
-	this->active = true;
-}
+void Button::Activate() { this->active = true; }
 
-void Button::Deactivate() {
-	this->active = false;
-}
+void Button::Deactivate() { this->active = false; }
 
-bool Button::IsActive() {
-	return this->active == true;
-}
+bool Button::IsActive() { return this->active == true; }
 
-void Button::Display() {
+void Button::Display()
+{
 	HELPER::Dimension textDimension(
 		textwidth((char*)this->placeholder.c_str()),
 		textheight((char*)this->placeholder.c_str())
@@ -131,32 +113,52 @@ void Button::Display() {
 	outtextxy(textPosition.x, textPosition.y, (char*)this->placeholder.c_str());
 }
 
-bool Button::IsPointed() {
+bool Button::IsPointed()
+{
 	HELPER::Coordinate currentMouse(HELPER::GetCurrentMouseCoordinate());
-	if (this->topLeft.x <= currentMouse.x && this->topLeft.y <= currentMouse.y &&
-		this->bottomRight.x >= currentMouse.x && this->bottomRight.y >= currentMouse.y) {
+	if (this->topLeft.x <= currentMouse.x && this->topLeft.y <= currentMouse.y && this->bottomRight.x >= currentMouse.x && this->bottomRight.y >= currentMouse.y)
+	{
 		this->isPointed = true;
 		return true;
 	}
 	return false;
 }
 
-bool Button::IsHover() {
+bool Button::IsHover()
+{
 	return this->IsPointed() && this->LeftMouseClicked() == false && this->RightMouseClicked() == false;
 }
 
-bool Button::LeftMouseClicked() {
-	if (this->IsPointed() && GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
+bool Button::LeftMouseClicked()
+{
+	if (this->IsPointed() && GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+	{
 		this->leftClicked = true;
 		return true;
 	}
 	return false;
 }
 
-bool Button::RightMouseClicked() {
-	if (this->IsPointed() && GetAsyncKeyState(VK_RBUTTON) & 0x8000) {
+bool Button::RightMouseClicked()
+{
+	if (this->IsPointed() && GetAsyncKeyState(VK_RBUTTON) & 0x8000)
+	{
 		this->clickedCount += 1;
 		return true;
 	}
 	return false;
 }
+
+bool Button::OutsideLeftMouseClick()
+{
+	if (!this->IsPointed() && GetAsyncKeyState(VK_LBUTTON) & 0x8000) { return true; }
+	return false;
+}
+
+bool Button::OutsideRightMouseClick()
+{
+	if (!this->IsPointed() && GetAsyncKeyState(VK_RBUTTON) & 0x8000) { return true; }
+	return false;
+}
+
+

@@ -1,15 +1,17 @@
 #include "Datasheet.h"
 
-namespace DATASHEET {
-
-	Row::Row() {
+namespace DATASHEET
+{
+	Row::Row()
+	{
 		this->topLeft = this->bottomRight = HELPER::Coordinate();
 		this->attributeCount = 0;
 		this->items = nullptr;
 		this->rowHeight = 0;
 	}
 
-	Row::Row(int attributeCount, int rowHeight, HELPER::Coordinate topLeft, std::string* data, int* characterLimits) {
+	Row::Row(int attributeCount, int rowHeight, HELPER::Coordinate topLeft, std::string* data, int* characterLimits)
+	{
 		this->attributeCount = attributeCount;
 		this->topLeft = topLeft;
 		this->rowHeight = rowHeight;
@@ -18,7 +20,10 @@ namespace DATASHEET {
 		this->items = new Button[this->attributeCount];
 		HELPER::Dimension boxDimension;
 		for (int i = 0; i < this->attributeCount; ++i) {
-			boxDimension.width = max(textwidth((char*)data[i].c_str()), textwidth((char*)"W") * characterLimits[i]) + padding.left + padding.right;
+			boxDimension.width = max(
+				textwidth((char*)data[i].c_str()),
+				textwidth((char*)"H") * characterLimits[i]
+			) + padding.left + padding.right;
 			boxDimension.height = this->rowHeight;
 			if (i == 0) {
 				this->items[i].SetTopLeft(this->topLeft);
@@ -155,7 +160,7 @@ namespace DATASHEET {
 
 	Row& Datasheet::operator[](int index) {
 		if (index < 0 || index >= this->recordCount) {
-			std::cerr << "[ERROR] Datasheet index violation!\n";
+			std::cerr << "[ERROR] Datasheet index violation! (operator[])\n";
 			exit(1);
 		}
 
@@ -257,14 +262,20 @@ namespace DATASHEET {
 
 	Datasheet& Controller::operator[](int index) {
 		if (index < 0 || index >= this->datasheetCount) {
-			std::cerr << "[ERROR] Datasheet controller index violation!\n";
+			std::cerr << "[ERROR] Datasheet controller index violation! (Controller operator[])\n";
 			exit(1);
 		}
 
 		return this->sheets[index];
 	}
 
-	void Controller::InitializeDatasheets() {
+	void Controller::InitializeDatasheets()
+	{
+		if (this->datasheetCount <= 0)
+		{
+			throw std::logic_error("[ERROR] Invalid datasheet count! (Initialize datasheet method)");
+		}
+
 		this->sheets = new DATASHEET::Datasheet[this->datasheetCount];
 		this->activeSheet = 0;
 	}
@@ -318,21 +329,24 @@ namespace DATASHEET {
 		this->activeSheet = indicator;
 	}
 
-	void Controller::DatasheetChangeButtonUpdate() {
-		if (this->active == false) {
-			return;
-		}
+	void Controller::DatasheetChangeButtonUpdate()
+	{
+		if (this->active == false) { return; }
 
 		int movement[2] = { -1, +1 };
-		for (int i = 0; i < 2; ++i) {
-			if (this->datasheetChangeButton[i].IsHover()) {
+		for (int i = 0; i < 2; ++i)
+		{
+			if (this->datasheetChangeButton[i].IsHover())
+			{
 				this->DatasheetChangeBTNHover(this->datasheetChangeButton[i]);
 			}
-			else if (this->datasheetChangeButton[i].LeftMouseClicked()) {
-				this->activeSheet = (this->activeSheet + movement[i] + this->datasheetCount) % this->datasheetCount;
+			else if (this->datasheetChangeButton[i].LeftMouseClicked())
+			{
 				delay(100);
+				this->activeSheet = (this->activeSheet + movement[i] + this->datasheetCount) % this->datasheetCount;
 			}
-			else {
+			else
+			{
 				this->DatasheetChangeBTNProperties(this->datasheetChangeButton[i]);
 			}
 		}

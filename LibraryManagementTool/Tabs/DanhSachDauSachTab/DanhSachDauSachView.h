@@ -2,74 +2,110 @@
 
 #include "DanhSachDauSachStyling.h"
 #include "../../DauSach/DauSach.h"
+#include "../../Helper/Package.h"
 #include "../UI/Elements.h"
 #include "../UI/Button.h"
 #include "../UI/Datasheet.h"
-#include "../../DataStructures/LinkedList.h"
+#include "../UI/SearchFilters.h"
 
-namespace DAU_SACH_TAB {
-	/*
-	 * Function creates datasheets from the list.
-	 * The datasheets then stored inside the datasheet's controller.
-	 * 
-	 * Function takes in two references, the first one is the list which store the data will be presented on the datasheet.
-	 * The second one is the datasheet's controller.
-	 * Function returns no value.
-	*/
-	void CreateDatasheetsFromList(TitleLinearList* titleList, DATASHEET::Controller& datasheetController);
-
+namespace DAU_SACH_TAB
+{
 	/**
-	 * * Function creates datasheets from a sortedList.
-	 * * The datasheets then stored inside the datasheet's controller.
+	* TODO: Rewrite this class into an template interface
 	*/
-	void CreateDatasheetsWithSortedCategory(TitleLinearList* titleListSortedByCategory, DATASHEET::Controller& datasheetController);
+	class DatasheetProcessor
+	{
+	public:
+		DatasheetProcessor();
 
-	/*
-	 * This is a graphical field, represented as a form, with the main purpose is for adding new item into the list.
-	 * Users have to input the data into the correct field and submit the form in order to save the data into the list.
-	 * 
-	 * Struct gets initialzied as soon as there is any initialization of the related object happends.
-	 * You can draw out the form with @Display method.
-	*/
-	struct SachAddField {
-		bool active;
-		HELPER::Fill background;
-		Button title;
-		Button savebtn;
-		Button inputField[5];
+		DatasheetProcessor(LINEAR_LIST::LinearList* dataList, DataFilter* dataFilter);
 
-		SachAddField();
+		void AllowCreateDatasheet();
+
+		void CreateDatasheet();
+
+		void SetDataFilter(DataFilter* dataFilter);
+
+		DataFilter* GetDataFilter();
+
+		void SetDataList(LINEAR_LIST::LinearList* dataList);
+
+		LINEAR_LIST::LinearList* GetDataList();
+
+		DataFilter*& AccessDataFilter();
+
+		DATASHEET::Datasheet& AccessCurrentDatasheet();
+
+		void Display();
 
 		void Activate();
 
 		void Deactivate();
 
-		bool DisplayStatus();
+		bool InActive();
 
-		void Display();
+	public:
+		bool active_;
+
+		bool allowCreateDatasheet_;
+
+		DATASHEET::Controller datasheetController_;
+		
+		DataFilter* dataFilter_;
+		
+		LINEAR_LIST::LinearList* dataList_;
 	};
 
-	/*
-	 * This is a controller for the @SachAddField. There will be many form of @SachAddField. Therefore the main purpose of this controller
-	 * is to manage and simplfied the posible task when interact with many form. The number of form is equal to the number of @catalogue.
-	 * 
-	 * Struct gets initialzied as soon as there is any initialization of the related object happends.
-	 * You can draw one current form with @Display method.
+	/**
+	 * TODO: Change this struct into a class
+	 * 1. Create necessary member access methods
+	 * 2. Re-design the UI
+	 * 3. Optimize member's life cycle
+	 * 4. Memory optimization
 	*/
-	struct SachAddFieldController {
-		bool active;
-		SachAddField* items;
-		int itemsCount;
-		int activeField;
-		Button indexChangeButtons[2];
+	struct BookCreatingSection
+	{
+		BookCreatingSection();
 
-		SachAddFieldController();
+		void Activate();
 
-		~SachAddFieldController();
+		void Deactivate();
 
-		void Initialize(int amount, std::string isbn);
+		bool GetStatus();
 
-		void SachAddFieldOnUpdate(TitleLinearList* titleList, ELEMENTS::InputModeController& InputController);
+		void Display();
+
+		private:
+		void InitializeElements();
+
+		public:
+		bool active_;
+		HELPER::Fill background_;
+		Button titleButton_;
+		Button saveButton_;
+		Button inputField_[5];
+	};
+
+	/**
+	 * TODO: Change this struct into a class
+	 * 1. Create necessary member access methods
+	 * 2. Re-design the UI
+	 * 3. Optimize member's life cycle
+	 * 4. Memory optimization
+	*/
+	struct CatalogueCreatingSection
+	{
+		CatalogueCreatingSection();
+
+		CatalogueCreatingSection(LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController);
+
+		~CatalogueCreatingSection();
+
+		void InitializeCatalogue(int amount, std::string isbn);
+
+		void InputFieldOnUpdate();
+
+		void SaveButtonOnUpdate();
 
 		void IndexChangeButtonOnAction();
 
@@ -77,64 +113,89 @@ namespace DAU_SACH_TAB {
 
 		void Deactivate();
 
-		bool DisplayStatus();
+		bool GetStatus();
 
 		void Display();
+
+		private:
+		void InitializeElements();
+
+		public:
+		LINEAR_LIST::LinearList* titleList_;
+		ELEMENTS::InputModeController* inputController_;
+
+		bool active;
+		BookCreatingSection* items;
+		int itemsCount;
+		int activeField;
+		Button indexChangeButtons[2];
 	};
 
-	/*
-	 * This is a graphical form for taking in the date for each Book,
-	 * User must filled out all the input field and press add button.
-	 * Then a set of form will be generated, the user must filled out
-	 * the following forms in order to complete the process.
-	 * 
-	 * Struct gets initialzied as soon as there is any initialization of the related object happends.
-	 * You can draw the form with @Display method.
+	/**
+	 * TODO: Change this struct into a class
+	 * 1. Create necessary member access methods
+	 * 2. Re-design the UI
+	 * 3. Optimize member's life cycle
+	 * 4. Memory optimization
 	*/
-	struct ItemAddField {
-		bool active;
-		bool sachAddFieldDisplay;
-		HELPER::Fill background;
-		HELPER::Fill backdrop;
-		Button title;
-		Button createDanhMucSach;
-		Button inputField[7];
-		Button goBackButton;
-		Button submit;
+	struct TitleCreatingSection
+	{
+		public:
+		TitleCreatingSection();
 
-		SachAddFieldController sachAddFieldController;
+		TitleCreatingSection(Package* package);
 
-		ItemAddField();
-
-		bool ItemAddFieldOnUpdate(TitleLinearList* titleList, ELEMENTS::InputModeController& InputController);
+		bool Run();
 
 		void Activate();
 
 		void Deactivate();
 
-		bool DisplayStatus();
+		bool GetStatus();
 
-		void Display(TitleLinearList* titleList, ELEMENTS::InputModeController& InputController);
+		void Display();
 
 		bool GoBackButtonOnAction();
+
+		private:
+		void InitializeElements();
+
+		bool InputFieldOnUpdate();
+
+		bool CreateCatalogueButtonOnUpdate();
+
+		bool SubmitButtonOnUpdate();
+
+		bool ISBNInputFieldCheckProcess();
+
+		bool CatalogueSizeCheckProcess();
+
+		bool CatalogueInputFieldCheckProcess();
+
+		public:
+		Package* package_;
+
+		bool active;
+		bool sachAddFieldDisplay;
+		HELPER::Fill background;
+		HELPER::Fill backdrop;
+		Button title;
+		Button createCatalogueButton_;
+		Button inputField_[7];
+		Button alertField_[2];
+		Button goBackButton;
+		Button submit;
+
+		bool ISBNCheckProcessResult_ = false;
+		bool catalogueSizeProcessResult_ = false;
+		bool goodInputFieldCheckResult_ = false;
+		bool allowCreatingNewTitle_ = false;
+
+		CatalogueCreatingSection catalogueCreatingSection;
 	};
 
-	/**
-	 * * This is a grphical field, with the main purpose is displaying the detail infomations of one targeted title.
-	 * * The title's name, isbn, author, page number, public year will be shown and a list of the corresponding books will be shown
-	 * * as a set of datasheets
-	*/
-	struct TitleDetailDisplayField {
-		bool active;
-		BOOK_TITLE::BookTitle* targetedTitle;
-		HELPER::Fill background;
-		Button title;
-		Button titleDetails[5];
-		Button goBackBtn;
-		DATASHEET::Controller bookListDatasheetController;
-		Button deleteBookBtn;
-		LINKED_LIST::Pointer deleteBook;
-
+	struct TitleDetailDisplayField
+	{
 		TitleDetailDisplayField();
 
 		void Destructor();
@@ -147,7 +208,7 @@ namespace DAU_SACH_TAB {
 
 		void Deactivate();
 
-		bool DisplayStatus();
+		bool GetStatus();
 
 		void Display();
 
@@ -156,79 +217,129 @@ namespace DAU_SACH_TAB {
 		void ResetDeleteBookButton();
 
 		bool GoBackButtonOnAction();
+
+		bool active;
+		BOOK_TITLE::BookTitle* targetedTitle;
+		HELPER::Fill background;
+		Button title;
+		Button titleDetails[5];
+		Button goBackBtn;
+		DATASHEET::Controller bookListDatasheetController;
+		Button deleteBookBtn;
+		LINKED_LIST::Pointer deleteBook;
 	};
 
-	/*
-	 * This is a graphical field, with the main purpose is for searching the data on the datasheet.
-	 *
-	 * Struct gets initialzied as soon as there is any initialization of the related object happends.
-	 * You can draw out the search field with @Display method.
+	struct SearchSection
+	{
+	public:
+		SearchSection();
 
-	! The logic behind the struct is not written yet!
-	*/
-	struct SearchField {
-		bool active;
-		bool searchFound;
-		HELPER::Fill* background;
-		Button* title;
-		Button* inputSearchBox;
-		Button* searchStatusBox;
-		TitleDetailDisplayField targetDetails;
+		SearchSection(Package* package, DAU_SACH_TAB::DatasheetProcessor* titleDatasheetPackage);
 
-		SearchField();
+		void SetSearchData(LINEAR_LIST::LinearList* data);
 
 		void Activate();
 
 		void Deactivate();
 
-		bool DisplayStatus();
+		bool GetStatus();
 
-		void OnAction(ELEMENTS::InputModeController* InputController);
+		bool SearchOperation();
+
+		void SearchBoxOnAction();
 
 		void Display();
+
+		bool Run();
+
+	private:
+		void Initialize();
+
+		void InitializeSearchFilters();
+
+	private:
+		bool active_ = false;
+
+		Button title_;
+
+		Button searchBox_;
+
+		LINEAR_LIST::LinearList* data_;
+
+		Package* package_;
+
+		DAU_SACH_TAB::DatasheetProcessor* titleDatasheetPackage_;
+
+		SearchFilters searchFilters_;
 	};
 }
 
-class CategoryLinkedList : public LinkedList<std::string>
+
+namespace CATEGORY_LINKED_LIST
 {
-public:
-	CategoryLinkedList();
+	struct Node
+	{
+		std::string info;
+		Node* next;
 
-	CategoryLinkedList(const CategoryLinkedList& other);
+		Node(std::string info, Node* next);
+	};
+	typedef Node* Pointer;
 
-	~CategoryLinkedList();
+	void Initialzie(Pointer& First);
 
-	CategoryLinkedList& operator=(const CategoryLinkedList& other);
+	bool Empty(const Pointer& First);
 
-	void PushOrder(const std::string& value);
-};
+	void PushFront(Pointer& First, std::string info);
+
+	void InsertOrder(Pointer& First, std::string info);
+
+	void Traversal(const Pointer& First);
+}
 
 
 class DauSachTab
 {
-private:
-	bool active;
-	bool datasheetDisplayFlag;
-	DATASHEET::Controller datasheetController;
-	ELEMENTS::InputModeController* inputController;
-	TitleLinearList* titleList;
-	TitleLinearList titleListSortedByCategory;
-	Button functionalButtons[3];
-
-private:
-	DAU_SACH_TAB::SearchField searchField;
-
-	DAU_SACH_TAB::ItemAddField itemAddField;
-
-	DAU_SACH_TAB::TitleDetailDisplayField titleDetailField;
-
 public:
-	DauSachTab(TitleLinearList* titleList, ELEMENTS::InputModeController* InputController);
+	DauSachTab(Package* package);
 
 	void Destructor();
 
-	void SortByCategory();
-
 	void Run();
+
+private:
+	void InitializeFilters();
+
+	void CreateSortedByCategoryTitleList();
+
+	void Initialize();
+
+	void FunctionalButtonOnAction();
+
+	void DatasheetSortingFunctionality();
+
+private:
+	bool datasheetDisplayFlag;
+	Button functionalButtons[3];
+
+private:
+	DAU_SACH_TAB::SearchSection titleSearchSection_;
+
+	DAU_SACH_TAB::TitleCreatingSection titleCreatingSection;
+
+	DAU_SACH_TAB::TitleDetailDisplayField titleDetailField;
+
+private:
+	bool defaultView_ = true;
+
+	Package* package_;
+
+	DataFilter defaultTitleListFilter_;
+
+	LINEAR_LIST::LinearList sortedByCategoryTitleList_;
+
+	DataFilter sortedByCategoryTitleListFilter_;
+
+	DAU_SACH_TAB::DatasheetProcessor titleDatasheetPackage_;
 };
 
