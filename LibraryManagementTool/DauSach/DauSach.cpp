@@ -238,48 +238,129 @@ void BOOK_TITLE::BookTitle::Log() {
 	std::cerr << std::format("----------------\n");
 }
 
-BOOK_TITLE::BookTitle* DAU_SACH_MODULES::SearchByName(const TitleLinearList* titleList, const std::string& titleName)
-{
-	if (titleList->Empty())
-	{
+LINEAR_LIST::LinearList::LinearList() {
+	this->numberOfNode = 0;
+	for (int i = 0; i < LINEAR_LIST::MAX_SIZE; ++i) {
+		this->nodes[i] = nullptr;
+	}
+}
+
+void LINEAR_LIST::Initialize(LINEAR_LIST::LinearList& list) {
+	list.numberOfNode = 0;
+	for (int i = 0; i < LINEAR_LIST::MAX_SIZE; ++i) {
+		list.nodes[i] = nullptr;
+	}
+}
+
+bool LINEAR_LIST::Empty(const LinearList& list) {
+	return list.numberOfNode == 0;
+}
+
+bool LINEAR_LIST::IsFull(const LinearList& list) {
+	return list.numberOfNode == MAX_SIZE;
+}
+
+bool LINEAR_LIST::PushFront(LinearList& list, BOOK_TITLE::BookTitle* item) {
+	if (LINEAR_LIST::IsFull(list)) {
+		return false;
+	}
+
+	list.nodes[0] = item;
+	list.numberOfNode = 1;
+	return true;
+}
+
+bool LINEAR_LIST::InsertItem(LINEAR_LIST::LinearList& list, BOOK_TITLE::BookTitle* item, int position) {
+	if (LINEAR_LIST::IsFull(list)) {
+		std::cerr << std::format("[ERROR] LIST IS FULL CANNOT INSERT NEW ELEMENT!\nSUGGEST CREATE A NEW LIST WITH BIGGER SIZE!\n");
+		exit(1);
+	}
+
+	if (position < 0 || position >= list.numberOfNode) {
+		std::cerr << std::format("[ERROR] POSITION OUT OF RANGE! INSERT POSITION MUST IN RANGE 0 TO {}\n", LINEAR_LIST::MAX_SIZE - 1);
+		exit(1);
+	}
+
+	//* Shift all item from position + 1 to the right by 1.
+	for (int i = list.numberOfNode; i > position; --i) {
+		list.nodes[i] = list.nodes[i - 1];
+	}
+	
+	//* Insert new item into the list.
+	list.nodes[position] = item;
+
+	//* Increase the size of the list by one.
+	++list.numberOfNode;
+
+	return true;
+}
+
+bool LINEAR_LIST::PushBack(LinearList& list, BOOK_TITLE::BookTitle* item) {
+	if (LINEAR_LIST::IsFull(list)) {
+		std::cerr << std::format("[ERROR] DANH BOOK DAU BOOK IS FULL!\n");
+		exit(1);
+	}
+
+	list.nodes[list.numberOfNode] = item;
+	++list.numberOfNode;
+
+	return false;
+}
+
+bool LINEAR_LIST::InsertOrder(LinearList& list, BOOK_TITLE::BookTitle* item) {
+	if (LINEAR_LIST::IsFull(list)) {
+		exit(1);
+	}
+
+	int index = 0;
+	for (; index < list.numberOfNode && item->GetTitle().compare(list.nodes[index]->GetTitle()) >= 0; ++index);
+
+	for (int i = list.numberOfNode; i > index; --i) {
+		list.nodes[i] = list.nodes[i - 1];
+	}
+
+	list.numberOfNode++;
+	list.nodes[index] = item;
+
+	return true;
+}
+
+void LINEAR_LIST::Traversal(const LinearList& list) {
+	for (int i = 0; i < list.numberOfNode; ++i) {
+		list.nodes[i]->Log();
+	}
+}
+
+BOOK_TITLE::BookTitle* LINEAR_LIST::SearchByName(const LinearList& list, const std::string& titleName) {
+	if (LINEAR_LIST::Empty(list)) {
 		return nullptr;
 	}
 
-	BOOK_TITLE::BookTitle* searchTarget = nullptr;
-	for (int i = 0; i < titleList->Size(); ++i)
-	{
-		searchTarget = titleList->At(i);
-		if (titleName.compare(searchTarget->GetTitle()) == 0)
-		{
-			return searchTarget;
+	for (int i = 0; i < list.numberOfNode; ++i) {
+		if (titleName.compare(list.nodes[i]->GetTitle()) == 0) {
+			return list.nodes[i];
 		}
 	}
 
 	return nullptr;
 }
 
-BOOK_TITLE::BookTitle* DAU_SACH_MODULES::SearchByISBN(const TitleLinearList* titleList, const std::string& isbn)
+BOOK_TITLE::BookTitle* LINEAR_LIST::SearchByISBN(const LinearList& list, const std::string& isbn)
 {
-	if (titleList->Empty())
+	for (int i = 0; i < list.numberOfNode; ++i)
 	{
-		return nullptr;
-	}
-
-	BOOK_TITLE::BookTitle* searchTarget = nullptr;
-	for (int i = 0; i < titleList->Size(); ++i)
-	{
-		searchTarget = titleList->At(i);
-		if (isbn.compare(searchTarget->GetISBN()) == 0)
+		if (isbn.compare(list.nodes[i]->GetISBN()) == 0)
 		{
-			return searchTarget;
+			return list.nodes[i];
 		}
 	}
-
 	return nullptr;
 }
 
-bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, TitleLinearList* titleList)
-{	
+bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LIST::LinearList& danhSachDauSach) 
+{
+	LINEAR_LIST::Initialize(danhSachDauSach);
+	
 	std::filebuf databaseBuffer{};
 
 	if (!databaseBuffer.open(filename, std::ios::in)) 
@@ -393,13 +474,13 @@ bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, TitleLine
 			}
 		}
 
-		if (titleList->Empty()) 
+		if (LINEAR_LIST::Empty(danhSachDauSach)) 
 		{
-			titleList->PushFront(newTitle);
+			LINEAR_LIST::PushFront(danhSachDauSach, newTitle);
 		}
 		else 
 		{
-			titleList->PushFront(newTitle);
+			LINEAR_LIST::InsertOrder(danhSachDauSach, newTitle);
 		}
 	}
 
@@ -408,7 +489,7 @@ bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, TitleLine
 	return true;
 }
 
-bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const TitleLinearList* titleList)
+bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const LINEAR_LIST::LinearList& titleList) 
 {
 	std::filebuf databaseBuffer{};
 
@@ -420,16 +501,16 @@ bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const T
 
 	std::ostream database(&databaseBuffer);
 
-	for (int i = 0; i < titleList->Size(); ++i) 
+	for (int i = 0; i < titleList.numberOfNode; ++i) 
 	{
-		database << titleList->At(i)->GetISBN() << ", ";
-		database << titleList->At(i)->GetTitle() << ", ";
-		database << titleList->At(i)->GetPageCount() << ", ";
-		database << titleList->At(i)->GetAuthor() << ", ";
-		database << titleList->At(i)->GetPublicationYear() << ", ";
-		database << titleList->At(i)->GetCategory() << ", ";
+		database << titleList.nodes[i]->GetISBN() << ", ";
+		database << titleList.nodes[i]->GetTitle() << ", ";
+		database << titleList.nodes[i]->GetPageCount() << ", ";
+		database << titleList.nodes[i]->GetAuthor() << ", ";
+		database << titleList.nodes[i]->GetPublicationYear() << ", ";
+		database << titleList.nodes[i]->GetCategory() << ", ";
 
-		LINKED_LIST::Controller danhMucSach = titleList->At(i)->GetCatalogue();
+		LINKED_LIST::Controller danhMucSach = titleList.nodes[i]->GetCatalogue();
 		
 		if (LINKED_LIST::Empty(danhMucSach)) 
 		{
@@ -452,32 +533,11 @@ bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const T
 	return true;
 }
 
-TitleLinearList::TitleLinearList() : LinearList<BOOK_TITLE::BookTitle*>() {}
-
-TitleLinearList::TitleLinearList(const TitleLinearList& other) : LinearList<BOOK_TITLE::BookTitle*>(other) {}
-
-TitleLinearList::~TitleLinearList() {}
-
-TitleLinearList& TitleLinearList::operator=(const TitleLinearList& other)
+void DAU_SACH_MODULES::DuplicateList(const LINEAR_LIST::LinearList& titleList, LINEAR_LIST::LinearList& destinationList)
 {
-	if (this == &other)
+	destinationList.numberOfNode = titleList.numberOfNode;
+	for (int i = 0; i < titleList.numberOfNode; ++i)
 	{
-		return *this;
+		destinationList.nodes[i] = titleList.nodes[i];
 	}
-
-	LinearList<BOOK_TITLE::BookTitle*>::operator=(other);
-	return *this;
-}
-
-void TitleLinearList::PushOrder(BOOK_TITLE::BookTitle* value)
-{
-	if (this->Full())
-	{
-		throw std::logic_error("[ERROR] LIST IS FULL! CANNOT INSERT MORE TITLE!");
-	}
-
-	int index = 0;
-	for (; index < this->Size() && value->GetTitle().compare((*this)[index]->GetTitle()) >= 0; ++index);
-
-	LinearList<BOOK_TITLE::BookTitle*>::PushAt(value, index);
 }
