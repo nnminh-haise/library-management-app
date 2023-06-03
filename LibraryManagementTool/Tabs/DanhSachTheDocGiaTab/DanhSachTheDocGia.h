@@ -25,7 +25,7 @@ namespace READER_TAB_MEMBERS
 
 		int SearchReaderAlgorithm();
 
-		void ProcessingSearchResult();		
+		void ProcessingSearchResult();
 
 		void Display();
 
@@ -46,7 +46,7 @@ namespace READER_TAB_MEMBERS
 		ELEMENTS::InputModeController* inputController;
 	};
 
-	class NewReaderForm 
+	class NewReaderForm
 	{
 	public:
 		NewReaderForm(AVL_Tree<READER::Reader, int>* readerList, ELEMENTS::InputModeController* inputController);
@@ -73,7 +73,7 @@ namespace READER_TAB_MEMBERS
 		int readerIndex;
 	};
 
-	struct DeleteItemInListForm 
+	struct DeleteItemInListForm
 	{
 		bool status;
 		HELPER::Fill* background;
@@ -95,7 +95,7 @@ namespace READER_TAB_MEMBERS
 		bool SubmitForm(AVL_Tree<READER::Reader, int>* readerList, ELEMENTS::InputModeController& InputController);
 	};
 
-	class EditReaderInfoForm 
+	class EditReaderInfoForm
 	{
 	public:
 		EditReaderInfoForm(AVL_Tree<READER::Reader, int>* readerList, ELEMENTS::InputModeController* inputController);
@@ -130,7 +130,7 @@ namespace READER_TAB_MEMBERS
 		ELEMENTS::InputModeController* inputController;
 	};
 
-	struct ReaderInfo 
+	struct ReaderInfo
 	{
 		ReaderInfo();
 
@@ -144,7 +144,7 @@ namespace READER_TAB_MEMBERS
 		Button readerStatus;
 	};
 
-	class ReaderIndeptDetail 
+	class ReaderIndeptDetail
 	{
 	public:
 		ReaderIndeptDetail();
@@ -246,4 +246,3 @@ private:
 	LINEAR_LIST::LinearList* titleList;
 	ELEMENTS::InputModeController* inputController;
 };
-

@@ -124,7 +124,7 @@ int READER_TAB_MEMBERS::SearchField::SearchReaderAlgorithm()
 
 		if (stk.Empty() == false) {
 			p = stk.Pop();
-			
+
 			//* Search logic here
 			searchValue = this->searchBox.GetPlaceholder();
 			fullName = p->info_.GetFullName();
@@ -134,7 +134,7 @@ int READER_TAB_MEMBERS::SearchField::SearchReaderAlgorithm()
 				this->searchResult = p;
 				return 1;
 			}
-			
+
 			if (fullName.find(searchValue) != std::string::npos) {
 				this->searchResult = p;
 				return 2;
@@ -230,31 +230,31 @@ void READER_TAB_MEMBERS::NewReaderForm::FormOnAction()
 	this->readerIndex = indexGenerator.FromFileGetIndexAt(CONSTANTS::READER_INDICIES, readerListSize);
 	this->readerIDButton.SetPlaceholder(std::to_string(readerIndex));
 
-	for (int i = 0; i < 3; ++i) 
+	for (int i = 0; i < 3; ++i)
 	{
-		if (inputFields[i]->IsPointed() && inputFields[i]->LeftMouseClicked() == false) 
+		if (inputFields[i]->IsPointed() && inputFields[i]->LeftMouseClicked() == false)
 		{
 			DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxHoverProperties(inputFields[i]);
 		}
-		else if (inputFields[i]->LeftMouseClicked()) 
+		else if (inputFields[i]->LeftMouseClicked())
 		{
 			delay(100);
 			this->inputController->Activate(inputFields[i], inputFields[i], fieldsCharacterLimit[i], true, false, true);
 		}
-		else 
+		else
 		{
 			DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(inputFields[i]);
 		}
 	}
 }
 
-bool READER_TAB_MEMBERS::NewReaderForm::SubmitForm() 
+bool READER_TAB_MEMBERS::NewReaderForm::SubmitForm()
 {
-	if (this->submitButton.IsHover()) 
+	if (this->submitButton.IsHover())
 	{
 		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmutButtonHoverStyling(&this->submitButton);
 	}
-	else if (this->submitButton.LeftMouseClicked()) 
+	else if (this->submitButton.LeftMouseClicked())
 	{
 		delay(100);
 
@@ -272,7 +272,7 @@ bool READER_TAB_MEMBERS::NewReaderForm::SubmitForm()
 
 		return true;
 	}
-	else 
+	else
 	{
 		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(&this->submitButton);
 	}
@@ -455,7 +455,7 @@ void READER_TAB_MEMBERS::EditReaderInfoForm::ReaderIDButtonOnAction()
 	}
 }
 
-void READER_TAB_MEMBERS::EditReaderInfoForm::Display() 
+void READER_TAB_MEMBERS::EditReaderInfoForm::Display()
 {
 	this->background.Draw();
 	this->title.Display();
@@ -543,33 +543,33 @@ bool READER_TAB_MEMBERS::EditReaderInfoForm::SearchReaderProcess()
 	return false;
 }
 
-bool READER_TAB_MEMBERS::EditReaderInfoForm::SubmitForm() 
+bool READER_TAB_MEMBERS::EditReaderInfoForm::SubmitForm()
 {
-	if (this->saveBtn.IsHover()) 
+	if (this->saveBtn.IsHover())
 	{
 		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmutButtonHoverStyling(&this->saveBtn);
 	}
-	else if (this->saveBtn.LeftMouseClicked()) 
+	else if (this->saveBtn.LeftMouseClicked())
 	{
 		delay(100);
-		
+
 		if (this->searchReaderFound)
 		{
 			bool checker = true;
 
-			if (this->readerGenderButton.GetPlaceholder() != "MALE" && this->readerGenderButton.GetPlaceholder() != "FEMALE") 
+			if (this->readerGenderButton.GetPlaceholder() != "MALE" && this->readerGenderButton.GetPlaceholder() != "FEMALE")
 			{
 				std::cerr << std::format("[ERROR] SAI DU LIEU O TRUONG PHAI\n");
 				checker = false;
 			}
 
-			if (this->readerStatusButton.GetPlaceholder() != "ACTIVE" && this->readerStatusButton.GetPlaceholder() != "BANNED") 
+			if (this->readerStatusButton.GetPlaceholder() != "ACTIVE" && this->readerStatusButton.GetPlaceholder() != "BANNED")
 			{
 				std::cerr << std::format("[ERROR] SAI DU LIEU O TRUONG TRANG THAI\n");
 				checker = false;
 			}
 
-			if (checker) 
+			if (checker)
 			{
 				this->searchResult->info_.SetFirstName(this->readerFirstNameButton.GetPlaceholder());
 				this->searchResult->info_.SetLastName(this->readerLastNameButton.GetPlaceholder());
@@ -674,7 +674,7 @@ READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail(LINEAR_LIST::LinearLi
 	this->CreateTitlesDatasheet();
 	this->titlesDatasheetController.ActivateDatasheets();
 
-	if (this->reader != nullptr) 
+	if (this->reader != nullptr)
 	{
 		this->readerInfo.UpdateReaderInfo(this->reader);
 	}
@@ -741,24 +741,24 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::Display()
 
 bool READER_TAB_MEMBERS::ReaderIndeptDetail::GoBackButtonOnAction()
 {
-	if (this->active == false) 
+	if (this->active == false)
 	{
 		return false;
 	}
 
-	
-	if (this->goBackButton.IsHover()) 
+
+	if (this->goBackButton.IsHover())
 	{
 		this->goBackButton.SetFillColor(rgb(130, 170, 227));
 	}
-	else if (this->goBackButton.LeftMouseClicked()) 
+	else if (this->goBackButton.LeftMouseClicked())
 	{
 		delay(100);
 		this->active = false;
 		this->titlesDatasheetController.DeactivateDatasheets();
 		return true;
 	}
-	else 
+	else
 	{
 		this->goBackButton.SetFillColor(rgb(236, 242, 255));
 	}
@@ -774,9 +774,9 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowButtonOnAction()
 	else if (this->borrowBookButton.LeftMouseClicked())
 	{
 		delay(100);
-		
+
 		bool borrowingBookProcessResult = false;
-		try 
+		try
 		{
 			borrowingBookProcessResult = this->BorrowBook();
 		}
@@ -808,7 +808,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnButtonOnAction()
 		delay(100);
 
 		bool returningBookProcessresult = false;
-		try 
+		try
 		{
 			returningBookProcessresult = this->ReturnBook();
 		}
@@ -964,7 +964,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 			allReturnedInTime = false;
 			break;
 		}
-		
+
 	}
 	if (!allReturnedInTime)
 	{
@@ -1125,7 +1125,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateTitlesDatasheet()
 
 	this->titlesDatasheetController.InitializeDatasheets();
 
-	for (int i = 0; i < this->titlesDatasheetController.GetDatasheetCount(); ++i) 
+	for (int i = 0; i < this->titlesDatasheetController.GetDatasheetCount(); ++i)
 	{
 		this->titlesDatasheetController[i] = DATASHEET::Datasheet(
 			this->titlesDatasheetController.GetRecordCount(),
@@ -1222,7 +1222,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::InitializeFunctionalButton()
 	this->borrowBookButton = Button(HELPER::Coordinate(1275, 940), 100, 40);
 	this->borrowBookButton.SetPlaceholder("BORROW");
 	this->ApplyDefaultStyleForFunctionalButton(this->borrowBookButton);
-	
+
 	this->returnBookButton = Button(HELPER::Coordinate(1390, 940), 100, 40);
 	this->returnBookButton.SetPlaceholder("RETURN");
 	this->ApplyDefaultStyleForFunctionalButton(this->returnBookButton);
@@ -1273,7 +1273,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_Tree<READER::Reader, in
 {
 	int attributeCount = readerList->Size();
 	datasheetController->SetDatasheetCount(
-	attributeCount / (CONSTANTS::MAX_ROW_COUNT - 1) + (attributeCount % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
+		attributeCount / (CONSTANTS::MAX_ROW_COUNT - 1) + (attributeCount % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
 	);
 	datasheetController->InitializeDatasheets();
 
@@ -1302,7 +1302,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_Tree<READER::Reader, in
 
 		if (stk.Empty() == false) {
 			currentNode = stk.Pop();
-			
+
 			//* Logic stays here
 			++recordIndex;
 			if (recordIndex > datasheetController->GetRecordCount() - 1) {
@@ -1384,7 +1384,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_Tree<READER::Reader, int
 
 /**
 * Tab's constructor
-* 
+*
 * All the code in this method only run once in the program runtime!
 */
 DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController) {
@@ -1393,13 +1393,13 @@ DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_Tree<READER::Reader, int>* read
 	this->readerList = readerList;
 	this->titleList = titleList;
 	this->inputController = inputController;
-	
+
 	HELPER::Coordinate datasheetTopLeft(36, 120);
 	HELPER::Coordinate toLeftBtnTopLeft(36, 935);
 	HELPER::Coordinate toRightBtnTopLeft(86, 935);
 
 	this->datasheetController = DATASHEET::Controller(
-		CONSTANTS::MAX_ROW_COUNT, READER_PROPERTIES::PROPERTIES_COUNT, 
+		CONSTANTS::MAX_ROW_COUNT, READER_PROPERTIES::PROPERTIES_COUNT,
 		READER_PROPERTIES::ROW_HEIGHT, datasheetTopLeft
 	);
 	this->datasheetController.ActivateDatasheets();
@@ -1431,7 +1431,7 @@ DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_Tree<READER::Reader, int>* read
 
 /**
 * Tab's frame logic.
-* 
+*
 * Code in this method will be run many time.
 * Each time the program render a frame, this code will be run once, therefore the element's logic will be in here!
 */
@@ -1572,4 +1572,3 @@ void DanhSachTheDocGiaView::Run()
 		}
 	}
 }
-

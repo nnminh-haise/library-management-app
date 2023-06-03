@@ -2,21 +2,18 @@
 
 #include <string>
 #include "../DataStructures/AVL_Tree.h"
-#include "../DataStructures/DoubleLinkedList.h"
 #include "../Helper/Helper.h"
 
-namespace BOOK_CIRCULATION 
+namespace BOOK_CIRCULATION
 {
 	enum CirculationStatus { BORROWING, RETURNED, LOSTED };
 
-	class BookCirculation 
+	class BookCirculation
 	{
 	public:
 		BookCirculation();
 
 		BookCirculation(std::string id, HELPER::Date borrowDate, HELPER::Date returnDate, CirculationStatus status);
-
-		~BookCirculation();
 
 		void SetID(std::string id);
 
@@ -48,24 +45,58 @@ namespace BOOK_CIRCULATION
 	};
 }
 
-namespace BOOK_CIRCULATION_MODULES {
-	int CountBorrowedBooks(const DoubleLinkedList<BOOK_CIRCULATION::BookCirculation>& booksCirculation);
+namespace DOUBLE_LINKED_LIST
+{
+	struct Node
+	{
+		Node();
+
+		BOOK_CIRCULATION::BookCirculation info;
+		Node* left;
+		Node* right;
+	};
+
+	typedef Node* Pointer;
+
+	struct Controller
+	{
+		Controller();
+
+		Pointer First;
+		Pointer Last;
+	};
+
+	void Initialize(DOUBLE_LINKED_LIST::Controller& list);
+
+	bool Empty(const Controller& list);
+
+	int Size(const Controller& list);
+
+	void ClearList(Controller& list);
+
+	void PushFront(Controller& list, BOOK_CIRCULATION::BookCirculation info);
+
+	void PushBack(Controller& list, BOOK_CIRCULATION::BookCirculation info);
+
+	void RemoveNode(Controller& list, DOUBLE_LINKED_LIST::Pointer targetNode);
 }
 
-namespace READER 
+namespace BOOK_CIRCULATION_MODULES {
+	int CountBorrowedBooks(const DOUBLE_LINKED_LIST::Controller& list);
+}
+
+namespace READER
 {
 	enum Gender { MALE, FEMALE };
 
 	enum ReaderStatus { BANNED, ACTIVE };
 
-	class Reader 
+	class Reader
 	{
 	public:
 		Reader();
 
-		Reader(int id, std::string firstName, std::string lastName, Gender gender, ReaderStatus status, DoubleLinkedList<BOOK_CIRCULATION::BookCirculation> booksCirculation);
-
-		Reader& operator=(const Reader& other);
+		Reader(int id, std::string firstName, std::string lastName, Gender gender, ReaderStatus status, DOUBLE_LINKED_LIST::Controller borrowedBooks);
 
 		void SetID(int id);
 
@@ -93,9 +124,9 @@ namespace READER
 
 		std::string StringfyStatus();
 
-		void SetBooksCirculation(const DoubleLinkedList<BOOK_CIRCULATION::BookCirculation>& booksCirculation);
+		void SetBooksCirculation(DOUBLE_LINKED_LIST::Controller borrowedBooks);
 
-		DoubleLinkedList<BOOK_CIRCULATION::BookCirculation> GetBooksCirculation();
+		DOUBLE_LINKED_LIST::Controller GetBooksCirculation();
 
 		void Log();
 
@@ -105,11 +136,53 @@ namespace READER
 		std::string lastName;
 		Gender sex;
 		ReaderStatus status;
-		DoubleLinkedList<BOOK_CIRCULATION::BookCirculation> booksCirculation;
+		DOUBLE_LINKED_LIST::Controller borrowedBooks;
 	};
 }
 
-namespace READER_MODULES 
+//namespace AVL_TREE 
+//{
+//	struct Node 
+//	{
+//		READER::Reader info;
+//		int balanceFactor;
+//		int height;
+//		Node* left;
+//		Node* right;
+//
+//		Node();
+//
+//		int GetKey();
+//
+//		void SetKey(const int key);
+//	};
+//
+//	typedef Node* Pointer;
+//
+//	void Initialize(Pointer& root);
+//
+//	bool Empty(const Pointer& root);
+//
+//	void InOrderTraversal(const Pointer& root);
+//
+//	void Size(const Pointer& root, int& counter);
+//
+//	void NonrecursiveInOrderTraversal(const Pointer& root);
+//
+//	Pointer RotateLeft(Pointer root);
+//
+//	Pointer RotateRight(Pointer root);
+//
+//	bool Insert(Pointer& root, READER::Reader info);
+//
+//	Pointer SearchByKey(const Pointer& root, const int& key);
+//
+//	Pointer GetMinValueNode(Pointer const& node);
+//
+//	Pointer RemoveNode(Pointer& node, const int& key);
+//}
+
+namespace READER_MODULES
 {
 	bool LoadDanhSachTheDocGiaFromDB(const std::string& filename, AVL_Tree<READER::Reader, int>* tree);
 
