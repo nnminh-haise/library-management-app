@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DanhSachDauSachStyling.h"
+#include "SelectedObject.h"
 #include "../../DauSach/DauSach.h"
 #include "../../Helper/Package.h"
 #include "../UI/Elements.h"
@@ -20,6 +21,8 @@ namespace DAU_SACH_TAB
 
 		DatasheetProcessor(LINEAR_LIST::LinearList* dataList, DataFilter* dataFilter);
 
+		void SetSelectedObjectContainer(SelectedObject<BOOK_TITLE::BookTitle*>* datasheetSelectedObject);
+
 		void AllowCreateDatasheet();
 
 		void CreateDatasheet();
@@ -36,13 +39,18 @@ namespace DAU_SACH_TAB
 
 		DATASHEET::Datasheet& AccessCurrentDatasheet();
 
-		void Display();
-
 		void Activate();
 
 		void Deactivate();
 
 		bool InActive();
+
+		int Run();
+
+	private:
+		void Display();
+
+		int DatasheetOnAction();
 
 	public:
 		bool active_;
@@ -54,6 +62,8 @@ namespace DAU_SACH_TAB
 		DataFilter* dataFilter_;
 		
 		LINEAR_LIST::LinearList* dataList_;
+
+		SelectedObject<BOOK_TITLE::BookTitle*>* datasheetSelectedObject_;
 	};
 
 	/**
@@ -229,7 +239,7 @@ namespace DAU_SACH_TAB
 		LINKED_LIST::Pointer deleteBook;
 	};
 
-	struct SearchSection
+	class SearchSection
 	{
 	public:
 		SearchSection();
@@ -308,11 +318,11 @@ public:
 	void Run();
 
 private:
+	void Initialize();
+
 	void InitializeFilters();
 
 	void CreateSortedByCategoryTitleList();
-
-	void Initialize();
 
 	void FunctionalButtonOnAction();
 
@@ -341,5 +351,7 @@ private:
 	DataFilter sortedByCategoryTitleListFilter_;
 
 	DAU_SACH_TAB::DatasheetProcessor titleDatasheetPackage_;
+
+	SelectedObject<BOOK_TITLE::BookTitle*> datasheetSelectedObject_;
 };
 

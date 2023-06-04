@@ -36,6 +36,11 @@ namespace DAU_SACH_TAB
 		};
 	}
 
+	void DatasheetProcessor::SetSelectedObjectContainer(SelectedObject<BOOK_TITLE::BookTitle*>* datasheetSelectedObject)
+	{
+		this->datasheetSelectedObject_ = datasheetSelectedObject;
+	}
+
 	void DatasheetProcessor::AllowCreateDatasheet() { this->allowCreateDatasheet_ = true; }
 
 	void DatasheetProcessor::CreateDatasheet()
@@ -134,6 +139,59 @@ namespace DAU_SACH_TAB
 	void DatasheetProcessor::Deactivate() { this->active_ = false; }
 
 	bool DatasheetProcessor::InActive() { return this->active_; }
+
+	int DatasheetProcessor::Run()
+	{
+		if (!this->active_) { return 0; }
+
+		this->Display();
+		this->DatasheetOnAction();
+		
+		return 1;
+	}
+
+	int DatasheetProcessor::DatasheetOnAction()
+	{
+		if (!this->active_) { return 0; }
+
+		int currentDatasheetIndex = this->datasheetController_.CurrentActiveDatasheet();
+		int datasheetColumnCount = this->datasheetController_.GetAttributeCount();
+		int datasheetRowCount = this->datasheetController_.GetRecordCount();
+
+		for (int rowIndex = 1; rowIndex < datasheetRowCount; ++rowIndex)
+		{
+			for (int columnIndex = 0; columnIndex < datasheetColumnCount; ++columnIndex)
+			{
+				Button& currentCell = this->datasheetController_[currentDatasheetIndex][rowIndex][columnIndex];
+
+				if (currentCell.GetPlaceholder().compare("...") == 0) { continue; }
+
+				if (currentCell.IsHover())
+				{
+					currentCell.SetFillColor(rgb(221, 230, 237));
+				}
+				else if (currentCell.LeftMouseClicked())
+				{
+					delay(100);
+
+					BOOK_TITLE::BookTitle* selectedObject = this->dataList_->nodes[(datasheetRowCount - 1) * currentDatasheetIndex + rowIndex - 1];
+					this->datasheetSelectedObject_->SetObjectPointer(selectedObject);
+				}
+				else if (currentCell.RightMouseClicked())
+				{
+					delay(100);
+					std::cerr << "Show Details!\n";
+				}
+				else
+				{
+					if (rowIndex % 2 == 0) { currentCell.SetFillColor(rgb(238, 238, 238)); }
+					else { currentCell.SetFillColor(rgb(255, 251, 245)); }
+				}
+			}
+		}
+
+		return 0;
+	}
 
 	SearchSection::SearchSection()
 	{
@@ -1375,7 +1433,9 @@ void DauSachTab::Run()
 {
 	if (this->defaultView_ == true)
 	{
-		this->titleDatasheetPackage_.Display();
+		this->titleDatasheetPackage_.Run();
+
+		this->datasheetSelectedObject_.Run();
 
 		for (int i = 0; i < 3; ++i) { this->functionalButtons[i].Display(); }
 		this->FunctionalButtonOnAction();
@@ -1536,9 +1596,12 @@ void DauSachTab::Initialize()
 	this->CreateSortedByCategoryTitleList();
 
 	this->titleDatasheetPackage_ = DAU_SACH_TAB::DatasheetProcessor(this->package_->titleList, &this->defaultTitleListFilter_);
+	this->titleDatasheetPackage_.SetSelectedObjectContainer(&this->datasheetSelectedObject_);
 	this->titleDatasheetPackage_.Activate();
 	this->titleDatasheetPackage_.AllowCreateDatasheet();
 	this->titleDatasheetPackage_.CreateDatasheet();
+
+	this->datasheetSelectedObject_.Activate();
 
 	HELPER::Coordinate listManipulateButtonCoordinates[] = {
 		HELPER::Coordinate(1585, 210),

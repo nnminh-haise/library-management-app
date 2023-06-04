@@ -150,11 +150,13 @@
   <ItemGroup>
     <ClInclude Include="DataStructures\AVL_Tree.h" />
     <ClInclude Include="DataStructures\DoubleLinkedList.h" />
+    <ClInclude Include="DataStructures\DynamicArray.h" />
     <ClInclude Include="DataStructures\HashMap.h" />
     <ClInclude Include="DataStructures\LinearList.h" />
     <ClInclude Include="DataStructures\LinkedList.h" />
     <ClInclude Include="Helper\IndexGenerator.h" />
     <ClInclude Include="Helper\Package.h" />
+    <ClInclude Include="Tabs\DanhSachDauSachTab\SelectedObject.h" />
     <ClInclude Include="Tabs\UI\SearchFilters.h" />
     <ClInclude Include="Tabs\UI\Datasheet.h" />
     <ClInclude Include="Tabs\UI\Button.h" />

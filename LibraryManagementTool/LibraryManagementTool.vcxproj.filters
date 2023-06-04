@@ -146,6 +146,12 @@
     <ClInclude Include="Tabs\UI\SearchFilters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Tabs\DanhSachDauSachTab\SelectedObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DataStructures\DynamicArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="Graphics\graphics.lib" />
