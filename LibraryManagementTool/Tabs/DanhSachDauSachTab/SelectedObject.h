@@ -50,11 +50,40 @@ public:
 
 	inline T GetObjectPointer() { return this->objectPointer_; }
 
+	inline bool IndicatorObAction()
+	{
+		if (!this->active_) { return false; }
+
+		if (this->objectPointer_ == nullptr) { return false; }
+
+		if (this->indicator_.IsHover())
+		{
+			this->indicator_.SetFillColor(rgb(130, 170, 227));
+			this->indicator_.SetTextColor(WHITE);
+		}
+		else if (this->indicator_.LeftMouseClicked())
+		{
+			delay(100);
+			return true;
+		}
+		else
+		{
+			this->indicator_.SetTextColor(BLACK);
+			this->indicator_.SetFillColor(rgb(236, 242, 255));
+			this->indicator_.SetBorderColor(BLACK);
+		}
+
+		return false;
+	}
+
 	inline int Run()
 	{
 		if (!this->active_) { return 0; }
 
 		this->Display();
+		if (this->IndicatorObAction()) { return 1; }
+
+		return 0;
 	}
 
 private:

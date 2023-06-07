@@ -145,9 +145,9 @@ namespace DAU_SACH_TAB
 		if (!this->active_) { return 0; }
 
 		this->Display();
-		this->DatasheetOnAction();
+		if (this->DatasheetOnAction() == 1) { return 1; }
 		
-		return 1;
+		return 0;
 	}
 
 	int DatasheetProcessor::DatasheetOnAction()
@@ -180,7 +180,11 @@ namespace DAU_SACH_TAB
 				else if (currentCell.RightMouseClicked())
 				{
 					delay(100);
-					std::cerr << "Show Details!\n";
+
+					BOOK_TITLE::BookTitle* selectedObject = this->dataList_->nodes[(datasheetRowCount - 1) * currentDatasheetIndex + rowIndex - 1];
+					this->datasheetSelectedObject_->SetObjectPointer(selectedObject);
+
+					return 1;
 				}
 				else
 				{
@@ -636,6 +640,7 @@ namespace DAU_SACH_TAB
 
 	TitleCreatingSection::TitleCreatingSection()
 	{
+		this->package_ = nullptr;
 		this->active = false;
 		this->sachAddFieldDisplay = false;
 	}
@@ -772,11 +777,11 @@ namespace DAU_SACH_TAB
 
 			if (std::stoi(this->inputField_[6].GetPlaceholder()) == 0)
 			{
-				newTitle->SetCatalogue(LINKED_LIST::Controller());
+				newTitle->SetCatalogue(nullptr);
 			}
 			else
 			{
-				LINKED_LIST::Controller newBookList;
+				LINKED_LIST::Pointer newBookList = nullptr;
 				LINKED_LIST::Initialize(newBookList);
 
 				for (int i = 0; i < this->catalogueCreatingSection.itemsCount; ++i)
@@ -784,7 +789,7 @@ namespace DAU_SACH_TAB
 					BOOK::Book newBook;
 					newBook.SetID(this->catalogueCreatingSection.items[i].inputField_[0].GetPlaceholder());
 					newBook.SetStatus(BOOK::Status::AVAILABLE);
-					newBook.SetDescription(std::format("ROW {} COL {} SECTION {}",
+					newBook.SetDescription(std::format("ROW {} COLUMN {} SECTION {}",
 						this->catalogueCreatingSection.items[i].inputField_[2].GetPlaceholder(),
 						this->catalogueCreatingSection.items[i].inputField_[3].GetPlaceholder(),
 						this->catalogueCreatingSection.items[i].inputField_[4].GetPlaceholder()
@@ -1104,254 +1109,6 @@ namespace DAU_SACH_TAB
 
 		return true;
 	}
-
-	TitleDetailDisplayField::TitleDetailDisplayField() {
-		this->active = false;
-
-		this->targetedTitle = nullptr;
-
-		this->background = HELPER::Fill(HELPER::Coordinate(1105, 120), 650, 700, rgb(238, 238, 238), BLACK);
-
-		this->title = Button(
-			HELPER::Coordinate(1105, 120), HELPER::Dimension(650, 80),
-			WHITE, //* text color
-			rgb(87, 108, 188), //* Background color
-			BLACK //* Border color
-		);
-
-		HELPER::Coordinate titleDetailsCoordinates[] = {
-			HELPER::Coordinate(1130, 232),
-			HELPER::Coordinate(1130, 314),
-			HELPER::Coordinate(1130, 397),
-			HELPER::Coordinate(1130, 480),
-			HELPER::Coordinate(1130, 563),
-		};
-		for (int i = 0; i < 5; ++i) {
-			this->titleDetails[i] = Button(
-				titleDetailsCoordinates[i], HELPER::Dimension(600, 60),
-				BLACK, //* Text color
-				WHITE, //* Fill color
-				BLACK  //* Border color
-			);
-		}
-
-		this->goBackBtn = Button(
-			HELPER::Coordinate(1685, 930), 70, 40,
-			rgb(24, 18, 43), rgb(236, 242, 255), rgb(24, 18, 43)
-		);
-		this->goBackBtn.SetPlaceholder("<");
-
-		this->bookListDatasheetController = DATASHEET::Controller(
-			16, 4, 50, HELPER::Coordinate(36, 120)
-		);
-
-		this->deleteBookBtn = Button(
-			HELPER::Coordinate(229, 945), 150, 40,
-			rgb(57, 62, 70),
-			rgb(219, 223, 253),
-			rgb(219, 223, 253)
-		);
-		this->deleteBookBtn.SetPlaceholder("DELETE");
-		this->deleteBook = nullptr;
-	}
-
-	void TitleDetailDisplayField::Destructor() {
-		this->bookListDatasheetController = DATASHEET::Controller();
-	}
-
-	void TitleDetailDisplayField::Initialize(BOOK_TITLE::BookTitle* title) {
-		this->targetedTitle = title;
-
-		this->title.SetPlaceholder(this->targetedTitle->GetTitle());
-
-		this->titleDetails[0].SetPlaceholder(std::format("isbn: {}", this->targetedTitle->GetISBN()));
-		this->titleDetails[1].SetPlaceholder(std::format("Category: {}", this->targetedTitle->GetCategory()));
-		this->titleDetails[2].SetPlaceholder(std::format("Author: {}", this->targetedTitle->GetAuthor()));
-		this->titleDetails[3].SetPlaceholder(std::format("Page number: {}", std::to_string(this->targetedTitle->GetPageCount())));
-		this->titleDetails[4].SetPlaceholder(std::format("Public: {}", std::to_string(this->targetedTitle->GetPublicationYear())));
-
-		this->CreateBookListDatasheet();
-	}
-
-	void TitleDetailDisplayField::CreateBookListDatasheet() {
-		std::string labels[] = { "STT", "MA BOOK", "TRANG THAI", "VI TRI" };
-		int chrLimits[] = { 3, 8, 18, 20 };
-
-		int listSize = LINKED_LIST::Size(this->targetedTitle->GetCatalogue());
-
-		this->bookListDatasheetController.SetDatasheetCount(
-			max(1, listSize / (CONSTANTS::MAX_ROW_COUNT - 1) + (listSize % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1))
-		);
-		this->bookListDatasheetController.InitializeDatasheets();
-
-		for (int i = 0; i < this->bookListDatasheetController.GetDatasheetCount(); ++i) {
-			this->bookListDatasheetController[i] = DATASHEET::Datasheet(
-				this->bookListDatasheetController.GetRecordCount(),
-				this->bookListDatasheetController.GetAttributeCount(),
-				this->bookListDatasheetController.GetRowHeight(),
-				this->bookListDatasheetController.GetTopLeft(),
-				labels, chrLimits
-			);
-		}
-
-		if (listSize == 0) {
-			return;
-		}
-
-		int recordIndex = 0;
-		int sheetIndex = -1;
-		int order = 0;
-		for (LINKED_LIST::Pointer p = this->targetedTitle->GetCatalogue().first; p != nullptr; p = p->next) {
-			++recordIndex;
-			if (recordIndex > this->bookListDatasheetController.GetRecordCount() - 1) {
-				recordIndex = 1;
-			}
-			if (recordIndex % (this->bookListDatasheetController.GetRecordCount() - 1) == 1) {
-				sheetIndex += 1;
-			}
-
-			std::string* data = new std::string[this->bookListDatasheetController.GetAttributeCount()];
-			data[0] = std::to_string(++order);
-			data[1] = p->info.GetID();
-			data[2] = p->info.StringfyStatus();
-			data[3] = p->info.GetDescription();
-
-			this->bookListDatasheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
-		}
-	}
-
-	void TitleDetailDisplayField::Activate() {
-		this->active = true;
-	}
-
-	void TitleDetailDisplayField::Deactivate() {
-		this->active = false;
-	}
-
-	bool TitleDetailDisplayField::GetStatus() {
-		return this->active;
-	}
-
-	void TitleDetailDisplayField::Display() {
-		if (this->active == false) {
-			return;
-		}
-
-		this->background.Draw();
-		this->title.Display();
-		for (int i = 0; i < 5; ++i) {
-			this->titleDetails[i].Display();
-		}
-
-		this->bookListDatasheetController.Display();
-
-		if (this->deleteBookBtn.IsActive() == true) {
-			this->deleteBookBtn.Display();
-
-			if (this->deleteBookBtn.IsHover()) {
-				this->deleteBookBtn.SetFillColor(rgb(155, 163, 235));
-				this->deleteBookBtn.SetBorderColor(rgb(36, 47, 155));
-				this->deleteBookBtn.SetTextColor(rgb(234, 253, 252));
-			}
-			else if (this->deleteBookBtn.LeftMouseClicked()) {
-				//todo: LINKED_LIST::DeleteAt function is not working!
-
-				LINKED_LIST::Controller buffer = this->targetedTitle->GetCatalogue();
-				if (LINKED_LIST::DeleteAt(buffer, this->deleteBook->info)) {
-					std::cerr << "delete!\n";
-					this->targetedTitle->SetCatalogue(buffer);
-					this->CreateBookListDatasheet();
-				}
-				else {
-					std::cerr << "not delete\n";
-				}
-			}
-			else {
-				this->deleteBookBtn.SetFillColor(rgb(219, 223, 253));
-				this->deleteBookBtn.SetBorderColor(rgb(219, 223, 253));
-				this->deleteBookBtn.SetTextColor(rgb(57, 62, 70));
-			}
-		}
-
-		this->goBackBtn.Display();
-	}
-
-	void TitleDetailDisplayField::DeleteBookButtonOnAction() {
-		if (this->bookListDatasheetController.GetDatasheetCount() == 0) {
-			return;
-		}
-
-		for (int i = 1; i < this->bookListDatasheetController.GetRecordCount(); ++i) {
-			Button& bookIdButton = this->bookListDatasheetController[this->bookListDatasheetController.CurrentActiveDatasheet()][i][1];
-
-			if (bookIdButton.IsHover()) {
-				bookIdButton.SetFillColor(rgb(244, 249, 249));
-			}
-			else if (bookIdButton.LeftMouseClicked()) {
-				delay(100);
-				for (LINKED_LIST::Pointer p = this->targetedTitle->GetCatalogue().first; p != nullptr; p = p->next) {
-					if (p->info.GetID().compare(bookIdButton.GetPlaceholder()) == 0) {
-						this->deleteBook = p;
-						break;
-					}
-				}
-				this->deleteBookBtn.Deactivate();
-			}
-			else {
-				if (i % 2 != 0) {
-					bookIdButton.SetFillColor(rgb(255, 251, 245));
-				}
-				else {
-					bookIdButton.SetFillColor(rgb(238, 238, 238));
-				}
-			}
-		}
-
-		if (this->deleteBookBtn.IsHover()) {
-			this->deleteBookBtn.SetFillColor(rgb(155, 163, 235));
-			this->deleteBookBtn.SetBorderColor(rgb(36, 47, 155));
-			this->deleteBookBtn.SetTextColor(rgb(234, 253, 252));
-		}
-		else if (this->deleteBookBtn.LeftMouseClicked()) {
-			delay(100);
-		}
-		else {
-			this->deleteBookBtn.SetFillColor(rgb(219, 223, 253));
-			this->deleteBookBtn.SetBorderColor(this->deleteBookBtn.GetFillColor());
-			this->deleteBookBtn.SetTextColor(rgb(57, 62, 70));
-		}
-	}
-
-	void TitleDetailDisplayField::ResetDeleteBookButton() {
-		this->deleteBookBtn = Button(
-			HELPER::Coordinate(229, 945), 150, 40,
-			rgb(57, 62, 70),
-			rgb(219, 223, 253),
-			rgb(219, 223, 253)
-		);
-		this->deleteBookBtn.SetPlaceholder("DELETE");
-		this->deleteBook = nullptr;
-	}
-
-	bool TitleDetailDisplayField::GoBackButtonOnAction() {
-		if (this->active == false) {
-			return true;
-		}
-
-		if (this->goBackBtn.IsHover()) {
-			this->goBackBtn.SetFillColor(rgb(130, 170, 227));
-		}
-		else if (this->goBackBtn.LeftMouseClicked()) {
-			delay(100);
-			this->active = false;
-			return true;
-		}
-		else {
-			this->goBackBtn.SetFillColor(rgb(236, 242, 255)
-			);
-		}
-		return false;
-	}
 }
 
 namespace CATEGORY_LINKED_LIST {
@@ -1433,18 +1190,31 @@ void DauSachTab::Run()
 {
 	if (this->defaultView_ == true)
 	{
-		this->titleDatasheetPackage_.Run();
+		//* Title datasheet section runtime logic
+		int titleDatasheetPackageRunningResult = this->titleDatasheetPackage_.Run();
+		if (titleDatasheetPackageRunningResult == 1)
+		{
+			this->defaultView_ = false;
+			this->titleDetailSection_.Activate();
+			this->titleDetailSection_.SetTitlePointer(this->datasheetSelectedObject_.GetObjectPointer());
+		}
 
-		this->datasheetSelectedObject_.Run();
+		//* Selected title section runtime logic
+		if (this->datasheetSelectedObject_.Run() == 1)
+		{
+			this->defaultView_ = false;
+			this->titleDetailSection_.Activate();
+			this->titleDetailSection_.SetTitlePointer(this->datasheetSelectedObject_.GetObjectPointer());
+		}
 
 		for (int i = 0; i < 3; ++i) { this->functionalButtons[i].Display(); }
 		this->FunctionalButtonOnAction();
 
-		//* Display search field
+		//* Search field section runtime logic
 		bool allowUpdateTitleDatesheet = this->titleSearchSection_.Run();
 		if (allowUpdateTitleDatesheet)
 		{
-			std::cerr << "Update datasheet!\n";
+			std::cerr << "[LOG] UPDATE DATESHEET!\n";
 			this->titleDatasheetPackage_.AllowCreateDatasheet();
 			this->titleDatasheetPackage_.CreateDatasheet();
 		}
@@ -1452,12 +1222,15 @@ void DauSachTab::Run()
 		this->DatasheetSortingFunctionality();
 	}
 
-	//* Displaying title's details field
-	if (this->titleDetailField.GetStatus() == true)
+	//* Selected title's detail display section
+	if (this->titleDetailSection_.InActive())
 	{
-		this->titleDetailField.Display();
-		if (this->titleDetailField.GoBackButtonOnAction() == true) { this->defaultView_ = true; }
-		else { this->defaultView_ = false; }
+		int titleDetailSectionRunningResult = this->titleDetailSection_.Run();
+		if (titleDetailSectionRunningResult == -1) //* Back Button pressed logic
+		{
+			this->titleDetailSection_.Deactivate();
+			this->defaultView_ = true;
+		}
 	}
 
 	//* Displaying the ADD function.
@@ -1620,6 +1393,8 @@ void DauSachTab::Initialize()
 	this->titleSearchSection_ = DAU_SACH_TAB::SearchSection(this->package_, &this->titleDatasheetPackage_);
 	this->titleSearchSection_.SetSearchData(this->package_->titleList);
 	this->titleSearchSection_.Activate();
+
+	this->titleDetailSection_.Deactivate();
 }
 
 void DauSachTab::FunctionalButtonOnAction()

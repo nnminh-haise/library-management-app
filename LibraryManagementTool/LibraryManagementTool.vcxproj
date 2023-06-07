@@ -145,7 +145,10 @@
     <ClCompile Include="Tabs\UI\Elements.cpp" />
     <ClCompile Include="Helper\Helper.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Tabs\UI\Component.cpp" />
     <ClCompile Include="TheDocGia\TheDocGia.cpp" />
+    <ClCompile Include="Tabs\DanhSachDauSachTab\TitleDetailView.cpp" />
+    <ClCompile Include="Tabs\DanhSachDauSachTab\TitleDetailCard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStructures\AVL_Tree.h" />
@@ -156,6 +159,7 @@
     <ClInclude Include="DataStructures\LinkedList.h" />
     <ClInclude Include="Helper\IndexGenerator.h" />
     <ClInclude Include="Helper\Package.h" />
+    <ClInclude Include="Tabs\UI\Sheets.hpp" />
     <ClInclude Include="Tabs\DanhSachDauSachTab\SelectedObject.h" />
     <ClInclude Include="Tabs\UI\SearchFilters.h" />
     <ClInclude Include="Tabs\UI\Datasheet.h" />
@@ -174,6 +178,9 @@
     <ClInclude Include="Tabs\UI\Elements.h" />
     <ClInclude Include="Helper\Helper.h" />
     <ClInclude Include="TheDocGia\TheDocGia.h" />
+    <ClInclude Include="Tabs\UI\Component.hpp" />
+    <ClInclude Include="Tabs\DanhSachDauSachTab\TitleDetailView.h" />
+    <ClInclude Include="Tabs\DanhSachDauSachTab\TitleDetailCard.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Graphics\graphics.lib" />

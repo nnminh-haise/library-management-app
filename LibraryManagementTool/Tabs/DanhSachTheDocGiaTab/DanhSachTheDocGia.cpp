@@ -919,7 +919,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 		return false;
 	}
 
-	LINKED_LIST::Controller titleCatalogue = correspondTitle->GetCatalogue();
+	LINKED_LIST::Pointer titleCatalogue = correspondTitle->GetCatalogue();
 	this->targetedBookID = LINKED_LIST::SearchByID(titleCatalogue, borrowingBookID);
 	if (this->targetedBookID == nullptr)
 	{
@@ -1050,9 +1050,9 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnBook()
 		return false;
 	}
 
-	LINKED_LIST::Controller targetedTitleCatalouge = this->titleList->nodes[indexOfCoresspondTitle]->GetCatalogue();
+	LINKED_LIST::Pointer targetedTitleCatalouge = this->titleList->nodes[indexOfCoresspondTitle]->GetCatalogue();
 	bool bookExist = false;
-	LINKED_LIST::Pointer targetedBook = targetedTitleCatalouge.first;
+	LINKED_LIST::Pointer targetedBook = targetedTitleCatalouge;
 	for (; targetedBook != nullptr; targetedBook = targetedBook->next)
 	{
 		if (targetedBook->info.GetID().compare(userTargetedReturnBookID) == 0)

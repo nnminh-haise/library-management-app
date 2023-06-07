@@ -48,27 +48,19 @@ namespace LINKED_LIST
 
 	typedef Node* Pointer;
 
-	struct Controller 
-	{
-		unsigned int total;
-		unsigned int borrowed;
-		unsigned int sold;
-		Pointer first;
-	};
+	void Initialize(Pointer& first);
 
-	void Initialize(Controller& controller);
+	bool Empty(const Pointer& first);
 
-	bool Empty(const Controller& controller);
+	int Size(const Pointer& first);
 
-	int Size(const Controller& controller);
+	void PushFront(Pointer& first, BOOK::Book item);
 
-	void PushFront(Controller& controller, BOOK::Book item);
+	void PushBack(Pointer& first, BOOK::Book item);
 
-	void PushBack(Controller& controller, BOOK::Book item);
+	bool DeleteAt(Pointer& first, BOOK::Book item);
 
-	bool DeleteAt(Controller& controller, BOOK::Book item);
-
-	BOOK::Book* SearchByID(Controller& controller, const std::string& id);
+	BOOK::Book* SearchByID(Pointer& first, const std::string& id);
 }
 
 namespace BOOK_TITLE 
@@ -82,12 +74,12 @@ namespace BOOK_TITLE
 		std::string author;
 		int publiationYear;
 		std::string category;
-		LINKED_LIST::Controller catalogue;
+		LINKED_LIST::Pointer catalogue;
 
 	public:
 		BookTitle();
 
-		BookTitle(std::string isbn, std::string title, int pageCount, std::string author, int publiationYear, std::string category, LINKED_LIST::Controller catalogue);
+		BookTitle(std::string isbn, std::string title, int pageCount, std::string author, int publiationYear, std::string category, LINKED_LIST::Pointer catalogue);
 
 		void SetISBN(std::string isbn);
 
@@ -113,9 +105,9 @@ namespace BOOK_TITLE
 
 		std::string GetCategory();
 
-		void SetCatalogue(LINKED_LIST::Controller catalogue);
+		void SetCatalogue(LINKED_LIST::Pointer catalogue);
 
-		LINKED_LIST::Controller GetCatalogue();
+		LINKED_LIST::Pointer GetCatalogue();
 
 		void Log();
 	};

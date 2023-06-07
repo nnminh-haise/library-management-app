@@ -60,77 +60,69 @@ LINKED_LIST::Node::Node() : info(BOOK::Book()), next(nullptr) {
 LINKED_LIST::Node::Node(BOOK::Book info, LINKED_LIST::Node* next) : info(info), next(next) {
 }
 
-void LINKED_LIST::Initialize(LINKED_LIST::Controller& controller) {
-	controller.first = nullptr;
+void LINKED_LIST::Initialize(LINKED_LIST::Pointer& first)
+{
+	first = nullptr;
 }
 
-bool LINKED_LIST::Empty(const LINKED_LIST::Controller& controller) {
-	return controller.first == nullptr;
+bool LINKED_LIST::Empty(const LINKED_LIST::Pointer& first)
+{
+	return first == nullptr;
 }
 
-int LINKED_LIST::Size(const Controller& controller) {
+int LINKED_LIST::Size(const Pointer& first)
+{
 	int counter = 0;
-	for (LINKED_LIST::Pointer p = controller.first; p != nullptr; p = p->next) {
+	for (LINKED_LIST::Pointer p = first; p != nullptr; p = p->next)
+	{
 		++counter;
 	}
 
 	return counter;
 }
 
-void LINKED_LIST::PushFront(Controller& controller, BOOK::Book item) {
+void LINKED_LIST::PushFront(Pointer& first, BOOK::Book item)
+{
 	LINKED_LIST::Pointer newNode = new LINKED_LIST::Node(item, nullptr);
-	controller.first = newNode;
-
-	controller.total++;
-	if (item.GetStatus() == BOOK::UNAVAILABLE) {
-		controller.borrowed++;
-	}
-	else if (item.GetStatus() == BOOK::SOLD) {
-		controller.sold++;
-	}
+	first = newNode;
 }
 
-void LINKED_LIST::PushBack(LINKED_LIST::Controller& controller, BOOK::Book item) {
-	if (LINKED_LIST::Empty(controller)) {
-		LINKED_LIST::PushFront(controller, item);
+void LINKED_LIST::PushBack(LINKED_LIST::Pointer& first, BOOK::Book item)
+{
+	if (LINKED_LIST::Empty(first))
+	{
+		LINKED_LIST::PushFront(first, item);
 		return;
 	}
 
 	LINKED_LIST::Pointer newNode = new Node(item, nullptr);
-
-	++controller.total;
-	if (item.GetStatus() == BOOK::Status::UNAVAILABLE) {
-		++controller.borrowed;
-	}
-	else if (item.GetStatus() == BOOK::Status::SOLD) {
-		++controller.sold;
-	}
-
-	LINKED_LIST::Pointer Last = controller.first;
+	LINKED_LIST::Pointer Last = first;
 	for (; Last->next != nullptr; Last = Last->next);
 	Last->next = newNode;
 }
 
-bool LINKED_LIST::DeleteAt(Controller& controller, BOOK::Book item) {
-	if (LINKED_LIST::Empty(controller)) {
+bool LINKED_LIST::DeleteAt(LINKED_LIST::Pointer& first, BOOK::Book item)
+{
+	if (LINKED_LIST::Empty(first))
+	{
 		return false;
 	}
 
-	if (controller.first->next == nullptr && controller.first->info.GetID().compare(item.GetID()) == 0) {
-		delete controller.first;
-		controller.first = nullptr;
+	if (first->next == nullptr && first->info.GetID().compare(item.GetID()) == 0)
+	{
+		delete first;
+		first = nullptr;
 		return true;
 	}
-	else if (controller.first->next == nullptr) {
+	else if (first->next == nullptr)
+	{
 		return false;
 	}
 
-	LINKED_LIST::Pointer p = controller.first;
+	LINKED_LIST::Pointer p = first;
 	for (; p != nullptr && p->next != nullptr && p->next->info.GetID().compare(item.GetID()) != 0; p = p->next);
 
-	if (p == nullptr) {
-		return false;
-	}
+	if (p == nullptr) { return false; }
 
 	LINKED_LIST::Pointer deleteNode = p->next;
 	p->next = deleteNode->next;
@@ -138,9 +130,9 @@ bool LINKED_LIST::DeleteAt(Controller& controller, BOOK::Book item) {
 	return true;
 }
 
-BOOK::Book* LINKED_LIST::SearchByID(Controller& controller, const std::string& id)
+BOOK::Book* LINKED_LIST::SearchByID(LINKED_LIST::Pointer& first, const std::string& id)
 {
-	for (LINKED_LIST::Pointer currentNode = controller.first; currentNode != nullptr; currentNode = currentNode->next)
+	for (LINKED_LIST::Pointer currentNode = first; currentNode != nullptr; currentNode = currentNode->next)
 	{
 		if (id.compare(currentNode->info.GetID()) == 0)
 		{
@@ -158,10 +150,10 @@ BOOK_TITLE::BookTitle::BookTitle() {
 	this->author = std::string();
 	this->publiationYear = 0;
 	this->category = std::string();
-	this->catalogue.first = nullptr;
+	this->catalogue = nullptr;
 }
 
-BOOK_TITLE::BookTitle::BookTitle(std::string isbn, std::string title, int pageCount, std::string author, int publiationYear, std::string category, LINKED_LIST::Controller catalogue) {
+BOOK_TITLE::BookTitle::BookTitle(std::string isbn, std::string title, int pageCount, std::string author, int publiationYear, std::string category, LINKED_LIST::Pointer catalogue) {
 	this->isbn = isbn;
 	this->title = title;
 	this->pageCount = pageCount;
@@ -219,11 +211,11 @@ std::string BOOK_TITLE::BookTitle::GetCategory() {
 	return this->category;
 }
 
-void BOOK_TITLE::BookTitle::SetCatalogue(LINKED_LIST::Controller catalogue) {
+void BOOK_TITLE::BookTitle::SetCatalogue(LINKED_LIST::Pointer catalogue) {
 	this->catalogue = catalogue;
 }
 
-LINKED_LIST::Controller BOOK_TITLE::BookTitle::GetCatalogue() {
+LINKED_LIST::Pointer BOOK_TITLE::BookTitle::GetCatalogue() {
 	return this->catalogue;
 }
 
@@ -365,8 +357,7 @@ bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LI
 
 	if (!databaseBuffer.open(filename, std::ios::in)) 
 	{
-		std::cerr << std::format("[ERROR] Can not open file {}\n", filename);
-		exit(0);
+		throw std::logic_error(std::format("[ERROR] Can not open file {}\n", filename));
 	}
 
 	std::istream database(&databaseBuffer);
@@ -425,11 +416,11 @@ bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LI
 					int bookListSize = std::stoi(data[i]);
 					if (bookListSize == 0) 
 					{
-						newTitle->SetCatalogue(LINKED_LIST::Controller());
+						newTitle->SetCatalogue(nullptr);
 					}
 					else 
 					{
-						LINKED_LIST::Controller newBookList;
+						LINKED_LIST::Pointer newBookList = nullptr;
 						LINKED_LIST::Initialize(newBookList);
 
 						while (database && bookListSize--) 
@@ -441,8 +432,7 @@ bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LI
 
 							if (bookData.length() == 0) 
 							{
-								std::cerr << std::format("[ERROR] Empty book list data in database!\n");
-								exit(1);
+								throw std::logic_error(std::format("[ERROR] Empty book list data in database!\n"));
 							}
 
 							std::string* bookItems = nullptr;
@@ -495,7 +485,7 @@ bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const L
 
 	if (!databaseBuffer.open(filename, std::ios::out)) 
 	{
-		std::cerr << std::format("[ERROR] Can not open file {}\n", filename);
+		throw std::logic_error(std::format("[ERROR] Can not open file {}\n", filename));
 		return false;
 	}
 
@@ -510,8 +500,8 @@ bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const L
 		database << titleList.nodes[i]->GetPublicationYear() << ", ";
 		database << titleList.nodes[i]->GetCategory() << ", ";
 
-		LINKED_LIST::Controller danhMucSach = titleList.nodes[i]->GetCatalogue();
-		
+		LINKED_LIST::Pointer danhMucSach = titleList.nodes[i]->GetCatalogue();
+
 		if (LINKED_LIST::Empty(danhMucSach)) 
 		{
 			database << 0 << "\n";
@@ -520,7 +510,7 @@ bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const L
 		{
 			int danhMucSachSize = LINKED_LIST::Size(danhMucSach);
 			database << danhMucSachSize << "\n";
-			for (LINKED_LIST::Pointer p = danhMucSach.first; p != nullptr; p = p->next) 
+			for (LINKED_LIST::Pointer p = danhMucSach; p != nullptr; p = p->next) 
 			{
 				database << p->info.GetID() << ", ";
 				database << p->info.StringfyStatus() << ", ";

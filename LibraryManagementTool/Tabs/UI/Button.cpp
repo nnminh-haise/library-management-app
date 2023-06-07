@@ -46,6 +46,8 @@ void Button::SetTopLeft(HELPER::Coordinate topLeft)
 {
 	this->topLeft = topLeft;
 	this->fill.topLeft = topLeft;
+
+	this->UpdateWithNewTopLeft();
 }
 
 HELPER::Coordinate Button::GetTopLeft() { return this->topLeft; }

@@ -2,12 +2,14 @@
 
 #include "DanhSachDauSachStyling.h"
 #include "SelectedObject.h"
+#include "TitleDetailView.h"
 #include "../../DauSach/DauSach.h"
 #include "../../Helper/Package.h"
 #include "../UI/Elements.h"
 #include "../UI/Button.h"
 #include "../UI/Datasheet.h"
 #include "../UI/SearchFilters.h"
+#include "../UI/Component.hpp"
 
 namespace DAU_SACH_TAB
 {
@@ -59,11 +61,11 @@ namespace DAU_SACH_TAB
 
 		DATASHEET::Controller datasheetController_;
 		
-		DataFilter* dataFilter_;
+		DataFilter* dataFilter_ = nullptr;
 		
-		LINEAR_LIST::LinearList* dataList_;
+		LINEAR_LIST::LinearList* dataList_ = nullptr;
 
-		SelectedObject<BOOK_TITLE::BookTitle*>* datasheetSelectedObject_;
+		SelectedObject<BOOK_TITLE::BookTitle*>* datasheetSelectedObject_ = nullptr;
 	};
 
 	/**
@@ -75,6 +77,7 @@ namespace DAU_SACH_TAB
 	*/
 	struct BookCreatingSection
 	{
+	public:
 		BookCreatingSection();
 
 		void Activate();
@@ -85,10 +88,10 @@ namespace DAU_SACH_TAB
 
 		void Display();
 
-		private:
+	private:
 		void InitializeElements();
 
-		public:
+	public:
 		bool active_;
 		HELPER::Fill background_;
 		Button titleButton_;
@@ -105,6 +108,7 @@ namespace DAU_SACH_TAB
 	*/
 	struct CatalogueCreatingSection
 	{
+	public:
 		CatalogueCreatingSection();
 
 		CatalogueCreatingSection(LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController);
@@ -127,10 +131,10 @@ namespace DAU_SACH_TAB
 
 		void Display();
 
-		private:
+	private:
 		void InitializeElements();
 
-		public:
+	public:
 		LINEAR_LIST::LinearList* titleList_;
 		ELEMENTS::InputModeController* inputController_;
 
@@ -150,7 +154,7 @@ namespace DAU_SACH_TAB
 	*/
 	struct TitleCreatingSection
 	{
-		public:
+	public:
 		TitleCreatingSection();
 
 		TitleCreatingSection(Package* package);
@@ -167,7 +171,7 @@ namespace DAU_SACH_TAB
 
 		bool GoBackButtonOnAction();
 
-		private:
+	private:
 		void InitializeElements();
 
 		bool InputFieldOnUpdate();
@@ -202,41 +206,6 @@ namespace DAU_SACH_TAB
 		bool allowCreatingNewTitle_ = false;
 
 		CatalogueCreatingSection catalogueCreatingSection;
-	};
-
-	struct TitleDetailDisplayField
-	{
-		TitleDetailDisplayField();
-
-		void Destructor();
-
-		void Initialize(BOOK_TITLE::BookTitle* title);
-
-		void CreateBookListDatasheet();
-
-		void Activate();
-
-		void Deactivate();
-
-		bool GetStatus();
-
-		void Display();
-
-		void DeleteBookButtonOnAction();
-
-		void ResetDeleteBookButton();
-
-		bool GoBackButtonOnAction();
-
-		bool active;
-		BOOK_TITLE::BookTitle* targetedTitle;
-		HELPER::Fill background;
-		Button title;
-		Button titleDetails[5];
-		Button goBackBtn;
-		DATASHEET::Controller bookListDatasheetController;
-		Button deleteBookBtn;
-		LINKED_LIST::Pointer deleteBook;
 	};
 
 	class SearchSection
@@ -337,7 +306,7 @@ private:
 
 	DAU_SACH_TAB::TitleCreatingSection titleCreatingSection;
 
-	DAU_SACH_TAB::TitleDetailDisplayField titleDetailField;
+	TitleDetail titleDetailSection_;
 
 private:
 	bool defaultView_ = true;
