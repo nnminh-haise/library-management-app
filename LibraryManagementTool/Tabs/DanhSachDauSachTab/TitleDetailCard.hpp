@@ -3,6 +3,7 @@
 #ifndef TITLE_DETAIL_CARD
 #define TITLE_DETAIL_CARD
 
+#include "../../Helper/Package.h"
 #include "../../DauSach/DauSach.h"
 #include "../../Helper/Helper.h"
 #include "../UI/Component.hpp"
@@ -11,7 +12,7 @@
 #include <format>
 #include <sstream>
 
-namespace TITLE_DETAIL_COMPONENTS
+namespace TITLE_DETAIL_CARD_COMPONENTS
 {
 	class BookDetailCard : public View
 	{
@@ -30,7 +31,25 @@ namespace TITLE_DETAIL_COMPONENTS
 
 		void UpdateCard(BOOK::Book* bookPointer);
 
+		void SetPackage(Package* package);
+
+		HELPER::Fill& DA_Background();
+
+		Button& DA_Heading();
+
+		LinkedButton& DA_BookID();
+
+		LinkedButton& DA_BookStatus();
+
+		LinkedButton& DA_Row();
+
+		LinkedButton& DA_Column();
+
+		LinkedButton& DA_Section();
+
 		int Run() override;
+
+		int SectionOnAction();
 
 	private:
 		void Initialize();
@@ -55,6 +74,8 @@ namespace TITLE_DETAIL_COMPONENTS
 		LinkedButton column_;
 
 		LinkedButton section_;
+
+		Package* package_;
 	};
 
 	class BookDetailCardsController : public View
@@ -70,6 +91,12 @@ namespace TITLE_DETAIL_COMPONENTS
 
 		BookDetailCardsController& operator=(const BookDetailCardsController& other);
 
+		BookDetailCard& operator[] (int index);
+
+		Button& DA_CardChangeButton(int index);
+
+		Button& DA_CardCountIndicator();
+
 		using View::Activate;
 
 		using View::Deactivate;
@@ -78,7 +105,13 @@ namespace TITLE_DETAIL_COMPONENTS
 
 		void CreateCatalogueCards(LINKED_LIST::Pointer catalogue);
 
+		void SetPackage(Package* package);
+
+		int Size();
+
 		int Run() override;
+
+		int CardElementsOnAction();
 
 	private:
 		void Initialize();
@@ -103,6 +136,8 @@ namespace TITLE_DETAIL_COMPONENTS
 		Button cardChangeButtons_[2];
 
 		Button cardCountIndicator_;
+
+		Package* package_;
 	};
 }
 
@@ -118,6 +153,8 @@ public:
 	using View::InActive;
 
 	void UpdateCard(BOOK_TITLE::BookTitle* targetedTitle);
+
+	void SetPackage(Package* package);
 
 	int Run() override;
 
@@ -149,7 +186,9 @@ private:
 
 	LinkedButton catalogueSize_;
 
-	TITLE_DETAIL_COMPONENTS::BookDetailCardsController catalogueController_;
+	TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController catalogueController_;
+
+	Package* package_;
 };
 
 #endif // !TITLE_DETAIL_CARD

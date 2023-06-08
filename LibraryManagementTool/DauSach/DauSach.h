@@ -58,6 +58,8 @@ namespace LINKED_LIST
 
 	void PushBack(Pointer& first, BOOK::Book item);
 
+	void Append(Pointer& first, Pointer& target);
+
 	bool DeleteAt(Pointer& first, BOOK::Book item);
 
 	BOOK::Book* SearchByID(Pointer& first, const std::string& id);

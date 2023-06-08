@@ -1395,6 +1395,7 @@ void DauSachTab::Initialize()
 	this->titleSearchSection_.Activate();
 
 	this->titleDetailSection_.Deactivate();
+	this->titleDetailSection_.SetPackage(this->package_);
 }
 
 void DauSachTab::FunctionalButtonOnAction()

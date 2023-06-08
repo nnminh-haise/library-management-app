@@ -10,6 +10,7 @@
 #include "../UI/Elements.h"
 #include "../../DauSach/DauSach.h"
 #include "../../Helper/ConstantsAndGlobalVariables.h"
+#include "../../Helper/Package.h"
 
 namespace TITLE_DETAIL_VIEW_COMPONENTS
 {
@@ -30,14 +31,24 @@ namespace TITLE_DETAIL_VIEW_COMPONENTS
 
 		void Reset();
 
+		void SetTitlePointer(BOOK_TITLE::BookTitle* titlePointer);
+
+		void SetPackage(Package* package);
+
 	private:
 		void Initialize();
 
 		void InitializeElements();
 
-		void Display();
+		void InitializeNewBookCards();
+
+		int Display();
 
 		int FunctionalityButtonsOnAction();
+
+		bool NewBookFunctionOnAction();
+
+		bool AddBooksButtonOnAction();
 
 	private:
 		using View::status_;
@@ -50,7 +61,15 @@ namespace TITLE_DETAIL_VIEW_COMPONENTS
 
 		Button confirmButtons_[3];
 
-		HELPER::Fill confirmCovers_[3];
+		Button addNewBooksButton_;
+
+		LINKED_LIST::Pointer newBooks_ = nullptr;
+
+		TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController newBookCards_;
+
+		BOOK_TITLE::BookTitle* titlePointer_ = nullptr;
+
+		Package* package_ = nullptr;
 	};
 }
 
@@ -68,6 +87,8 @@ public:
 	using View::GoBackButtonOnAction;
 
 	void SetTitlePointer(BOOK_TITLE::BookTitle* titlePointer);
+
+	void SetPackage(Package* package);
 
 	int Run() override;
 
@@ -90,6 +111,8 @@ private:
 	TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet functionalitySet_;
 
 	BOOK_TITLE::BookTitle* titlePointer_ = nullptr;
+
+	Package* package_ = nullptr;
 };
 
 #endif // !TITLE_DETAIL

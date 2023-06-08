@@ -101,6 +101,19 @@ void LINKED_LIST::PushBack(LINKED_LIST::Pointer& first, BOOK::Book item)
 	Last->next = newNode;
 }
 
+void LINKED_LIST::Append(LINKED_LIST::Pointer& first, LINKED_LIST::Pointer& target)
+{
+	if (LINKED_LIST::Empty(first))
+	{
+		first = target;
+		return;
+	}
+
+	LINKED_LIST::Pointer lastNode = first;
+	for (; lastNode->next != nullptr; lastNode = lastNode->next);
+	lastNode->next = target;
+}
+
 bool LINKED_LIST::DeleteAt(LINKED_LIST::Pointer& first, BOOK::Book item)
 {
 	if (LINKED_LIST::Empty(first))

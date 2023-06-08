@@ -1,11 +1,11 @@
 #include "TitleDetailCard.hpp"
 
-TITLE_DETAIL_COMPONENTS::BookDetailCard::BookDetailCard()
+TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::BookDetailCard()
 {
 	this->Initialize();
 }
 
-TITLE_DETAIL_COMPONENTS::BookDetailCard::BookDetailCard(const BookDetailCard& other)
+TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::BookDetailCard(const BookDetailCard& other)
 {
 	if (this != &other)
 	{
@@ -27,7 +27,7 @@ TITLE_DETAIL_COMPONENTS::BookDetailCard::BookDetailCard(const BookDetailCard& ot
 	}
 }
 
-TITLE_DETAIL_COMPONENTS::BookDetailCard& TITLE_DETAIL_COMPONENTS::BookDetailCard::operator=(const BookDetailCard& other)
+TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard& TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::operator=(const BookDetailCard& other)
 {
 	if (this == &other) { return *this; }
 
@@ -48,7 +48,7 @@ TITLE_DETAIL_COMPONENTS::BookDetailCard& TITLE_DETAIL_COMPONENTS::BookDetailCard
 	this->section_ = other.section_;
 }
 
-void TITLE_DETAIL_COMPONENTS::BookDetailCard::UpdateCard(BOOK::Book* bookPointer)
+void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::UpdateCard(BOOK::Book* bookPointer)
 {
 	if (bookPointer == nullptr) { return; }
 
@@ -75,7 +75,47 @@ void TITLE_DETAIL_COMPONENTS::BookDetailCard::UpdateCard(BOOK::Book* bookPointer
 	this->section_.content_.SetPlaceholder(sectionValue);
 }
 
-int TITLE_DETAIL_COMPONENTS::BookDetailCard::Run()
+void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::SetPackage(Package* package)
+{
+	this->package_ = package;
+}
+
+HELPER::Fill& TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::DA_Background()
+{
+	return this->background_;
+}
+
+Button& TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::DA_Heading()
+{
+	return this->heading_;
+}
+
+LinkedButton& TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::DA_BookID()
+{
+	return this->bookID_;
+}
+
+LinkedButton& TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::DA_BookStatus()
+{
+	return this->bookStatus_;
+}
+
+LinkedButton& TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::DA_Row()
+{
+	return this->row_;
+}
+
+LinkedButton& TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::DA_Column()
+{
+	return this->column_;
+}
+
+LinkedButton& TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::DA_Section()
+{
+	return this->section_;
+}
+
+int TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::Run()
 {
 	if (!this->status_) { return 0; }
 
@@ -84,12 +124,12 @@ int TITLE_DETAIL_COMPONENTS::BookDetailCard::Run()
 	return 0;
 }
 
-void TITLE_DETAIL_COMPONENTS::BookDetailCard::Initialize()
+void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::Initialize()
 {
 	this->InitializeElements();
 }
 
-void TITLE_DETAIL_COMPONENTS::BookDetailCard::InitializeElements()
+void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::InitializeElements()
 {
 	this->background_ = HELPER::Fill(
 		HELPER::Coordinate(36, 380),
@@ -152,7 +192,7 @@ void TITLE_DETAIL_COMPONENTS::BookDetailCard::InitializeElements()
 	this->section_.content_.SetTextColor(BLACK);
 }
 
-void TITLE_DETAIL_COMPONENTS::BookDetailCard::Display()
+void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::Display()
 {
 	if (!this->status_) { return; }
 
@@ -164,6 +204,31 @@ void TITLE_DETAIL_COMPONENTS::BookDetailCard::Display()
 	this->row_.Display();
 	this->column_.Display();
 	this->section_.Display();
+}
+
+int TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::SectionOnAction()
+{
+	if (!this->status_) { return 0; }
+
+	Button* cells[3] = {&this->row_.content_, &this->column_.content_, &this->section_.content_};
+	for (int i = 0; i < 3; ++i)
+	{
+		if (cells[i]->IsHover())
+		{
+			cells[i]->SetFillColor(rgb(241, 246, 249));
+		}
+		else if (cells[i]->LeftMouseClicked())
+		{
+			delay(130);
+			this->package_->inputController->Activate(cells[i], cells[i], 3, false, true, false);
+		}
+		else
+		{
+			cells[i]->SetFillColor(WHITE);
+		}
+	}
+
+	return 0;
 }
 
 TitleDetailCard::TitleDetailCard()
@@ -187,9 +252,14 @@ void TitleDetailCard::UpdateCard(BOOK_TITLE::BookTitle* targetedTitle)
 
 	this->catalogueSize_.content_.SetPlaceholder(std::to_string(LINKED_LIST::Size(targetedTitle->GetCatalogue())));
 
-	this->catalogueController_ = TITLE_DETAIL_COMPONENTS::BookDetailCardsController(LINKED_LIST::Size(targetedTitle->GetCatalogue()));
+	this->catalogueController_ = TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController(LINKED_LIST::Size(targetedTitle->GetCatalogue()));
 	this->catalogueController_.CreateCatalogueCards(targetedTitle->GetCatalogue());
 	this->catalogueController_.Activate();
+}
+
+void TitleDetailCard::SetPackage(Package* package)
+{
+	this->package_ = package;
 }
 
 int TitleDetailCard::Run()
@@ -297,22 +367,22 @@ void TitleDetailCard::Display()
 	this->catalogueController_.Run();
 }
 
-TITLE_DETAIL_COMPONENTS::BookDetailCardsController::BookDetailCardsController()
+TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::BookDetailCardsController()
 {
 }
 
-TITLE_DETAIL_COMPONENTS::BookDetailCardsController::BookDetailCardsController(int catalogueSize)
+TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::BookDetailCardsController(int catalogueSize)
 {
-	if (catalogueSize == 0) { throw std::logic_error("[ERROR] Empty catalogue! (TITLE_DETAIL_COMPONENTS::BookDetailCardsController::BookDetailCardsController)"); }
+	if (catalogueSize == 0) { throw std::logic_error("[ERROR] Empty catalogue! (TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::BookDetailCardsController)"); }
 
 	this->catalogueSize_ = catalogueSize;
 
-	this->cards_ = new TITLE_DETAIL_COMPONENTS::BookDetailCard[catalogueSize];
+	this->cards_ = new TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard[catalogueSize];
 
 	this->Initialize();
 }
 
-TITLE_DETAIL_COMPONENTS::BookDetailCardsController::BookDetailCardsController(const BookDetailCardsController& other)
+TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::BookDetailCardsController(const BookDetailCardsController& other)
 {
 	if (this != &other)
 	{
@@ -324,7 +394,7 @@ TITLE_DETAIL_COMPONENTS::BookDetailCardsController::BookDetailCardsController(co
 
 		this->activeCardIndex_ = other.activeCardIndex_;
 
-		this->cards_ = new TITLE_DETAIL_COMPONENTS::BookDetailCard[this->catalogueSize_];
+		this->cards_ = new TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard[this->catalogueSize_];
 		for (int i = 0; i < this->catalogueSize_; ++i) { this->cards_[i] = other.cards_[i]; }
 
 		for (int i = 0; i < 2; ++i) { this->cardChangeButtons_[i] = other.cardChangeButtons_[i]; }
@@ -333,12 +403,12 @@ TITLE_DETAIL_COMPONENTS::BookDetailCardsController::BookDetailCardsController(co
 	}
 }
 
-TITLE_DETAIL_COMPONENTS::BookDetailCardsController::~BookDetailCardsController()
+TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::~BookDetailCardsController()
 {
 	delete[] this->cards_;
 }
 
-TITLE_DETAIL_COMPONENTS::BookDetailCardsController& TITLE_DETAIL_COMPONENTS::BookDetailCardsController::operator=(const BookDetailCardsController& other)
+TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController& TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::operator=(const BookDetailCardsController& other)
 {
 	if (this == &other) { return *this; }
 
@@ -350,7 +420,7 @@ TITLE_DETAIL_COMPONENTS::BookDetailCardsController& TITLE_DETAIL_COMPONENTS::Boo
 
 	this->activeCardIndex_ = other.activeCardIndex_;
 
-	this->cards_ = new TITLE_DETAIL_COMPONENTS::BookDetailCard[this->catalogueSize_];
+	this->cards_ = new TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard[this->catalogueSize_];
 	for (int i = 0; i < this->catalogueSize_; ++i) { this->cards_[i] = other.cards_[i]; }
 
 	for (int i = 0; i < 2; ++i) { this->cardChangeButtons_[i] = other.cardChangeButtons_[i]; }
@@ -358,16 +428,41 @@ TITLE_DETAIL_COMPONENTS::BookDetailCardsController& TITLE_DETAIL_COMPONENTS::Boo
 	this->cardCountIndicator_ = other.cardCountIndicator_;
 }
 
-void TITLE_DETAIL_COMPONENTS::BookDetailCardsController::UpdateCard(int cardIndex, BOOK::Book* bookPointer)
+TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard& TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::operator[](int index)
 {
-	if (cardIndex < 0 || cardIndex >= this->catalogueSize_) { throw std::logic_error("[ERROR] Index out of range! (TITLE_DETAIL_COMPONENTS::BookDetailCardsController::UpdateCard)"); }
+	if (index < 0 || index >= this->catalogueSize_)
+	{
+		throw std::logic_error("[ERROR] Index out of range! (TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::operator[])");
+	}
+
+	return this->cards_[index];
+}
+
+Button& TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::DA_CardChangeButton(int index)
+{
+	if (index < 0 || index >= 2)
+	{
+		throw std::logic_error("[ERROR] Index out of range! (TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::DA_CardChangeButton)");
+	}
+
+	return this->cardChangeButtons_[index];
+}
+
+Button& TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::DA_CardCountIndicator()
+{
+	return this->cardCountIndicator_;
+}
+
+void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::UpdateCard(int cardIndex, BOOK::Book* bookPointer)
+{
+	if (cardIndex < 0 || cardIndex >= this->catalogueSize_) { throw std::logic_error("[ERROR] Index out of range! (TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::UpdateCard)"); }
 
 	if (bookPointer == nullptr) { return; }
 
 	this->cards_[cardIndex].UpdateCard(bookPointer);
 }
 
-void TITLE_DETAIL_COMPONENTS::BookDetailCardsController::CardChangeButtonsOnAction()
+void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::CardChangeButtonsOnAction()
 {
 	int movements[] = { -1, 1 };
 
@@ -394,9 +489,14 @@ void TITLE_DETAIL_COMPONENTS::BookDetailCardsController::CardChangeButtonsOnActi
 	}
 }
 
-void TITLE_DETAIL_COMPONENTS::BookDetailCardsController::CreateCatalogueCards(LINKED_LIST::Pointer catalogue)
+void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::CreateCatalogueCards(LINKED_LIST::Pointer catalogue)
 {
-	if (catalogue == nullptr) { throw std::logic_error("[ERROR] NULL Pointer! (TITLE_DETAIL_COMPONENTS::BookDetailCardsController::CreateCatalogueCards)"); }
+	if (catalogue == nullptr) { throw std::logic_error("[ERROR] NULL Pointer! (TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::CreateCatalogueCards)"); }
+
+	for (int i = 0; i < this->catalogueSize_; ++i)
+	{
+		this->cards_[i].SetPackage(this->package_);
+	}
 
 	int index = 0;
 	for (LINKED_LIST::Pointer currentBook = catalogue; currentBook != nullptr; currentBook = currentBook->next)
@@ -408,7 +508,17 @@ void TITLE_DETAIL_COMPONENTS::BookDetailCardsController::CreateCatalogueCards(LI
 	this->cardCountIndicator_.SetPlaceholder(std::format("{}/{}", this->activeCardIndex_ + 1, this->catalogueSize_));
 }
 
-int TITLE_DETAIL_COMPONENTS::BookDetailCardsController::Run()
+void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::SetPackage(Package* package)
+{
+	this->package_ = package;
+}
+
+int TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::Size()
+{
+	return this->catalogueSize_;
+}
+
+int TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::Run()
 {
 	if (!this->status_) { return 0; }
 
@@ -419,12 +529,22 @@ int TITLE_DETAIL_COMPONENTS::BookDetailCardsController::Run()
 	return 0;
 }
 
-void TITLE_DETAIL_COMPONENTS::BookDetailCardsController::Initialize()
+int TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::CardElementsOnAction()
+{
+	if (!this->status_) { return 0; }
+
+	int sectionRunningResult = this->cards_[this->activeCardIndex_].SectionOnAction();
+	if (sectionRunningResult != 0) { return sectionRunningResult; }
+
+	return 0;
+}
+
+void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::Initialize()
 {
 	this->InitializeElements();
 }
 
-void TITLE_DETAIL_COMPONENTS::BookDetailCardsController::InitializeElements()
+void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::InitializeElements()
 {
 	//* Initialize Cards
 	for (int i = 0; i < this->catalogueSize_; ++i)
@@ -448,7 +568,7 @@ void TITLE_DETAIL_COMPONENTS::BookDetailCardsController::InitializeElements()
 	this->cardCountIndicator_.SetPlaceholder(std::format("{}/{}", this->activeCardIndex_ + 1, this->catalogueSize_));
 }
 
-void TITLE_DETAIL_COMPONENTS::BookDetailCardsController::Display()
+void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::Display()
 {
 	if (!this->status_) { return; }
 

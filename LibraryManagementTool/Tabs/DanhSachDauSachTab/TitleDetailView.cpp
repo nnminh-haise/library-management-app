@@ -10,6 +10,13 @@ void TitleDetail::SetTitlePointer(BOOK_TITLE::BookTitle* titlePointer)
 	this->titlePointer_ = titlePointer;
 
 	this->detailCard_.UpdateCard(this->titlePointer_);
+	this->functionalitySet_.SetTitlePointer(this->titlePointer_);
+	this->functionalitySet_.SetPackage(this->package_);
+}
+
+void TitleDetail::SetPackage(Package* package)
+{
+	this->package_ = package;
 }
 
 int TitleDetail::Run()
@@ -36,7 +43,9 @@ void TitleDetail::Initialize()
 void TitleDetail::InitializeElements()
 {
 	this->detailCard_.Activate();
+	this->detailCard_.SetPackage(this->package_);
 
+	this->functionalitySet_.SetPackage(this->package_);
 	this->functionalitySet_.Activate();
 
 	this->goBackButton_.SetTopLeft({ 1685, 940 });
@@ -55,7 +64,11 @@ void TitleDetail::Display()
 
 	this->detailCard_.Run();
 
-	this->functionalitySet_.Run();
+	int FunctionalitySetRunningResult = this->functionalitySet_.Run();
+	if (FunctionalitySetRunningResult == 11)
+	{
+		this->detailCard_.UpdateCard(this->titlePointer_);
+	}
 
 	this->goBackButton_.Display();
 }
@@ -69,7 +82,10 @@ int TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::Run()
 {
 	if (!this->status_) { return 0; }
 
-	this->Display();
+	if (this->Display() == 11) // added new books -> re-create title's details
+	{
+		return 11;
+	}
 
 	int functionChoice = this->FunctionalityButtonsOnAction();
 	if (functionChoice != 0)
@@ -118,18 +134,81 @@ void TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::InitializeElements()
 	this->confirmButtons_[2] = Button({ 736, 493 }, { 70, 47 }, WHITE, rgb(130, 170, 227), rgb(130, 170, 227));
 	this->confirmButtons_[2].SetPlaceholder("YES");
 
-	for (int i = 0; i < 3; ++i) { this->confirmCovers_[i] = HELPER::Fill({ 576, 360 }, 230, 67, WHITE, WHITE); }
+	this->addNewBooksButton_ = Button({ 176, 900 }, { 100, 40 }, WHITE, rgb(130, 170, 227), rgb(130, 170, 227));
+	this->addNewBooksButton_.SetPlaceholder("ADD BOOKS");
+}
+
+void TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::InitializeNewBookCards()
+{
+	int cardCount = this->newBookCards_.Size();
+	for (int i = 0; i < cardCount; ++i)
+	{
+		TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard& card = this->newBookCards_[i];
+
+		HELPER::Fill& background = card.DA_Background();
+		Button& heading = card.DA_Heading();
+		LinkedButton& bookID = card.DA_BookID();
+		LinkedButton& bookStatus = card.DA_BookStatus();
+		LinkedButton& row = card.DA_Row();
+		LinkedButton& column = card.DA_Column();
+		LinkedButton& section = card.DA_Section();
+
+		Button& leftCardChangeButton = this->newBookCards_.DA_CardChangeButton(0);
+		Button& rightCardChangeButton = this->newBookCards_.DA_CardChangeButton(1);
+		Button& cardCountIndicator = this->newBookCards_.DA_CardCountIndicator();
+
+		background = HELPER::Fill(
+			HELPER::Coordinate(36, 675),
+			400, 160,
+			rgb(238, 238, 238),
+			rgb(24, 18, 43)
+		);
+
+		heading = Button({ 36, 635 }, { 400, 40 }, WHITE, rgb(33, 42, 62), rgb(33, 42, 62));
+		heading.SetPlaceholder("BOOK'S DETAILS");
+
+		bookID.description_.SetTopLeft({ 46, 685 });
+		bookID.content_.SetTopLeft({ 46, 705 });
+
+		bookStatus.description_.SetTopLeft({ 176, 685 });
+		bookStatus.content_.SetTopLeft({ 176, 705 });
+
+		row.description_.SetTopLeft({ 46, 760 });
+		row.content_.SetTopLeft({ 46, 780 });
+
+		column.description_.SetTopLeft({ 176, 760 });
+		column.content_.SetTopLeft({ 176, 780 });
+
+		section.description_.SetTopLeft({ 308, 760 });
+		section.content_.SetTopLeft({ 308, 780 });
+
+		leftCardChangeButton.SetTopLeft({36, 845});
+		rightCardChangeButton.SetTopLeft({ 146, 845 });
+		cardCountIndicator.SetTopLeft({ 86, 845 });
+	}
 }
 
 void TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::Reset()
 {
 	for (int i = 0; i < 3; ++i) { this->infomaticButtons_[i].status_ = false; }
 	this->selectingFunction_ = -1;
+	this->newBookCards_.Deactivate();
+	this->infomaticButtons_[0].content_.SetPlaceholder("2");
 }
 
-void TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::Display()
+void TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::SetTitlePointer(BOOK_TITLE::BookTitle* titlePointer)
 {
-	if (!this->status_) { return; }
+	this->titlePointer_ = titlePointer;
+}
+
+void TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::SetPackage(Package* package)
+{
+	this->package_ = package;
+}
+
+int TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::Display()
+{
+	if (!this->status_) { return 0; }
 
 	for (int i = 0; i < 3; ++i)
 	{
@@ -145,20 +224,35 @@ void TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::Display()
 		this->functionalButtons_[i].Display();
 	}
 
-	if (this->selectingFunction_ == -1)
-	{
-		for (int i = 0; i < 3; ++i) { this->confirmCovers_[i].Draw(); }
-	}
-	else
+	if (this->selectingFunction_ != -1)
 	{
 		int displayOptions[] = {-1, 2, 2};
 
-		if (this->infomaticButtons_[this->selectingFunction_].status_)
+		if (this->infomaticButtons_[this->selectingFunction_].status_)	
 		{
 			this->infomaticButtons_[this->selectingFunction_].Display(displayOptions[this->selectingFunction_]);
 			if (this->selectingFunction_ == 0 || this->selectingFunction_ == 2) { this->confirmButtons_[this->selectingFunction_].Display(); }
+			
+			if (this->selectingFunction_ == 0)
+			{
+				this->NewBookFunctionOnAction();
+			}
 		}
 	}
+
+	if (this->newBookCards_.InActive())
+	{
+		this->newBookCards_.Run();
+		this->newBookCards_.CardElementsOnAction();
+
+		this->addNewBooksButton_.Display();
+		if (this->AddBooksButtonOnAction())
+		{
+			return 11;
+		}
+	}
+
+	return 0;
 }
 
 int TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::FunctionalityButtonsOnAction()
@@ -178,7 +272,9 @@ int TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::FunctionalityButtonsOnAction
 			if (this->selectingFunction_ == 0)
 			{
 				this->infomaticButtons_[0].status_ = false;
+				this->newBookCards_.Deactivate();
 			}
+
 
 			this->selectingFunction_ = -1;
 		}
@@ -220,6 +316,28 @@ int TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::FunctionalityButtonsOnAction
 				this->selectingFunction_ = i;
 				this->infomaticButtons_[i].status_ = false;
 
+				this->newBookCards_ = TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController(1);
+				this->newBookCards_.SetPackage(this->package_);
+				this->InitializeNewBookCards();
+				LINKED_LIST::Pointer lastNode = this->titlePointer_->GetCatalogue();
+				
+				if (lastNode == nullptr) { continue; }
+
+				for (; lastNode->next != nullptr; lastNode = lastNode->next);
+				std::string titleISBN = this->titlePointer_->GetISBN();
+				std::string lastID = lastNode->info.GetID();
+				int newIndex = std::stoi(lastID.substr(lastID.find("-") + 1)) + 1;
+
+				this->newBooks_ = nullptr;
+				LINKED_LIST::Initialize(newBooks_);
+				for (int i = 0; i < 1; ++i)
+				{
+					LINKED_LIST::PushBack(newBooks_, BOOK::Book(std::format("{}-{}", titleISBN, newIndex++), BOOK::Status::AVAILABLE, "ROW 0 COLUMN 0 SECTION 0"));
+				}
+				
+				this->newBookCards_.CreateCatalogueCards(newBooks_);
+				this->newBookCards_.Activate();
+
 				return i + 1;
 			}
 			else if (this->functionalButtons_[i].LeftMouseClicked())
@@ -240,4 +358,110 @@ int TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::FunctionalityButtonsOnAction
 	}
 
 	return 0;
+}
+
+bool TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::NewBookFunctionOnAction()
+{
+	if (!this->status_) { return false; }
+
+	if (this->infomaticButtons_[0].content_.IsHover())
+	{
+		this->infomaticButtons_[0].content_.SetFillColor(rgb(241, 246, 249));
+	}
+	else if (this->infomaticButtons_[0].content_.LeftMouseClicked())
+	{
+		delay(130);
+		this->package_->inputController->Activate(
+			&this->infomaticButtons_[0].content_, &this->infomaticButtons_[0].content_,
+			3, false, true, false
+		);
+	}
+	else
+	{
+		this->infomaticButtons_[0].content_.SetFillColor(rgb(238, 238, 238));
+	}
+
+	if (this->confirmButtons_[0].IsHover())
+	{
+		this->confirmButtons_[0].SetFillColor(rgb(145, 216, 228));
+	}
+	else if (this->confirmButtons_[0].LeftMouseClicked())
+	{
+		delay(130);
+		int numberOfNewBook = std::stoi(this->infomaticButtons_[0].content_.GetPlaceholder());
+		this->newBookCards_ = TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController(numberOfNewBook);
+		this->newBookCards_.SetPackage(this->package_);
+		this->InitializeNewBookCards();
+		LINKED_LIST::Pointer lastNode = this->titlePointer_->GetCatalogue();
+
+		for (; lastNode->next != nullptr; lastNode = lastNode->next);
+		std::string titleISBN = this->titlePointer_->GetISBN();
+		std::string lastID = lastNode->info.GetID();
+		int newIndex = std::stoi(lastID.substr(lastID.find("-") + 1)) + 1;
+
+		this->newBooks_ = nullptr;
+		LINKED_LIST::Initialize(newBooks_);
+		for (int i = 0; i < numberOfNewBook; ++i)
+		{
+			LINKED_LIST::PushBack(
+				newBooks_, 
+				BOOK::Book(
+					std::format("{}-{}", titleISBN, newIndex++),
+					BOOK::Status::AVAILABLE,
+					std::format("ROW 0 COLUMN 0 SECTION 0")
+				)
+			);
+		}
+
+		this->newBookCards_.CreateCatalogueCards(newBooks_);
+		this->newBookCards_.Activate();
+	}
+	else
+	{
+		this->confirmButtons_[0].SetFillColor(rgb(130, 170, 227));
+	}
+
+	return false;
+}
+
+bool TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::AddBooksButtonOnAction()
+{
+	if (!this->status_) { return false; }
+
+	if (this->addNewBooksButton_.IsHover())
+	{
+		this->addNewBooksButton_.SetFillColor(rgb(145, 216, 228));
+	}
+	else if (this->addNewBooksButton_.LeftMouseClicked())
+	{
+		delay(130);
+		LINKED_LIST::Pointer titleCatalogue = this->titlePointer_->GetCatalogue();
+
+		int index = 0;
+		for (auto p = this->newBooks_; p != nullptr; p = p->next)
+		{
+			p->info.SetDescription(
+				std::format(
+					"ROW {} COLUMN {} SECTION {}",
+					this->newBookCards_[index].DA_Row().content_.GetPlaceholder(),
+					this->newBookCards_[index].DA_Column().content_.GetPlaceholder(),
+					this->newBookCards_[index].DA_Section().content_.GetPlaceholder()
+				)
+			);
+
+			++index;
+		}
+
+		LINKED_LIST::Append(titleCatalogue, this->newBooks_);
+		this->titlePointer_->SetCatalogue(titleCatalogue);
+		this->Reset();
+
+		return true;
+	}
+	else
+	{
+		this->addNewBooksButton_.SetFillColor(rgb(130, 170, 227));
+	}
+
+	return false;
 }
