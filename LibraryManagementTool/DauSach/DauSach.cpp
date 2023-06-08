@@ -18,6 +18,25 @@ BOOK::Book::Book(std::string id, BOOK::Status status, std::string description) {
 	this->description = description;
 }
 
+BOOK::Book::Book(const BOOK::Book& other)
+{
+	if (this != &other)
+	{
+		this->id = other.id;
+		this->status = other.status;
+		this->description = other.description;
+	}
+}
+
+BOOK::Book& BOOK::Book::operator=(const BOOK::Book& other)
+{
+	if (this == &other) { return *this; }
+
+	this->id = other.id;
+	this->status = other.status;
+	this->description = other.description;
+}
+
 void BOOK::Book::SetID(std::string id) {
 	this->id = id;
 }

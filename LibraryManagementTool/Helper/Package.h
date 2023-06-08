@@ -20,7 +20,9 @@ struct DataFilter
 struct Package
 {
 	AVL_Tree<READER::Reader, int>* readerList;
+
 	LINEAR_LIST::LinearList* titleList;
+
 	ELEMENTS::InputModeController* inputController;
 
 	HashMap<BOOK_TITLE::BookTitle*>* titleMap;

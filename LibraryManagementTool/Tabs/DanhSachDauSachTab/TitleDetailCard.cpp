@@ -73,6 +73,47 @@ void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::UpdateCard(BOOK::Book* bookPo
 	this->row_.content_.SetPlaceholder(rowValue);
 	this->column_.content_.SetPlaceholder(colValue);
 	this->section_.content_.SetPlaceholder(sectionValue);
+
+	Stack <AVL_Tree<READER::Reader, int>::Node*> stk;
+	AVL_Tree<READER::Reader, int>::Node* p = this->package_->readerList->GetRoot();
+	while (true)
+	{
+		while (p != nullptr)
+		{
+			stk.Push(p);
+			p = p->left_;
+		}
+
+		if (stk.Empty() == false)
+		{
+			p = stk.Pop();
+			// NODE MANIPULATION LOGIC PERFORM HERE ------
+
+			auto bookCirculations = p->info_.GetBooksCirculation();
+			for (auto bookCirculation = bookCirculations; bookCirculation.First != nullptr; bookCirculation.First = bookCirculation.First->right)
+			{
+				if (bookCirculation.First->info.GetID().compare(bookID) == 0)
+				{
+					this->removable_ = false;
+				}
+			}
+
+			//--------------------------------------------
+			p = p->right_;
+		}
+		else
+		{
+			break;
+		}
+	}
+	if (!this->removable_)
+	{
+		this->removavilityIndicator_.SetPlaceholder("Can not be remove!");
+	}
+	else
+	{
+		this->removavilityIndicator_.SetPlaceholder("Removable!");
+	}
 }
 
 void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::SetPackage(Package* package)
@@ -190,6 +231,9 @@ void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::InitializeElements()
 	this->section_.content_.SetBorderColor(BLACK);
 	this->section_.description_.SetTextColor(BLACK);
 	this->section_.content_.SetTextColor(BLACK);
+
+	this->removavilityIndicator_ = Button({ 296, 550 }, { 140, 30 }, BLACK, rgb(238, 238, 238), rgb(238, 238, 238));
+	this->removavilityIndicator_.SetPlaceholder("Removable!");
 }
 
 void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::Display()
@@ -204,11 +248,15 @@ void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::Display()
 	this->row_.Display();
 	this->column_.Display();
 	this->section_.Display();
+
+	this->removavilityIndicator_.Display();
 }
 
 int TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::SectionOnAction()
 {
 	if (!this->status_) { return 0; }
+
+	if (!this->removable_) { return 0; }
 
 	Button* cells[3] = {&this->row_.content_, &this->column_.content_, &this->section_.content_};
 	for (int i = 0; i < 3; ++i)
@@ -231,6 +279,11 @@ int TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::SectionOnAction()
 	return 0;
 }
 
+bool TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::Removability()
+{
+	return this->removable_;
+}
+
 TitleDetailCard::TitleDetailCard()
 {
 	this->Initialize();
@@ -238,6 +291,8 @@ TitleDetailCard::TitleDetailCard()
 
 void TitleDetailCard::UpdateCard(BOOK_TITLE::BookTitle* targetedTitle)
 {
+	this->targetedTitle_ = targetedTitle;
+
 	this->isbn_.content_.SetPlaceholder(std::format("{}",targetedTitle->GetISBN()));
 
 	this->title_.content_.SetPlaceholder(std::format("{}", targetedTitle->GetTitle()));
@@ -260,6 +315,8 @@ void TitleDetailCard::UpdateCard(BOOK_TITLE::BookTitle* targetedTitle)
 void TitleDetailCard::SetPackage(Package* package)
 {
 	this->package_ = package;
+
+	this->catalogueController_.SetPackage(package);
 }
 
 int TitleDetailCard::Run()
@@ -269,6 +326,11 @@ int TitleDetailCard::Run()
 	this->Display();
 
 	return 1;
+}
+
+TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController& TitleDetailCard::DA_CatalogueController()
+{
+	return this->catalogueController_;
 }
 
 void TitleDetailCard::Initialize()
@@ -475,7 +537,7 @@ void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::CardChangeButtonsO
 		}
 		else if (this->cardChangeButtons_[i].LeftMouseClicked())
 		{
-			delay(100);
+			delay(130);
 			this->cards_[this->activeCardIndex_].Deactivate();
 			this->activeCardIndex_ = (this->activeCardIndex_ + movements[i] + this->catalogueSize_) % this->catalogueSize_;
 			this->cardCountIndicator_.SetPlaceholder(std::format("{}/{}", this->activeCardIndex_ + 1, this->catalogueSize_));
@@ -511,6 +573,13 @@ void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::CreateCatalogueCar
 void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::SetPackage(Package* package)
 {
 	this->package_ = package;
+
+	if (this->cards_ == nullptr) { return; }
+
+	for (int i = 0; i < this->catalogueSize_; ++i)
+	{
+		this->cards_[i].SetPackage(package);
+	}
 }
 
 int TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::Size()
@@ -537,6 +606,21 @@ int TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::CardElementsOnActio
 	if (sectionRunningResult != 0) { return sectionRunningResult; }
 
 	return 0;
+}
+
+bool TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::Removability(int index)
+{
+	if (index < 0 || index >= this->catalogueSize_)
+	{
+		throw std::logic_error("[ERROR] Index out of range! (TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::Removability)");
+	}
+
+	return this->cards_[index].Removability();
+}
+
+int TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::CurrentCardIndex()
+{
+	return this->activeCardIndex_;
 }
 
 void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::Initialize()

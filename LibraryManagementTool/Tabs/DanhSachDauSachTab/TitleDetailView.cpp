@@ -9,9 +9,10 @@ void TitleDetail::SetTitlePointer(BOOK_TITLE::BookTitle* titlePointer)
 {
 	this->titlePointer_ = titlePointer;
 
+	this->detailCard_.SetPackage(this->package_);
 	this->detailCard_.UpdateCard(this->titlePointer_);
-	this->functionalitySet_.SetTitlePointer(this->titlePointer_);
 	this->functionalitySet_.SetPackage(this->package_);
+	this->functionalitySet_.SetTitlePointer(this->titlePointer_);
 }
 
 void TitleDetail::SetPackage(Package* package)
@@ -64,11 +65,53 @@ void TitleDetail::Display()
 
 	this->detailCard_.Run();
 
+	int currentCardIndex = this->detailCard_.DA_CatalogueController().CurrentCardIndex();
+	bool bookRemovability = this->detailCard_.DA_CatalogueController().Removability(currentCardIndex);
+
+	this->functionalitySet_.SetRemovability(bookRemovability);
 	int FunctionalitySetRunningResult = this->functionalitySet_.Run();
-	if (FunctionalitySetRunningResult == 11)
+	if (FunctionalitySetRunningResult == 11) //* Update cards after adding new books
 	{
 		this->detailCard_.UpdateCard(this->titlePointer_);
 	}
+	else if (FunctionalitySetRunningResult == 13) //* Update cards after remove book
+	{
+		this->detailCard_.UpdateCard(this->titlePointer_);
+	}
+	else if (FunctionalitySetRunningResult == 2)
+	{
+		std::cerr << "edit!\n";
+		TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController& catalogueController = this->detailCard_.DA_CatalogueController();
+		catalogueController.SetPackage(this->package_);
+		catalogueController.CardElementsOnAction();
+	}
+	else if (FunctionalitySetRunningResult == 3)
+	{
+		std::cerr << "delete!\n";
+	}
+
+
+	//! This section may cause performance bottle necking
+	//! <
+	TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController& catalogueController = this->detailCard_.DA_CatalogueController();
+	if (catalogueController.Size())
+	{
+		int index = 0;
+		auto updatedCatalogue = this->titlePointer_->GetCatalogue();
+
+		for (auto p = updatedCatalogue; p != nullptr; p = p->next)
+		{
+			p->info.SetDescription(std::format(
+				"ROW {} COLUMN {} SECTION {}",
+				catalogueController[index].DA_Row().content_.GetPlaceholder(),
+				catalogueController[index].DA_Column().content_.GetPlaceholder(),
+				catalogueController[index].DA_Section().content_.GetPlaceholder()
+			));
+			++index;
+		}
+		this->titlePointer_->SetCatalogue(updatedCatalogue);
+	}
+	//! />
 
 	this->goBackButton_.Display();
 }
@@ -82,9 +125,16 @@ int TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::Run()
 {
 	if (!this->status_) { return 0; }
 
-	if (this->Display() == 11) // added new books -> re-create title's details
+	std::cerr << "Removability: " << this->removability_ << "\n";
+
+	int displayingResult = this->Display(this->removability_);
+	if (displayingResult == 11) // added new books -> re-create title's details
 	{
 		return 11;
+	}
+	else if (displayingResult == 13)
+	{
+		return 13;
 	}
 
 	int functionChoice = this->FunctionalityButtonsOnAction();
@@ -206,13 +256,18 @@ void TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::SetPackage(Package* package
 	this->package_ = package;
 }
 
-int TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::Display()
+bool TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::SetRemovability(bool value)
+{
+	return this->removability_ = value;
+}
+
+int TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::Display(bool removable)
 {
 	if (!this->status_) { return 0; }
 
 	for (int i = 0; i < 3; ++i)
 	{
-		if (i == 2 && this->selectingFunction_ == i)
+		if (i == 2 && removable == true && this->selectingFunction_ == i)
 		{
 			this->functionalButtons_[i].SetPlaceholder("NO");
 		}
@@ -221,21 +276,33 @@ int TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::Display()
 			this->functionalButtons_[i].SetPlaceholder("DELETE BOOK");
 		}
 
+		if (i == 1 && this->selectingFunction_ == i)
+		{
+			this->functionalButtons_[i].SetPlaceholder("SAVE");
+		}
+		else if (i == 1 && this->selectingFunction_ != 1)
+		{
+			this->functionalButtons_[i].SetPlaceholder("EDIT BOOK");
+		}
+
 		this->functionalButtons_[i].Display();
 	}
 
 	if (this->selectingFunction_ != -1)
 	{
-		int displayOptions[] = {-1, 2, 2};
-
-		if (this->infomaticButtons_[this->selectingFunction_].status_)	
+		if (this->removability_ == true)
 		{
-			this->infomaticButtons_[this->selectingFunction_].Display(displayOptions[this->selectingFunction_]);
-			if (this->selectingFunction_ == 0 || this->selectingFunction_ == 2) { this->confirmButtons_[this->selectingFunction_].Display(); }
-			
-			if (this->selectingFunction_ == 0)
+			int displayOptions[] = {-1, 2, 2};
+
+			if (this->infomaticButtons_[this->selectingFunction_].status_)	
 			{
-				this->NewBookFunctionOnAction();
+				this->infomaticButtons_[this->selectingFunction_].Display(displayOptions[this->selectingFunction_]);
+				if (this->selectingFunction_ == 0 || this->selectingFunction_ == 2) { this->confirmButtons_[this->selectingFunction_].Display(); }
+				
+				if (this->selectingFunction_ == 0)
+				{
+					this->NewBookFunctionOnAction();
+				}
 			}
 		}
 	}
@@ -298,6 +365,15 @@ int TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::FunctionalityButtonsOnAction
 		{
 			if (this->functionalButtons_[i].IsHover())
 			{
+				if (i == 2 && this->removability_ == false)
+				{
+					this->selectingFunction_ = -1;
+					this->functionalButtons_[i].SetTextColor(BLACK);
+					this->functionalButtons_[i].SetFillColor(rgb(236, 242, 255));
+
+					continue;
+				}
+
 				this->selectingFunction_ = -1;
 				this->functionalButtons_[i].SetTextColor(WHITE);
 				this->functionalButtons_[i].SetFillColor(rgb(130, 170, 227));
@@ -345,6 +421,14 @@ int TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::FunctionalityButtonsOnAction
 				delay(130);
 				this->selectingFunction_ = i;
 				this->infomaticButtons_[i].status_ = true;
+
+				if (i == 2 && this->removability_ == false)
+				{
+					this->selectingFunction_ = -1;
+					this->functionalButtons_[i].SetTextColor(BLACK);
+					this->functionalButtons_[i].SetFillColor(rgb(236, 242, 255));
+					return 0;
+				}
 
 				return i + 1;
 			}

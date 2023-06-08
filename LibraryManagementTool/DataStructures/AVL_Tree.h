@@ -65,6 +65,7 @@ private:
 
 private:
     Node* root_;
+
     int size_;
 };
 

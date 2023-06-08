@@ -13,6 +13,10 @@ namespace BOOK
 
 		Book(std::string id, Status status, std::string description);
 
+		Book(const Book& other);
+
+		Book& operator=(const Book& other);
+
 		void SetID(std::string id);
 
 		std::string GetID();
@@ -29,7 +33,7 @@ namespace BOOK
 
 	private:
 		std::string id;
-		Status status;
+		Status status = AVAILABLE;
 		std::string description;
 	};
 }

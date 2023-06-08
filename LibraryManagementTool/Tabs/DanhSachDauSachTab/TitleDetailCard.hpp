@@ -5,6 +5,8 @@
 
 #include "../../Helper/Package.h"
 #include "../../DauSach/DauSach.h"
+#include "../../TheDocGia/TheDocGia.h"
+#include "../../DataStructures/Stack.h"
 #include "../../Helper/Helper.h"
 #include "../UI/Component.hpp"
 #include "../UI/Button.h"
@@ -51,6 +53,8 @@ namespace TITLE_DETAIL_CARD_COMPONENTS
 
 		int SectionOnAction();
 
+		bool Removability();
+
 	private:
 		void Initialize();
 
@@ -75,7 +79,11 @@ namespace TITLE_DETAIL_CARD_COMPONENTS
 
 		LinkedButton section_;
 
+		Button removavilityIndicator_;
+
 		Package* package_;
+
+		bool removable_ = true;
 	};
 
 	class BookDetailCardsController : public View
@@ -112,6 +120,10 @@ namespace TITLE_DETAIL_CARD_COMPONENTS
 		int Run() override;
 
 		int CardElementsOnAction();
+
+		bool Removability(int index);
+
+		int CurrentCardIndex();
 
 	private:
 		void Initialize();
@@ -158,6 +170,8 @@ public:
 
 	int Run() override;
 
+	TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController& DA_CatalogueController();
+
 private:
 	void Initialize();
 
@@ -187,6 +201,8 @@ private:
 	LinkedButton catalogueSize_;
 
 	TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController catalogueController_;
+
+	BOOK_TITLE::BookTitle* targetedTitle_;
 
 	Package* package_;
 };

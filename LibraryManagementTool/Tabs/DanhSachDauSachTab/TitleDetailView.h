@@ -35,6 +35,8 @@ namespace TITLE_DETAIL_VIEW_COMPONENTS
 
 		void SetPackage(Package* package);
 
+		bool SetRemovability(bool value);
+
 	private:
 		void Initialize();
 
@@ -42,7 +44,7 @@ namespace TITLE_DETAIL_VIEW_COMPONENTS
 
 		void InitializeNewBookCards();
 
-		int Display();
+		int Display(bool removable = true);
 
 		int FunctionalityButtonsOnAction();
 
@@ -70,6 +72,8 @@ namespace TITLE_DETAIL_VIEW_COMPONENTS
 		BOOK_TITLE::BookTitle* titlePointer_ = nullptr;
 
 		Package* package_ = nullptr;
+
+		bool removability_ = true;
 	};
 }
 
