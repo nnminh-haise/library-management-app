@@ -55,6 +55,10 @@ namespace TITLE_DETAIL_CARD_COMPONENTS
 
 		bool Removability();
 
+		void SetBookPointer(BOOK::Book* bookPointer);
+
+		BOOK::Book* GetBookPointer();
+
 	private:
 		void Initialize();
 
@@ -84,6 +88,8 @@ namespace TITLE_DETAIL_CARD_COMPONENTS
 		Package* package_;
 
 		bool removable_ = true;
+
+		BOOK::Book* bookPointer_ = nullptr;
 	};
 
 	class BookDetailCardsController : public View

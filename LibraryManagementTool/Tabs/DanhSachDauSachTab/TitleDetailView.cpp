@@ -67,8 +67,17 @@ void TitleDetail::Display()
 
 	int currentCardIndex = this->detailCard_.DA_CatalogueController().CurrentCardIndex();
 	bool bookRemovability = this->detailCard_.DA_CatalogueController().Removability(currentCardIndex);
+	auto removingBook = this->detailCard_.DA_CatalogueController()[currentCardIndex].GetBookPointer();
 
 	this->functionalitySet_.SetRemovability(bookRemovability);
+	if (bookRemovability == false)
+	{
+		this->functionalitySet_.SetRemoveBook(nullptr);
+	}
+	else
+	{
+		this->functionalitySet_.SetRemoveBook(removingBook);
+	}
 	int FunctionalitySetRunningResult = this->functionalitySet_.Run();
 	if (FunctionalitySetRunningResult == 11) //* Update cards after adding new books
 	{
@@ -261,6 +270,11 @@ bool TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::SetRemovability(bool value)
 	return this->removability_ = value;
 }
 
+void TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::SetRemoveBook(BOOK::Book* bookPointer)
+{
+	this->bookPointer_ = bookPointer;
+}
+
 int TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::Display(bool removable)
 {
 	if (!this->status_) { return 0; }
@@ -270,6 +284,13 @@ int TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::Display(bool removable)
 		if (i == 2 && removable == true && this->selectingFunction_ == i)
 		{
 			this->functionalButtons_[i].SetPlaceholder("NO");
+		}
+		else if (i == 2 && this->selectingFunction_ == 2 && this->removability_ == false)
+		{
+			this->functionalButtons_[i].SetPlaceholder("DELETE BOOK");
+			this->functionalButtons_[i].SetTextColor(BLACK);
+			this->functionalButtons_[i].SetFillColor(rgb(236, 242, 255));
+			this->selectingFunction_ = -1;
 		}
 		else if (i == 2 && this->selectingFunction_ != 2)
 		{
@@ -302,6 +323,13 @@ int TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::Display(bool removable)
 				if (this->selectingFunction_ == 0)
 				{
 					this->NewBookFunctionOnAction();
+				}
+				else if (this->selectingFunction_ == 2)
+				{
+					if (this->RemoveBookFunctionOnAction())
+					{
+						return 13;
+					}
 				}
 			}
 		}
@@ -545,6 +573,44 @@ bool TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::AddBooksButtonOnAction()
 	else
 	{
 		this->addNewBooksButton_.SetFillColor(rgb(130, 170, 227));
+	}
+
+	return false;
+}
+
+bool TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::RemoveBookFunctionOnAction()
+{
+	if (!this->status_) { return false; }
+
+	if (this->confirmButtons_[2].IsHover())
+	{
+		this->confirmButtons_[2].SetFillColor(rgb(33, 42, 62));
+	}
+	else if (this->confirmButtons_[2].LeftMouseClicked())
+	{
+		delay(130);
+		
+		if (this->bookPointer_ != nullptr)
+		{
+			std::cerr << "[LOG] Removing\n";
+
+			auto titleCatalogue = this->titlePointer_->GetCatalogue();
+			bool removeStatus = LINKED_LIST::DeleteAt(titleCatalogue, *this->bookPointer_);
+			if (removeStatus)
+			{
+				std::cerr << "SUCCESS!\n";
+			}
+			else
+			{
+				std::cerr << "FAILED!\n";
+			}
+			this->titlePointer_->SetCatalogue(titleCatalogue);
+		}
+		return true;
+	}
+	else
+	{
+		this->confirmButtons_[2].SetFillColor(rgb(130, 170, 227));
 	}
 
 	return false;

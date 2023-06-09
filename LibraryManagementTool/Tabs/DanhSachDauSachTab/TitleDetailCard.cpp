@@ -284,6 +284,16 @@ bool TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::Removability()
 	return this->removable_;
 }
 
+void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::SetBookPointer(BOOK::Book* bookPointer)
+{
+	this->bookPointer_ = bookPointer;
+}
+
+BOOK::Book* TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::GetBookPointer()
+{
+	return this->bookPointer_;
+}
+
 TitleDetailCard::TitleDetailCard()
 {
 	this->Initialize();
@@ -563,7 +573,9 @@ void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::CreateCatalogueCar
 	int index = 0;
 	for (LINKED_LIST::Pointer currentBook = catalogue; currentBook != nullptr; currentBook = currentBook->next)
 	{
-		this->cards_[index++].UpdateCard(&currentBook->info);
+		this->cards_[index].SetBookPointer(&currentBook->info);
+		this->cards_[index].UpdateCard(&currentBook->info);
+		++index;
 	}
 	this->activeCardIndex_ = 0;
 	this->cards_[this->activeCardIndex_].Activate();

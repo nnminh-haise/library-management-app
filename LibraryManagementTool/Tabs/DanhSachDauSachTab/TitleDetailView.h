@@ -37,6 +37,8 @@ namespace TITLE_DETAIL_VIEW_COMPONENTS
 
 		bool SetRemovability(bool value);
 
+		void SetRemoveBook(BOOK::Book* bookPointer);
+
 	private:
 		void Initialize();
 
@@ -51,6 +53,8 @@ namespace TITLE_DETAIL_VIEW_COMPONENTS
 		bool NewBookFunctionOnAction();
 
 		bool AddBooksButtonOnAction();
+
+		bool RemoveBookFunctionOnAction();
 
 	private:
 		using View::status_;
@@ -74,6 +78,8 @@ namespace TITLE_DETAIL_VIEW_COMPONENTS
 		Package* package_ = nullptr;
 
 		bool removability_ = true;
+
+		BOOK::Book* bookPointer_ = nullptr;
 	};
 }
 
