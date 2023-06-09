@@ -26,6 +26,9 @@ void TitleDetail::SetTitlePointer(BOOK_TITLE::BookTitle* titlePointer)
 
 	this->updatingBookSection_.Reset();
 	this->updatingBookSection_.SetTitlePointer(this->titlePointer_);
+
+	this->deletingBookSection_.Reset();
+	this->deletingBookSection_.SetTitlePointer(this->titlePointer_);
 }
 
 void TitleDetail::SetPackage(Package* package)
@@ -41,6 +44,8 @@ void TitleDetail::SetPackage(Package* package)
 	this->creatingNewBooksSection_.SetPackage(this->package_);
 
 	this->updatingBookSection_.SetPackage(this->package_);
+
+	this->deletingBookSection_.SetPackage(this->package_);
 }
 
 int TitleDetail::Run()
@@ -57,6 +62,7 @@ int TitleDetail::Run()
 		this->functionalitySet_.SetCurrentBook(
 			this->catalogueSection_[currentCatalogueCardIndex].GetBookPointer()
 		);
+		this->functionalitySet_.SetCurrentCatalogueCardPointer(&this->catalogueSection_[currentCatalogueCardIndex]);
 		this->updatingBookSection_.SetBookPointer(this->catalogueSection_[currentCatalogueCardIndex].GetBookPointer());
 		this->updatingBookSection_.SetCurrentCatalogueCardPointer(&this->catalogueSection_[currentCatalogueCardIndex]);
 	}
@@ -72,7 +78,9 @@ int TitleDetail::Run()
 		case (1): {
 			this->creatingNewBooksSection_.Activate();
 			this->updatingBookSection_.Deactivate();
+			this->deletingBookSection_.Deactivate();
 			
+			//* CREATING NEW BOOKS
 			int creatingNewBooksSectionReturnSignal = this->creatingNewBooksSection_.Run();
 			if (creatingNewBooksSectionReturnSignal == 1)
 			{
@@ -86,7 +94,9 @@ int TitleDetail::Run()
 		case (2): { //! External title's catalogue update (external saving)
 			this->creatingNewBooksSection_.Deactivate();
 			this->updatingBookSection_.Activate();
+			this->deletingBookSection_.Deactivate();
 
+			//* UPDATING A BOOK DETAILS
 			int updatingBookSectionReturnSignal = this->updatingBookSection_.Run();
 			if (updatingBookSectionReturnSignal == 1)
 			{
@@ -104,9 +114,24 @@ int TitleDetail::Run()
 
 			break;
 		}
-		case (3): {
+		case (3): { //! External title's catalogue delete (external removing)
 			this->creatingNewBooksSection_.Deactivate();
 			this->updatingBookSection_.Deactivate();
+			this->deletingBookSection_.Activate();
+
+			//* REMOVING A BOOK WITH A SPECIFIC CONDITION
+			int deletingBookSectionReturnSignal = this->deletingBookSection_.Run();
+			if (deletingBookSectionReturnSignal == 1)
+			{
+				int currentCardIndex = this->catalogueSection_.CurrentCardIndex();
+				BOOK::Book* removeBook = this->catalogueSection_[currentCardIndex].GetBookPointer();
+				LINKED_LIST::Pointer titleCatalogue = this->titlePointer_->GetCatalogue();
+				LINKED_LIST::DeleteAt(titleCatalogue, *removeBook);
+				this->titlePointer_->SetCatalogue(titleCatalogue);
+
+				this->InitializeCatalogueCards();
+				this->functionalitySet_.Reset();
+			}
 
 			break;
 		}
@@ -229,21 +254,12 @@ void TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::InitializeElements()
 	HELPER::Coordinate topLefts[] = { {446, 380}, {446, 436}, {446, 493} };
 	for (int i = 0; i < 3; ++i)
 	{
-		this->functionalButtons_[i] = Button(topLefts[i], {120, 47});
+		this->functionalButtons_[i] = Button(topLefts[i], { 120, 47 });
 		this->functionalButtons_[i].SetTextColor(BLACK);
 		this->functionalButtons_[i].SetFillColor(rgb(236, 242, 255));
 		this->functionalButtons_[i].SetBorderColor(rgb(236, 242, 255));
 		this->functionalButtons_[i].SetPlaceholder(placeholders[i]);
 	}
-
-	//this->infomaticButtons_[1].content_ = Button({576, 438}, {150, 47}, BLACK, rgb(238, 238, 238), rgb(238, 238, 238));
-	//this->infomaticButtons_[1].content_.SetPlaceholder("Editing this book!");
-
-	//this->infomaticButtons_[2].content_ = Button({ 576, 493 }, { 150, 47 }, BLACK, rgb(238, 238, 238), rgb(238, 238, 238));
-	//this->infomaticButtons_[2].content_.SetPlaceholder("Delete this book?");
-
-	//this->confirmButtons_[2] = Button({ 736, 493 }, { 70, 47 }, WHITE, rgb(130, 170, 227), rgb(130, 170, 227));
-	//this->confirmButtons_[2].SetPlaceholder("YES");
 }
 
 
@@ -272,6 +288,16 @@ void TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::SetTitlePointer(BOOK_TITLE:
 BOOK_TITLE::BookTitle* TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::GetCurrentTitle()
 {
 	return this->titlePointer_;
+}
+
+void TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::SetCurrentCatalogueCardPointer(TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard* currentCatalogueCard)
+{
+	this->currentCatalogueCard_ = currentCatalogueCard;
+}
+
+TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard* TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::GetCurrentCatalogueCardPointer()
+{
+	return this->currentCatalogueCard_;
 }
 
 void TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::SetPackage(Package* package)
@@ -319,6 +345,8 @@ int TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::FunctionalityButtonsOnAction
 			int reusltValue = 0;
 			for (int i = 1; i <= 3; ++i)
 			{
+				bool currentBookRemovability = this->currentCatalogueCard_->Removability();
+				if (i == 3 && currentBookRemovability == false) { continue; }
 				reusltValue = this->FunctionButtonOnAction(i);
 				if (reusltValue) { return reusltValue; }
 			}
@@ -883,6 +911,113 @@ int TITLE_DETAIL_VIEW_COMPONENTS::UpdateBookSection::CatalogueCardOnAction()
 		{
 			cells[i]->SetFillColor(WHITE);
 		}
+	}
+
+	return 0;
+}
+
+TITLE_DETAIL_VIEW_COMPONENTS::DelateBookSection::DelateBookSection()
+{
+	this->Initialize();
+}
+
+int TITLE_DETAIL_VIEW_COMPONENTS::DelateBookSection::Run()
+{
+	if (!this->status_) { return 0; }
+
+	this->Display();
+
+	if (this->ConfirmButtonOnAction()) //! External removing
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
+void TITLE_DETAIL_VIEW_COMPONENTS::DelateBookSection::Reset()
+{
+	this->Initialize();
+}
+
+void TITLE_DETAIL_VIEW_COMPONENTS::DelateBookSection::SetTitlePointer(BOOK_TITLE::BookTitle* titlePointer)
+{
+	this->titlePointer_ = titlePointer;
+}
+
+BOOK_TITLE::BookTitle* TITLE_DETAIL_VIEW_COMPONENTS::DelateBookSection::GetCurrentTitle()
+{
+	return this->titlePointer_;
+}
+
+void TITLE_DETAIL_VIEW_COMPONENTS::DelateBookSection::SetBookPointer(BOOK::Book* bookPointer)
+{
+	this->bookPointer_ = bookPointer;
+}
+
+BOOK::Book* TITLE_DETAIL_VIEW_COMPONENTS::DelateBookSection::GetBookPointer()
+{
+	return this->bookPointer_;
+}
+
+void TITLE_DETAIL_VIEW_COMPONENTS::DelateBookSection::SetCurrentCatalogueCardPointer(TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard* currentCatalogueCard)
+{
+	this->currentCatalogueCard_ = currentCatalogueCard;
+}
+
+TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard* TITLE_DETAIL_VIEW_COMPONENTS::DelateBookSection::GetCurrentCatalogueCardPointer()
+{
+	return this->currentCatalogueCard_;
+}
+
+void TITLE_DETAIL_VIEW_COMPONENTS::DelateBookSection::SetPackage(Package* package)
+{
+	this->package_ = package;
+}
+
+void TITLE_DETAIL_VIEW_COMPONENTS::DelateBookSection::Initialize()
+{
+	this->InitializeElements();
+}
+
+void TITLE_DETAIL_VIEW_COMPONENTS::DelateBookSection::InitializeElements()
+{
+	this->infomaticButtons_.status_ = true;
+	this->infomaticButtons_.content_ = Button({ 576, 493 }, { 150, 47 }, BLACK, rgb(238, 238, 238), rgb(238, 238, 238));
+	this->infomaticButtons_.content_.SetPlaceholder("Delete this book?");
+
+	this->confirmButton_ = Button({ 736, 493 }, { 70, 47 }, WHITE, rgb(130, 170, 227), rgb(130, 170, 227));
+	this->confirmButton_.SetPlaceholder("YES");
+}
+
+int TITLE_DETAIL_VIEW_COMPONENTS::DelateBookSection::Display()
+{
+	if (!this->status_) { return 0; }
+
+	this->infomaticButtons_.Display();
+
+	this->confirmButton_.Display();
+
+	return 0;
+}
+
+int TITLE_DETAIL_VIEW_COMPONENTS::DelateBookSection::ConfirmButtonOnAction()
+{
+	if (!this->status_) { return 0; }
+
+	if (this->confirmButton_.IsHover())
+	{
+		this->confirmButton_.SetFillColor(rgb(145, 216, 228));
+	}
+	else if (this->confirmButton_.LeftMouseClicked())
+	{
+		delay(130);
+
+		return 1;
+	}
+	else
+	{
+		this->confirmButton_.SetFillColor(rgb(130, 170, 227));
 	}
 
 	return 0;

@@ -135,27 +135,41 @@ void LINKED_LIST::Append(LINKED_LIST::Pointer& first, LINKED_LIST::Pointer& targ
 
 bool LINKED_LIST::DeleteAt(LINKED_LIST::Pointer& first, BOOK::Book item)
 {
-	if (LINKED_LIST::Empty(first))
-	{
-		return false;
-	}
+	//* Filter out an empty list
+	if (LINKED_LIST::Empty(first)) { return false; }
 
+	//* List of length 1 and target founded
 	if (first->next == nullptr && first->info.GetID().compare(item.GetID()) == 0)
 	{
 		delete first;
 		first = nullptr;
 		return true;
 	}
+	//* List of length 1 and target not founded
 	else if (first->next == nullptr)
 	{
 		return false;
 	}
+	//* List of length greater than 1 and target founded
+	else if (first->next != nullptr && first->info.GetID().compare(item.GetID()) == 0)
+	{
+		LINKED_LIST::Pointer deleteNode = first;
+		first = first->next;
+		delete deleteNode;
+		return true;
+	}
 
+	/**
+	* * List of length greater than 1 and start scanning for target
+	* * Standing from the beginning and looking at the next one
+	*/
 	LINKED_LIST::Pointer p = first;
 	for (; p != nullptr && p->next != nullptr && p->next->info.GetID().compare(item.GetID()) != 0; p = p->next);
 
+	//* After scanning and cannot find out the target
 	if (p == nullptr) { return false; }
 
+	//* Founded the target at some where from [1, n - 1]
 	LINKED_LIST::Pointer deleteNode = p->next;
 	p->next = deleteNode->next;
 	delete deleteNode;
