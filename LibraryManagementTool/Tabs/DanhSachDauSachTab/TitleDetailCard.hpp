@@ -121,6 +121,8 @@ namespace TITLE_DETAIL_CARD_COMPONENTS
 
 		void CreateCatalogueCards(LINKED_LIST::Pointer catalogue);
 
+		LINKED_LIST::Pointer GetCatalogueData();
+
 		void SetTitlePointer(BOOK_TITLE::BookTitle* titlePointer);
 
 		void SetPackage(Package* package);

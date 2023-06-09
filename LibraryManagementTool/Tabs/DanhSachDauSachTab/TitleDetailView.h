@@ -76,6 +76,65 @@ namespace TITLE_DETAIL_VIEW_COMPONENTS
 
 	};
 
+	class UpdateBookSection : public View
+	{
+	public:
+		UpdateBookSection();
+
+		using View::Activate;
+
+		using View::Deactivate;
+
+		using View::InActive;
+
+		int Run() override;
+
+		void Reset();
+
+		void SetTitlePointer(BOOK_TITLE::BookTitle* titlePointer);
+
+		BOOK_TITLE::BookTitle* GetCurrentTitle();
+
+		void SetBookPointer(BOOK::Book* bookPointer);
+
+		BOOK::Book* GetBookPointer();
+
+		void SetCurrentCatalogueCardPointer(TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard* currentCatalogueCard);
+
+		TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard* GetCurrentCatalogueCardPointer();
+
+		void SetPackage(Package* package);
+
+	private:
+		void Initialize();
+
+		void InitializeElements();
+
+		int Display();
+
+		int ConfirmButtonOnAction();
+
+		int CatalogueCardOnAction();
+
+	private:
+		using View::status_;
+
+		BOOK_TITLE::BookTitle* titlePointer_ = nullptr;
+
+		BOOK::Book* bookPointer_ = nullptr;
+
+		Package* package_ = nullptr;
+
+	private:
+		LinkedButton infomaticButtons_;
+
+		Button confirmButton_;
+
+		bool allowUpdateBook_ = false;
+
+		TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard* currentCatalogueCard_ = nullptr;
+	};
+
 	class FunctionalitySet : public View
 	{
 	public:
@@ -114,11 +173,7 @@ namespace TITLE_DETAIL_VIEW_COMPONENTS
 
 		int FunctionalityButtonsOnAction();
 
-		int CreateButtonOnAction();
-
-		int UpdateButtonOnAction();
-
-		int DeleteButtonOnAction();
+		int FunctionButtonOnAction(int indicator);
 
 	private:
 		using View::status_;
@@ -182,6 +237,8 @@ private:
 	TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController catalogueSection_;
 
 	TITLE_DETAIL_VIEW_COMPONENTS::CreatingNewBooksSection creatingNewBooksSection_;
+
+	TITLE_DETAIL_VIEW_COMPONENTS::UpdateBookSection updatingBookSection_;
 };
 
 #endif // !TITLE_DETAIL

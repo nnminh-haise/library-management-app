@@ -319,6 +319,8 @@ void TitleDetailCard::UpdateCard(BOOK_TITLE::BookTitle* targetedTitle)
 	this->pageCount_.content_.SetPlaceholder(std::to_string(targetedTitle->GetPageCount()));
 
 	this->publication_.content_.SetPlaceholder(std::to_string(targetedTitle->GetPublicationYear()));
+
+	this->emptyCatalogue_ = (LINKED_LIST::Size(targetedTitle->GetCatalogue()) == 0);
 }
 
 void TitleDetailCard::SetPackage(Package* package)
@@ -332,7 +334,7 @@ int TitleDetailCard::Run()
 
 	this->Display();
 
-	return 1;
+	return 0;
 }
 
 void TitleDetailCard::Initialize()
@@ -602,6 +604,33 @@ void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::CreateCatalogueCar
 	this->activeCardIndex_ = 0;
 	this->cards_[this->activeCardIndex_].Activate();
 	this->cardCountIndicator_.SetPlaceholder(std::format("{}/{}", this->activeCardIndex_ + 1, this->catalogueSize_));
+}
+
+LINKED_LIST::Pointer TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::GetCatalogueData()
+{
+	if (!this->status_) { return nullptr; }
+
+	if (this->titlePointer_ == nullptr)
+	{
+		throw std::logic_error("[ERROR] Title's pointer is NULL! (TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::GetCatalogueData)");
+	}
+
+	auto titleCatelogue = this->titlePointer_->GetCatalogue();
+	int index = 0;
+	for (auto p = titleCatelogue; p != nullptr; p = p->next)
+	{
+		p->info.SetDescription(std::format(
+			"ROW {} COLUMN {} SECTION {}",
+			this->cards_[index].DA_Row().content_.GetPlaceholder(),
+			this->cards_[index].DA_Column().content_.GetPlaceholder(),
+			this->cards_[index].DA_Section().content_.GetPlaceholder()
+		));
+
+		++index;
+	}
+	this->titlePointer_->SetCatalogue(titleCatelogue);
+
+	return this->titlePointer_->GetCatalogue();
 }
 
 void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::SetTitlePointer(BOOK_TITLE::BookTitle* titlePointer)
