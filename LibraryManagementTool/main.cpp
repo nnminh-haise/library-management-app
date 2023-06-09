@@ -18,6 +18,16 @@ int main() {
 	LandingView mainView(&readerList, &titleList);
 	mainView.Run();
 
+	//* Update databse before closing the program
+	try {
+		READER_MODULES::UpdateListToDatabase(CONSTANTS::READER_DATABASE, &readerList);
+		DAU_SACH_MODULES::UpdateListToDatabase(CONSTANTS::TITLES_DATABASE, titleList);
+	}
+	catch (const std::exception& ex) {
+		std::cerr << ex.what() << "\n";
+		return 1;
+	}
+
 	return 0;
 }
 

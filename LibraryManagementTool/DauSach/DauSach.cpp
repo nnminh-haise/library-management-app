@@ -513,6 +513,8 @@ bool DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(std::string filename, LINEAR_LI
 
 bool DAU_SACH_MODULES::UpdateListToDatabase(const std::string& filename, const LINEAR_LIST::LinearList& titleList) 
 {
+	std::cerr << "[LOG] Updating title list to database!\n";
+
 	std::filebuf databaseBuffer{};
 
 	if (!databaseBuffer.open(filename, std::ios::out)) 

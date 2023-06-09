@@ -184,10 +184,6 @@ void LandingView::Run()
 			char emptychr = getch();//take an empty char then do nothing
 		}
 	}
-
-	//* Update databse before closing the program
-	READER_MODULES::UpdateListToDatabase(CONSTANTS::READER_DATABASE, this->readerList);
-	DAU_SACH_MODULES::UpdateListToDatabase(CONSTANTS::TITLES_DATABASE, *this->titleList);
 }
 
 void LandingView::CreateTitleHashMap()

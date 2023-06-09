@@ -249,7 +249,7 @@ void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::Display()
 	this->column_.Display();
 	this->section_.Display();
 
-	this->removavilityIndicator_.Display();
+	if (this->removable_ == false) { this->removavilityIndicator_.Display(); }
 }
 
 int TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::SectionOnAction()
@@ -277,6 +277,11 @@ int TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::SectionOnAction()
 	}
 
 	return 0;
+}
+
+void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::SetRemovability(bool value)
+{
+	this->removable_ = value;
 }
 
 bool TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::Removability()
@@ -314,19 +319,11 @@ void TitleDetailCard::UpdateCard(BOOK_TITLE::BookTitle* targetedTitle)
 	this->pageCount_.content_.SetPlaceholder(std::to_string(targetedTitle->GetPageCount()));
 
 	this->publication_.content_.SetPlaceholder(std::to_string(targetedTitle->GetPublicationYear()));
-
-	this->catalogueSize_.content_.SetPlaceholder(std::to_string(LINKED_LIST::Size(targetedTitle->GetCatalogue())));
-
-	this->catalogueController_ = TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController(LINKED_LIST::Size(targetedTitle->GetCatalogue()));
-	this->catalogueController_.CreateCatalogueCards(targetedTitle->GetCatalogue());
-	this->catalogueController_.Activate();
 }
 
 void TitleDetailCard::SetPackage(Package* package)
 {
 	this->package_ = package;
-
-	this->catalogueController_.SetPackage(package);
 }
 
 int TitleDetailCard::Run()
@@ -336,11 +333,6 @@ int TitleDetailCard::Run()
 	this->Display();
 
 	return 1;
-}
-
-TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController& TitleDetailCard::DA_CatalogueController()
-{
-	return this->catalogueController_;
 }
 
 void TitleDetailCard::Initialize()
@@ -434,9 +426,6 @@ void TitleDetailCard::Display()
 	this->author_.Display();
 	this->pageCount_.Display();
 	this->publication_.Display();
-	this->catalogueSize_.Display();
-
-	this->catalogueController_.Run();
 }
 
 TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::BookDetailCardsController()
@@ -445,11 +434,18 @@ TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::BookDetailCardsControll
 
 TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::BookDetailCardsController(int catalogueSize)
 {
-	if (catalogueSize == 0) { throw std::logic_error("[ERROR] Empty catalogue! (TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::BookDetailCardsController)"); }
+	if (catalogueSize == 0)
+	{
+		this->emptyCatalogue_ = true;
 
-	this->catalogueSize_ = catalogueSize;
+		this->catalogueSize_ = 0;
+	}
+	else
+	{
+		this->catalogueSize_ = catalogueSize;
 
-	this->cards_ = new TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard[catalogueSize];
+		this->cards_ = new TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard[catalogueSize];
+	}
 
 	this->Initialize();
 }
@@ -472,11 +468,21 @@ TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::BookDetailCardsControll
 		for (int i = 0; i < 2; ++i) { this->cardChangeButtons_[i] = other.cardChangeButtons_[i]; }
 
 		this->cardCountIndicator_ = other.cardCountIndicator_;
+
+		this->titlePointer_ = other.titlePointer_;
+		
+		this->titleCatalogue_ = other.titleCatalogue_;
+
+		this->emptyCatalogue_ = other.emptyCatalogue_;
+
+		this->package_ = other.package_;
 	}
 }
 
 TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::~BookDetailCardsController()
 {
+	if (this->catalogueSize_ == 0) { return; }
+
 	delete[] this->cards_;
 }
 
@@ -498,6 +504,14 @@ TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController& TITLE_DETAIL_CARD_COMPO
 	for (int i = 0; i < 2; ++i) { this->cardChangeButtons_[i] = other.cardChangeButtons_[i]; }
 
 	this->cardCountIndicator_ = other.cardCountIndicator_;
+
+	this->titlePointer_ = other.titlePointer_;
+
+	this->titleCatalogue_ = other.titleCatalogue_;
+
+	this->emptyCatalogue_ = other.emptyCatalogue_;
+
+	this->package_ = other.package_;
 }
 
 TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard& TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::operator[](int index)
@@ -563,23 +577,36 @@ void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::CardChangeButtonsO
 
 void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::CreateCatalogueCards(LINKED_LIST::Pointer catalogue)
 {
-	if (catalogue == nullptr) { throw std::logic_error("[ERROR] NULL Pointer! (TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::CreateCatalogueCards)"); }
+	this->titleCatalogue_ = catalogue;
 
 	for (int i = 0; i < this->catalogueSize_; ++i)
 	{
 		this->cards_[i].SetPackage(this->package_);
 	}
 
-	int index = 0;
-	for (LINKED_LIST::Pointer currentBook = catalogue; currentBook != nullptr; currentBook = currentBook->next)
+	this->emptyCatalogue_ = true;
+
+	if (catalogue != nullptr)
 	{
-		this->cards_[index].SetBookPointer(&currentBook->info);
-		this->cards_[index].UpdateCard(&currentBook->info);
-		++index;
+		int index = 0;
+		for (LINKED_LIST::Pointer currentBook = catalogue; currentBook != nullptr; currentBook = currentBook->next)
+		{
+			this->cards_[index].SetBookPointer(&currentBook->info);
+			this->cards_[index].UpdateCard(&currentBook->info);
+			++index;
+		}
+
+		this->emptyCatalogue_ = false;
 	}
+
 	this->activeCardIndex_ = 0;
 	this->cards_[this->activeCardIndex_].Activate();
 	this->cardCountIndicator_.SetPlaceholder(std::format("{}/{}", this->activeCardIndex_ + 1, this->catalogueSize_));
+}
+
+void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::SetTitlePointer(BOOK_TITLE::BookTitle* titlePointer)
+{
+	this->titlePointer_ = titlePointer;
 }
 
 void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::SetPackage(Package* package)
@@ -605,7 +632,10 @@ int TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::Run()
 
 	this->Display();
 
-	this->CardChangeButtonsOnAction();
+	if (this->emptyCatalogue_ == false)
+	{
+		this->CardChangeButtonsOnAction();
+	}
 
 	return 0;
 }
@@ -633,6 +663,11 @@ bool TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::Removability(int i
 int TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::CurrentCardIndex()
 {
 	return this->activeCardIndex_;
+}
+
+void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::SetEmptyCatalogue(bool value)
+{
+	this->emptyCatalogue_ = value;
 }
 
 void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::Initialize()
@@ -667,6 +702,13 @@ void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::InitializeElements
 void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::Display()
 {
 	if (!this->status_) { return; }
+
+	if (this->emptyCatalogue_)
+	{
+		this->coverbutton_.SetPlaceholder("This title's book catalogue is EMPTY!");
+		this->coverbutton_.Display();
+		return;
+	}
 
 	this->cards_[this->activeCardIndex_].Run();
 

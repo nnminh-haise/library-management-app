@@ -14,6 +14,68 @@
 
 namespace TITLE_DETAIL_VIEW_COMPONENTS
 {
+	class CreatingNewBooksSection : public View
+	{
+	public:
+		CreatingNewBooksSection();
+
+		using View::Activate;
+
+		using View::Deactivate;
+
+		using View::InActive;
+
+		int Run() override;
+
+		void Reset();
+
+		void SetTitlePointer(BOOK_TITLE::BookTitle* titlePointer);
+
+		BOOK_TITLE::BookTitle* GetCurrentTitle();
+
+		void SetPackage(Package* package);
+
+	private:
+		void Initialize();
+
+		void InitializeElements();
+
+		int Display();
+
+		int InfomaticButtonOnAction();
+
+		int ConfirmButtonOnAction();
+
+		void CreateCatalogue(int catalogueSize);
+
+		void InitializeNewBookCards();
+
+		void NewBooksCardsOnAction();
+
+		int SaveButtonOnAction();
+
+	private:
+		using View::status_;
+
+		BOOK_TITLE::BookTitle* titlePointer_ = nullptr;
+
+		Package* package_ = nullptr;
+
+	private:
+		LinkedButton infomaticButtons_;
+
+		Button confirmButton_;
+
+		TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController newBooksCardsController_;
+
+		bool allowCreatingNewBooks_ = false;
+
+		Button saveButton_;
+
+		LINKED_LIST::Pointer newBooks_ = nullptr;
+
+	};
+
 	class FunctionalitySet : public View
 	{
 	public:
@@ -31,55 +93,45 @@ namespace TITLE_DETAIL_VIEW_COMPONENTS
 
 		void Reset();
 
+		void SetCurrentBook(BOOK::Book* bookPointer);
+
+		BOOK::Book* GetCurrentBook();
+
 		void SetTitlePointer(BOOK_TITLE::BookTitle* titlePointer);
+
+		BOOK_TITLE::BookTitle* GetCurrentTitle();
 
 		void SetPackage(Package* package);
 
-		bool SetRemovability(bool value);
-
-		void SetRemoveBook(BOOK::Book* bookPointer);
+		int WorkingFunctionality();
 
 	private:
 		void Initialize();
 
 		void InitializeElements();
 
-		void InitializeNewBookCards();
-
-		int Display(bool removable = true);
+		int Display();
 
 		int FunctionalityButtonsOnAction();
 
-		bool NewBookFunctionOnAction();
+		int CreateButtonOnAction();
 
-		bool AddBooksButtonOnAction();
+		int UpdateButtonOnAction();
 
-		bool RemoveBookFunctionOnAction();
+		int DeleteButtonOnAction();
 
 	private:
 		using View::status_;
 
-		int selectingFunction_ = -1;
+		int workingFunction_ = -1;
 
 		Button functionalButtons_[3];
 
-		LinkedButton infomaticButtons_[3];
-
-		Button confirmButtons_[3];
-
-		Button addNewBooksButton_;
-
-		LINKED_LIST::Pointer newBooks_ = nullptr;
-
-		TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController newBookCards_;
-
 		BOOK_TITLE::BookTitle* titlePointer_ = nullptr;
 
-		Package* package_ = nullptr;
-
-		bool removability_ = true;
-
 		BOOK::Book* bookPointer_ = nullptr;
+
+		Package* package_ = nullptr;
 	};
 }
 
@@ -107,6 +159,8 @@ private:
 
 	void InitializeElements();
 
+	void InitializeCatalogueCards();
+
 	void CleanUp();
 
 	void Display();
@@ -123,6 +177,11 @@ private:
 	BOOK_TITLE::BookTitle* titlePointer_ = nullptr;
 
 	Package* package_ = nullptr;
+
+private:
+	TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController catalogueSection_;
+
+	TITLE_DETAIL_VIEW_COMPONENTS::CreatingNewBooksSection creatingNewBooksSection_;
 };
 
 #endif // !TITLE_DETAIL

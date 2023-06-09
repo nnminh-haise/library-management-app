@@ -775,6 +775,8 @@ bool READER_MODULES::LoadDanhSachTheDocGiaFromDB(const std::string& filename, AV
 
 bool READER_MODULES::UpdateListToDatabase(const std::string& filename, AVL_Tree<READER::Reader, int>* tree)
 {
+    std::cerr << "[LOG] Updating reader list to database!\n";
+
     std::filebuf databaseBuffer{};
 
     if (!databaseBuffer.open(filename, std::ios::out))
@@ -808,22 +810,8 @@ bool READER_MODULES::UpdateListToDatabase(const std::string& filename, AVL_Tree<
             }
             else {
                 DOUBLE_LINKED_LIST::Controller lst = p->info_.GetBooksCirculation();
-
-                std::cout << "debug\n";
-                int cnt = 0;
-                for (auto p = lst.First; p != nullptr; p = p->right)
-                {
-                    ++cnt;
-                    std::cout << p->info.GetID() << "\n";
-                }
-                std::cout << "cnt = " << cnt << "\n";
-
-
                 int listSize = DOUBLE_LINKED_LIST::Size(lst);
-                std::cout << "size: " << listSize << "\n";
-
                 database << listSize << "\n";
-
                 for (DOUBLE_LINKED_LIST::Pointer currentNode = lst.First; currentNode != nullptr; currentNode = currentNode->right)
                 {
                     database << currentNode->info.GetID() << ", " << currentNode->info.GetBorrowDate().Stringify() << ", " << currentNode->info.GetReturnDate().Stringify() << ", " << currentNode->info.StringfyStatus() << "\n";

@@ -177,6 +177,7 @@
     <ClInclude Include="DauSach\DauSach.h" />
     <ClInclude Include="Tabs\UI\Elements.h" />
     <ClInclude Include="Helper\Helper.h" />
+    <ClInclude Include="Tabs\UI\Table.hpp" />
     <ClInclude Include="TheDocGia\TheDocGia.h" />
     <ClInclude Include="Tabs\UI\Component.hpp" />
     <ClInclude Include="Tabs\DanhSachDauSachTab\TitleDetailView.h" />

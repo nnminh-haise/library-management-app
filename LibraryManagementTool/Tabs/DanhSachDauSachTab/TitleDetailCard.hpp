@@ -53,6 +53,8 @@ namespace TITLE_DETAIL_CARD_COMPONENTS
 
 		int SectionOnAction();
 
+		void SetRemovability(bool value);
+
 		bool Removability();
 
 		void SetBookPointer(BOOK::Book* bookPointer);
@@ -83,7 +85,7 @@ namespace TITLE_DETAIL_CARD_COMPONENTS
 
 		LinkedButton section_;
 
-		Button removavilityIndicator_;
+		Button removavilityIndicator_{ {0, 0}, {0, 0} };
 
 		Package* package_;
 
@@ -119,6 +121,8 @@ namespace TITLE_DETAIL_CARD_COMPONENTS
 
 		void CreateCatalogueCards(LINKED_LIST::Pointer catalogue);
 
+		void SetTitlePointer(BOOK_TITLE::BookTitle* titlePointer);
+
 		void SetPackage(Package* package);
 
 		int Size();
@@ -130,6 +134,8 @@ namespace TITLE_DETAIL_CARD_COMPONENTS
 		bool Removability(int index);
 
 		int CurrentCardIndex();
+
+		void SetEmptyCatalogue(bool value);
 
 	private:
 		void Initialize();
@@ -155,7 +161,15 @@ namespace TITLE_DETAIL_CARD_COMPONENTS
 
 		Button cardCountIndicator_;
 
-		Package* package_;
+		BOOK_TITLE::BookTitle* titlePointer_ = nullptr;
+
+		LINKED_LIST::Pointer titleCatalogue_ = nullptr;
+
+		Package* package_ = nullptr;
+
+		bool emptyCatalogue_ = false;
+
+		Button coverbutton_{ {36, 340}, {400, 240}, BLACK, rgb(217,217,217), rgb(217,217,217) };
 	};
 }
 
@@ -175,8 +189,6 @@ public:
 	void SetPackage(Package* package);
 
 	int Run() override;
-
-	TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController& DA_CatalogueController();
 
 private:
 	void Initialize();
@@ -204,13 +216,11 @@ private:
 
 	LinkedButton publication_;
 
-	LinkedButton catalogueSize_;
-
-	TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController catalogueController_;
-
 	BOOK_TITLE::BookTitle* targetedTitle_;
 
 	Package* package_;
+
+	bool emptyCatalogue_ = false;
 };
 
 #endif // !TITLE_DETAIL_CARD
