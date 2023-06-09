@@ -172,14 +172,14 @@ namespace DAU_SACH_TAB
 				}
 				else if (currentCell.LeftMouseClicked())
 				{
-					delay(100);
+					delay(130);
 
 					BOOK_TITLE::BookTitle* selectedObject = this->dataList_->nodes[(datasheetRowCount - 1) * currentDatasheetIndex + rowIndex - 1];
 					this->datasheetSelectedObject_->SetObjectPointer(selectedObject);
 				}
 				else if (currentCell.RightMouseClicked())
 				{
-					delay(100);
+					delay(130);
 
 					BOOK_TITLE::BookTitle* selectedObject = this->dataList_->nodes[(datasheetRowCount - 1) * currentDatasheetIndex + rowIndex - 1];
 					this->datasheetSelectedObject_->SetObjectPointer(selectedObject);
