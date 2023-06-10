@@ -308,6 +308,8 @@ private:
 
 	TitleDetail titleDetailSection_;
 
+	Button noticator_{ {1053, 940}, {600, 40}, rgb(57, 72, 103), rgb(241, 246, 249), rgb(241, 246, 249) };
+
 private:
 	bool defaultView_ = true;
 

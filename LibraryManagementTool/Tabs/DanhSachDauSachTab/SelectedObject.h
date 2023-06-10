@@ -6,7 +6,7 @@ template<typename T>
 class SelectedObject
 {
 public:
-	SelectedObject() : active_(false), objectPointer_(nullptr), indicator_(Button({1042, 950}, {500, 30}, BLACK, rgb(236, 242, 255), BLACK)) {}
+	SelectedObject() : active_(false), objectPointer_(nullptr), indicator_(Button({147, 940}, {600, 40}, BLACK, rgb(236, 242, 255), rgb(236, 242, 255))) {}
 
 	SelectedObject(const SelectedObject& other)
 	{

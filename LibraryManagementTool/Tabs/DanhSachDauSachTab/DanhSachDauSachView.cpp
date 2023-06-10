@@ -31,8 +31,8 @@ namespace DAU_SACH_TAB
 			DATASHEET_DEFAULT_PROPERTIES::MAX_ROW,
 			DAU_SACH_PROPERTIES::PROPERTIES_COUNT,
 			DATASHEET_DEFAULT_PROPERTIES::ROW_HEIGHT,
-			HELPER::Coordinate(36, 210),
-			HELPER::Coordinate(36, 950)
+			HELPER::Coordinate(147, 210),
+			HELPER::Coordinate(850, 945)
 		};
 	}
 
@@ -377,11 +377,11 @@ namespace DAU_SACH_TAB
 
 	void SearchSection::Initialize()
 	{
-		this->title_ = Button(HELPER::Coordinate(36, 120), 750, 70);
+		this->title_ = Button(HELPER::Coordinate(147, 120), 750, 70);
 		this->title_.SetFillColor(rgb(33, 42, 62));
 		this->title_.SetBorderColor(rgb(33, 42, 62));
 
-		this->searchBox_ = Button(HELPER::Coordinate(41, 125), 740, 60);
+		this->searchBox_ = Button(HELPER::Coordinate(152, 125), 740, 60);
 		this->searchBox_.SetPlaceholder("Type here to search!");
 
 		this->InitializeSearchFilters();
@@ -392,7 +392,7 @@ namespace DAU_SACH_TAB
 		this->searchFilters_ = SearchFilters(5);
 
 		std::string filterPlaceholders[] = { "Title", "ISBN", "Category", "Author", "Publication" };
-		HELPER::Coordinate filterCoordinates[] = { {822, 120}, {946, 120}, {1070, 120}, {1194, 120}, {1318, 120} };
+		HELPER::Coordinate filterCoordinates[] = { {933, 120}, {1057, 120}, {1181, 120}, {1305, 120}, {1429, 120} };
 		bool filterDefaultValues[] = { true, true, true, false, false };
 		for (int i = 0; i < 5; ++i)
 		{
@@ -1199,6 +1199,8 @@ void DauSachTab::Run()
 			this->titleDetailSection_.SetTitlePointer(this->datasheetSelectedObject_.GetObjectPointer());
 		}
 
+		this->noticator_.Display();
+
 		//* Selected title section runtime logic
 		if (this->datasheetSelectedObject_.Run() == 1)
 		{
@@ -1207,7 +1209,7 @@ void DauSachTab::Run()
 			this->titleDetailSection_.SetTitlePointer(this->datasheetSelectedObject_.GetObjectPointer());
 		}
 
-		for (int i = 0; i < 3; ++i) { this->functionalButtons[i].Display(); }
+		for (int i = 0; i < 1; ++i) { this->functionalButtons[i].Display(); }
 		this->FunctionalButtonOnAction();
 
 		//* Search field section runtime logic
@@ -1377,12 +1379,12 @@ void DauSachTab::Initialize()
 	this->datasheetSelectedObject_.Activate();
 
 	HELPER::Coordinate listManipulateButtonCoordinates[] = {
-		HELPER::Coordinate(1585, 210),
+		HELPER::Coordinate(1660, 210),
 		HELPER::Coordinate(1585, 300),
 		HELPER::Coordinate(1585, 390)
 	};
-	HELPER::Dimension listManipulateButtonDimension(170, 70);
-	std::string listManipulateButtonPlaceholders[] = { "NEW", "EDIT", "REMOVE" };
+	HELPER::Dimension listManipulateButtonDimension(100, 50);
+	std::string listManipulateButtonPlaceholders[] = { "NEW TITLE", "EDIT", "REMOVE" };
 	for (int i = 0; i < 3; ++i)
 	{
 		this->functionalButtons[i] = Button(listManipulateButtonCoordinates[i], listManipulateButtonDimension);
@@ -1396,6 +1398,8 @@ void DauSachTab::Initialize()
 
 	this->titleDetailSection_.Deactivate();
 	this->titleDetailSection_.SetPackage(this->package_);
+
+	this->noticator_.SetPlaceholder("Right click on any cell of the row to quickly open the corresponding title!");
 }
 
 void DauSachTab::FunctionalButtonOnAction()
@@ -1419,10 +1423,8 @@ void DauSachTab::FunctionalButtonOnAction()
 					this->titleCreatingSection.Activate();
 					break;
 				case (1):
-					std::cerr << "edit item!\n";
 					break;
 				case (2):
-					std::cerr << "remove item!\n";
 					break;
 			}
 		}

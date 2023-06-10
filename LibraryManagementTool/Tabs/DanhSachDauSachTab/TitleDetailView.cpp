@@ -58,7 +58,7 @@ int TitleDetail::Run()
 	if (this->catalogueSection_.Size())
 	{
 		int currentCatalogueCardIndex = this->catalogueSection_.CurrentCardIndex();
-		std::cerr << "[LOG] Displaying book: " << this->catalogueSection_[currentCatalogueCardIndex].DA_BookID().content_.GetPlaceholder() << "\n";
+		//std::cerr << "[LOG] Displaying book: " << this->catalogueSection_[currentCatalogueCardIndex].DA_BookID().content_.GetPlaceholder() << "\n";
 		this->functionalitySet_.SetCurrentBook(
 			this->catalogueSection_[currentCatalogueCardIndex].GetBookPointer()
 		);
@@ -75,7 +75,7 @@ int TitleDetail::Run()
 	int workingFunction = this->functionalitySet_.WorkingFunctionality();
 	switch (workingFunction)
 	{
-		case (1): {
+		case (1): { //! Internal title's catalgoue create (internal adding at SaveButtonOnAction)
 			this->creatingNewBooksSection_.Activate();
 			this->updatingBookSection_.Deactivate();
 			this->deletingBookSection_.Deactivate();
@@ -84,7 +84,6 @@ int TitleDetail::Run()
 			int creatingNewBooksSectionReturnSignal = this->creatingNewBooksSection_.Run();
 			if (creatingNewBooksSectionReturnSignal == 1)
 			{
-				std::cerr << "[LOG] Recreate title's catalogue display section!\n";
 				this->InitializeCatalogueCards();
 				this->functionalitySet_.Reset();
 			}
@@ -100,8 +99,6 @@ int TitleDetail::Run()
 			int updatingBookSectionReturnSignal = this->updatingBookSection_.Run();
 			if (updatingBookSectionReturnSignal == 1)
 			{
-				std::cerr << "[LOG] Recreate title's catalogue display section!\n";
-
 				LINKED_LIST::Pointer newCatalogue = nullptr;
 				LINKED_LIST::Initialize(newCatalogue);
 
@@ -211,8 +208,6 @@ int TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::Run()
 	if (this->titlePointer_ == nullptr) { return 0; }
 
 	//* Indicating working functionality
-	std::cerr << "Working function: " << this->workingFunction_ << "\n";
-
 	if (this->workingFunction_ != -1)
 	{
 		this->functionalButtons_[this->workingFunction_ - 1].SetTextColor(WHITE);
@@ -227,15 +222,15 @@ int TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::Run()
 	switch (functionalityReturnSignal)
 	{
 		case (11): {
-			return 11; //TODO: return a signal to create new books
+			return 11; //* return a signal to create new books
 			break;
 		}
 		case (12): {
-			return 12; //TODO: return a signal to update current book
+			return 12; //* return a signal to update current book
 			break;
 		}
 		case (13): {
-			return 13; //TODO: return a signal to delete current book
+			return 13; //* return a signal to delete current book
 			break;
 		}
 	}
@@ -326,9 +321,7 @@ int TITLE_DETAIL_VIEW_COMPONENTS::FunctionalitySet::FunctionalityButtonsOnAction
 {
 	if (!this->status_) { return 0; }
 
-	std::cerr << "bug: " << (this->bookPointer_ == nullptr) << "\n";
-
-	if (this->bookPointer_ == nullptr)
+	if (this->titlePointer_->GetCatalogue() == nullptr)
 	{
 		int resultValue = this->FunctionButtonOnAction(1);
 		if (resultValue) { return resultValue; }
@@ -830,7 +823,7 @@ int TITLE_DETAIL_VIEW_COMPONENTS::UpdateBookSection::Display()
 {
 	if (!this->status_) { return 0; }
 
-	this->infomaticButtons_.Display();
+	this->infomaticButtons_.Display(2);
 
 	this->confirmButton_.Display();
 
@@ -994,7 +987,7 @@ int TITLE_DETAIL_VIEW_COMPONENTS::DelateBookSection::Display()
 {
 	if (!this->status_) { return 0; }
 
-	this->infomaticButtons_.Display();
+	this->infomaticButtons_.Display(2);
 
 	this->confirmButton_.Display();
 
