@@ -59,9 +59,9 @@ namespace DAU_SACH_TAB
 		int DatasheetOnAction();
 
 	public:
-		bool active_;
+		bool active_ = false;
 
-		bool allowCreateDatasheet_;
+		bool allowCreateDatasheet_ = false;
 
 		DATASHEET::Controller datasheetController_;
 		
@@ -100,7 +100,7 @@ namespace DAU_SACH_TAB
 		void InitializeElements();
 
 	public:
-		bool active_;
+		bool active_ = false;
 		HELPER::Fill background_;
 		Button titleButton_;
 		Button saveButton_;
@@ -150,10 +150,10 @@ namespace DAU_SACH_TAB
 		LINEAR_LIST::LinearList* titleList_;
 		ELEMENTS::InputModeController* inputController_;
 
-		bool active;
+		bool active = false;
 		BookCreatingSection* items;
-		int itemsCount;
-		int activeField;
+		int itemsCount{};
+		int activeField{};
 		Button indexChangeButtons[2];
 	};
 
@@ -304,6 +304,8 @@ public:
 
 	DauSachTab(const DauSachTab& other);
 
+	~DauSachTab();
+
 	DauSachTab& operator= (const DauSachTab& other);
 
 	using View::Activate;
@@ -311,8 +313,6 @@ public:
 	using View::Deactivate;
 
 	using View::InActive;
-
-	void Destructor();
 
 	int Run() override;
 

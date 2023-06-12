@@ -183,39 +183,57 @@ namespace DAU_SACH_TAB
 		int datasheetColumnCount = this->datasheetController_.GetAttributeCount();
 		int datasheetRowCount = this->datasheetController_.GetRecordCount();
 
+		std::string targetISBN{};
+
 		for (int rowIndex = 1; rowIndex < datasheetRowCount; ++rowIndex)
 		{
-			for (int columnIndex = 0; columnIndex < datasheetColumnCount; ++columnIndex)
+			Button& currentCell = this->datasheetController_[currentDatasheetIndex][rowIndex][2];
+			Button& ISBNCell = this->datasheetController_[currentDatasheetIndex][rowIndex][1];
+
+			if (currentCell.GetPlaceholder().compare("...") == 0) { continue; }
+
+			if (currentCell.IsHover())
 			{
-				Button& currentCell = this->datasheetController_[currentDatasheetIndex][rowIndex][columnIndex];
+				currentCell.SetFillColor(rgb(221, 230, 237));
+			}
+			else if (currentCell.LeftMouseClicked())
+			{
+				delay(130);
 
-				if (currentCell.GetPlaceholder().compare("...") == 0) { continue; }
-
-				if (currentCell.IsHover())
+				targetISBN = ISBNCell.GetPlaceholder();
+				BOOK_TITLE::BookTitle* selectedObject = nullptr;
+				for (int i = 0; i < this->dataList_->numberOfNode; ++i)
 				{
-					currentCell.SetFillColor(rgb(221, 230, 237));
+					if (this->dataFilter_->filters_[i] && this->dataList_->nodes[i]->GetISBN().compare(targetISBN) == 0)
+					{
+						selectedObject = this->dataList_->nodes[i];
+					}
 				}
-				else if (currentCell.LeftMouseClicked())
-				{
-					delay(130);
 
-					BOOK_TITLE::BookTitle* selectedObject = this->dataList_->nodes[(datasheetRowCount - 1) * currentDatasheetIndex + rowIndex - 1];
-					this->datasheetSelectedObject_->SetObjectPointer(selectedObject);
-				}
-				else if (currentCell.RightMouseClicked())
-				{
-					delay(130);
+				this->datasheetSelectedObject_->SetObjectPointer(selectedObject);
+			}
+			else if (currentCell.RightMouseClicked())
+			{
+				delay(130);
 
-					BOOK_TITLE::BookTitle* selectedObject = this->dataList_->nodes[(datasheetRowCount - 1) * currentDatasheetIndex + rowIndex - 1];
-					this->datasheetSelectedObject_->SetObjectPointer(selectedObject);
-
-					return 1;
-				}
-				else
+				targetISBN = ISBNCell.GetPlaceholder();
+				BOOK_TITLE::BookTitle* selectedObject = nullptr;
+				for (int i = 0; i < this->dataList_->numberOfNode; ++i)
 				{
-					if (rowIndex % 2 == 0) { currentCell.SetFillColor(rgb(238, 238, 238)); }
-					else { currentCell.SetFillColor(rgb(255, 251, 245)); }
+					if (this->dataFilter_->filters_[i] && this->dataList_->nodes[i]->GetISBN().compare(targetISBN) == 0)
+					{
+						selectedObject = this->dataList_->nodes[i];
+					}
 				}
+
+				this->datasheetSelectedObject_->SetObjectPointer(selectedObject);
+
+				return 1;
+			}
+			else
+			{
+				if (rowIndex % 2 == 0) { currentCell.SetFillColor(rgb(238, 238, 238)); }
+				else { currentCell.SetFillColor(rgb(255, 251, 245)); }
 			}
 		}
 
@@ -319,7 +337,7 @@ namespace DAU_SACH_TAB
 		std::string titlePublication{};
 
 		//* Initialize filter's checkers
-		int filterCount = this->searchFilters_.Size();
+		int filterCount = 5;
 		bool* filterCheckers = new bool[filterCount];
 		for (int i = 0; i < filterCount; ++i) { filterCheckers[i] = false; }
 
@@ -353,7 +371,6 @@ namespace DAU_SACH_TAB
 			}
 
 			//* Only update filter if there are any changes
-			//if (existSubstringInISBN || existSubstringInTitle)
 			if (res)
 			{
 				// The current filter is already correct, therefore we don't need to update the filter
@@ -1383,6 +1400,10 @@ DauSachTab::DauSachTab(const DauSachTab& other)
 	}
 }
 
+DauSachTab::~DauSachTab()
+{
+}
+
 DauSachTab& DauSachTab::operator=(const DauSachTab& other)
 {
 	if (this == &other) { return *this; }
@@ -1413,8 +1434,6 @@ DauSachTab& DauSachTab::operator=(const DauSachTab& other)
 
 	this->datasheetSelectedObject_ = other.datasheetSelectedObject_;
 }
-
-void DauSachTab::Destructor() {}
 
 int DauSachTab::Run()
 {

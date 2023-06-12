@@ -95,7 +95,7 @@ class Filter
 
 class SearchFilters
 {
-    public:
+public:
     SearchFilters() : active_(false), filters_(nullptr) {}
 
     SearchFilters(int filterCount) : active_(false), filterCount_(filterCount)
@@ -132,7 +132,7 @@ class SearchFilters
     {
         if (this == &other) { return *this; }
 
-        // this->~SearchFilters();
+        this->~SearchFilters();
 
         this->active_ = other.active_;
         this->filterCount_ = other.filterCount_;
@@ -172,7 +172,7 @@ class SearchFilters
         for (int i = 0; i < this->filterCount_; ++i) { this->filters_[i].Run(); }
     }
 
-    private:
+private:
     bool active_ = false;
     int filterCount_ = 0;
     Filter* filters_ = nullptr;
