@@ -70,6 +70,7 @@ namespace GLOBAL_VARIABLES {
 
 namespace DATASHEET_DEFAULT_PROPERTIES
 {
+	const int LETTER_WIDTH = 10;
 	const int ROW_HEIGHT = 45;
 	const int MAX_ROW = 16;
 	const int PROPERTIES_COUNT = 6;
@@ -96,6 +97,14 @@ namespace READER_PROPERTIES
 			const HELPER::Coordinate DATASHEET_CHANGE_BUTTON_TOP_LEFT{ 1115, 870 };
 		}
 	}
+}
+
+namespace TITLE_LIST_TABLE_PROPERTIES
+{
+	const int PROPERTIES_COUNT = 6;
+	const int MAX_CHARACTERS[] = { 4, 50, 10, 40, 11, 20 };
+	const int ROW_HEIGHT = 45;
+	const std::string LABEL_PLACEHOLDERS[] = { "ISBN", "TITLE", "PAGE COUNT", "AUTHOR", "PUBLICATION", "CATEGORY" };
 }
 
 namespace STATISTIC_TAB_PROPERTIES

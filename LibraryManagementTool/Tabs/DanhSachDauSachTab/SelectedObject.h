@@ -12,7 +12,7 @@ public:
 	{
 		if (this != &other)
 		{
-			~SelectedObject();
+			this->~SelectedObject();
 
 			this->active_ = other.active_;
 
@@ -24,9 +24,9 @@ public:
 
 	inline SelectedObject& operator=(const SelectedObject& other)
 	{
-		if (this == &other) { return this; }
+		if (this == &other) { return *this; }
 
-		~SelectedObject();
+		this->~SelectedObject();
 
 		this->active_ = other.active_;
 

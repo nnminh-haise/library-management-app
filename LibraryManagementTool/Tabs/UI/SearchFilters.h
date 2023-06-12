@@ -173,7 +173,7 @@ class SearchFilters
     }
 
     private:
-    bool active_;
+    bool active_ = false;
     int filterCount_ = 0;
     Filter* filters_ = nullptr;
 };

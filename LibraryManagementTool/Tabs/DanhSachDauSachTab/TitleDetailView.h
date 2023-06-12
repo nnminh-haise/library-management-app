@@ -4,9 +4,10 @@
 #define TITLE_DETAIL
 
 #include "TitleDetailCard.hpp"
+#include "TitleListTable.hpp"
 #include "../UI/Component.hpp"
 #include "../UI/Button.h"
-#include "../UI/Sheets.hpp"
+#include "../UI/Table.hpp"
 #include "../UI/Elements.h"
 #include "../../DauSach/DauSach.h"
 #include "../../Helper/ConstantsAndGlobalVariables.h"

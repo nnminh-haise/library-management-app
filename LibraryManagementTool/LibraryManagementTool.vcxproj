@@ -149,6 +149,7 @@
     <ClCompile Include="TheDocGia\TheDocGia.cpp" />
     <ClCompile Include="Tabs\DanhSachDauSachTab\TitleDetailView.cpp" />
     <ClCompile Include="Tabs\DanhSachDauSachTab\TitleDetailCard.cpp" />
+    <ClCompile Include="Tabs\DanhSachDauSachTab\TitleListTable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStructures\AVL_Tree.h" />
@@ -159,7 +160,6 @@
     <ClInclude Include="DataStructures\LinkedList.h" />
     <ClInclude Include="Helper\IndexGenerator.h" />
     <ClInclude Include="Helper\Package.h" />
-    <ClInclude Include="Tabs\UI\Sheets.hpp" />
     <ClInclude Include="Tabs\DanhSachDauSachTab\SelectedObject.h" />
     <ClInclude Include="Tabs\UI\SearchFilters.h" />
     <ClInclude Include="Tabs\UI\Datasheet.h" />
@@ -182,6 +182,7 @@
     <ClInclude Include="Tabs\UI\Component.hpp" />
     <ClInclude Include="Tabs\DanhSachDauSachTab\TitleDetailView.h" />
     <ClInclude Include="Tabs\DanhSachDauSachTab\TitleDetailCard.hpp" />
+    <ClInclude Include="Tabs\DanhSachDauSachTab\TitleListTable.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Graphics\graphics.lib" />

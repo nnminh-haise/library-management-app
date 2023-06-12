@@ -1015,3 +1015,4 @@ int TITLE_DETAIL_VIEW_COMPONENTS::DelateBookSection::ConfirmButtonOnAction()
 
 	return 0;
 }
+

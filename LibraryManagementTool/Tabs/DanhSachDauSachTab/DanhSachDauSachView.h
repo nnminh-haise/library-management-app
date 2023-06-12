@@ -21,7 +21,11 @@ namespace DAU_SACH_TAB
 	public:
 		DatasheetProcessor();
 
+		DatasheetProcessor(const DatasheetProcessor& other);
+
 		DatasheetProcessor(LINEAR_LIST::LinearList* dataList, DataFilter* dataFilter);
+
+		DatasheetProcessor& operator= (const DatasheetProcessor& other);
 
 		void SetSelectedObjectContainer(SelectedObject<BOOK_TITLE::BookTitle*>* datasheetSelectedObject);
 
@@ -80,6 +84,10 @@ namespace DAU_SACH_TAB
 	public:
 		BookCreatingSection();
 
+		BookCreatingSection(const BookCreatingSection& other);
+
+		BookCreatingSection& operator= (const BookCreatingSection& other);
+
 		void Activate();
 
 		void Deactivate();
@@ -111,9 +119,13 @@ namespace DAU_SACH_TAB
 	public:
 		CatalogueCreatingSection();
 
+		CatalogueCreatingSection(const CatalogueCreatingSection& other);
+
 		CatalogueCreatingSection(LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController);
 
 		~CatalogueCreatingSection();
+
+		CatalogueCreatingSection& operator= (const CatalogueCreatingSection& other);
 
 		void InitializeCatalogue(int amount, std::string isbn);
 
@@ -157,7 +169,11 @@ namespace DAU_SACH_TAB
 	public:
 		TitleCreatingSection();
 
+		TitleCreatingSection(const TitleCreatingSection& other);
+
 		TitleCreatingSection(Package* package);
+
+		TitleCreatingSection& operator= (const TitleCreatingSection& other);
 
 		bool Run();
 
@@ -213,7 +229,11 @@ namespace DAU_SACH_TAB
 	public:
 		SearchSection();
 
+		SearchSection(const SearchSection& other);
+
 		SearchSection(Package* package, DAU_SACH_TAB::DatasheetProcessor* titleDatasheetPackage);
+
+		SearchSection& operator=(const SearchSection& other);
 
 		void SetSearchData(LINEAR_LIST::LinearList* data);
 
@@ -243,11 +263,11 @@ namespace DAU_SACH_TAB
 
 		Button searchBox_;
 
-		LINEAR_LIST::LinearList* data_;
+		LINEAR_LIST::LinearList* data_ = nullptr;
 
-		Package* package_;
+		Package* package_ = nullptr;
 
-		DAU_SACH_TAB::DatasheetProcessor* titleDatasheetPackage_;
+		DAU_SACH_TAB::DatasheetProcessor* titleDatasheetPackage_ = nullptr;
 
 		SearchFilters searchFilters_;
 	};
@@ -282,6 +302,10 @@ class DauSachTab
 public:
 	DauSachTab(Package* package);
 
+	DauSachTab(const DauSachTab& other);
+
+	DauSachTab& operator= (const DauSachTab& other);
+
 	void Destructor();
 
 	void Run();
@@ -298,7 +322,7 @@ private:
 	void DatasheetSortingFunctionality();
 
 private:
-	bool datasheetDisplayFlag;
+	bool datasheetDisplayFlag = false;
 	Button functionalButtons[3];
 
 private:
@@ -308,12 +332,18 @@ private:
 
 	TitleDetail titleDetailSection_;
 
-	Button noticator_{ {1053, 940}, {600, 40}, rgb(57, 72, 103), rgb(241, 246, 249), rgb(241, 246, 249) };
+	Button noticator_{ 
+		{1053, 940}, 
+		{600, 40}, 
+		rgb(57, 72, 103), 
+		rgb(241, 246, 249), 
+		rgb(241, 246, 249)
+	};
 
 private:
 	bool defaultView_ = true;
 
-	Package* package_;
+	Package* package_ = nullptr;
 
 	DataFilter defaultTitleListFilter_;
 

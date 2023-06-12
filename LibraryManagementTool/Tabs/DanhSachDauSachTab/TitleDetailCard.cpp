@@ -306,6 +306,8 @@ TitleDetailCard::TitleDetailCard()
 
 void TitleDetailCard::UpdateCard(BOOK_TITLE::BookTitle* targetedTitle)
 {
+	std::cerr << "[LOG] Update new card!\n";
+
 	this->targetedTitle_ = targetedTitle;
 
 	this->isbn_.content_.SetPlaceholder(std::format("{}",targetedTitle->GetISBN()));

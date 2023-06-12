@@ -19,6 +19,19 @@ namespace DAU_SACH_TAB
 		this->allowCreateDatasheet_ = false;
 	}
 
+	DatasheetProcessor::DatasheetProcessor(const DatasheetProcessor& other)
+	{
+		if (this != &other)
+		{
+			active_ = other.active_;
+			allowCreateDatasheet_ = other.allowCreateDatasheet_;
+			datasheetController_ = other.datasheetController_;
+			dataFilter_ = other.dataFilter_;
+			dataList_ = other.dataList_;
+			datasheetSelectedObject_ = other.datasheetSelectedObject_;
+		}
+	}
+
 	DatasheetProcessor::DatasheetProcessor(LINEAR_LIST::LinearList* dataList, DataFilter* dataFilter_)
 	{
 		this->dataList_ = dataList;
@@ -34,6 +47,18 @@ namespace DAU_SACH_TAB
 			HELPER::Coordinate(147, 210),
 			HELPER::Coordinate(850, 945)
 		};
+	}
+
+	DatasheetProcessor& DatasheetProcessor::operator=(const DatasheetProcessor& other)
+	{
+		if (this == &other) { return *this; }
+
+		active_ = other.active_;
+		allowCreateDatasheet_ = other.allowCreateDatasheet_;
+		datasheetController_ = other.datasheetController_;
+		dataFilter_ = other.dataFilter_;
+		dataList_ = other.dataList_;
+		datasheetSelectedObject_ = other.datasheetSelectedObject_;
 	}
 
 	void DatasheetProcessor::SetSelectedObjectContainer(SelectedObject<BOOK_TITLE::BookTitle*>* datasheetSelectedObject)
@@ -205,6 +230,22 @@ namespace DAU_SACH_TAB
 		this->active_ = false;
 	}
 
+	SearchSection::SearchSection(const SearchSection& other)
+	{
+		if (this != &other)
+		{
+			this->~SearchSection();
+
+			active_ = other.active_;
+			title_ = other.title_;
+			searchBox_ = other.searchBox_;
+			data_ = other.data_;
+			package_ = other.package_;
+			titleDatasheetPackage_ = other.titleDatasheetPackage_;
+			searchFilters_ = other.searchFilters_;
+		}
+	}
+
 	SearchSection::SearchSection(Package* package, DAU_SACH_TAB::DatasheetProcessor* titleDatasheetPackage)
 	{
 		this->package_ = package;
@@ -212,6 +253,21 @@ namespace DAU_SACH_TAB
 		this->active_ = false;
 
 		this->Initialize();
+	}
+
+	SearchSection& SearchSection::operator=(const SearchSection& other)
+	{
+		if (this == &other) { return *this; }
+
+		this->~SearchSection();
+
+		active_ = other.active_;
+		title_ = other.title_;
+		searchBox_ = other.searchBox_;
+		data_ = other.data_;
+		package_ = other.package_;
+		titleDatasheetPackage_ = other.titleDatasheetPackage_;
+		searchFilters_ = other.searchFilters_;
 	}
 
 	void SearchSection::SetSearchData(LINEAR_LIST::LinearList* data) { this->data_ = data; }
@@ -410,6 +466,33 @@ namespace DAU_SACH_TAB
 		this->InitializeElements();
 	}
 
+	BookCreatingSection::BookCreatingSection(const BookCreatingSection& other)
+	{
+		if (this != &other)
+		{
+			active_ = other.active_;
+			background_ = other.background_;
+			titleButton_ = other.titleButton_;
+			saveButton_ = other.saveButton_;
+			for (int i = 0; i < 5; ++i) {
+				inputField_[i] = other.inputField_[i];
+			}
+		}
+	}
+
+	BookCreatingSection& BookCreatingSection::operator=(const BookCreatingSection& other)
+	{
+		if (this == &other) { return *this; }
+
+		active_ = other.active_;
+		background_ = other.background_;
+		titleButton_ = other.titleButton_;
+		saveButton_ = other.saveButton_;
+		for (int i = 0; i < 5; ++i) {
+			inputField_[i] = other.inputField_[i];
+		}
+	}
+
 	void BookCreatingSection::Activate() { this->active_ = true; }
 
 	void BookCreatingSection::Deactivate() { this->active_ = false; }
@@ -483,6 +566,22 @@ namespace DAU_SACH_TAB
 		this->activeField = -1;
 	}
 
+	CatalogueCreatingSection::CatalogueCreatingSection(const CatalogueCreatingSection& other)
+	{
+		if (this != &other)
+		{
+			titleList_ = other.titleList_;
+			inputController_ = other.inputController_;
+			active = other.active;
+			items = new BookCreatingSection[other.itemsCount];
+			itemsCount = other.itemsCount;
+			activeField = other.activeField;
+			for (int i = 0; i < 2; ++i) {
+				indexChangeButtons[i] = other.indexChangeButtons[i];
+			}
+		}
+	}
+
 	CatalogueCreatingSection::CatalogueCreatingSection(LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController)
 	{
 		this->titleList_ = titleList;
@@ -500,6 +599,21 @@ namespace DAU_SACH_TAB
 	CatalogueCreatingSection::~CatalogueCreatingSection()
 	{
 		delete[this->itemsCount] this->items;
+	}
+
+	CatalogueCreatingSection& CatalogueCreatingSection::operator=(const CatalogueCreatingSection& other)
+	{
+		if (this == &other) { return *this; }
+
+		titleList_ = other.titleList_;
+		inputController_ = other.inputController_;
+		active = other.active;
+		items = new BookCreatingSection[other.itemsCount];
+		itemsCount = other.itemsCount;
+		activeField = other.activeField;
+		for (int i = 0; i < 2; ++i) {
+			indexChangeButtons[i] = other.indexChangeButtons[i];
+		}
 	}
 
 	void CatalogueCreatingSection::InitializeCatalogue(int catalogueSize, std::string ISBN)
@@ -645,6 +759,33 @@ namespace DAU_SACH_TAB
 		this->sachAddFieldDisplay = false;
 	}
 
+	TitleCreatingSection::TitleCreatingSection(const TitleCreatingSection& other)
+	{
+		if (this != &other)
+		{
+			package_ = other.package_;
+			active = other.active;
+			sachAddFieldDisplay = other.sachAddFieldDisplay;
+			background = other.background;
+			backdrop = other.backdrop;
+			title = other.title;
+			createCatalogueButton_ = other.createCatalogueButton_;
+			for (int i = 0; i < 7; ++i) {
+				inputField_[i] = other.inputField_[i];
+			}
+			for (int i = 0; i < 2; ++i) {
+				alertField_[i] = other.alertField_[i];
+			}
+			goBackButton = other.goBackButton;
+			submit = other.submit;
+			ISBNCheckProcessResult_ = other.ISBNCheckProcessResult_;
+			catalogueSizeProcessResult_ = other.catalogueSizeProcessResult_;
+			goodInputFieldCheckResult_ = other.goodInputFieldCheckResult_;
+			allowCreatingNewTitle_ = other.allowCreatingNewTitle_;
+			catalogueCreatingSection = other.catalogueCreatingSection;
+		}
+	}
+
 	TitleCreatingSection::TitleCreatingSection(Package* package)
 	{
 		this->package_ = package;
@@ -653,6 +794,32 @@ namespace DAU_SACH_TAB
 		this->sachAddFieldDisplay = false;
 
 		this->InitializeElements();
+	}
+
+	TitleCreatingSection& TitleCreatingSection::operator=(const TitleCreatingSection& other)
+	{
+		if (this == &other) { return *this; }
+
+		package_ = other.package_;
+		active = other.active;
+		sachAddFieldDisplay = other.sachAddFieldDisplay;
+		background = other.background;
+		backdrop = other.backdrop;
+		title = other.title;
+		createCatalogueButton_ = other.createCatalogueButton_;
+		for (int i = 0; i < 7; ++i) {
+			inputField_[i] = other.inputField_[i];
+		}
+		for (int i = 0; i < 2; ++i) {
+			alertField_[i] = other.alertField_[i];
+		}
+		goBackButton = other.goBackButton;
+		submit = other.submit;
+		ISBNCheckProcessResult_ = other.ISBNCheckProcessResult_;
+		catalogueSizeProcessResult_ = other.catalogueSizeProcessResult_;
+		goodInputFieldCheckResult_ = other.goodInputFieldCheckResult_;
+		allowCreatingNewTitle_ = other.allowCreatingNewTitle_;
+		catalogueCreatingSection = other.catalogueCreatingSection;
 	}
 
 	bool TitleCreatingSection::InputFieldOnUpdate()
@@ -1182,6 +1349,69 @@ DauSachTab::DauSachTab(Package* package)
 	this->defaultView_ = true;
 
 	this->Initialize();
+}
+
+DauSachTab::DauSachTab(const DauSachTab& other)
+{
+	if (this != &other)
+	{
+		this->~DauSachTab();
+
+		this->datasheetDisplayFlag = other.datasheetDisplayFlag;
+
+		for (int i = 0; i < 3; ++i) { this->functionalButtons[i] = other.functionalButtons[i]; }
+
+		this->titleSearchSection_ = other.titleSearchSection_;
+
+		this->titleCreatingSection = other.titleCreatingSection;
+
+		this->noticator_ = other.noticator_;
+
+		this->defaultView_ = other.defaultView_;
+
+		this->package_ = other.package_;
+
+		this->defaultTitleListFilter_ = other.defaultTitleListFilter_;
+
+		this->sortedByCategoryTitleList_ = other.sortedByCategoryTitleList_;
+
+		this->sortedByCategoryTitleListFilter_ = other.sortedByCategoryTitleListFilter_;
+
+		this->titleDatasheetPackage_ = other.titleDatasheetPackage_;
+
+		this->datasheetSelectedObject_ = other.datasheetSelectedObject_;
+	}
+}
+
+DauSachTab& DauSachTab::operator=(const DauSachTab& other)
+{
+	if (this == &other) { return *this; }
+
+	this->~DauSachTab();
+
+	this->datasheetDisplayFlag = other.datasheetDisplayFlag;
+
+	for (int i = 0; i < 3; ++i) { this->functionalButtons[i] = other.functionalButtons[i]; }
+
+	this->titleSearchSection_ = other.titleSearchSection_;
+
+	this->titleCreatingSection = other.titleCreatingSection;
+
+	this->noticator_ = other.noticator_;
+
+	this->defaultView_ = other.defaultView_;
+
+	this->package_ = other.package_;
+
+	this->defaultTitleListFilter_ = other.defaultTitleListFilter_;
+
+	this->sortedByCategoryTitleList_ = other.sortedByCategoryTitleList_;
+
+	this->sortedByCategoryTitleListFilter_ = other.sortedByCategoryTitleListFilter_;
+
+	this->titleDatasheetPackage_ = other.titleDatasheetPackage_;
+
+	this->datasheetSelectedObject_ = other.datasheetSelectedObject_;
 }
 
 void DauSachTab::Destructor() {}
