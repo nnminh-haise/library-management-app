@@ -7,16 +7,19 @@
 void StatisticTab::InittializeTitleButton()
 {
 	this->overdueReaderListButton = Button(HELPER::Coordinate(300, 115), HELPER::Dimension(500, 50));
-	this->overdueReaderListButton.SetFillColor(rgb(73, 84, 100));
-	this->overdueReaderListButton.SetBorderColor(rgb(73, 84, 100));
-	this->overdueReaderListButton.SetTextColor(WHITE);
+	this->overdueReaderListButton.SetFillColor(rgb(33, 42, 62));
+	this->overdueReaderListButton.SetBorderColor(rgb(33, 42, 62));
+	this->overdueReaderListButton.SetTextColor(rgb(241, 246, 249));
 	this->overdueReaderListButton.SetPlaceholder("OVERDUE READER LIST");
 
 	this->top10TitleButton = Button(HELPER::Coordinate(999, 115), HELPER::Dimension(500, 50));
-	this->top10TitleButton.SetFillColor(rgb(73, 84, 100));
-	this->top10TitleButton.SetBorderColor(rgb(73, 84, 100));
-	this->top10TitleButton.SetTextColor(WHITE);
+	this->top10TitleButton.SetFillColor(rgb(33, 42, 62));
+	this->top10TitleButton.SetBorderColor(rgb(33, 42, 62));
+	this->top10TitleButton.SetTextColor(rgb(241, 246, 249));
 	this->top10TitleButton.SetPlaceholder("TOP 10 POPULAR TITLES");
+	
+	this->overdueReadersDatasheet.Activate();
+	this->top10TitlesDatasheet.Deactivate();
 }
 
 void StatisticTab::TitleButtonOnAction()
@@ -29,9 +32,9 @@ void StatisticTab::TitleButtonOnAction()
 		{
 			if (this->overdueReadersDatasheet.GetStatus() == true)
 			{
-				buttons[i]->SetFillColor(rgb(73, 84, 100));
-				buttons[i]->SetBorderColor(rgb(73, 84, 100));
-				buttons[i]->SetTextColor(WHITE);
+				buttons[i]->SetFillColor(rgb(33, 42, 62));
+				buttons[i]->SetBorderColor(rgb(33, 42, 62));
+				buttons[i]->SetTextColor(rgb(241, 246, 249));
 				continue;
 			}
 		}
@@ -39,9 +42,9 @@ void StatisticTab::TitleButtonOnAction()
 		{
 			if (this->top10TitlesDatasheet.GetStatus() == true)
 			{
-				buttons[i]->SetFillColor(rgb(73, 84, 100));
-				buttons[i]->SetBorderColor(rgb(73, 84, 100));
-				buttons[i]->SetTextColor(WHITE);
+				buttons[i]->SetFillColor(rgb(33, 42, 62));
+				buttons[i]->SetBorderColor(rgb(33, 42, 62));
+				buttons[i]->SetTextColor(rgb(241, 246, 249));
 				continue;
 			}
 		}
@@ -49,8 +52,7 @@ void StatisticTab::TitleButtonOnAction()
 		if (buttons[i]->IsHover())
 		{
 			buttons[i]->SetFillColor(rgb(232, 232, 232));
-			buttons[i]->SetBorderColor(rgb(73, 84, 100));
-			buttons[i]->SetTextColor(BLACK);
+			buttons[i]->SetTextColor(rgb(33, 42, 62));
 		}
 		else if (buttons[i]->LeftMouseClicked())
 		{
@@ -72,8 +74,7 @@ void StatisticTab::TitleButtonOnAction()
 		else
 		{
 			buttons[i]->SetFillColor(rgb(73, 84, 100));
-			buttons[i]->SetBorderColor(rgb(73, 84, 100));
-			buttons[i]->SetTextColor(WHITE);
+			buttons[i]->SetTextColor(rgb(241, 246, 249));
 		}
 	}
 }
@@ -89,6 +90,10 @@ StatisticTab::StatisticTab(Package* package)
 	this->overdueReadersDatasheet.Activate();
 
 	this->top10TitlesDatasheet = STATISTIC_TAB_MEMBER::Top10TitleDatasheet(this->package_);
+}
+
+StatisticTab::~StatisticTab()
+{
 }
 
 int StatisticTab::Run()
@@ -111,6 +116,11 @@ int StatisticTab::Run()
 	}
 
 	return 0;
+}
+
+void StatisticTab::Reset()
+{
+	this->InittializeTitleButton();
 }
 
 STATISTIC_TAB_MEMBER::Top10TitleDatasheet::Top10TitleDatasheet()
@@ -138,7 +148,6 @@ void STATISTIC_TAB_MEMBER::Top10TitleDatasheet::CreateDatasheet()
 
 	Stack<AVL_TREE::Pointer> stk;
 	auto reader = *this->package_->readerList;
-
 	do
 	{
 		while (reader != nullptr)
@@ -171,7 +180,7 @@ void STATISTIC_TAB_MEMBER::Top10TitleDatasheet::CreateDatasheet()
 		}
 	} while (true);
 
-	BOOK_TITLE::BookTitle** newTitleList = new BOOK_TITLE::BookTitle * [this->package_->titleList->numberOfNode];
+	BOOK_TITLE::BookTitle** newTitleList = new BOOK_TITLE::BookTitle* [this->package_->titleList->numberOfNode];
 	for (int i = 0; i < this->package_->titleList->numberOfNode; ++i)
 	{
 		newTitleList[i] = this->package_->titleList->nodes[i];
@@ -188,6 +197,34 @@ void STATISTIC_TAB_MEMBER::Top10TitleDatasheet::CreateDatasheet()
 		}
 	}
 
+	int dataSize = 0;
+	int rankCount = 0;
+	int* ranks = new int[this->package_->titleList->numberOfNode];
+	ranks[0] = 0;
+
+	if (titleBorrowedCountMap[newTitleList[0]->GetISBN()] > 0)
+	{
+		dataSize = 1;
+		rankCount = 1;
+		ranks[0] = 1;
+
+		for (int i = 1; i < this->package_->titleList->numberOfNode && rankCount <= 10; ++i)
+		{
+			if (titleBorrowedCountMap[newTitleList[i]->GetISBN()] == 0) { break; }
+
+			if (titleBorrowedCountMap[newTitleList[i]->GetISBN()] != titleBorrowedCountMap[newTitleList[i - 1]->GetISBN()])
+			{
+				ranks[i] = ranks[i - 1] + 1;
+				++rankCount;
+			}
+			else
+			{
+				ranks[i] = ranks[i - 1];
+			}
+			++dataSize;
+		}
+	}
+
 	this->top10TitlesDatasheetController = DATASHEET::Controller(
 		STATISTIC_TAB_PROPERTIES::TOP_10_TITLES_DATASHEET_PROPERTIES::MAX_ROW,
 		STATISTIC_TAB_PROPERTIES::TOP_10_TITLES_DATASHEET_PROPERTIES::PROPERTIES_COUNT,
@@ -196,8 +233,9 @@ void STATISTIC_TAB_MEMBER::Top10TitleDatasheet::CreateDatasheet()
 		STATISTIC_TAB_PROPERTIES::TOP_10_TITLES_DATASHEET_PROPERTIES::DATASHEET_CHANGE_BUTTON_TOP_LEFT
 	);
 
-	int listSize = 10;
-	this->top10TitlesDatasheetController.SetDatasheetCount(1);
+	this->top10TitlesDatasheetController.SetDatasheetCount(
+		max(1, dataSize / (STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::MAX_ROW - 1) + (dataSize % (STATISTIC_TAB_PROPERTIES::OVERDUE_READER_DATASHEET_PROPERTIES::MAX_ROW - 1) == 0 ? 0 : 1))
+	);
 	this->top10TitlesDatasheetController.InitializeDatasheets();
 
 	for (int i = 0; i < this->top10TitlesDatasheetController.GetDatasheetCount(); ++i)
@@ -216,7 +254,7 @@ void STATISTIC_TAB_MEMBER::Top10TitleDatasheet::CreateDatasheet()
 	int sheetIndex = -1;
 	int order = 0;
 
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < dataSize; ++i)
 	{
 		++recordIndex;
 		if (recordIndex > this->top10TitlesDatasheetController.GetRecordCount() - 1)
@@ -235,11 +273,13 @@ void STATISTIC_TAB_MEMBER::Top10TitleDatasheet::CreateDatasheet()
 		data[3] = newTitleList[i]->GetAuthor();
 		data[4] = newTitleList[i]->GetCategory();
 		data[5] = std::to_string(titleBorrowedCountMap[newTitleList[i]->GetISBN()]);
+		data[6] = std::to_string(ranks[i]);
 
 		this->top10TitlesDatasheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 	}
 
 	delete[] newTitleList;
+	delete[] ranks;
 	this->top10TitlesDatasheetController.ActivateDatasheets();
 
 	std::cerr << "[LOG] TOP 10 MOST BORROWED TITLES DATASHEET CREATED!\n";

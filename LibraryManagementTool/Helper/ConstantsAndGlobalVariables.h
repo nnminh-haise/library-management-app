@@ -111,22 +111,22 @@ namespace STATISTIC_TAB_PROPERTIES
 {
 	namespace OVERDUE_READER_DATASHEET_PROPERTIES
 	{
-		const int MAX_ROW = 15;
+		const int MAX_ROW = 16;
 		const int PROPERTIES_COUNT = 7;
 		const std::string LABEL_PLACEHOLDERS[] = { "ORDER", "READER ID", "FULL NAME", "BOOK ID", "TITLE", "BORROW DATE", "OVERDUE DATE" };
-		const int CHARACTER_LIMITS[] = { 5, 6, 40, 8, 30, 10, 10 };
-		const HELPER::Coordinate TOP_LEFT{ 60, 180 };
-		const HELPER::Coordinate DATASHEET_CHANGE_BUTTON_TOP_LEFT{ 850, 952 };
+		const int CHARACTER_LIMITS[] = { 5, 6, 46, 8, 50, 10, 10 };
+		const HELPER::Coordinate TOP_LEFT{ 144, 180 };
+		const HELPER::Coordinate DATASHEET_CHANGE_BUTTON_TOP_LEFT{ 850, 920 };
 	}
 
 	namespace TOP_10_TITLES_DATASHEET_PROPERTIES
 	{
-		const int MAX_ROW = 11;
-		const int PROPERTIES_COUNT = 6;
-		const std::string LABEL_PLACEHOLDERS[] = { "ORDER", "ISBN", "TITLE", "AUTHOR", "CATEGORY", "BORROWED COUNT" };
-		const int CHARACTER_LIMITS[] = { 2, 4, 50, 40, 20, 6 };
-		const HELPER::Coordinate TOP_LEFT{ 300, 180 };
-		const HELPER::Coordinate DATASHEET_CHANGE_BUTTON_TOP_LEFT{ 300, 870 };
+		const int MAX_ROW = 16;
+		const int PROPERTIES_COUNT = 7;
+		const std::string LABEL_PLACEHOLDERS[] = { "ORDER", "ISBN", "TITLE", "AUTHOR", "CATEGORY", "BORROWED COUNT", "RANK" };
+		const int CHARACTER_LIMITS[] = { 3, 4, 50, 40, 20, 6, 4 };
+		const HELPER::Coordinate TOP_LEFT{ 148, 180 };
+		const HELPER::Coordinate DATASHEET_CHANGE_BUTTON_TOP_LEFT{ 850, 920 };
 	}
 }
 

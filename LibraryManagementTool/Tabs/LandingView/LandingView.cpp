@@ -73,6 +73,22 @@ void LandingView::TabsOnUpdate()
 			{
 				delay(100);
 				this->currentTab = i;
+
+				switch (this->currentTab)
+				{
+					case (0): {
+						
+						break;
+					}
+					case (1): {
+						break;
+					}
+					case (2): {
+
+						this->thongKeView->Reset();
+						break;
+					}
+				}
 			}
 			else
 			{

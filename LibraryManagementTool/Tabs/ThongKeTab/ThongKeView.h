@@ -81,6 +81,8 @@ class StatisticTab : public View
 public:
 	StatisticTab(Package* package);
 
+	~StatisticTab();
+
 	using View::Activate;
 
 	using View::Deactivate;
@@ -88,6 +90,8 @@ public:
 	using View::InActive;
 
 	int Run() override;
+
+	void Reset();
 
 private:
 	void InittializeTitleButton();
