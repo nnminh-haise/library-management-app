@@ -19,13 +19,13 @@ struct DataFilter
 
 struct Package
 {
-	AVL_Tree<READER::Reader, int>* readerList;
+	AVL_TREE::Pointer* readerList = nullptr;
 
-	LINEAR_LIST::LinearList* titleList;
+	LINEAR_LIST::LinearList* titleList = nullptr;
 
-	ELEMENTS::InputModeController* inputController;
+	ELEMENTS::InputModeController* inputController = nullptr;
 
-	HashMap<BOOK_TITLE::BookTitle*>* titleMap;
+	HashMap<BOOK_TITLE::BookTitle*>* titleMap = nullptr;
 };
 
 #endif // !PACKAGE_HEADER

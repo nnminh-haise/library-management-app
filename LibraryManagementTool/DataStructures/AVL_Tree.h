@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef AVL_TREE
-#define AVL_TREE
+#ifndef AVL_TREE_H
+#define AVL_TREE_H
 
 #include "Stack.h"
 #include "LinearList.h"
@@ -656,4 +656,4 @@ inline void AVL_Tree<VALUE_TYPE, KEY_TYPE>::InterchangeLeftMostNode(AVL_Tree<VAL
 }
 
 
-#endif // !AVL_TREE
+#endif // !AVL_TREE_H

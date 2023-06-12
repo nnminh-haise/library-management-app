@@ -102,31 +102,6 @@ void LandingView::CloseButtonOnUpdate()
 	}
 }
 
-//* View Constructor function.
-LandingView::LandingView(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList)
-{
-	this->currentTab = 0;
-	this->programStopFlag = false;
-
-	this->readerList = readerList;
-	this->titleList = titleList;
-
-	READER_MODULES::LoadDanhSachTheDocGiaFromDB(CONSTANTS::READER_DATABASE, this->readerList);
-	DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(CONSTANTS::TITLES_DATABASE, *this->titleList);
-
-	this->CreateTitleHashMap();
-	this->CreatePackage();
-
-	this->ConstructGraphicWindow();
-	this->graphicWindow->Activate();
-
-	this->ConstructNavigationBar();
-
-	this->dauSachView = new DauSachTab(&this->package_);
-	this->theDocGiaView = new DanhSachTheDocGiaView(this->readerList, this->titleList, &this->inpController);
-	this->thongKeView = new StatisticTab(this->readerList, this->titleList);
-}
-
 //* View Run function
 void LandingView::Run()
 {
@@ -206,6 +181,30 @@ void LandingView::CreatePackage()
 	this->package_.titleList = this->titleList;
 	this->package_.readerList = this->readerList;
 	this->package_.titleMap = &this->titleMap_;
+}
+
+LandingView::LandingView(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList)
+{
+	this->currentTab = 0;
+	this->programStopFlag = false;
+
+	this->readerList = readerList;
+	this->titleList = titleList;
+
+	READER_MODULES::LoadDanhSachTheDocGiaFromDB(CONSTANTS::READER_DATABASE, *this->readerList);
+	DAU_SACH_MODULES::LoadDanhSachDauSachFromDB(CONSTANTS::TITLES_DATABASE, *this->titleList);
+
+	this->CreateTitleHashMap();
+	this->CreatePackage();
+
+	this->ConstructGraphicWindow();
+	this->graphicWindow->Activate();
+
+	this->ConstructNavigationBar();
+
+	this->dauSachView = new DauSachTab(&this->package_);
+	this->theDocGiaView = new DanhSachTheDocGiaView(&this->package_);
+	this->thongKeView = new StatisticTab(&this->package_);
 }
 
 //* View destructor

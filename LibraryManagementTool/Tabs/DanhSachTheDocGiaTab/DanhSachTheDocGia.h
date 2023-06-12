@@ -2,6 +2,7 @@
 
 #include "../../TheDocGia/TheDocGia.h"
 #include "../../DauSach/DauSach.h"
+#include "../../Helper/Package.h"
 #include "../UI/Elements.h"
 #include "../UI/Button.h"
 #include "../UI/Datasheet.h"
@@ -13,7 +14,7 @@ namespace READER_TAB_MEMBERS
 	public:
 		SearchField();
 
-		SearchField(AVL_Tree<READER::Reader, int>* readerList, ELEMENTS::InputModeController* inputController);
+		SearchField(Package* package);
 
 		void Deactivate();
 
@@ -41,15 +42,14 @@ namespace READER_TAB_MEMBERS
 		Button title;
 		Button searchBox;
 		Button resultBox;
-		AVL_Tree<READER::Reader, int>* readerList;
-		AVL_Tree<READER::Reader, int>::Node* searchResult;
-		ELEMENTS::InputModeController* inputController;
+		AVL_TREE::Pointer searchResult = nullptr;
+		Package* package_ = nullptr;
 	};
 
 	class NewReaderForm
 	{
 	public:
-		NewReaderForm(AVL_Tree<READER::Reader, int>* readerList, ELEMENTS::InputModeController* inputController);
+		NewReaderForm(Package* package);
 
 		void Display();
 
@@ -67,8 +67,7 @@ namespace READER_TAB_MEMBERS
 		Button readerSexButton;
 		Button submitButton;
 
-		AVL_Tree<READER::Reader, int>* readerList;
-		ELEMENTS::InputModeController* inputController;
+		Package* package_{ nullptr };
 
 		int readerIndex;
 	};
@@ -84,21 +83,23 @@ namespace READER_TAB_MEMBERS
 		Button* phai;
 		Button* deleteBtn;
 		bool searchTargetFound;
-		AVL_Tree<READER::Reader, int>::Node* searchResult;
+		AVL_TREE::Pointer searchResult{nullptr};
+
+		Package* package_{ nullptr };
 
 		DeleteItemInListForm();
 
 		~DeleteItemInListForm();
 
-		void Display(AVL_Tree<READER::Reader, int>* readerList, ELEMENTS::InputModeController& InputController);
+		void Display(Package* package);
 
-		bool SubmitForm(AVL_Tree<READER::Reader, int>* readerList, ELEMENTS::InputModeController& InputController);
+		bool SubmitForm(Package* package);
 	};
 
 	class EditReaderInfoForm
 	{
 	public:
-		EditReaderInfoForm(AVL_Tree<READER::Reader, int>* readerList, ELEMENTS::InputModeController* inputController);
+		EditReaderInfoForm(Package* package);
 
 		void ReaderIDButtonOnAction();
 
@@ -124,10 +125,10 @@ namespace READER_TAB_MEMBERS
 		Button saveBtn;
 		int searchReaderFound;
 		bool assignReaderOldInfo;
-		AVL_Tree<READER::Reader, int>::Node* searchResult;
 
-		AVL_Tree<READER::Reader, int>* readerList;
-		ELEMENTS::InputModeController* inputController;
+		AVL_TREE::Pointer searchResult{nullptr};
+
+		Package* package_{ nullptr };
 	};
 
 	struct ReaderInfo
@@ -149,9 +150,7 @@ namespace READER_TAB_MEMBERS
 	public:
 		ReaderIndeptDetail();
 
-		ReaderIndeptDetail(LINEAR_LIST::LinearList* titleList, READER::Reader* reader);
-
-		void SetInputController(ELEMENTS::InputModeController* inputController);
+		ReaderIndeptDetail(Package* package, READER::Reader* reader);
 
 		void UpdateReader(READER::Reader* reader);
 
@@ -199,12 +198,11 @@ namespace READER_TAB_MEMBERS
 
 	private:
 		bool active;
-		LINEAR_LIST::LinearList* titleList;
-		READER::Reader* reader;
+		Package* package_{ nullptr };
+		READER::Reader* reader{ nullptr };
 
 		DATASHEET::Controller titlesDatasheetController;
 		DATASHEET::Controller borrowedBooksDatassheetController;
-		ELEMENTS::InputModeController* inputController;
 
 		Button bookIDButton;
 		Button borrowBookButton;
@@ -221,15 +219,17 @@ namespace READER_TAB_MEMBERS
 class DanhSachTheDocGiaView
 {
 public:
-	void CreateDatasheetsFromList(AVL_Tree<READER::Reader, int>* readerList, DATASHEET::Controller* controller);
+	void CreateDatasheetsFromList(Package* package, DATASHEET::Controller* datasheetController);
 
-	void CreateDatasheetsFromArr(AVL_Tree<READER::Reader, int>* readerList, DATASHEET::Controller* controller);
+	void CreateDatasheetsFromArr(Package* package, DATASHEET::Controller* datasheetController);
 
-	DanhSachTheDocGiaView(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController);
+	DanhSachTheDocGiaView(Package* package);
 
 	void Run();
 
 private:
+	Package* package_ = nullptr;
+
 	bool active;
 	DATASHEET::Controller datasheetController;
 	int listManipulationButtonStatus;
@@ -241,8 +241,4 @@ private:
 	READER_TAB_MEMBERS::DeleteItemInListForm deleteItemForm;
 	READER_TAB_MEMBERS::EditReaderInfoForm* editItemForm;
 	READER_TAB_MEMBERS::ReaderIndeptDetail readerIndeptDetail;
-
-	AVL_Tree<READER::Reader, int>* readerList;
-	LINEAR_LIST::LinearList* titleList;
-	ELEMENTS::InputModeController* inputController;
 };

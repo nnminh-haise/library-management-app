@@ -34,8 +34,6 @@ void READER_TAB_MEMBERS::SearchField::ResultBoxOnAction()
 
 READER_TAB_MEMBERS::SearchField::SearchField()
 {
-	this->readerList = nullptr;
-	this->inputController = nullptr;
 	this->status = false;
 	this->searchResult = nullptr;
 	this->showSearchResult = false;
@@ -56,10 +54,10 @@ READER_TAB_MEMBERS::SearchField::SearchField()
 	this->ResultBoxDefaultStyling();
 }
 
-READER_TAB_MEMBERS::SearchField::SearchField(AVL_Tree<READER::Reader, int>* readerList, ELEMENTS::InputModeController* inputController)
+READER_TAB_MEMBERS::SearchField::SearchField(Package* package)
 {
-	this->readerList = readerList;
-	this->inputController = inputController;
+	this->package_ = package;
+
 	this->status = false;
 	this->searchResult = nullptr;
 	this->showSearchResult = false;
@@ -103,7 +101,7 @@ void READER_TAB_MEMBERS::SearchField::SearchBoxOnActionLogic()
 	}
 	else if (this->searchBox.LeftMouseClicked()) {
 		delay(100);
-		this->inputController->Activate(&this->searchBox, &this->searchBox, 30, true, true, true);
+		this->package_->inputController->Activate(&this->searchBox, &this->searchBox, 30, true, true, true);
 	}
 	else {
 		DANH_SACH_THE_DOC_GIA_SEARCH_FIELD_STYLING::SearchBoxStyling(&this->searchBox);
@@ -112,14 +110,13 @@ void READER_TAB_MEMBERS::SearchField::SearchBoxOnActionLogic()
 
 int READER_TAB_MEMBERS::SearchField::SearchReaderAlgorithm()
 {
-	Stack<AVL_Tree<READER::Reader, int>::Node*> stk;
-
-	AVL_Tree<READER::Reader, int>::Node* p = this->readerList->GetRoot();
+	Stack<AVL_TREE::Pointer> stk;
+	auto p = *this->package_->readerList;
 	std::string searchValue{}, fullName{}, readerID{};
 	do {
 		while (p != nullptr) {
 			stk.Push(p);
-			p = p->left_;
+			p = p->left;
 		}
 
 		if (stk.Empty() == false) {
@@ -127,8 +124,8 @@ int READER_TAB_MEMBERS::SearchField::SearchReaderAlgorithm()
 
 			//* Search logic here
 			searchValue = this->searchBox.GetPlaceholder();
-			fullName = p->info_.GetFullName();
-			readerID = p->info_.GetID();
+			fullName = p->info.GetFullName();
+			readerID = p->info.GetID();
 
 			if (readerID.find(searchValue) != std::string::npos) {
 				this->searchResult = p;
@@ -140,7 +137,7 @@ int READER_TAB_MEMBERS::SearchField::SearchReaderAlgorithm()
 				return 2;
 			}
 
-			p = p->right_;
+			p = p->right;
 		}
 		else {
 			break;
@@ -175,7 +172,10 @@ void READER_TAB_MEMBERS::SearchField::Display()
 	this->resultBox.Display();
 }
 
-READER_TAB_MEMBERS::NewReaderForm::NewReaderForm(AVL_Tree<READER::Reader, int>* readerList, ELEMENTS::InputModeController* inputController) {
+READER_TAB_MEMBERS::NewReaderForm::NewReaderForm(Package* package)
+{
+	this->package_ = package;
+
 	this->status = false;
 	this->background = HELPER::Fill(HELPER::Coordinate(1305, 420), 450, 500);
 
@@ -204,9 +204,6 @@ READER_TAB_MEMBERS::NewReaderForm::NewReaderForm(AVL_Tree<READER::Reader, int>* 
 	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(&this->readerLastNameButton);
 	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxStyling(&this->readerSexButton);
 	DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmitButtonStyling(&this->submitButton);
-
-	this->readerList = readerList;
-	this->inputController = inputController;
 }
 
 void READER_TAB_MEMBERS::NewReaderForm::Display() {
@@ -219,12 +216,14 @@ void READER_TAB_MEMBERS::NewReaderForm::Display() {
 	this->submitButton.Display();
 }
 
+// TODO: Rework on reader auto indexing
 void READER_TAB_MEMBERS::NewReaderForm::FormOnAction()
 {
 	Button* inputFields[3] = { &this->readerFirstNameButton, &this->readerLastNameButton, &this->readerSexButton };
 	int fieldsCharacterLimit[3] = { 30, 15, 6 };
 
-	int readerListSize = this->readerList->Size();
+	int readerListSize{};
+	AVL_TREE::Size(*this->package_->readerList, readerListSize);
 
 	IndexGenerator indexGenerator(500000);
 	this->readerIndex = indexGenerator.FromFileGetIndexAt(CONSTANTS::READER_INDICIES, readerListSize);
@@ -239,7 +238,7 @@ void READER_TAB_MEMBERS::NewReaderForm::FormOnAction()
 		else if (inputFields[i]->LeftMouseClicked())
 		{
 			delay(100);
-			this->inputController->Activate(inputFields[i], inputFields[i], fieldsCharacterLimit[i], true, false, true);
+			this->package_->inputController->Activate(inputFields[i], inputFields[i], fieldsCharacterLimit[i], true, false, true);
 		}
 		else
 		{
@@ -268,7 +267,7 @@ bool READER_TAB_MEMBERS::NewReaderForm::SubmitForm()
 		newreader.SetBooksCirculation(DOUBLE_LINKED_LIST::Controller());
 		delay(100);
 
-		this->readerList->Insert(this->readerIndex, newreader);
+		AVL_TREE::Insert(*this->package_->readerList, newreader);
 
 		return true;
 	}
@@ -323,7 +322,10 @@ READER_TAB_MEMBERS::DeleteItemInListForm::~DeleteItemInListForm() {
 	delete this->deleteBtn;
 }
 
-void READER_TAB_MEMBERS::DeleteItemInListForm::Display(AVL_Tree<READER::Reader, int>* readerList, ELEMENTS::InputModeController& InputController) {
+void READER_TAB_MEMBERS::DeleteItemInListForm::Display(Package* package)
+{
+	this->package_ = package;
+
 	this->searchTargetFound = false;
 	this->background->Draw();
 	this->title->Display();
@@ -336,7 +338,7 @@ void READER_TAB_MEMBERS::DeleteItemInListForm::Display(AVL_Tree<READER::Reader, 
 	else if (this->maThe->LeftMouseClicked()) {
 		delay(100);
 
-		InputController.Activate(this->maThe, this->maThe, 4, false, true, false);
+		this->package_->inputController->Activate(this->maThe, this->maThe, 4, false, true, false);
 	}
 	else {
 		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::InputBoxHoverProperties(this->maThe);
@@ -344,9 +346,9 @@ void READER_TAB_MEMBERS::DeleteItemInListForm::Display(AVL_Tree<READER::Reader, 
 
 	bool checker = VALIDATOR::OnlyDigit(this->maThe->GetPlaceholder());
 	if (checker) {
-		this->searchResult = readerList->Search(std::stoi(this->maThe->GetPlaceholder()));
+		this->searchResult = AVL_TREE::SearchByKey(*this->package_->readerList, std::stoi(this->maThe->GetPlaceholder()));
 		if (this->searchResult != nullptr) {
-			int currentBorrowedBooksCount = BOOK_CIRCULATION_MODULES::CountBorrowedBooks(this->searchResult->info_.GetBooksCirculation());
+			int currentBorrowedBooksCount = BOOK_CIRCULATION_MODULES::CountBorrowedBooks(this->searchResult->info.GetBooksCirculation());
 			if (currentBorrowedBooksCount != 0) {
 				std::cerr << std::format("[ERROR] DOC GIA DANG MUON BOOK! KHONG THE XOA DOC GIA!\n");
 			}
@@ -354,9 +356,9 @@ void READER_TAB_MEMBERS::DeleteItemInListForm::Display(AVL_Tree<READER::Reader, 
 				this->searchTargetFound = true;
 			}
 
-			this->hoTen->SetPlaceholder(this->searchResult->info_.GetFullName());
-			this->phai->SetPlaceholder(this->searchResult->info_.StringifyGender());
-			this->trangThai->SetPlaceholder(this->searchResult->info_.StringfyStatus());
+			this->hoTen->SetPlaceholder(this->searchResult->info.GetFullName());
+			this->phai->SetPlaceholder(this->searchResult->info.StringifyGender());
+			this->trangThai->SetPlaceholder(this->searchResult->info.StringfyStatus());
 
 			this->hoTen->Display();
 			this->phai->Display();
@@ -372,8 +374,8 @@ void READER_TAB_MEMBERS::DeleteItemInListForm::Display(AVL_Tree<READER::Reader, 
 	}
 }
 
-bool READER_TAB_MEMBERS::DeleteItemInListForm::SubmitForm(AVL_Tree<READER::Reader, int>* readerList, ELEMENTS::InputModeController& InputController) {
-
+bool READER_TAB_MEMBERS::DeleteItemInListForm::SubmitForm(Package* package)
+{
 	//* Submit button
 	if (this->deleteBtn->IsHover()) {
 		DANH_SACH_THE_DOC_GIA_NEW_LIST_ITEM_FORM_STYLING::SubmutButtonHoverStyling(this->deleteBtn);
@@ -381,7 +383,8 @@ bool READER_TAB_MEMBERS::DeleteItemInListForm::SubmitForm(AVL_Tree<READER::Reade
 	else if (this->deleteBtn->LeftMouseClicked()) {
 		delay(100);
 		if (this->searchTargetFound == true) {
-			readerList->Remove(this->searchResult->key_);
+
+			AVL_TREE::RemoveNode(*this->package_->readerList, this->searchResult->GetKey());
 			std::cerr << std::format("[INFO] XOA THE DOC GIA THANH CONG!\n");
 			return true;
 		}
@@ -393,10 +396,9 @@ bool READER_TAB_MEMBERS::DeleteItemInListForm::SubmitForm(AVL_Tree<READER::Reade
 	return false;
 }
 
-READER_TAB_MEMBERS::EditReaderInfoForm::EditReaderInfoForm(AVL_Tree<READER::Reader, int>* readerList, ELEMENTS::InputModeController* inputController)
+READER_TAB_MEMBERS::EditReaderInfoForm::EditReaderInfoForm(Package* package)
 {
-	this->readerList = readerList;
-	this->inputController = inputController;
+	this->package_ = package;
 
 	this->status = false;
 	this->background = HELPER::Fill(HELPER::Coordinate(1305, 420), 450, 500);
@@ -445,7 +447,7 @@ void READER_TAB_MEMBERS::EditReaderInfoForm::ReaderIDButtonOnAction()
 	else if (this->readerIDButton.LeftMouseClicked())
 	{
 		delay(100);
-		this->inputController->Activate(&this->readerIDButton, &this->readerIDButton, 6, false, true, false);
+		this->package_->inputController->Activate(&this->readerIDButton, &this->readerIDButton, 6, false, true, false);
 		this->assignReaderOldInfo = false;
 		this->searchReaderFound = 0;
 	}
@@ -469,11 +471,11 @@ void READER_TAB_MEMBERS::EditReaderInfoForm::Display()
 
 void READER_TAB_MEMBERS::EditReaderInfoForm::AssignReaderOldInfoToFields()
 {
-	this->readerIDButton.SetPlaceholder(std::to_string(this->searchResult->info_.GetID()));
-	this->readerFirstNameButton.SetPlaceholder(this->searchResult->info_.GetFirstName());
-	this->readerLastNameButton.SetPlaceholder(this->searchResult->info_.GetLastName());
-	this->readerGenderButton.SetPlaceholder(this->searchResult->info_.StringifyGender());
-	this->readerStatusButton.SetPlaceholder(this->searchResult->info_.StringfyStatus());
+	this->readerIDButton.SetPlaceholder(std::to_string(this->searchResult->info.GetID()));
+	this->readerFirstNameButton.SetPlaceholder(this->searchResult->info.GetFirstName());
+	this->readerLastNameButton.SetPlaceholder(this->searchResult->info.GetLastName());
+	this->readerGenderButton.SetPlaceholder(this->searchResult->info.StringifyGender());
+	this->readerStatusButton.SetPlaceholder(this->searchResult->info.StringfyStatus());
 }
 
 void READER_TAB_MEMBERS::EditReaderInfoForm::FormOnAction()
@@ -499,16 +501,16 @@ void READER_TAB_MEMBERS::EditReaderInfoForm::FormOnAction()
 			switch (i)
 			{
 			case (0):
-				this->inputController->Activate(inpField[i], inpField[i], 30, true, false, true);
+				this->package_->inputController->Activate(inpField[i], inpField[i], 30, true, false, true);
 				break;
 			case (1):
-				this->inputController->Activate(inpField[i], inpField[i], 15, true, false, true);
+				this->package_->inputController->Activate(inpField[i], inpField[i], 15, true, false, true);
 				break;
 			case (2):
-				this->inputController->Activate(inpField[i], inpField[i], 6, true, false, false);
+				this->package_->inputController->Activate(inpField[i], inpField[i], 6, true, false, false);
 				break;
 			case (3):
-				this->inputController->Activate(inpField[i], inpField[i], 6, true, false, true);
+				this->package_->inputController->Activate(inpField[i], inpField[i], 6, true, false, true);
 				break;
 			}
 		}
@@ -524,7 +526,7 @@ bool READER_TAB_MEMBERS::EditReaderInfoForm::SearchReaderProcess()
 	bool checker = VALIDATOR::OnlyDigit(this->readerIDButton.GetPlaceholder());
 	if (checker)
 	{
-		this->searchResult = this->readerList->Search(std::stoi(this->readerIDButton.GetPlaceholder()));
+		this->searchResult = AVL_TREE::SearchByKey(*this->package_->readerList, std::stoi(this->readerIDButton.GetPlaceholder()));
 		if (this->searchResult != nullptr)
 		{
 			this->assignReaderOldInfo = true;
@@ -571,12 +573,12 @@ bool READER_TAB_MEMBERS::EditReaderInfoForm::SubmitForm()
 
 			if (checker)
 			{
-				this->searchResult->info_.SetFirstName(this->readerFirstNameButton.GetPlaceholder());
-				this->searchResult->info_.SetLastName(this->readerLastNameButton.GetPlaceholder());
-				this->searchResult->info_.SetGender(
+				this->searchResult->info.SetFirstName(this->readerFirstNameButton.GetPlaceholder());
+				this->searchResult->info.SetLastName(this->readerLastNameButton.GetPlaceholder());
+				this->searchResult->info.SetGender(
 					this->readerGenderButton.GetPlaceholder() == "MALE" ? READER::Gender::MALE : READER::Gender::FEMALE
 				);
-				this->searchResult->info_.SetStatus(
+				this->searchResult->info.SetStatus(
 					this->readerStatusButton.GetPlaceholder() == "BANNED" ? READER::ReaderStatus::BANNED : READER::ReaderStatus::ACTIVE
 				);
 
@@ -648,17 +650,13 @@ void READER_TAB_MEMBERS::ReaderInfo::Display()
 READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail()
 {
 	this->active = false;
-	this->reader = nullptr;
-	this->titleList = nullptr;
-
-	this->inputController = nullptr;
 
 	this->targetedBookID = nullptr;
 }
 
-READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail(LINEAR_LIST::LinearList* titleList, READER::Reader* reader)
+READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail(Package* package, READER::Reader* reader)
 {
-	this->titleList = titleList;
+	this->package_ = package;
 	this->reader = reader;
 
 	this->targetedBookID = nullptr;
@@ -686,11 +684,6 @@ READER_TAB_MEMBERS::ReaderIndeptDetail::ReaderIndeptDetail(LINEAR_LIST::LinearLi
 		rgb(24, 18, 43)
 	);
 	this->goBackButton.SetPlaceholder("<");
-}
-
-void READER_TAB_MEMBERS::ReaderIndeptDetail::SetInputController(ELEMENTS::InputModeController* inputController)
-{
-	this->inputController = inputController;
 }
 
 void READER_TAB_MEMBERS::ReaderIndeptDetail::UpdateReader(READER::Reader* reader)
@@ -870,7 +863,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::BookIDButtonOnAction()
 	else if (this->bookIDButton.LeftMouseClicked())
 	{
 		delay(100);
-		this->inputController->Activate(&this->bookIDButton, &this->bookIDButton, 8, true, true, false);
+		this->package_->inputController->Activate(&this->bookIDButton, &this->bookIDButton, 8, true, true, false);
 	}
 	else
 	{
@@ -912,7 +905,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::BorrowBook()
 
 	//* FINDING CORRESPOND BOOK ID (start below) ---------------------------------------------------------
 	const std::string& borrowingTitleISBN = borrowingBookID.substr(0, 4); //* Taking the ISBN code of the targetedBook
-	BOOK_TITLE::BookTitle* correspondTitle = LINEAR_LIST::SearchByISBN(*this->titleList, borrowingTitleISBN);
+	BOOK_TITLE::BookTitle* correspondTitle = LINEAR_LIST::SearchByISBN(*this->package_->titleList, borrowingTitleISBN);
 	if (correspondTitle == nullptr)
 	{
 		throw std::logic_error(std::format("[ERROR] THE ISBN: {} NOT EXIST!\n", borrowingTitleISBN));
@@ -1036,9 +1029,9 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnBook()
 
 	//* Finding the title which the targeted targetedBook belongs to.
 	int indexOfCoresspondTitle = -1;
-	for (int i = 0; i < this->titleList->numberOfNode; ++i)
+	for (int i = 0; i < this->package_->titleList->numberOfNode; ++i)
 	{
-		if (this->titleList->nodes[i]->GetISBN().compare(userTargetedReturnBookID.substr(0, 4)) == 0)
+		if (this->package_->titleList->nodes[i]->GetISBN().compare(userTargetedReturnBookID.substr(0, 4)) == 0)
 		{
 			indexOfCoresspondTitle = i;
 			break;
@@ -1050,7 +1043,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnBook()
 		return false;
 	}
 
-	LINKED_LIST::Pointer targetedTitleCatalouge = this->titleList->nodes[indexOfCoresspondTitle]->GetCatalogue();
+	LINKED_LIST::Pointer targetedTitleCatalouge = this->package_->titleList->nodes[indexOfCoresspondTitle]->GetCatalogue();
 	bool bookExist = false;
 	LINKED_LIST::Pointer targetedBook = targetedTitleCatalouge;
 	for (; targetedBook != nullptr; targetedBook = targetedBook->next)
@@ -1068,7 +1061,7 @@ bool READER_TAB_MEMBERS::ReaderIndeptDetail::ReturnBook()
 	}
 
 	targetedBook->info.SetStatus(BOOK::Status::AVAILABLE);
-	this->titleList->nodes[indexOfCoresspondTitle]->SetCatalogue(targetedTitleCatalouge);
+	this->package_->titleList->nodes[indexOfCoresspondTitle]->SetCatalogue(targetedTitleCatalouge);
 	targetBookCirculation->info.SetReturnDate(HELPER::Date());
 	targetBookCirculation->info.SetStatus(BOOK_CIRCULATION::CirculationStatus::RETURNED);
 	//DOUBLE_LINKED_LIST::RemoveNode(readerBookCirculationList, targetBookCirculation);
@@ -1118,7 +1111,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateTitlesDatasheet()
 	int characterLimits[] = {
 		3, 4, 30, 20, 10
 	};
-	int listSize = this->titleList->numberOfNode;
+	int listSize = this->package_->titleList->numberOfNode;
 	this->titlesDatasheetController.SetDatasheetCount(
 		listSize / (CONSTANTS::MAX_ROW_COUNT - 1) + (listSize % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
 	);
@@ -1140,7 +1133,7 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateTitlesDatasheet()
 	int recordIndex = 0;
 	int sheetIndex = -1;
 
-	for (int i = 0; i < titleList->numberOfNode; ++i)
+	for (int i = 0; i < this->package_->titleList->numberOfNode; ++i)
 	{
 		++recordIndex;
 		if (recordIndex > this->titlesDatasheetController.GetRecordCount() - 1)
@@ -1154,10 +1147,10 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::CreateTitlesDatasheet()
 
 		std::string* data = new std::string[this->titlesDatasheetController.GetAttributeCount()];
 		data[0] = std::to_string(i + 1);
-		data[1] = titleList->nodes[i]->GetISBN();
-		data[2] = titleList->nodes[i]->GetTitle();
-		data[3] = titleList->nodes[i]->GetAuthor();
-		data[4] = titleList->nodes[i]->GetCategory();
+		data[1] = this->package_->titleList->nodes[i]->GetISBN();
+		data[2] = this->package_->titleList->nodes[i]->GetTitle();
+		data[3] = this->package_->titleList->nodes[i]->GetAuthor();
+		data[4] = this->package_->titleList->nodes[i]->GetCategory();
 
 		this->titlesDatasheetController[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 	}
@@ -1269,9 +1262,10 @@ void READER_TAB_MEMBERS::ReaderIndeptDetail::ApplyHoverStyleForBookIDButton()
 
 //----------------------------------------------------------------------------------------------------------------------------
 
-void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_Tree<READER::Reader, int>* readerList, DATASHEET::Controller* datasheetController)
+void DanhSachTheDocGiaView::CreateDatasheetsFromList(Package* package, DATASHEET::Controller* datasheetController)
 {
-	int attributeCount = readerList->Size();
+	int attributeCount{ 0 };
+	AVL_TREE::Size(*package->readerList, attributeCount);
 	datasheetController->SetDatasheetCount(
 		attributeCount / (CONSTANTS::MAX_ROW_COUNT - 1) + (attributeCount % (CONSTANTS::MAX_ROW_COUNT - 1) == 0 ? 0 : 1)
 	);
@@ -1288,8 +1282,8 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_Tree<READER::Reader, in
 		);
 	}
 
-	Stack<AVL_Tree<READER::Reader, int>::Node*> stk;
-	AVL_Tree<READER::Reader, int>::Node* currentNode = readerList->GetRoot();
+	Stack<AVL_TREE::Pointer> stk;
+	AVL_TREE::Pointer currentNode = *package->readerList;
 	int recordIndex = 0;
 	int sheetIndex = -1;
 	int order = 0;
@@ -1297,7 +1291,7 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_Tree<READER::Reader, in
 	do {
 		while (currentNode != nullptr) {
 			stk.Push(currentNode);
-			currentNode = currentNode->left_;
+			currentNode = currentNode->left;
 		}
 
 		if (stk.Empty() == false) {
@@ -1314,17 +1308,17 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_Tree<READER::Reader, in
 
 			std::string* data = new std::string[datasheetController->GetAttributeCount()];
 			data[0] = std::to_string(++order);
-			data[1] = std::to_string(currentNode->info_.GetID());
-			data[2] = currentNode->info_.GetFirstName();
-			data[3] = currentNode->info_.GetLastName();
-			data[4] = currentNode->info_.StringifyGender();
-			data[5] = currentNode->info_.StringfyStatus();
+			data[1] = std::to_string(currentNode->info.GetID());
+			data[2] = currentNode->info.GetFirstName();
+			data[3] = currentNode->info.GetLastName();
+			data[4] = currentNode->info.StringifyGender();
+			data[5] = currentNode->info.StringfyStatus();
 
 			(*datasheetController)[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
 
 			//---
 
-			currentNode = currentNode->right_;
+			currentNode = currentNode->right;
 		}
 		else {
 			break;
@@ -1332,10 +1326,10 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromList(AVL_Tree<READER::Reader, in
 	} while (true);
 }
 
-void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_Tree<READER::Reader, int>* readerList, DATASHEET::Controller* datasheetController) {
-
-	LinearList< AVL_Tree<READER::Reader, int>::Node*> readerPointersArr;
-	READER_MODULES::SortByName(*readerList, readerPointersArr);
+void DanhSachTheDocGiaView::CreateDatasheetsFromArr(Package* package, DATASHEET::Controller* datasheetController)
+{
+	LinearList<AVL_TREE::Pointer> readerPointersArr;
+	READER_MODULES::SortByName(*package->readerList, readerPointersArr);
 
 	int arrSize = readerPointersArr.Size();
 	datasheetController->SetDatasheetCount(
@@ -1369,17 +1363,14 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_Tree<READER::Reader, int
 
 		std::string* data = new std::string[datasheetController->GetAttributeCount()];
 		data[0] = std::to_string(i + 1);
-		data[1] = std::to_string(readerPointersArr[i]->info_.GetID());
-		data[2] = readerPointersArr[i]->info_.GetFirstName();
-		data[3] = readerPointersArr[i]->info_.GetLastName();
-		data[4] = readerPointersArr[i]->info_.StringifyGender();
-		data[5] = readerPointersArr[i]->info_.StringfyStatus();
+		data[1] = std::to_string(readerPointersArr[i]->info.GetID());
+		data[2] = readerPointersArr[i]->info.GetFirstName();
+		data[3] = readerPointersArr[i]->info.GetLastName();
+		data[4] = readerPointersArr[i]->info.StringifyGender();
+		data[5] = readerPointersArr[i]->info.StringfyStatus();
 
 		(*datasheetController)[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
-
-		//---
 	}
-
 }
 
 /**
@@ -1387,12 +1378,12 @@ void DanhSachTheDocGiaView::CreateDatasheetsFromArr(AVL_Tree<READER::Reader, int
 *
 * All the code in this method only run once in the program runtime!
 */
-DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList, ELEMENTS::InputModeController* inputController) {
+DanhSachTheDocGiaView::DanhSachTheDocGiaView(Package* package)
+{
+	this->package_ = package;
+
 	this->active = false;
 	this->defaultOrder = true;
-	this->readerList = readerList;
-	this->titleList = titleList;
-	this->inputController = inputController;
 
 	HELPER::Coordinate datasheetTopLeft(36, 120);
 	HELPER::Coordinate toLeftBtnTopLeft(36, 935);
@@ -1404,7 +1395,7 @@ DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_Tree<READER::Reader, int>* read
 	);
 	this->datasheetController.ActivateDatasheets();
 	if (this->defaultOrder) {
-		this->CreateDatasheetsFromList(this->readerList, &this->datasheetController);
+		this->CreateDatasheetsFromList(this->package_, &this->datasheetController);
 	}
 
 	//* List manipulation buttons
@@ -1421,12 +1412,12 @@ DanhSachTheDocGiaView::DanhSachTheDocGiaView(AVL_Tree<READER::Reader, int>* read
 		DANH_SACH_THE_DOC_GIA_STYLING::ListManipulateButtonDefaultProperties(this->listManipulateButton[i]);
 	}
 
-	this->searchField = READER_TAB_MEMBERS::SearchField(this->readerList, this->inputController);
+	this->searchField = READER_TAB_MEMBERS::SearchField(this->package_);
 	this->searchField.Activate();
-	this->readerIndeptDetail = READER_TAB_MEMBERS::ReaderIndeptDetail(this->titleList, nullptr);
+	this->readerIndeptDetail = READER_TAB_MEMBERS::ReaderIndeptDetail(this->package_, nullptr);
 
-	this->newItemForm = new READER_TAB_MEMBERS::NewReaderForm(this->readerList, this->inputController);
-	this->editItemForm = new READER_TAB_MEMBERS::EditReaderInfoForm(this->readerList, this->inputController);
+	this->newItemForm = new READER_TAB_MEMBERS::NewReaderForm(this->package_);
+	this->editItemForm = new READER_TAB_MEMBERS::EditReaderInfoForm(this->package_);
 }
 
 /**
@@ -1463,8 +1454,7 @@ void DanhSachTheDocGiaView::Run()
 					this->datasheetController.DeactivateDatasheets();
 					this->searchField.Deactivate();
 					this->readerIndeptDetail.Activate();
-					this->readerIndeptDetail.SetInputController(this->inputController);
-					this->readerIndeptDetail.UpdateReader(&this->searchField.searchResult->info_);
+					this->readerIndeptDetail.UpdateReader(&this->searchField.searchResult->info);
 				}
 				else {
 					this->searchField.ResultBoxFoundedStyling();
@@ -1481,7 +1471,7 @@ void DanhSachTheDocGiaView::Run()
 				this->newItemForm->FormOnAction();
 				bool formSubmitted = this->newItemForm->SubmitForm();
 				if (formSubmitted) {
-					DanhSachTheDocGiaView::CreateDatasheetsFromList(this->readerList, &this->datasheetController);
+					DanhSachTheDocGiaView::CreateDatasheetsFromList(this->package_, &this->datasheetController);
 				}
 				break;
 			}
@@ -1490,15 +1480,15 @@ void DanhSachTheDocGiaView::Run()
 				this->editItemForm->FormOnAction();
 				bool confirmSave = this->editItemForm->SubmitForm();
 				if (confirmSave) {
-					DanhSachTheDocGiaView::CreateDatasheetsFromList(this->readerList, &this->datasheetController);
+					DanhSachTheDocGiaView::CreateDatasheetsFromList(this->package_, &this->datasheetController);
 				}
 				break;
 			}
 			case (2): {
-				this->deleteItemForm.Display(this->readerList, *this->inputController);
-				bool confirmDelete = this->deleteItemForm.SubmitForm(this->readerList, *this->inputController);
+				this->deleteItemForm.Display(this->package_);
+				bool confirmDelete = this->deleteItemForm.SubmitForm(this->package_);
 				if (confirmDelete) {
-					DanhSachTheDocGiaView::CreateDatasheetsFromList(this->readerList, &this->datasheetController);
+					DanhSachTheDocGiaView::CreateDatasheetsFromList(this->package_, &this->datasheetController);
 				}
 				break;
 			}
@@ -1542,7 +1532,7 @@ void DanhSachTheDocGiaView::Run()
 		else if (this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][1].LeftMouseClicked()) {
 			this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][1].SetFillColor(RED);
 			this->defaultOrder = true;
-			this->CreateDatasheetsFromList(this->readerList, &this->datasheetController);
+			this->CreateDatasheetsFromList(this->package_, &this->datasheetController);
 		}
 		else {
 			DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonDefaultStyling(&this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][1]);
@@ -1555,7 +1545,7 @@ void DanhSachTheDocGiaView::Run()
 		else if (this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][3].LeftMouseClicked()) {
 			delay(100);
 			std::cout << "bug: sorting by last name!\n";
-			DanhSachTheDocGiaView::CreateDatasheetsFromArr(this->readerList, &this->datasheetController);
+			DanhSachTheDocGiaView::CreateDatasheetsFromArr(this->package_, &this->datasheetController);
 		}
 		else {
 			DANH_SACH_THE_DOC_GIA_STYLING::DatasheetLabelsButtonDefaultStyling(&this->datasheetController[this->datasheetController.CurrentActiveDatasheet()][0][3]);

@@ -11,7 +11,7 @@
 class LandingView
 {
 public:
-	LandingView(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList);
+	LandingView(AVL_TREE::Pointer* readerList, LINEAR_LIST::LinearList* titleList);
 
 	~LandingView();
 
@@ -32,7 +32,9 @@ private:
 
 private:
 	//* Internal storage's pointer
-	AVL_Tree<READER::Reader, int>* readerList;
+	//AVL_Tree<READER::Reader, int>* readerList;
+
+	AVL_TREE::Pointer* readerList;
 	LINEAR_LIST::LinearList* titleList;
 
 	//* Tabs

@@ -8,6 +8,7 @@
 #include "../../DataStructures/Stack.h"
 #include "../../TheDocGia/TheDocGia.h"
 #include "../../DauSach/DauSach.h"
+#include "../../Helper/Package.h"
 #include "../UI/Elements.h"
 #include "../UI/Datasheet.h"
 
@@ -28,7 +29,7 @@ namespace STATISTIC_TAB_MEMBER
 	public:
 		Top10TitleDatasheet();
 
-		Top10TitleDatasheet(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList);
+		Top10TitleDatasheet(Package* package);
 
 		void CreateDatasheet();
 
@@ -41,10 +42,9 @@ namespace STATISTIC_TAB_MEMBER
 		bool GetStatus();
 
 	private:
-		bool status;
+		bool status = false;
 
-		AVL_Tree<READER::Reader, int>* readerList;
-		LINEAR_LIST::LinearList* titleList;
+		Package* package_{ nullptr };
 
 		DATASHEET::Controller top10TitlesDatasheetController;
 	};
@@ -54,7 +54,7 @@ namespace STATISTIC_TAB_MEMBER
 	public:
 		OverdueReadersDatasheet();
 
-		OverdueReadersDatasheet(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList);
+		OverdueReadersDatasheet(Package* package);
 
 		void CreateDatasheet();
 
@@ -67,10 +67,9 @@ namespace STATISTIC_TAB_MEMBER
 		bool GetStatus();
 
 	private:
-		bool status;
+		bool status = false;
 
-		AVL_Tree<READER::Reader, int>* readerList;
-		LINEAR_LIST::LinearList* titleList;
+		Package* package_{ nullptr };
 
 		DATASHEET::Controller overdueReaderDatasheetController;
 	};
@@ -79,7 +78,7 @@ namespace STATISTIC_TAB_MEMBER
 class StatisticTab
 {
 public:
-	StatisticTab(AVL_Tree<READER::Reader, int>* readerList, LINEAR_LIST::LinearList* titleList);
+	StatisticTab(Package* package);
 
 	void Run();
 
@@ -95,8 +94,7 @@ private:
 	Button overdueReaderListButton;
 	Button top10TitleButton;
 
-	AVL_Tree<READER::Reader, int>* readerList;
-	LINEAR_LIST::LinearList* titleList;
+	Package* package_{ nullptr };
 
 	HashMap <int> titleBorrowedCountMap;
 	HashMap <BOOK_TITLE::BookTitle*> titleListMap;

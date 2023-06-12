@@ -140,55 +140,63 @@ namespace READER
 	};
 }
 
-//namespace AVL_TREE 
-//{
-//	struct Node 
-//	{
-//		READER::Reader info;
-//		int balanceFactor;
-//		int height;
-//		Node* left;
-//		Node* right;
-//
-//		Node();
-//
-//		int GetKey();
-//
-//		void SetKey(const int key);
-//	};
-//
-//	typedef Node* Pointer;
-//
-//	void Initialize(Pointer& root);
-//
-//	bool Empty(const Pointer& root);
-//
-//	void InOrderTraversal(const Pointer& root);
-//
-//	void Size(const Pointer& root, int& counter);
-//
-//	void NonrecursiveInOrderTraversal(const Pointer& root);
-//
-//	Pointer RotateLeft(Pointer root);
-//
-//	Pointer RotateRight(Pointer root);
-//
-//	bool Insert(Pointer& root, READER::Reader info);
-//
-//	Pointer SearchByKey(const Pointer& root, const int& key);
-//
-//	Pointer GetMinValueNode(Pointer const& node);
-//
-//	Pointer RemoveNode(Pointer& node, const int& key);
-//}
+namespace AVL_TREE 
+{
+	struct Node 
+	{
+		READER::Reader info;
+		int balanceFactor = 0;
+		int height = 1;
+		Node* left = nullptr;
+		Node* right = nullptr;
+
+		Node();
+
+		int GetKey();
+
+		void SetKey(const int key);
+	};
+
+	typedef Node* Pointer;
+
+	void Initialize(Pointer& root);
+
+	bool Empty(const Pointer& root);
+
+	void InOrderTraversal(const Pointer& root);
+
+	void Size(const Pointer& root, int& counter);
+
+	void NonrecursiveInOrderTraversal(const Pointer& root);
+
+	Pointer RotateLeft(Pointer root);
+
+	Pointer RotateRight(Pointer root);
+
+	bool Insert(Pointer& root, READER::Reader info);
+
+	Pointer SearchByKey(const Pointer& root, const int& key);
+
+	Pointer GetMinValueNode(Pointer const& node);
+
+	Pointer RemoveNode(Pointer& node, const int& key);
+}
 
 namespace READER_MODULES
 {
-	bool LoadDanhSachTheDocGiaFromDB(const std::string& filename, AVL_Tree<READER::Reader, int>* tree);
+	//bool LoadDanhSachTheDocGiaFromDB(const std::string& filename, AVL_Tree<READER::Reader, int>* tree);
 
-	bool UpdateListToDatabase(const std::string& filename, AVL_Tree<READER::Reader, int>* tree);
+	bool LoadDanhSachTheDocGiaFromDB(const std::string& filename, AVL_TREE::Pointer& root);
 
-	int GetIndex(const std::string& filename, AVL_Tree<READER::Reader, int>* tree);
+	//bool UpdateListToDatabase(const std::string& filename, AVL_Tree<READER::Reader, int>* tree);
 
-	void SortByName(const AVL_Tree<READER::Reader, int>& tree, LinearList< AVL_Tree<READER::Reader, int>::Node*>& readerPointersArr);
+	bool UpdateListToDatabase(const std::string& filename, AVL_TREE::Pointer& root);
+
+	//int GetIndex(const std::string& filename, AVL_Tree<READER::Reader, int>* tree);
+
+	int GetIndex(const std::string& filename, AVL_TREE::Pointer root);
+
+	//void SortByName(const AVL_Tree<READER::Reader, int>& tree, LinearList< AVL_Tree<READER::Reader, int>::Node*>& readerPointersArr);
+
+	void SortByName(const AVL_TREE::Pointer& root, LinearList<AVL_TREE::Pointer>& readerPointersArr);
 }

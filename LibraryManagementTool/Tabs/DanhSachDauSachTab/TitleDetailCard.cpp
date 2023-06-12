@@ -74,14 +74,14 @@ void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::UpdateCard(BOOK::Book* bookPo
 	this->column_.content_.SetPlaceholder(colValue);
 	this->section_.content_.SetPlaceholder(sectionValue);
 
-	Stack <AVL_Tree<READER::Reader, int>::Node*> stk;
-	AVL_Tree<READER::Reader, int>::Node* p = this->package_->readerList->GetRoot();
+	Stack <AVL_TREE::Pointer> stk;
+	auto p = *this->package_->readerList;
 	while (true)
 	{
 		while (p != nullptr)
 		{
 			stk.Push(p);
-			p = p->left_;
+			p = p->left;
 		}
 
 		if (stk.Empty() == false)
@@ -89,7 +89,7 @@ void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::UpdateCard(BOOK::Book* bookPo
 			p = stk.Pop();
 			// NODE MANIPULATION LOGIC PERFORM HERE ------
 
-			auto bookCirculations = p->info_.GetBooksCirculation();
+			auto bookCirculations = p->info.GetBooksCirculation();
 			for (auto bookCirculation = bookCirculations; bookCirculation.First != nullptr; bookCirculation.First = bookCirculation.First->right)
 			{
 				if (bookCirculation.First->info.GetID().compare(bookID) == 0)
@@ -99,7 +99,7 @@ void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::UpdateCard(BOOK::Book* bookPo
 			}
 
 			//--------------------------------------------
-			p = p->right_;
+			p = p->right;
 		}
 		else
 		{
