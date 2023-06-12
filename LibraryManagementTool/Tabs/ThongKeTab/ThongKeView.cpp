@@ -91,8 +91,10 @@ StatisticTab::StatisticTab(Package* package)
 	this->top10TitlesDatasheet = STATISTIC_TAB_MEMBER::Top10TitleDatasheet(this->package_);
 }
 
-void StatisticTab::Run() 
+int StatisticTab::Run()
 {
+	if (!this->status_) { return 0; }
+
 	this->overdueReaderListButton.Display();
 	this->top10TitleButton.Display();
 
@@ -107,6 +109,8 @@ void StatisticTab::Run()
 	{
 		this->top10TitlesDatasheet.Display();
 	}
+
+	return 0;
 }
 
 STATISTIC_TAB_MEMBER::Top10TitleDatasheet::Top10TitleDatasheet()

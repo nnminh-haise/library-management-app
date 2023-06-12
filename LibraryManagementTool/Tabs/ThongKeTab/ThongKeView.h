@@ -11,6 +11,7 @@
 #include "../../Helper/Package.h"
 #include "../UI/Elements.h"
 #include "../UI/Datasheet.h"
+#include "../UI/Component.hpp"
 
 namespace STATISTIC_TAB_MEMBER
 {
@@ -21,7 +22,7 @@ namespace STATISTIC_TAB_MEMBER
 		std::string bookID;
 		std::string bookTitle;
 		HELPER::Date borrowDate;
-		int overdueDateCount;
+		int overdueDateCount = 0;
 	};
 
 	class Top10TitleDatasheet
@@ -75,12 +76,18 @@ namespace STATISTIC_TAB_MEMBER
 	};
 }
 
-class StatisticTab
+class StatisticTab : public View
 {
 public:
 	StatisticTab(Package* package);
 
-	void Run();
+	using View::Activate;
+
+	using View::Deactivate;
+
+	using View::InActive;
+
+	int Run() override;
 
 private:
 	void InittializeTitleButton();
@@ -88,6 +95,8 @@ private:
 	void TitleButtonOnAction();
 
 private:
+	using View::status_;
+
 	STATISTIC_TAB_MEMBER::Top10TitleDatasheet top10TitlesDatasheet;
 	STATISTIC_TAB_MEMBER::OverdueReadersDatasheet overdueReadersDatasheet;
 

@@ -1382,7 +1382,6 @@ DanhSachTheDocGiaView::DanhSachTheDocGiaView(Package* package)
 {
 	this->package_ = package;
 
-	this->active = false;
 	this->defaultOrder = true;
 
 	HELPER::Coordinate datasheetTopLeft(36, 120);
@@ -1426,8 +1425,10 @@ DanhSachTheDocGiaView::DanhSachTheDocGiaView(Package* package)
 * Code in this method will be run many time.
 * Each time the program render a frame, this code will be run once, therefore the element's logic will be in here!
 */
-void DanhSachTheDocGiaView::Run()
+int DanhSachTheDocGiaView::Run()
 {
+	if (!this->status_) { return 0; }
+
 	if (this->datasheetController.DisplayStatus() == true)
 	{
 		//* Display datasheet
@@ -1561,4 +1562,6 @@ void DanhSachTheDocGiaView::Run()
 			this->searchField.Activate();
 		}
 	}
+
+	return 0;
 }

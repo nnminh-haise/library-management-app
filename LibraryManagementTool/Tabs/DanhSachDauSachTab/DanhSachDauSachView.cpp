@@ -1416,8 +1416,10 @@ DauSachTab& DauSachTab::operator=(const DauSachTab& other)
 
 void DauSachTab::Destructor() {}
 
-void DauSachTab::Run()
+int DauSachTab::Run()
 {
+	if (!this->status_) { return 0; }
+
 	if (this->defaultView_ == true)
 	{
 		//* Title datasheet section runtime logic
@@ -1476,13 +1478,14 @@ void DauSachTab::Run()
 			this->defaultView_ = true;
 		}
 
-		//WORKING
 		bool newTitleListCreated = this->titleCreatingSection.Run();
 		if (newTitleListCreated)
 		{
 			//DAU_SACH_TAB::CreateDatasheetsFromList(this->titleList, this->datasheetController);
 		}
 	}
+
+	return 0;
 }
 
 void DauSachTab::InitializeFilters()

@@ -32,8 +32,6 @@ private:
 
 private:
 	//* Internal storage's pointer
-	//AVL_Tree<READER::Reader, int>* readerList;
-
 	AVL_TREE::Pointer* readerList;
 	LINEAR_LIST::LinearList* titleList;
 
@@ -43,16 +41,23 @@ private:
 	StatisticTab* thongKeView;
 
 	//* Landing view elements
-	Button* tabs;
+	Button tabs[3];
+	
 	ELEMENTS::Window* graphicWindow;
+	
 	HELPER::Fill navigationBarBackground;
+	
 	Button programTitle;
+	
 	ELEMENTS::CloseButton closeBtn;
+	
 	bool programStopFlag;
+
 	int currentTab;
 	
 	//* Core
 	ELEMENTS::InputModeController inpController;
+	
 	HashMap<BOOK_TITLE::BookTitle*> titleMap_;
 
 	Package package_;

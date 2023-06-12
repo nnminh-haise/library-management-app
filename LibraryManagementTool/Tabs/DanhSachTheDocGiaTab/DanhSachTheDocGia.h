@@ -6,6 +6,7 @@
 #include "../UI/Elements.h"
 #include "../UI/Button.h"
 #include "../UI/Datasheet.h"
+#include "../UI/Component.hpp"
 
 namespace READER_TAB_MEMBERS
 {
@@ -216,7 +217,7 @@ namespace READER_TAB_MEMBERS
 	};
 }
 
-class DanhSachTheDocGiaView
+class DanhSachTheDocGiaView : public View
 {
 public:
 	void CreateDatasheetsFromList(Package* package, DATASHEET::Controller* datasheetController);
@@ -225,12 +226,19 @@ public:
 
 	DanhSachTheDocGiaView(Package* package);
 
-	void Run();
+	using View::Activate;
+
+	using View::Deactivate;
+
+	using View::InActive;
+
+	int Run() override;
 
 private:
+	using View::status_;
+
 	Package* package_ = nullptr;
 
-	bool active;
 	DATASHEET::Controller datasheetController;
 	int listManipulationButtonStatus;
 	Button listManipulateButton[3];

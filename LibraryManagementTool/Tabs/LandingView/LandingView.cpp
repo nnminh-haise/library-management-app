@@ -32,7 +32,6 @@ void LandingView::ConstructNavigationBar()
 	this->programTitle.SetTextColor(NAVIGATION_BAR_PROPERTIES::PROGRAM_TITLE_TEXT_COLOR);
 	this->programTitle.SetPlaceholder(NAVIGATION_BAR_PROPERTIES::PROGRAM_TITLE_PLACEHOLDER);
 
-	this->tabs = new Button[3];
 	for (int i = 0; i < 3; ++i)
 	{
 		this->tabs[i] = Button(
@@ -43,6 +42,7 @@ void LandingView::ConstructNavigationBar()
 		this->tabs[i].SetBorderColor(NAVIGATION_BAR_PROPERTIES::TAB_DEFAULT_BORDER_COLOR);
 		this->tabs[i].SetTextColor(NAVIGATION_BAR_PROPERTIES::TAB_DEFAULT_TEXT_COLOR);
 	}
+	this->currentTab = 0;
 	this->tabs[this->currentTab].SetFillColor(NAVIGATION_BAR_PROPERTIES::TAB_ACTIVE_FILL_COLOR);
 	this->tabs[this->currentTab].SetBorderColor(NAVIGATION_BAR_PROPERTIES::TAB_ACTIVE_BORDER_COLOR);
 	this->tabs[this->currentTab].SetTextColor(NAVIGATION_BAR_PROPERTIES::TAB_ACTIVE_TEXT_COLOR);
@@ -116,22 +116,39 @@ void LandingView::Run()
 			this->graphicWindow->RenderBackground();
 			this->navigationBarBackground.Draw();
 			this->programTitle.Display();
-			
+		
 			for (int i = 0; i < 3; ++i)
 			{
+				this->tabs[this->currentTab].SetFillColor(NAVIGATION_BAR_PROPERTIES::TAB_ACTIVE_FILL_COLOR);
+				this->tabs[this->currentTab].SetBorderColor(NAVIGATION_BAR_PROPERTIES::TAB_ACTIVE_BORDER_COLOR);
+				this->tabs[this->currentTab].SetTextColor(NAVIGATION_BAR_PROPERTIES::TAB_ACTIVE_TEXT_COLOR);
+
 				this->tabs[i].Display();
 			}
+
 			this->closeBtn.Display();
 
 			switch (this->currentTab)
 			{
 				case (0):
+					this->dauSachView->Activate();
+					this->theDocGiaView->Deactivate();
+					this->thongKeView->Deactivate();
+
 					this->dauSachView->Run();
 					break;
 				case (1):
+					this->dauSachView->Deactivate();
+					this->theDocGiaView->Activate();
+					this->thongKeView->Deactivate();
+
 					this->theDocGiaView->Run();
 					break;
 				case (2):
+					this->dauSachView->Deactivate();
+					this->theDocGiaView->Deactivate();
+					this->thongKeView->Activate();
+
 					this->thongKeView->Run();
 					break;
 			}

@@ -297,7 +297,7 @@ namespace CATEGORY_LINKED_LIST
 }
 
 
-class DauSachTab
+class DauSachTab : public View
 {
 public:
 	DauSachTab(Package* package);
@@ -306,9 +306,15 @@ public:
 
 	DauSachTab& operator= (const DauSachTab& other);
 
+	using View::Activate;
+
+	using View::Deactivate;
+
+	using View::InActive;
+
 	void Destructor();
 
-	void Run();
+	int Run() override;
 
 private:
 	void Initialize();
@@ -322,6 +328,8 @@ private:
 	void DatasheetSortingFunctionality();
 
 private:
+	using View::status_;
+
 	bool datasheetDisplayFlag = false;
 	Button functionalButtons[3];
 
