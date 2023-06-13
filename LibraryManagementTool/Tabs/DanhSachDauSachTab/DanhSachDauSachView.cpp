@@ -213,6 +213,7 @@ namespace DAU_SACH_TAB
 				}
 
 				this->datasheetSelectedObject_->SetObjectPointer(selectedObject);
+				(*this->datasheetSelectedObject_).AccessIndicator().SetPlaceholder("Selecting" + selectedObject->GetTitle());
 			}
 			else if (currentCell.RightMouseClicked())
 			{
@@ -229,6 +230,7 @@ namespace DAU_SACH_TAB
 				}
 
 				this->datasheetSelectedObject_->SetObjectPointer(selectedObject);
+				(*this->datasheetSelectedObject_).AccessIndicator().SetPlaceholder("Selecting" + selectedObject->GetTitle());
 
 				return 1;
 			}
@@ -367,9 +369,9 @@ namespace DAU_SACH_TAB
 			if (titlePublication.find(searchTarget) != std::string::npos) { filterCheckers[4] = true; }
 
 			bool res = false;
-			for (int i = 0; i < 5; ++i)
+			for (int j = 0; j < filterCount; ++j)
 			{
-				res = res || (filterCheckers[i] * this->searchFilters_.FilterValue(i));
+				res = res || (filterCheckers[j] * this->searchFilters_.FilterValue(j));
 			}
 
 			//* Only update filter if there are any changes

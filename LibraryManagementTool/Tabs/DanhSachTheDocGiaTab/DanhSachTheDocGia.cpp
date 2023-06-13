@@ -66,6 +66,8 @@ void READER_TAB_MEMBERS::MainView::SetPackage(Package* package)
 
 	this->InitializeReaderTable();
 
+	this->InitializeSearchBox();
+
 	std::cerr << "[LOG] Set package's pointer CLOSE! (READER_TAB_MEMBERS::MainView::SetPackage)\n";
 }
 
@@ -75,10 +77,29 @@ int READER_TAB_MEMBERS::MainView::Run()
 
 	if (this->readerTablePackage_.InActive())
 	{
-		this->readerTablePackage_.Run();
+		int readerTableRunnngResult = this->readerTablePackage_.Run();
+		if (readerTableRunnngResult)
+		{
+			std::cerr << "Selected Object: " << this->tableSelectedObject_.GetObjectPointer()->info.GetID() << "\n";
+			std::cerr << "Selected Object: " << this->tableSelectedObject_.GetObjectPointer()->info.GetFullName() << "\n";
+		}
 	}
 
+	if (this->tableSelectedObject_.InActive())
+	{
+		this->tableSelectedObject_.Run();
+	}
 
+	if (this->searchBox_.InActive())
+	{
+		int searchBoxRunningResult = this->searchBox_.Run();
+		if (searchBoxRunningResult)
+		{
+			std::cerr << "[LOG] UPDATE DATESHEET!\n";
+			this->readerTablePackage_.AllowCreateDatasheet();
+			this->readerTablePackage_.CreateDatasheet();
+		}
+	}
 
 	return 0;
 }
@@ -90,6 +111,7 @@ void READER_TAB_MEMBERS::MainView::Initialize()
 
 void READER_TAB_MEMBERS::MainView::InitializeElements()
 {
+	this->tableSelectedObject_.Activate();
 }
 
 void READER_TAB_MEMBERS::MainView::InitializeFilters()
@@ -142,6 +164,25 @@ void READER_TAB_MEMBERS::MainView::InitializeReaderTable()
 	this->readerTablePackage_.CreateDatasheet();
 
 	std::cerr << "[LOG] Created reader TABLE!\n";
+}
+
+void READER_TAB_MEMBERS::MainView::InitializeSearchBox()
+{
+	if (this->package_ == nullptr)
+	{
+		std::cerr << "[ERROR] Package's pointer is NULL! (READER_TAB_MEMBERS::MainView::CreateSortedByNameReaderList)\n";
+
+		throw std::logic_error("[ERROR] Package's pointer is NULL! (READER_TAB_MEMBERS::MainView::CreateSortedByNameReaderList)\n");
+	}
+
+	std::cerr << "[LOG] Creating search box!\n";
+
+	this->searchBox_.SetPackage(this->package_);
+	this->searchBox_.SetReaderDatasheetPackage(&this->readerTablePackage_);
+	this->searchBox_.SetSearchData(this->package_->readerList);
+	this->searchBox_.Activate();
+
+	std::cerr << "[LOG] Created search box!\n";
 }
 
 void READER_TAB_MEMBERS::MainView::CreateSortedByNameReaderList()

@@ -6,7 +6,7 @@ READER_TABLE::DatasheetProcessor::DatasheetProcessor()
 	DATASHEET_DEFAULT_PROPERTIES::MAX_ROW,
 	READER_PROPERTIES::PROPERTIES_COUNT,
 	DATASHEET_DEFAULT_PROPERTIES::ROW_HEIGHT,
-	HELPER::Coordinate(36, 120),
+	HELPER::Coordinate(147, 210),
 	HELPER::Coordinate(850, 945)
 	};
 }
@@ -121,6 +121,7 @@ void READER_TABLE::DatasheetProcessor::CreateDatasheet()
 
 				delete[] data;
 			}
+			++index;
 
 			//---
 
@@ -130,8 +131,6 @@ void READER_TABLE::DatasheetProcessor::CreateDatasheet()
 			break;
 		}
 	} while (true);
-
-	std::cerr << this->datasheetController_.GetBottomRight().x - this->datasheetController_.GetTopLeft().x << "\n";
 
 	//* Completed creating datasheet
 	this->datasheetController_.ActivateDatasheets();
@@ -180,37 +179,96 @@ int READER_TABLE::DatasheetProcessor::DatasheetOnAction()
 	int datasheetColumnCount = this->datasheetController_.GetAttributeCount();
 	int datasheetRowCount = this->datasheetController_.GetRecordCount();
 
-	std::string targetISBN{};
+	std::string targetID{};
 
 	for (int rowIndex = 1; rowIndex < datasheetRowCount; ++rowIndex)
 	{
-		Button& currentCell = this->datasheetController_[currentDatasheetIndex][rowIndex][2];
-		Button& ISBNCell = this->datasheetController_[currentDatasheetIndex][rowIndex][1];
+		Button& IDCell = this->datasheetController_[currentDatasheetIndex][rowIndex][1];
 
-		if (currentCell.GetPlaceholder().compare("...") == 0) { continue; }
+		if (IDCell.GetPlaceholder().compare("...") == 0) { continue; }
 
-		if (currentCell.IsHover())
+		if (IDCell.IsHover())
 		{
-			currentCell.SetFillColor(rgb(221, 230, 237));
+			IDCell.SetFillColor(rgb(221, 230, 237));
 		}
-		else if (currentCell.LeftMouseClicked())
+		else if (IDCell.LeftMouseClicked())
 		{
 			delay(130);
 
+			targetID = IDCell.GetPlaceholder();
+			AVL_TREE::Pointer selectedObject = nullptr;
+
+			Stack<AVL_TREE::Pointer> stk;
+			AVL_TREE::Pointer currentNode = *this->dataList_;
+			int index = 0;
+			do {
+				while (currentNode != nullptr) {
+					stk.Push(currentNode);
+					currentNode = currentNode->left;
+				}
+
+				if (stk.Empty() == false) {
+					currentNode = stk.Pop();
+
+					//* Logic stays here
+					if (this->dataFilter_->filters_[index] && std::to_string(currentNode->info.GetID()).compare(targetID) == 0)
+					{
+						selectedObject = currentNode;
+					}
+					//---
+
+					currentNode = currentNode->right;
+				}
+				else {
+					break;
+				}
+			} while (true);
 			
+			this->datasheetSelectedObject_->SetObjectPointer(selectedObject);
+			(*this->datasheetSelectedObject_).AccessIndicator().SetPlaceholder("Selecting Reader ID: " + std::to_string(selectedObject->info.GetID()));
 		}
-		else if (currentCell.RightMouseClicked())
+		else if (IDCell.RightMouseClicked())
 		{
 			delay(130);
 
-			
+			targetID = IDCell.GetPlaceholder();
+			AVL_TREE::Pointer selectedObject = nullptr;
+
+			Stack<AVL_TREE::Pointer> stk;
+			AVL_TREE::Pointer currentNode = *this->dataList_;
+			int index = 0;
+			do {
+				while (currentNode != nullptr) {
+					stk.Push(currentNode);
+					currentNode = currentNode->left;
+				}
+
+				if (stk.Empty() == false) {
+					currentNode = stk.Pop();
+
+					//* Logic stays here
+					if (this->dataFilter_->filters_[index] && std::to_string(currentNode->info.GetID()).compare(targetID) == 0)
+					{
+						selectedObject = currentNode;
+					}
+					//---
+
+					currentNode = currentNode->right;
+				}
+				else {
+					break;
+				}
+			} while (true);
+
+			this->datasheetSelectedObject_->SetObjectPointer(selectedObject);
+			(*this->datasheetSelectedObject_).AccessIndicator().SetPlaceholder("Selecting Reader ID: " + std::to_string(selectedObject->info.GetID()));
 
 			return 1;
 		}
 		else
 		{
-			if (rowIndex % 2 == 0) { currentCell.SetFillColor(rgb(238, 238, 238)); }
-			else { currentCell.SetFillColor(rgb(255, 251, 245)); }
+			if (rowIndex % 2 == 0) { IDCell.SetFillColor(rgb(238, 238, 238)); }
+			else { IDCell.SetFillColor(rgb(255, 251, 245)); }
 		}
 	}
 

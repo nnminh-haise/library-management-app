@@ -41,11 +41,14 @@ public:
 
 	inline bool InActive() { return this->active_; }
 
+	inline Button& AccessIndicator()
+	{
+		return this->indicator_;
+	}
+
 	inline void SetObjectPointer(T objectPointer)
 	{
 		this->objectPointer_ = objectPointer;
-
-		this->indicator_.SetPlaceholder(this->objectPointer_->GetTitle());
 	}
 
 	inline T GetObjectPointer() { return this->objectPointer_; }

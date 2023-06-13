@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ReaderListTable.hpp"
+#include "SearchBox.hpp"
 #include "../UI/Button.h"
 #include "../UI/Elements.h"
 #include "../UI/Datasheet.h"
@@ -37,6 +38,8 @@ namespace READER_TAB_MEMBERS
 
 		void InitializeReaderTable();
 
+		void InitializeSearchBox();
+
 		void CreateSortedByNameReaderList();
 
 		void Log();
@@ -54,6 +57,9 @@ namespace READER_TAB_MEMBERS
 		LinearList<AVL_TREE::Pointer> sortedByNameReaderList_;
 
 		DataFilter sortedByNameReaderListFilter_;
+
+	private:
+		READER_SEARCH_BOX::SearchBox searchBox_;
 
 		READER_TABLE::DatasheetProcessor readerTablePackage_;
 

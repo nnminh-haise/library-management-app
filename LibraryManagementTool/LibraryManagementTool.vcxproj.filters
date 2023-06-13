@@ -75,6 +75,9 @@
     <ClCompile Include="Tabs\DanhSachTheDocGiaTab\ReaderListTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Tabs\DanhSachTheDocGiaTab\SearchBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DauSach\DauSach.h">
@@ -183,6 +186,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tabs\DanhSachTheDocGiaTab\ReaderListTable.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tabs\DanhSachTheDocGiaTab\SearchBox.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

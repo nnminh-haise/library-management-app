@@ -11,7 +11,6 @@
 #include "../UI/Component.hpp"
 #include "../../Helper/Package.h"
 
-
 namespace READER_TABLE
 {
 	class DatasheetProcessor : public View
