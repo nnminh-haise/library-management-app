@@ -62,8 +62,8 @@ namespace DOUBLE_LINKED_LIST
 	{
 		Controller();
 
-		Pointer First;
-		Pointer Last;
+		Pointer First = nullptr;
+		Pointer Last = nullptr;
 	};
 
 	void Initialize(DOUBLE_LINKED_LIST::Controller& list);
@@ -184,19 +184,11 @@ namespace AVL_TREE
 
 namespace READER_MODULES
 {
-	//bool LoadDanhSachTheDocGiaFromDB(const std::string& filename, AVL_Tree<READER::Reader, int>* tree);
-
 	bool LoadDanhSachTheDocGiaFromDB(const std::string& filename, AVL_TREE::Pointer& root);
-
-	//bool UpdateListToDatabase(const std::string& filename, AVL_Tree<READER::Reader, int>* tree);
 
 	bool UpdateListToDatabase(const std::string& filename, AVL_TREE::Pointer& root);
 
-	//int GetIndex(const std::string& filename, AVL_Tree<READER::Reader, int>* tree);
-
 	int GetIndex(const std::string& filename, AVL_TREE::Pointer root);
-
-	//void SortByName(const AVL_Tree<READER::Reader, int>& tree, LinearList< AVL_Tree<READER::Reader, int>::Node*>& readerPointersArr);
 
 	void SortByName(const AVL_TREE::Pointer& root, LinearList<AVL_TREE::Pointer>& readerPointersArr);
 }

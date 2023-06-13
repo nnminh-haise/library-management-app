@@ -106,6 +106,7 @@ void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCard::UpdateCard(BOOK::Book* bookPo
 			break;
 		}
 	}
+
 	if (!this->removable_)
 	{
 		this->removavilityIndicator_.SetPlaceholder("Can not be remove!");
@@ -565,7 +566,7 @@ void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::CardChangeButtonsO
 		}
 		else if (this->cardChangeButtons_[i].LeftMouseClicked())
 		{
-			delay(130);
+			delay(100);
 			this->cards_[this->activeCardIndex_].Deactivate();
 			this->activeCardIndex_ = (this->activeCardIndex_ + movements[i] + this->catalogueSize_) % this->catalogueSize_;
 			this->cardCountIndicator_.SetPlaceholder(std::format("{}/{}", this->activeCardIndex_ + 1, this->catalogueSize_));
@@ -582,6 +583,7 @@ void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::CardChangeButtonsO
 void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::CreateCatalogueCards(LINKED_LIST::Pointer catalogue)
 {
 	this->titleCatalogue_ = catalogue;
+	this->catalogueSize_ = LINKED_LIST::Size(catalogue);
 
 	for (int i = 0; i < this->catalogueSize_; ++i)
 	{
@@ -734,7 +736,7 @@ void TITLE_DETAIL_CARD_COMPONENTS::BookDetailCardsController::Display()
 {
 	if (!this->status_) { return; }
 
-	if (this->emptyCatalogue_)
+	if (this->emptyCatalogue_ || this->catalogueSize_ == 0)
 	{
 		this->coverbutton_.SetPlaceholder("This title's book catalogue is EMPTY!");
 		this->coverbutton_.Display();

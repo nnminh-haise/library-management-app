@@ -122,6 +122,8 @@ namespace DAU_SACH_TAB
 				data[6] = this->dataList_->nodes[i]->GetCategory();
 
 				this->datasheetController_[sheetIndex].UpdateNewPlaceholder(data, recordIndex);
+
+				delete[] data;
 			}
 		}
 		this->datasheetController_.ActivateDatasheets();
@@ -875,7 +877,7 @@ namespace DAU_SACH_TAB
 		}
 
 		std::string defaultInputValues[7] = {
-			" ISBN ", " Title ", " Author ", " Category ", " Page number ", " Public year ", " Catalogue's size "
+			" ISBN ", " Title ", " Author ", " Category ", " Public year ", " Page number ", " Catalogue's size "
 		};
 		bool userInputed = true;
 		std::string userInputValue{};
@@ -1105,7 +1107,7 @@ namespace DAU_SACH_TAB
 			HELPER::Dimension(140, 50)
 		};
 		std::string inputFiledPlaceholders[7] = {
-			" ISBN ", " Title ", " Author ", " Category ", " Page number ", " Public year ", " Catalogue's size "
+			" ISBN ", " Title ", " Author ", " Category ", " Public year ", " Page number ", " Catalogue's size "
 		};
 		for (int i = 0; i < 7; ++i)
 		{

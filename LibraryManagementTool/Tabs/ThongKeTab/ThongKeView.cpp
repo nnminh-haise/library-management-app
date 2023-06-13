@@ -186,11 +186,18 @@ void STATISTIC_TAB_MEMBER::Top10TitleDatasheet::CreateDatasheet()
 		newTitleList[i] = this->package_->titleList->nodes[i];
 	}
 
+	int cntI = 0, cntJ = 0;
+	std::string titleI{}, titleJ{};
 	for (int i = 0; i < this->package_->titleList->numberOfNode - 1; ++i)
 	{
 		for (int j = i + 1; j < this->package_->titleList->numberOfNode; ++j)
 		{
-			if (titleBorrowedCountMap[newTitleList[i]->GetISBN()] < titleBorrowedCountMap[newTitleList[j]->GetISBN()])
+			cntI = titleBorrowedCountMap[newTitleList[i]->GetISBN()];
+			cntJ = titleBorrowedCountMap[newTitleList[j]->GetISBN()];
+			titleI = newTitleList[i]->GetTitle();
+			titleJ = newTitleList[j]->GetTitle();
+
+			if ((cntI < cntJ) || (cntI == cntJ && titleI.compare(titleJ) > 0))
 			{
 				std::swap(newTitleList[i], newTitleList[j]);
 			}

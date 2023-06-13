@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClCompile Include="Helper\IndexGenerator.cpp" />
     <ClCompile Include="Helper\Package.cpp" />
+    <ClCompile Include="Tabs\DanhSachTheDocGiaTab\ReaderListTable.cpp" />
     <ClCompile Include="Tabs\UI\Datasheet.cpp" />
     <ClCompile Include="Tabs\UI\Button.cpp" />
     <ClCompile Include="Tabs\DanhSachDauSachTab\DanhSachDauSachStyling.cpp" />
@@ -160,7 +161,8 @@
     <ClInclude Include="DataStructures\LinkedList.h" />
     <ClInclude Include="Helper\IndexGenerator.h" />
     <ClInclude Include="Helper\Package.h" />
-    <ClInclude Include="Tabs\DanhSachDauSachTab\SelectedObject.h" />
+    <ClInclude Include="Tabs\DanhSachTheDocGiaTab\ReaderListTable.hpp" />
+    <ClInclude Include="Tabs\UI\SelectedObject.h" />
     <ClInclude Include="Tabs\UI\SearchFilters.h" />
     <ClInclude Include="Tabs\UI\Datasheet.h" />
     <ClInclude Include="Tabs\UI\Button.h" />

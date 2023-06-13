@@ -81,9 +81,10 @@ namespace DATASHEET_DEFAULT_PROPERTIES
 namespace READER_PROPERTIES
 {
 	const int PROPERTIES_COUNT = 6;
-	const int CHARACTER_LIMITS[] = { 3, 4, 30, 15, 6, 9 };
-	const int ROW_HEIGHT = 50;
-	const std::string LABEL_PLACEHOLDERS[] = { "ORDER", "ID", "FIRST NAME", "LAST NAME", "SEX", "STATUS" };
+	const int CHARACTER_LIMITS[] = { 3, 9, 30, 15, 6, 9 };
+	const int ROW_HEIGHT = 45;
+	const std::string LABEL_PLACEHOLDERS[] = { "ORDER", "READER ID", "FIRST NAME", "LAST NAME", "GENDER", "STATUS" };
+	const HELPER::Coordinate TOP_LEFT{ 36, 120 };
 
 	namespace READER_DETAIL_PROPERTIES
 	{

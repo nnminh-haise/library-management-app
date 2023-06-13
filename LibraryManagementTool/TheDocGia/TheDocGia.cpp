@@ -141,6 +141,7 @@ void DOUBLE_LINKED_LIST::PushFront(Controller& list, BOOK_CIRCULATION::BookCircu
     if (DOUBLE_LINKED_LIST::Empty(list))
     {
         list.First = newNode;
+        list.Last = newNode;
         return;
     }
 
@@ -159,13 +160,13 @@ void DOUBLE_LINKED_LIST::PushBack(Controller& list, BOOK_CIRCULATION::BookCircul
     if (DOUBLE_LINKED_LIST::Empty(list))
     {
         list.First = newNode;
+        list.Last = newNode;
         return;
     }
 
-    DOUBLE_LINKED_LIST::Pointer currentNode = list.First;
-    for (; currentNode->right != nullptr; currentNode = currentNode->right);
-    currentNode->right = newNode;
-    newNode->left = currentNode;
+    list.Last->right = newNode;
+    newNode->left = list.Last;
+    list.Last = newNode;
 }
 
 void DOUBLE_LINKED_LIST::RemoveNode(Controller& list, DOUBLE_LINKED_LIST::Pointer targetNode)
@@ -183,29 +184,24 @@ void DOUBLE_LINKED_LIST::RemoveNode(Controller& list, DOUBLE_LINKED_LIST::Pointe
     if (list.First == targetNode)
     {
         list.First = targetNode->right;
-        if (list.First != nullptr)
-        {
-            list.First->left = nullptr;
-        }
-        delete targetNode;
-        return;
     }
-
-    DOUBLE_LINKED_LIST::Pointer currentNode = list.First;
-    for (; currentNode != nullptr && currentNode != targetNode; currentNode = currentNode->right)
-
-        if (currentNode == nullptr)
-        {
-            return;
-        }
-
-    currentNode->left->right = currentNode->right;
-    if (currentNode->right != nullptr)
+    
+    if (list.Last == targetNode)
     {
-        currentNode->right->left = currentNode->left;
+        list.Last = targetNode->left;
+    }
+    
+    if (targetNode->left != nullptr)
+    {
+        targetNode->left->right = targetNode->right;
     }
 
-    delete currentNode;
+    if (targetNode->right != nullptr)
+    {
+        targetNode->right->left = targetNode->left;
+    }
+
+    delete targetNode;
 }
 
 READER::Reader::Reader() {
