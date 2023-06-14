@@ -7,7 +7,7 @@ READER_TABLE::DatasheetProcessor::DatasheetProcessor()
 	READER_PROPERTIES::PROPERTIES_COUNT,
 	DATASHEET_DEFAULT_PROPERTIES::ROW_HEIGHT,
 	HELPER::Coordinate(147, 210),
-	HELPER::Coordinate(850, 945)
+	HELPER::Coordinate(147, 940)
 	};
 }
 
@@ -132,6 +132,8 @@ void READER_TABLE::DatasheetProcessor::CreateDatasheet()
 		}
 	} while (true);
 
+	//std::cerr << datasheetController_.GetBottomRight().x - datasheetController_.GetTopLeft().x << "\n";
+
 	//* Completed creating datasheet
 	this->datasheetController_.ActivateDatasheets();
 	this->allowCreateDatasheet_ = false;
@@ -183,92 +185,107 @@ int READER_TABLE::DatasheetProcessor::DatasheetOnAction()
 
 	for (int rowIndex = 1; rowIndex < datasheetRowCount; ++rowIndex)
 	{
-		Button& IDCell = this->datasheetController_[currentDatasheetIndex][rowIndex][1];
-
-		if (IDCell.GetPlaceholder().compare("...") == 0) { continue; }
-
-		if (IDCell.IsHover())
+		for (int columnIndex = 1; columnIndex <= 3; ++columnIndex)
 		{
-			IDCell.SetFillColor(rgb(221, 230, 237));
-		}
-		else if (IDCell.LeftMouseClicked())
-		{
-			delay(130);
+			Button& IDCell = this->datasheetController_[currentDatasheetIndex][rowIndex][columnIndex];
 
-			targetID = IDCell.GetPlaceholder();
-			AVL_TREE::Pointer selectedObject = nullptr;
+			if (IDCell.GetPlaceholder().compare("...") == 0) { continue; }
 
-			Stack<AVL_TREE::Pointer> stk;
-			AVL_TREE::Pointer currentNode = *this->dataList_;
-			int index = 0;
-			do {
-				while (currentNode != nullptr) {
-					stk.Push(currentNode);
-					currentNode = currentNode->left;
-				}
+			if (IDCell.IsHover())
+			{
+				IDCell.SetFillColor(rgb(221, 230, 237));
+			}
+			else if (IDCell.LeftMouseClicked())
+			{
+				delay(130);
 
-				if (stk.Empty() == false) {
-					currentNode = stk.Pop();
+				targetID = this->datasheetController_[currentDatasheetIndex][rowIndex][1].GetPlaceholder();
+				AVL_TREE::Pointer selectedObject = nullptr;
 
-					//* Logic stays here
-					if (this->dataFilter_->filters_[index] && std::to_string(currentNode->info.GetID()).compare(targetID) == 0)
-					{
-						selectedObject = currentNode;
+				Stack<AVL_TREE::Pointer> stk;
+				AVL_TREE::Pointer currentNode = *this->dataList_;
+				int index = 0;
+				do {
+					while (currentNode != nullptr) {
+						stk.Push(currentNode);
+						currentNode = currentNode->left;
 					}
-					//---
 
-					currentNode = currentNode->right;
-				}
-				else {
-					break;
-				}
-			} while (true);
-			
-			this->datasheetSelectedObject_->SetObjectPointer(selectedObject);
-			(*this->datasheetSelectedObject_).AccessIndicator().SetPlaceholder("Selecting Reader ID: " + std::to_string(selectedObject->info.GetID()));
-		}
-		else if (IDCell.RightMouseClicked())
-		{
-			delay(130);
+					if (stk.Empty() == false) {
+						currentNode = stk.Pop();
 
-			targetID = IDCell.GetPlaceholder();
-			AVL_TREE::Pointer selectedObject = nullptr;
+						//* Logic stays here
+						if (this->dataFilter_->filters_[index] && std::to_string(currentNode->info.GetID()).compare(targetID) == 0)
+						{
+							selectedObject = currentNode;
+						}
+						//---
 
-			Stack<AVL_TREE::Pointer> stk;
-			AVL_TREE::Pointer currentNode = *this->dataList_;
-			int index = 0;
-			do {
-				while (currentNode != nullptr) {
-					stk.Push(currentNode);
-					currentNode = currentNode->left;
-				}
-
-				if (stk.Empty() == false) {
-					currentNode = stk.Pop();
-
-					//* Logic stays here
-					if (this->dataFilter_->filters_[index] && std::to_string(currentNode->info.GetID()).compare(targetID) == 0)
-					{
-						selectedObject = currentNode;
+						++index;
+						currentNode = currentNode->right;
 					}
-					//---
+					else {
+						break;
+					}
+				} while (true);
 
-					currentNode = currentNode->right;
+				if (selectedObject == nullptr)
+				{
+					throw std::logic_error("[ERROR] Selected object is NULL! (DatasheetProcessor::DatasheetOnAction)");
 				}
-				else {
-					break;
+
+				this->datasheetSelectedObject_->SetObjectPointer(selectedObject);
+				(*this->datasheetSelectedObject_).AccessIndicator().SetPlaceholder("Selecting Reader ID: " + std::to_string(selectedObject->info.GetID()));
+			}
+			else if (IDCell.RightMouseClicked())
+			{
+				delay(130);
+
+				targetID = this->datasheetController_[currentDatasheetIndex][rowIndex][1].GetPlaceholder();
+				AVL_TREE::Pointer selectedObject = nullptr;
+
+				Stack<AVL_TREE::Pointer> stk;
+				AVL_TREE::Pointer currentNode = *this->dataList_;
+				int index = 0;
+				do {
+					while (currentNode != nullptr) {
+						stk.Push(currentNode);
+						currentNode = currentNode->left;
+					}
+
+					if (stk.Empty() == false) {
+						currentNode = stk.Pop();
+
+						//* Logic stays here
+						if (this->dataFilter_->filters_[index] && std::to_string(currentNode->info.GetID()).compare(targetID) == 0)
+						{
+							selectedObject = currentNode;
+						}
+						//---
+
+						++index;
+						currentNode = currentNode->right;
+					}
+					else {
+						break;
+					}
+				} while (true);
+
+				if (selectedObject == nullptr)
+				{
+					throw std::logic_error("[ERROR] Selected object is NULL! (DatasheetProcessor::DatasheetOnAction)");
 				}
-			} while (true);
 
-			this->datasheetSelectedObject_->SetObjectPointer(selectedObject);
-			(*this->datasheetSelectedObject_).AccessIndicator().SetPlaceholder("Selecting Reader ID: " + std::to_string(selectedObject->info.GetID()));
+				this->datasheetSelectedObject_->SetObjectPointer(selectedObject);
+				(*this->datasheetSelectedObject_).AccessIndicator().SetPlaceholder("Selecting Reader ID: " + std::to_string(selectedObject->info.GetID()));
 
-			return 1;
-		}
-		else
-		{
-			if (rowIndex % 2 == 0) { IDCell.SetFillColor(rgb(238, 238, 238)); }
-			else { IDCell.SetFillColor(rgb(255, 251, 245)); }
+				return 1;
+			}
+			else
+			{
+				if (rowIndex % 2 == 0) { IDCell.SetFillColor(rgb(238, 238, 238)); }
+				else { IDCell.SetFillColor(rgb(255, 251, 245)); }
+			}
 		}
 	}
 

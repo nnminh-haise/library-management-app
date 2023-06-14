@@ -251,11 +251,11 @@ int READER_SEARCH_BOX::SearchBox::Run()
 
 void READER_SEARCH_BOX::SearchBox::Initialize()
 {
-	this->title_ = Button(HELPER::Coordinate(147, 120), 750, 70);
+	this->title_ = Button(HELPER::Coordinate(147, 120), 560, 70);
 	this->title_.SetFillColor(rgb(33, 42, 62));
 	this->title_.SetBorderColor(rgb(33, 42, 62));
 
-	this->searchBox_ = Button(HELPER::Coordinate(152, 125), 740, 60);
+	this->searchBox_ = Button(HELPER::Coordinate(152, 125), 550, 60);
 	this->searchBox_.SetPlaceholder("Type here to search!");
 
 	this->InitializeSearchFilters();
@@ -266,7 +266,7 @@ void READER_SEARCH_BOX::SearchBox::InitializeSearchFilters()
 	this->searchFilters_ = SearchFilters(5);
 
 	std::string filterPlaceholders[] = { "Reader ID", "First name", "Last name", "Gender", "Status" };
-	HELPER::Coordinate filterCoordinates[] = { {933, 120}, {1057, 120}, {1181, 120}, {1305, 120}, {1429, 120} };
+	HELPER::Coordinate filterCoordinates[] = { {36, 210}, {36, 290}, {36, 370}, {36, 450}, {36, 530} };
 	bool filterDefaultValues[] = { true, true, true, false, false };
 	for (int i = 0; i < 5; ++i)
 	{

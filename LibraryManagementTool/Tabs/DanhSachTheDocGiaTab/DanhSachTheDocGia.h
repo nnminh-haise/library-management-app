@@ -2,6 +2,8 @@
 
 #include "ReaderListTable.hpp"
 #include "SearchBox.hpp"
+#include "ReaderDetail.hpp"
+#include "UpdateReaderProcess.hpp"
 #include "../UI/Button.h"
 #include "../UI/Elements.h"
 #include "../UI/Datasheet.h"
@@ -14,6 +16,58 @@
 
 namespace READER_TAB_MEMBERS
 {
+	class ToolSets : public View
+	{
+	public:
+		ToolSets();
+
+		void Activate();
+
+		void Deactivate();
+
+		bool InActive();
+
+		int Run() override;
+
+		void Reset();
+
+		void SetCurrentReader(AVL_TREE::Pointer currentReader);
+
+		AVL_TREE::Pointer GetCurrentReader();
+
+		void SetReaderList(AVL_TREE::Pointer* readerList);
+
+		AVL_TREE::Pointer* GetReaderList();
+
+		void SetPackage(Package* package);
+
+		void SetInUsedTool(int tool);
+
+		int InUsedTool();
+
+	private:
+		void Initialize();
+
+		void InitializeElements();
+
+		int Display();
+
+		int ToolButtonsOnAction();
+
+	private:
+		bool status_ = false;
+
+		int inUsedTool_ = -1;
+
+		Button toolButtons_[3];
+
+		AVL_TREE::Pointer currentReader_ = nullptr;
+
+		AVL_TREE::Pointer* readerList_ = nullptr;
+
+		Package* package_ = nullptr;
+	};
+
 	class MainView : public View
 	{
 	public:
@@ -21,13 +75,15 @@ namespace READER_TAB_MEMBERS
 
 		void SetPackage(Package* package);
 
-		using View::Activate;
+		void Activate();
 
-		using View::Deactivate;
+		void Deactivate();
 
-		using View::InActive;
+		bool InActive();
 
 		int Run() override;
+
+		void Reset();
 
 	private:
 		void Initialize();
@@ -47,7 +103,7 @@ namespace READER_TAB_MEMBERS
 		void LogSortedList();
 
 	private:
-		using View::status_;
+		bool status_ = false;
 
 		Package* package_ = nullptr;
 
@@ -64,6 +120,13 @@ namespace READER_TAB_MEMBERS
 		READER_TABLE::DatasheetProcessor readerTablePackage_;
 
 		SelectedObject<AVL_TREE::Pointer> tableSelectedObject_;
+
+		ToolSets tools_;
+
+		ReaderDetails readerDetails_;
+
+	private:
+		UpdateReaderProcess readerUpdateProcess_;
 	};
 }
 
@@ -74,13 +137,15 @@ public:
 
 	DanhSachTheDocGiaView(Package* package);
 
-	using View::Activate;
+	void Activate();
 
-	using View::Deactivate;
+	void Deactivate();
 
-	using View::InActive;
+	bool InActive();
 
 	int Run() override;
+
+	void Reset();
 
 private:
 	void Initialize();
@@ -88,7 +153,7 @@ private:
 	void InitializeElements();
 
 private:
-	using View::status_;
+	bool status_ = false;
 
 	Package* package_ = nullptr;
 

@@ -212,8 +212,13 @@ namespace DAU_SACH_TAB
 					}
 				}
 
+				if (selectedObject == nullptr)
+				{
+					throw std::logic_error("[ERROR] Selected object is NULL! (DatasheetProcessor::DatasheetOnAction)");
+				}
+
 				this->datasheetSelectedObject_->SetObjectPointer(selectedObject);
-				(*this->datasheetSelectedObject_).AccessIndicator().SetPlaceholder("Selecting" + selectedObject->GetTitle());
+				(*this->datasheetSelectedObject_).AccessIndicator().SetPlaceholder("Selecting: " + selectedObject->GetTitle());
 			}
 			else if (currentCell.RightMouseClicked())
 			{
@@ -229,8 +234,13 @@ namespace DAU_SACH_TAB
 					}
 				}
 
+				if (selectedObject == nullptr)
+				{
+					throw std::logic_error("[ERROR] Selected object is NULL! (DatasheetProcessor::DatasheetOnAction)");
+				}
+
 				this->datasheetSelectedObject_->SetObjectPointer(selectedObject);
-				(*this->datasheetSelectedObject_).AccessIndicator().SetPlaceholder("Selecting" + selectedObject->GetTitle());
+				(*this->datasheetSelectedObject_).AccessIndicator().SetPlaceholder("Selecting: " + selectedObject->GetTitle());
 
 				return 1;
 			}

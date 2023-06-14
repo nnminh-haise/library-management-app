@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClCompile Include="Helper\IndexGenerator.cpp" />
     <ClCompile Include="Helper\Package.cpp" />
+    <ClCompile Include="Tabs\DanhSachTheDocGiaTab\ReaderDetail.cpp" />
     <ClCompile Include="Tabs\DanhSachTheDocGiaTab\SearchBox.cpp" />
     <ClCompile Include="Tabs\DanhSachTheDocGiaTab\ReaderListTable.cpp" />
     <ClCompile Include="Tabs\UI\Datasheet.cpp" />
@@ -152,6 +153,7 @@
     <ClCompile Include="Tabs\DanhSachDauSachTab\TitleDetailView.cpp" />
     <ClCompile Include="Tabs\DanhSachDauSachTab\TitleDetailCard.cpp" />
     <ClCompile Include="Tabs\DanhSachDauSachTab\TitleListTable.cpp" />
+    <ClCompile Include="Tabs\DanhSachTheDocGiaTab\UpdateReaderProcess.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStructures\AVL_Tree.h" />
@@ -162,6 +164,7 @@
     <ClInclude Include="DataStructures\LinkedList.h" />
     <ClInclude Include="Helper\IndexGenerator.h" />
     <ClInclude Include="Helper\Package.h" />
+    <ClInclude Include="Tabs\DanhSachTheDocGiaTab\ReaderDetail.hpp" />
     <ClInclude Include="Tabs\DanhSachTheDocGiaTab\SearchBox.hpp" />
     <ClInclude Include="Tabs\DanhSachTheDocGiaTab\ReaderListTable.hpp" />
     <ClInclude Include="Tabs\UI\SelectedObject.h" />
@@ -187,6 +190,7 @@
     <ClInclude Include="Tabs\DanhSachDauSachTab\TitleDetailView.h" />
     <ClInclude Include="Tabs\DanhSachDauSachTab\TitleDetailCard.hpp" />
     <ClInclude Include="Tabs\DanhSachDauSachTab\TitleListTable.hpp" />
+    <ClInclude Include="Tabs\DanhSachTheDocGiaTab\UpdateReaderProcess.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Graphics\graphics.lib" />
