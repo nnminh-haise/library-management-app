@@ -212,10 +212,10 @@
     <Text Include="Databases\DanhSachTheDocGiaIndex.txt" />
     <Text Include="Databases\DOC_GIA_DB.txt" />
     <Text Include="Databases\DAU_SACH_DB.txt" />
-    <Text Include="Databases\ReaderIndicies.txt" />
+    <Text Include="Databases\ReaderIndex.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Databases\ReaderIndicies.bin">
+    <None Include="Databases\ReaderIndex.bin">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

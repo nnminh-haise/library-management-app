@@ -9,7 +9,7 @@ namespace CONSTANTS
 {	
 	const std::string READER_DATABASE = "Databases/DOC_GIA_DB.txt";
 	const std::string TITLES_DATABASE = "Databases/DAU_SACH_DB.txt";
-	const std::string READER_INDICIES = "Databases/ReaderIndicies.bin";
+	const std::string READER_INDICIES = "Databases/ReaderIndex.bin";
 	const int BACKGROUND_COLOR = WHITE;
 	const int MAX_ROW_COUNT = 16;
 }

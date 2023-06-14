@@ -142,7 +142,7 @@ public:
 
     void GetIndicies(int* indicies, int& indexCount);
 
-    void ExportToFile(const std::string& filename);
+    void ExportToTXT(const std::string& filename);
 
     void ImportFromFile(const std::string& filename);
 
@@ -150,8 +150,14 @@ public:
 
     int FromFileGetIndexAt(const std::string& filename, int index);
 
-private:
-    int* indicies;
-    int amount;
-};
+    void SetUsedIndexCount(const std::string& filename, int value);
 
+    void SetUsedIndexCountToTXT(const std::string& filename, int value);
+
+    int GetUsedIndexCount(const std::string& filename);
+
+private:
+    int* indicies = nullptr;
+    int amount = 0;
+    int usedCount = 0;
+};

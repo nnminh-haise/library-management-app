@@ -98,6 +98,12 @@ namespace READER_TAB_MEMBERS
 
 		void CreateSortedByNameReaderList();
 
+		bool ReaderDetailInputValidation();
+
+		void GetNewReaderIndex();
+
+		void CreateNewReaderProcess();
+
 		void Log();
 
 		void LogSortedList();
@@ -127,6 +133,8 @@ namespace READER_TAB_MEMBERS
 
 	private:
 		UpdateReaderProcess readerUpdateProcess_;
+
+		int newIndex_ = -1;
 	};
 }
 

@@ -2,8 +2,10 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
 #include <format>
 #include <ctime>
+#include <iterator>
 
 namespace PRIVATE_DATA_STRUCTURE
 {
@@ -547,7 +549,7 @@ void IndexGenerator::GetIndicies(int* arr, int& indexCount)
     indexCount = this->amount;
 }
 
-void IndexGenerator::ExportToFile(const std::string& filename)
+void IndexGenerator::ExportToTXT(const std::string& filename)
 {
     std::ofstream fileOut(filename, std::ofstream::out);
 
@@ -556,6 +558,8 @@ void IndexGenerator::ExportToFile(const std::string& filename)
         throw std::logic_error(std::format("[ERROR] Cannot open {}\n", filename));
         exit(1);
     }
+
+    fileOut << 0 << "\n";
 
     for (int i = 0; i < this->amount; ++i)
     {
@@ -575,9 +579,11 @@ void IndexGenerator::LogToFile(const std::string& filename)
         exit(1);
     }
 
+    fileOut.write((char*)&this->usedCount, sizeof(int));
+
     for (int i = 0; i < this->amount; ++i)
     {
-        fileOut.write((char*)&this->indicies[i], sizeof(this->indicies[i]));
+        fileOut.write((char*)&this->indicies[i], sizeof(int));
     }
 
     fileOut.close();
@@ -593,10 +599,13 @@ void IndexGenerator::ImportFromFile(const std::string& filename)
         exit(1);
     }
 
+    fileIn.read((char*)&this->usedCount, sizeof(int));
+
     for (int i = 0; i < this->amount; ++i)
     {
         fileIn.read((char*)&this->indicies[i], sizeof(this->indicies[i]));
     }
+
     fileIn.close();
 }
 
@@ -610,7 +619,7 @@ int IndexGenerator::FromFileGetIndexAt(const std::string& filename, int index)
         exit(1);
     }
 
-    if (index < 0 || index >= this->amount)
+    if (index <= 0 || index > this->amount)
     {
         throw std::logic_error(std::format("[ERROR] Cannot open {}\n", filename));
         exit(1);
@@ -629,3 +638,75 @@ int IndexGenerator::FromFileGetIndexAt(const std::string& filename, int index)
     return result;
 }
 
+void IndexGenerator::SetUsedIndexCount(const std::string& filename, int value)
+{
+    std::ofstream file(filename, std::ios::binary | std::ios::in | std::ios::out);
+
+    if (file) {
+        // Write the integer at the beginning of the file
+        file.seekp(0, std::ios::beg);
+        file.write((char*)(&value), sizeof(int));
+
+        file.close();
+    }
+    else {
+        // Handle error opening the file
+        std::cerr << "Error opening file: " << filename << std::endl;
+    }
+}
+
+void IndexGenerator::SetUsedIndexCountToTXT(const std::string& filename, int value)
+{
+    std::ifstream file(filename);
+
+    if (file) {
+        // Read the current contents of the file into a string
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        std::string contents = buffer.str();
+
+        // Close the file
+        file.close();
+
+        // Reopen the file in output mode and truncate its contents
+        std::ofstream outputFile(filename, std::ofstream::out | std::ofstream::trunc);
+
+        if (outputFile) {
+            // Write the integer at the beginning of the file
+            outputFile << value << "\n" << contents;
+
+            outputFile.close();
+        }
+        else {
+            // Handle error opening the file in output mode
+            std::cerr << "Error opening file: " << filename << " for writing" << std::endl;
+        }
+    }
+    else {
+        // Handle error opening the file in input mode
+        std::cerr << "Error opening file: " << filename << " for reading" << std::endl;
+    }
+}
+
+int IndexGenerator::GetUsedIndexCount(const std::string& filename)
+{
+    std::ifstream fileIn(filename, std::ifstream::binary);
+
+    if (!fileIn.is_open())
+    {
+        throw std::logic_error(std::format("[ERROR] Cannot open {}\n", filename));
+        exit(1);
+    }
+
+    int result = 0;
+
+    fileIn.seekg(0, fileIn.end);
+    long long fileSize = fileIn.tellg();
+    fileIn.seekg(0, fileIn.beg);
+    fileIn.seekg(0 * sizeof(int));
+    fileIn.read((char*)&result, sizeof(int));
+
+    fileIn.close();
+
+    return result;
+}

@@ -92,6 +92,8 @@ void READER_TAB_MEMBERS::MainView::SetPackage(Package* package)
 
 	this->InitializeSearchBox();
 
+	this->readerDetails_.SetPackage(this->package_);
+
 	this->tools_.SetPackage(this->package_);
 	this->tools_.SetReaderList(this->package_->readerList);
 
@@ -142,7 +144,6 @@ int READER_TAB_MEMBERS::MainView::Run()
 		{
 			this->tools_.SetCurrentReader(this->tableSelectedObject_.GetObjectPointer());
 			this->readerDetails_.Activate();
-			this->readerDetails_.SetPackage(this->package_);
 			this->readerDetails_.SetReader(this->tableSelectedObject_.GetObjectPointer());
 		}
 	}
@@ -153,7 +154,6 @@ int READER_TAB_MEMBERS::MainView::Run()
 		if (selectedObjectIndicatorRunningResult) //* Left clicked from the indicator button
 		{
 			this->readerDetails_.Activate();
-			this->readerDetails_.SetPackage(this->package_);
 			this->readerDetails_.SetReader(this->tableSelectedObject_.GetObjectPointer());
 		}
 		this->tools_.SetCurrentReader(this->tableSelectedObject_.GetObjectPointer());
@@ -178,11 +178,13 @@ int READER_TAB_MEMBERS::MainView::Run()
 			switch (toolRunningResult)
 			{
 				case (1): {
-					std::cerr << "Creating new reader!\n";
+					this->readerDetails_.SetMode(1);
+					this->readerDetails_.SetReader(nullptr);
+					this->readerDetails_.Activate();
+					this->GetNewReaderIndex();
 					break;
 				}
 				case (2): {
-					std::cerr << "Updating current reader!\n";
 					this->readerUpdateProcess_.Activate();
 					this->readerUpdateProcess_.SetReader(this->tableSelectedObject_.GetObjectPointer());
 					this->readerUpdateProcess_.SetDetailCard(&this->readerDetails_);
@@ -190,8 +192,7 @@ int READER_TAB_MEMBERS::MainView::Run()
 					break;
 				}
 				case (3): {
-					std::cerr << "Deleting current reader!\n";
-
+					std::cerr << "deleting a reader!\n";
 					break;
 				}
 			}
@@ -201,9 +202,26 @@ int READER_TAB_MEMBERS::MainView::Run()
 		switch (inUsedTool)
 		{
 			case (1): {
-				std::cerr << "CREATE!\n";
 				this->readerUpdateProcess_.Deactivate();
-				this->readerDetails_.SetMode(0);
+
+				int saveSignal = this->readerDetails_.SaveButtonOnAction();
+				if (saveSignal && this->ReaderDetailInputValidation())
+				{
+					this->CreateNewReaderProcess();
+					auto tmp = AVL_TREE::SearchByKey(*this->package_->readerList, this->newIndex_);
+					this->tableSelectedObject_.SetObjectPointer(tmp);
+					this->readerDetails_.SetReader(tmp);
+
+					//* Reset and deactivate tool
+					this->tools_.SetInUsedTool(-1);
+
+					//* Re-create table
+					std::cerr << "[LOG] AFTER UPDATED READER INFO: UPDATE READER TABLE!\n";
+					this->readerTablePackage_.SetDataList(this->package_->readerList);
+					this->InitializeFilters();
+					this->readerTablePackage_.AllowCreateDatasheet();
+					this->readerTablePackage_.CreateDatasheet();
+				}
 
 				break;
 			}
@@ -220,6 +238,7 @@ int READER_TAB_MEMBERS::MainView::Run()
 					std::string newLastName = this->readerDetails_.AccessFields(1).content_.GetPlaceholder();
 					targetingReader->info.SetFirstName(newFirstName);
 					targetingReader->info.SetLastName(newLastName);
+					targetingReader->info.SetGender(this->readerDetails_.AccessFields(4).content_.GetPlaceholder() == "MALE" ? READER::Gender::MALE : READER::Gender::FEMALE);
 
 					//* Reset and deactivate tool
 					this->readerUpdateProcess_.Deactivate();
@@ -236,6 +255,8 @@ int READER_TAB_MEMBERS::MainView::Run()
 				std::cerr << "DELETE!\n";
 				this->readerUpdateProcess_.Deactivate();
 				this->readerDetails_.SetMode(0);
+
+
 				break;
 			}
 			default: {
@@ -405,6 +426,66 @@ void READER_TAB_MEMBERS::MainView::CreateSortedByNameReaderList()
 	}
 
 	std::cerr << "[LOG] Created reader list sorted by name!\n";
+}
+
+bool READER_TAB_MEMBERS::MainView::ReaderDetailInputValidation()
+{
+	Button& firstNameField = this->readerDetails_.AccessFields(0).content_;
+	Button& lastNameField = this->readerDetails_.AccessFields(1).content_;
+	std::string firstName = firstNameField.GetPlaceholder();
+	std::string lastName = lastNameField.GetPlaceholder();
+
+	if (firstName.compare("Nguyen Van") == 0 || firstName.length() == 0)
+	{
+		return false;
+	}
+
+	if (lastName.compare("Vu") == 0 || lastName.length() == 0)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void READER_TAB_MEMBERS::MainView::GetNewReaderIndex()
+{
+	IndexGenerator gen(100000);
+	int usedIndexCount = gen.GetUsedIndexCount(CONSTANTS::READER_INDICIES);
+	this->newIndex_ = gen.FromFileGetIndexAt(CONSTANTS::READER_INDICIES, usedIndexCount + 1);
+	gen.SetUsedIndexCount(CONSTANTS::READER_INDICIES, usedIndexCount + 1);
+
+	this->readerDetails_.AccessFields(2).content_.SetPlaceholder(std::to_string(this->newIndex_));
+	this->readerDetails_.AccessFields(3).content_.SetPlaceholder("ACTIVE");
+}
+
+void READER_TAB_MEMBERS::MainView::CreateNewReaderProcess()
+{
+	READER::Reader newReader;
+	newReader.SetFirstName(this->readerDetails_.AccessFields(0).content_.GetPlaceholder());
+	newReader.SetLastName(this->readerDetails_.AccessFields(1).content_.GetPlaceholder());
+	newReader.SetGender(this->readerDetails_.AccessFields(4).content_.GetPlaceholder() == "MALE" ? READER::Gender::MALE : READER::Gender::FEMALE);
+	newReader.SetID(this->newIndex_);
+	newReader.SetStatus(READER::ReaderStatus::ACTIVE);
+
+	AVL_TREE::Pointer newNode = new AVL_TREE::Node;
+	newNode->info = newReader;
+
+	int nullTree = AVL_TREE::Empty(*this->package_->readerList);
+	if (nullTree)
+	{
+		AVL_TREE::Pointer newNode = new AVL_TREE::Node;
+		newNode->info = newReader;
+		newNode->balanceFactor = 0;
+		newNode->height = 1;
+		newNode->left = newNode->right = nullptr;
+
+		*this->package_->readerList = newNode;
+	}
+	else
+	{
+		AVL_TREE::Insert(*this->package_->readerList, newReader);
+	}
 }
 
 void READER_TAB_MEMBERS::MainView::Log()
@@ -630,6 +711,7 @@ int READER_TAB_MEMBERS::ToolSets::ToolButtonsOnAction()
 			}
 			else
 			{
+				this->toolButtons_[0].SetPlaceholder(placeholders[0]);
 				this->toolButtons_[0].SetTextColor(rgb(241, 246, 249));
 				this->toolButtons_[0].SetFillColor(rgb(155, 164, 181));
 				this->toolButtons_[0].SetBorderColor(rgb(155, 164, 181));

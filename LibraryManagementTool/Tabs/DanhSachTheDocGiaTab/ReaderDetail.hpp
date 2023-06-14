@@ -48,6 +48,8 @@ private:
 
 	void FieldsOnAction();
 
+	void GenderButtonOnAction();
+
 private:
 	bool status_ = false;
 
@@ -65,8 +67,6 @@ private:
 	LinkedButton details_[5];
 
 	Button saveButton_;
-
-	Button cover_;
 };
 
 #endif // !NEW_READER_H

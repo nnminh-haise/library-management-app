@@ -26,17 +26,12 @@ int ReaderDetails::Run()
 {
 	if (!this->status_) { return 0; }
 
-	if (this->reader_ == nullptr)
-	{
-		this->cover_.Display();
-		return 0;
-	}
-
 	this->Display();
 
 	if (this->mode_ == 1)
 	{
 		this->FieldsOnAction();
+		this->GenderButtonOnAction();
 	}
 
 	return 0;
@@ -104,7 +99,7 @@ void ReaderDetails::InitializeElements()
 		{420, 45}, {200, 45}, {100, 45}, {100, 45}, {100, 45}
 	};
 	std::string descriptionPlaceholders[] = {"First name:", "Last name:", "Reader ID:", "Status:", "Gender:"};
-	std::string contentPlaceholders[] = { "Nguyen Van", "A", "Auto", "Auto", "FEMALE" };
+	std::string contentPlaceholders[] = { "Nguyen Van", "Vu", "Auto", "Auto", "FEMALE" };
 	for (int i = 0; i < 5; ++i)
 	{
 		this->details_[i].description_ = Button(descriptionTopLefts[i], { 80, 20 });
@@ -125,12 +120,6 @@ void ReaderDetails::InitializeElements()
 	this->saveButton_.SetTextColor(BLACK);
 	this->saveButton_.SetFillColor(rgb(130, 170, 227));
 	this->saveButton_.SetBorderColor(rgb(130, 170, 227));
-
-	this->cover_ = Button({ 1022, 204 }, {650, 200});
-	this->cover_.SetPlaceholder("Right click on reader's name or ID to see detail infomation!");
-	this->cover_.SetTextColor(BLACK);
-	this->cover_.SetFillColor(rgb(238, 238, 238));
-	this->cover_.SetBorderColor(rgb(238, 238, 238));
 }
 
 int ReaderDetails::Display()
@@ -209,6 +198,39 @@ void ReaderDetails::FieldsOnAction()
 			this->details_[i].content_.SetFillColor(WHITE);
 			this->details_[i].content_.SetBorderColor(BLACK);
 		}
+	}
+}
+
+void ReaderDetails::GenderButtonOnAction()
+{
+	if (!this->status_) { return; }
+
+	if (this->mode_ != 1) { return; }
+
+	if (this->details_[4].content_.IsHover())
+	{
+		this->details_[4].content_.SetFillColor(rgb(234, 253, 252));
+		this->details_[4].content_.SetBorderColor(rgb(130, 170, 227));
+	}
+	else if (this->details_[4].content_.LeftMouseClicked())
+	{
+		delay(130);
+
+		std::string currentOption = this->details_[4].content_.GetPlaceholder();
+		if (currentOption == "MALE")
+		{
+			this->details_[4].content_.SetPlaceholder("FEMALE");
+		}
+		else
+		{
+			this->details_[4].content_.SetPlaceholder("MALE");
+		}
+	}
+	else
+	{
+		this->details_[4].content_.SetTextColor(rgb(33, 42, 62));
+		this->details_[4].content_.SetFillColor(WHITE);
+		this->details_[4].content_.SetBorderColor(BLACK);
 	}
 }
 
