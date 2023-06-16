@@ -93,9 +93,7 @@ namespace READER_PROPERTIES
 			const int MAX_ROW = 11;
 			const int PROPERTIES_COUNT = 5;
 			const std::string LABEL_PLACEHOLDERS[] = { "ORDER", "BOOK ID", "BORROW DATE", "RETURN DATE", "STATUS" };
-			const int CHARACTER_LIMITS[] = { 3, 8, 10, 10, 8 };
-			const HELPER::Coordinate TOP_LEFT{ 1115, 295 };
-			const HELPER::Coordinate DATASHEET_CHANGE_BUTTON_TOP_LEFT{ 1115, 870 };
+			const int CHARACTER_LIMITS[] = { 3, 9, 10, 10, 9 };
 		}
 	}
 }

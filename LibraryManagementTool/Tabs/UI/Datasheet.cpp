@@ -377,4 +377,14 @@ namespace DATASHEET
 		}
 	}
 
+	Button& Controller::NavigateIndicator(int index)
+	{
+		if (index < 0 || index >= 2)
+		{
+			throw std::out_of_range("[ERROR] Index out of range! (Controller::NavigateIndicator)");
+		}
+
+		return this->datasheetChangeButton[index];
+	}
+
 }

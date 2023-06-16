@@ -377,7 +377,8 @@ AVL_TREE::Pointer AVL_TREE::RotateLeft(AVL_TREE::Pointer root) {
     AVL_TREE::Pointer p = root->right;
     root->right = p->left;
     p->left = root;
-
+    AVL_TREE::UpdateHeight(root);
+    AVL_TREE::UpdateHeight(p);
     return p;
 }
 
@@ -395,6 +396,8 @@ AVL_TREE::Pointer AVL_TREE::RotateRight(AVL_TREE::Pointer root) {
     AVL_TREE::Pointer s = root->left;
     root->left = s->right;
     s->right = root;
+    AVL_TREE::UpdateHeight(root);
+    AVL_TREE::UpdateHeight(s);
     return s;
 }
 
@@ -596,61 +599,90 @@ AVL_TREE::Pointer AVL_TREE::GetMinValueNode(AVL_TREE::Pointer const& node) {
     return AVL_TREE::GetMinValueNode(node->left);
 }
 
-AVL_TREE::Pointer AVL_TREE::RemoveNode(AVL_TREE::Pointer& node, const int& key) {
-    if (node == nullptr) {
-        return node;
-    }
+int AVL_TREE::GetHeight(Pointer node)
+{
+    if (node == nullptr) { return 0; }
+    return node->height;
+}
 
-    if (key < node->GetKey()) {
-        node->left = AVL_TREE::RemoveNode(node->left, key);
-    }
-    else if (key > node->GetKey()) {
-        node->right = AVL_TREE::RemoveNode(node->right, key);
-    }
-    else {
-        if (node->left == nullptr) {
-            AVL_TREE::Pointer temp = node->right;
-            delete node;
-            return temp;
+void AVL_TREE::UpdateHeight(Pointer node)
+{
+    int leftHeight = node->left == nullptr ? 0 : node->left->height;
+    int rightHeight = node->right == nullptr ? 0 : node->right->height;
+    node->height = 1 + max(leftHeight, rightHeight);
+}
+
+AVL_TREE::Pointer AVL_TREE::FindMinNode(Pointer node)
+{
+    Node* current = node;
+    while (current->left != nullptr)
+        current = current->left;
+    return current;
+}
+
+AVL_TREE::Pointer AVL_TREE::Balance(Pointer node)
+{
+    int leftHeight = GetHeight(node->left);
+    int rightHeight = GetHeight(node->right);
+    int balanceFactor = leftHeight - rightHeight;
+
+    if (balanceFactor > 1) {
+        if (GetHeight(node->left->left) >= GetHeight(node->left->right))
+            node = RotateRight(node);
+        else {
+            node->left = RotateLeft(node->left);
+            node = RotateRight(node);
         }
-        else if (node->right == nullptr) {
-            AVL_TREE::Pointer temp = node->left;
-            delete node;
-            return temp;
+    }
+    else if (balanceFactor < -1) {
+        if (GetHeight(node->right->right) >= GetHeight(node->right->left))
+            node = RotateLeft(node);
+        else {
+            node->right = RotateRight(node->right);
+            node = RotateLeft(node);
         }
-        AVL_TREE::Pointer temp = AVL_TREE::GetMinValueNode(node->right);
-        node->SetKey(temp->GetKey());
-        node->right = AVL_TREE::RemoveNode(node->right, temp->GetKey());
-    }
-
-    if (node == nullptr) {
-        return node;
-    }
-
-    node->height = 1 + max(
-        (node->left != nullptr ? node->left->height : 0),
-        (node->right != nullptr ? node->right->height : 0)
-    );
-
-    if (node->balanceFactor > 1 && node->left->balanceFactor >= 0) {
-        return AVL_TREE::RotateRight(node);
-    }
-
-    if (node->balanceFactor < -1 && node->right->balanceFactor <= 0) {
-        return AVL_TREE::RotateLeft(node);
-    }
-
-    if (node->balanceFactor > 1 && node->left->balanceFactor < 0) {
-        node->left = AVL_TREE::RotateLeft(node->left);
-        return AVL_TREE::RotateRight(node);
-    }
-
-    if (node->balanceFactor < -1 && node->right->balanceFactor > 0) {
-        node->right = AVL_TREE::RotateRight(node->right);
-        return AVL_TREE::RotateLeft(node);
     }
 
     return node;
+}
+
+AVL_TREE::Pointer AVL_TREE::RemoveNode(AVL_TREE::Pointer root, const int& key)
+{
+    if (root == nullptr)
+        return root;
+
+    if (key < root->GetKey())
+        root->left = RemoveNode(root->left, key);
+    else if (key > root->GetKey())
+        root->right = RemoveNode(root->right, key);
+    else
+    {
+        if (root->left == nullptr || root->right == nullptr) {
+            Node* temp = root->left ? root->left : root->right;
+            if (temp == nullptr)
+            {
+                temp = root;
+                root = nullptr;
+            }
+            else {
+                *root = *temp;
+            }
+            delete temp;
+        }
+        else {
+            Node* minRightNode = FindMinNode(root->right);
+            root->SetKey(minRightNode->GetKey());
+            root->right = RemoveNode(root->right, minRightNode->GetKey());
+        }
+    }
+
+    if (root == nullptr)
+        return root;
+
+    UpdateHeight(root);
+    root = Balance(root);
+
+    return root;
 }
 
 /**

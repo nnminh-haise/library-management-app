@@ -179,7 +179,15 @@ namespace AVL_TREE
 
 	Pointer GetMinValueNode(Pointer const& node);
 
-	Pointer RemoveNode(Pointer& node, const int& key);
+	int GetHeight(Pointer node);
+
+	void UpdateHeight(Pointer node);
+
+	Pointer FindMinNode(Pointer node);
+
+	Pointer Balance(Pointer node);
+
+	Pointer RemoveNode(Pointer node, const int& key);
 }
 
 namespace READER_MODULES

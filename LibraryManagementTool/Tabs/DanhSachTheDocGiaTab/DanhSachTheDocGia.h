@@ -1,9 +1,12 @@
 #pragma once
 
 #include "ReaderListTable.hpp"
+#include "ReaderTableSortedByName.h"
 #include "SearchBox.hpp"
+#include "SecondSearchBox.h"
 #include "ReaderDetail.hpp"
 #include "UpdateReaderProcess.hpp"
+#include "BookCirculationView.h"
 #include "../UI/Button.h"
 #include "../UI/Elements.h"
 #include "../UI/Datasheet.h"
@@ -53,6 +56,8 @@ namespace READER_TAB_MEMBERS
 		int Display();
 
 		int ToolButtonsOnAction();
+
+		bool ReaderDeleteCapabilityValidation();
 
 	private:
 		bool status_ = false;
@@ -104,6 +109,12 @@ namespace READER_TAB_MEMBERS
 
 		void CreateNewReaderProcess();
 
+		void SortingOptionsSelectorOnAction();
+
+		void InUsedToolProcessingForDefaultTable(int inUsedTool);
+
+		void InUsedToolProcessingForSortedTable(int inUsedTool);
+
 		void Log();
 
 		void LogSortedList();
@@ -112,6 +123,8 @@ namespace READER_TAB_MEMBERS
 		bool status_ = false;
 
 		Package* package_ = nullptr;
+
+		BookCirculationView bookCirculationView_;
 
 	private:
 		DataFilter defaultReaderListFilter_;
@@ -124,6 +137,10 @@ namespace READER_TAB_MEMBERS
 		READER_SEARCH_BOX::SearchBox searchBox_;
 
 		READER_TABLE::DatasheetProcessor readerTablePackage_;
+
+		READER_SECOND_SEARCH_BOX::SearchBox secondSearchBox_;
+
+		READER_TABLE_SORTED_BY_NAME::DatasheetProcessor readerTableSortedByNamePackage_;
 
 		SelectedObject<AVL_TREE::Pointer> tableSelectedObject_;
 

@@ -127,5 +127,7 @@ namespace DATASHEET {
         bool DisplayStatus();
 
         void Display(bool displayDatasheetChangeButton = true);
+
+        Button& NavigateIndicator(int index);
     };
 }

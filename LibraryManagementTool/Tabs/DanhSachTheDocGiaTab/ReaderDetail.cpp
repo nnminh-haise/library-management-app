@@ -78,22 +78,22 @@ void ReaderDetails::Initialize()
 
 void ReaderDetails::InitializeElements()
 {
-	this->background_ = HELPER::Fill({ 1022, 204 }, 650, 200);
+	this->background_ = HELPER::Fill({ 1106, 171 }, 650, 200);
 	this->background_.fillColor = rgb(238, 238, 238);
 	this->background_.borderColor = rgb(238, 238, 238);
 	this->background_.Draw();
 
-	this->title_ = Button({1022, 204}, {650, 40});
+	this->title_ = Button({ 1106, 171 }, {650, 40});
 	this->title_.SetPlaceholder("Reader's Infomations");
 	this->title_.SetTextColor(rgb(241, 246, 249));
 	this->title_.SetFillColor(rgb(33, 42, 62));
 	this->title_.SetBorderColor(rgb(33, 42, 62));
 
 	HELPER::Coordinate descriptionTopLefts[] = {
-		{1032, 254}, {1462, 254}, {1032, 329}, {1142, 329}, {1252, 329}
+		{1116, 221}, {1546, 221}, {1116, 296}, {1226, 296}, {1336, 296}
 	};
 	HELPER::Coordinate contentTopLefts[] = {
-		{1032, 274}, {1462, 274}, {1032, 349}, {1142, 349}, {1252, 349}
+		{1116, 241}, {1546, 241}, {1116, 316}, {1226, 316}, {1336, 316}
 	};
 	HELPER::Dimension contentDimensions[] = {
 		{420, 45}, {200, 45}, {100, 45}, {100, 45}, {100, 45}
@@ -115,7 +115,7 @@ void ReaderDetails::InitializeElements()
 		this->details_[i].content_.SetBorderColor(BLACK);
 	}
 
-	this->saveButton_ = Button({ 1542, 349 }, { 120, 45 });
+	this->saveButton_ = Button({ 1626, 316 }, { 120, 45 });
 	this->saveButton_.SetPlaceholder("SAVE");
 	this->saveButton_.SetTextColor(BLACK);
 	this->saveButton_.SetFillColor(rgb(130, 170, 227));
@@ -135,7 +135,7 @@ int ReaderDetails::Display()
 		this->details_[i].Display();
 	}
 
-	if (this->mode_ == 1)
+	if (this->mode_ == 1 || this->mode_ == 2)
 	{
 		this->saveButton_.Display();
 	}
@@ -237,8 +237,6 @@ void ReaderDetails::GenderButtonOnAction()
 int ReaderDetails::SaveButtonOnAction()
 {
 	if (!this->status_) { return 0; }
-
-	if (this->mode_ != 1) { return 0; }
 
 	if (this->saveButton_.IsHover())
 	{

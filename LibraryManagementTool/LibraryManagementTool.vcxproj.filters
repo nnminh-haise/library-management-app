@@ -84,6 +84,18 @@
     <ClCompile Include="Tabs\DanhSachTheDocGiaTab\UpdateReaderProcess.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Tabs\DanhSachTheDocGiaTab\ReaderTableSortedByName.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tabs\DanhSachTheDocGiaTab\SecondSearchBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tabs\DanhSachTheDocGiaTab\BookCirculationTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tabs\DanhSachTheDocGiaTab\BookCirculationView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DauSach\DauSach.h">
@@ -201,6 +213,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tabs\DanhSachTheDocGiaTab\UpdateReaderProcess.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tabs\DanhSachTheDocGiaTab\ReaderTableSortedByName.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tabs\DanhSachTheDocGiaTab\SecondSearchBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tabs\DanhSachTheDocGiaTab\BookCirculationTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tabs\DanhSachTheDocGiaTab\BookCirculationView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -131,8 +131,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Tabs\DanhSachTheDocGiaTab\BookCirculationView.cpp" />
+    <ClCompile Include="Tabs\DanhSachTheDocGiaTab\BookCirculationTable.cpp" />
     <ClCompile Include="Helper\IndexGenerator.cpp" />
     <ClCompile Include="Helper\Package.cpp" />
+    <ClCompile Include="Tabs\DanhSachTheDocGiaTab\SecondSearchBox.cpp" />
+    <ClCompile Include="Tabs\DanhSachTheDocGiaTab\ReaderTableSortedByName.cpp" />
     <ClCompile Include="Tabs\DanhSachTheDocGiaTab\ReaderDetail.cpp" />
     <ClCompile Include="Tabs\DanhSachTheDocGiaTab\SearchBox.cpp" />
     <ClCompile Include="Tabs\DanhSachTheDocGiaTab\ReaderListTable.cpp" />
@@ -156,6 +160,8 @@
     <ClCompile Include="Tabs\DanhSachTheDocGiaTab\UpdateReaderProcess.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Tabs\DanhSachTheDocGiaTab\BookCirculationView.h" />
+    <ClInclude Include="Tabs\DanhSachTheDocGiaTab\BookCirculationTable.h" />
     <ClInclude Include="DataStructures\AVL_Tree.h" />
     <ClInclude Include="DataStructures\DoubleLinkedList.h" />
     <ClInclude Include="DataStructures\DynamicArray.h" />
@@ -164,6 +170,8 @@
     <ClInclude Include="DataStructures\LinkedList.h" />
     <ClInclude Include="Helper\IndexGenerator.h" />
     <ClInclude Include="Helper\Package.h" />
+    <ClInclude Include="Tabs\DanhSachTheDocGiaTab\SecondSearchBox.h" />
+    <ClInclude Include="Tabs\DanhSachTheDocGiaTab\ReaderTableSortedByName.h" />
     <ClInclude Include="Tabs\DanhSachTheDocGiaTab\ReaderDetail.hpp" />
     <ClInclude Include="Tabs\DanhSachTheDocGiaTab\SearchBox.hpp" />
     <ClInclude Include="Tabs\DanhSachTheDocGiaTab\ReaderListTable.hpp" />
