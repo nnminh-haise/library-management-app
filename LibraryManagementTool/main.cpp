@@ -12,7 +12,6 @@ int main() {
 	LINEAR_LIST::LinearList titleList;
 	LINEAR_LIST::Initialize(titleList);
 
-	//* Run program main function
 	LandingView mainView(&readerList, &titleList);
 	mainView.Run();
 
