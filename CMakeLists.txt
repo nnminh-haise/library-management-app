@@ -1,0 +1,83 @@
+cmake_minimum_required(VERSION 3.26)
+project(Library_Management_Tool)
+
+set(CMAKE_CXX_STANDARD 20)
+
+include_directories(LibraryManagementTool/DataStructures)
+include_directories(LibraryManagementTool/DauSach)
+include_directories(LibraryManagementTool/Graphics)
+include_directories(LibraryManagementTool/Helper)
+include_directories(LibraryManagementTool/Tabs/DanhSachDauSachTab)
+include_directories(LibraryManagementTool/Tabs/DanhSachTheDocGiaTab)
+include_directories(LibraryManagementTool/Tabs/LandingView)
+include_directories(LibraryManagementTool/Tabs/ThongKeTab)
+include_directories(LibraryManagementTool/Tabs/UI)
+include_directories(LibraryManagementTool/TheDocGia)
+
+add_executable(Library_Management_Tool
+        LibraryManagementTool/DataStructures/AVL_Tree.h
+        LibraryManagementTool/DataStructures/DoubleLinkedList.h
+        LibraryManagementTool/DataStructures/DynamicArray.h
+        LibraryManagementTool/DataStructures/HashMap.h
+        LibraryManagementTool/DataStructures/LinearList.h
+        LibraryManagementTool/DataStructures/LinkedList.h
+        LibraryManagementTool/DataStructures/Stack.h
+        LibraryManagementTool/DauSach/DauSach.cpp
+        LibraryManagementTool/DauSach/DauSach.h
+        LibraryManagementTool/Graphics/graphics.h
+        LibraryManagementTool/Graphics/winbgim.h
+        LibraryManagementTool/Helper/ConstantsAndGlobalVariables.h
+        LibraryManagementTool/Helper/Helper.cpp
+        LibraryManagementTool/Helper/Helper.h
+        LibraryManagementTool/Helper/IndexGenerator.cpp
+        LibraryManagementTool/Helper/IndexGenerator.h
+        LibraryManagementTool/Helper/Package.cpp
+        LibraryManagementTool/Helper/Package.h
+        LibraryManagementTool/Tabs/DanhSachDauSachTab/DanhSachDauSachStyling.cpp
+        LibraryManagementTool/Tabs/DanhSachDauSachTab/DanhSachDauSachStyling.h
+        LibraryManagementTool/Tabs/DanhSachDauSachTab/DanhSachDauSachView.cpp
+        LibraryManagementTool/Tabs/DanhSachDauSachTab/DanhSachDauSachView.h
+        LibraryManagementTool/Tabs/DanhSachDauSachTab/TitleDetailCard.cpp
+        LibraryManagementTool/Tabs/DanhSachDauSachTab/TitleDetailCard.hpp
+        LibraryManagementTool/Tabs/DanhSachDauSachTab/TitleDetailView.cpp
+        LibraryManagementTool/Tabs/DanhSachDauSachTab/TitleDetailView.h
+        LibraryManagementTool/Tabs/DanhSachDauSachTab/TitleListTable.cpp
+        LibraryManagementTool/Tabs/DanhSachDauSachTab/TitleListTable.hpp
+        LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/BookCirculationTable.cpp
+        LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/BookCirculationTable.h
+        LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/BookCirculationView.cpp
+        LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/BookCirculationView.h
+        LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/DanhSachTheDocGia.cpp
+        LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/DanhSachTheDocGia.h
+        LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/DanhSachTheDocGiaStyling.cpp
+        LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/DanhSachTheDocGiaStyling.h
+        LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/ReaderDetail.cpp
+        LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/ReaderDetail.hpp
+        LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/ReaderListTable.cpp
+        LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/ReaderListTable.hpp
+        LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/ReaderTableSortedByName.cpp
+        LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/ReaderTableSortedByName.h
+        LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/SearchBox.cpp
+        LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/SearchBox.hpp
+        LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/SecondSearchBox.cpp
+        LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/SecondSearchBox.h
+        LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/UpdateReaderProcess.cpp
+        LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/UpdateReaderProcess.hpp
+        LibraryManagementTool/Tabs/LandingView/LandingView.cpp
+        LibraryManagementTool/Tabs/LandingView/LandingView.h
+        LibraryManagementTool/Tabs/ThongKeTab/ThongKeView.cpp
+        LibraryManagementTool/Tabs/ThongKeTab/ThongKeView.h
+        LibraryManagementTool/Tabs/UI/Button.cpp
+        LibraryManagementTool/Tabs/UI/Button.h
+        LibraryManagementTool/Tabs/UI/Component.cpp
+        LibraryManagementTool/Tabs/UI/Component.hpp
+        LibraryManagementTool/Tabs/UI/Datasheet.cpp
+        LibraryManagementTool/Tabs/UI/Datasheet.h
+        LibraryManagementTool/Tabs/UI/Elements.cpp
+        LibraryManagementTool/Tabs/UI/Elements.h
+        LibraryManagementTool/Tabs/UI/SearchFilters.h
+        LibraryManagementTool/Tabs/UI/SelectedObject.h
+        LibraryManagementTool/Tabs/UI/Table.hpp
+        LibraryManagementTool/TheDocGia/TheDocGia.cpp
+        LibraryManagementTool/TheDocGia/TheDocGia.h
+        LibraryManagementTool/main.cpp)

@@ -1,0 +1,658 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "Library_Management_Tool.exe"
+		},
+		{
+			"path" : "Library_Management_Tool.pdb"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_executable",
+			"include_directories"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 17,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 6,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 7,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 8,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 9,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 10,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 11,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 12,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 13,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 14,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 15,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g -std=gnu++20 -fdiagnostics-color=always"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/Minh/Code/Library-Management-Tool/LibraryManagementTool/DataStructures"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "C:/Users/Minh/Code/Library-Management-Tool/LibraryManagementTool/DauSach"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "C:/Users/Minh/Code/Library-Management-Tool/LibraryManagementTool/Graphics"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "C:/Users/Minh/Code/Library-Management-Tool/LibraryManagementTool/Helper"
+				},
+				{
+					"backtrace" : 6,
+					"path" : "C:/Users/Minh/Code/Library-Management-Tool/LibraryManagementTool/Tabs/DanhSachDauSachTab"
+				},
+				{
+					"backtrace" : 7,
+					"path" : "C:/Users/Minh/Code/Library-Management-Tool/LibraryManagementTool/Tabs/DanhSachTheDocGiaTab"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "C:/Users/Minh/Code/Library-Management-Tool/LibraryManagementTool/Tabs/LandingView"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/Minh/Code/Library-Management-Tool/LibraryManagementTool/Tabs/ThongKeTab"
+				},
+				{
+					"backtrace" : 10,
+					"path" : "C:/Users/Minh/Code/Library-Management-Tool/LibraryManagementTool/Tabs/UI"
+				},
+				{
+					"backtrace" : 11,
+					"path" : "C:/Users/Minh/Code/Library-Management-Tool/LibraryManagementTool/TheDocGia"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					1
+				],
+				"standard" : "20"
+			},
+			"sourceIndexes" : 
+			[
+				7,
+				12,
+				14,
+				16,
+				18,
+				20,
+				22,
+				24,
+				26,
+				28,
+				30,
+				32,
+				34,
+				36,
+				38,
+				40,
+				42,
+				44,
+				46,
+				48,
+				50,
+				52,
+				54,
+				56,
+				58,
+				63,
+				65
+			]
+		}
+	],
+	"id" : "Library_Management_Tool::@6890427a1f51a3e7e1df",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "-g",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "-lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "Library_Management_Tool",
+	"nameOnDisk" : "Library_Management_Tool.exe",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Header Files",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				8,
+				9,
+				10,
+				11,
+				13,
+				15,
+				17,
+				19,
+				21,
+				23,
+				25,
+				27,
+				29,
+				31,
+				33,
+				35,
+				37,
+				39,
+				41,
+				43,
+				45,
+				47,
+				49,
+				51,
+				53,
+				55,
+				57,
+				59,
+				60,
+				61,
+				62,
+				64
+			]
+		},
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				7,
+				12,
+				14,
+				16,
+				18,
+				20,
+				22,
+				24,
+				26,
+				28,
+				30,
+				32,
+				34,
+				36,
+				38,
+				40,
+				42,
+				44,
+				46,
+				48,
+				50,
+				52,
+				54,
+				56,
+				58,
+				63,
+				65
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/DataStructures/AVL_Tree.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/DataStructures/DoubleLinkedList.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/DataStructures/DynamicArray.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/DataStructures/HashMap.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/DataStructures/LinearList.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/DataStructures/LinkedList.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/DataStructures/Stack.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/DauSach/DauSach.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/DauSach/DauSach.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Graphics/graphics.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Graphics/winbgim.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Helper/ConstantsAndGlobalVariables.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Helper/Helper.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Helper/Helper.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Helper/IndexGenerator.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Helper/IndexGenerator.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Helper/Package.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Helper/Package.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/DanhSachDauSachTab/DanhSachDauSachStyling.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/DanhSachDauSachTab/DanhSachDauSachStyling.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/DanhSachDauSachTab/DanhSachDauSachView.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/DanhSachDauSachTab/DanhSachDauSachView.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/DanhSachDauSachTab/TitleDetailCard.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/DanhSachDauSachTab/TitleDetailCard.hpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/DanhSachDauSachTab/TitleDetailView.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/DanhSachDauSachTab/TitleDetailView.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/DanhSachDauSachTab/TitleListTable.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/DanhSachDauSachTab/TitleListTable.hpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/BookCirculationTable.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/BookCirculationTable.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/BookCirculationView.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/BookCirculationView.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/DanhSachTheDocGia.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/DanhSachTheDocGia.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/DanhSachTheDocGiaStyling.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/DanhSachTheDocGiaStyling.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/ReaderDetail.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/ReaderDetail.hpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/ReaderListTable.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/ReaderListTable.hpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/ReaderTableSortedByName.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/ReaderTableSortedByName.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/SearchBox.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/SearchBox.hpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/SecondSearchBox.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/SecondSearchBox.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/UpdateReaderProcess.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/UpdateReaderProcess.hpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/LandingView/LandingView.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/LandingView/LandingView.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/ThongKeTab/ThongKeView.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/ThongKeTab/ThongKeView.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/UI/Button.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/UI/Button.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/UI/Component.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/UI/Component.hpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/UI/Datasheet.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/UI/Datasheet.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/Tabs/UI/Elements.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/UI/Elements.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/UI/SearchFilters.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/UI/SelectedObject.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/Tabs/UI/Table.hpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/TheDocGia/TheDocGia.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "LibraryManagementTool/TheDocGia/TheDocGia.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "LibraryManagementTool/main.cpp",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "EXECUTABLE"
+}

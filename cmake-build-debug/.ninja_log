@@ -1,0 +1,6 @@
+# ninja log v5
+4	192	7147247454979599	build.ninja	93cb33fe2193c0b0
+18	6122	7146617818478746	CMakeFiles/Library_Management_Tool.dir/LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/DanhSachTheDocGiaStyling.cpp.obj	84e7052968e5badf
+31	6252	7146617819789064	CMakeFiles/Library_Management_Tool.dir/LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/ReaderDetail.cpp.obj	f4eda3addd0eec9e
+25	6400	7146617821258217	CMakeFiles/Library_Management_Tool.dir/LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/BookCirculationView.cpp.obj	714cee8c35f8e1e4
+8	7104	7146617828260464	CMakeFiles/Library_Management_Tool.dir/LibraryManagementTool/Tabs/DanhSachTheDocGiaTab/DanhSachTheDocGia.cpp.obj	df5ef3fee3933c57

@@ -1,0 +1,3 @@
+C:/Users/Minh/Code/Library-Management-Tool/cmake-build-debug/CMakeFiles/Library_Management_Tool.dir
+C:/Users/Minh/Code/Library-Management-Tool/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Minh/Code/Library-Management-Tool/cmake-build-debug/CMakeFiles/rebuild_cache.dir
