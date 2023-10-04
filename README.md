@@ -15,6 +15,7 @@
   - [Review and evaluation](#review-and-evaluation)
   - [Used tech](#used-tech)
   - [Future update](#future-update)
+  - [Usage](#usage)
 
 <!-- /code_chunk_output -->
 
@@ -134,18 +135,18 @@ classDiagram
 
 ## Review and evaluation
 
-The final product was preview and tested by Mr Thu on the Friday, June 16 2023. Sadly he did not tested all the functionality by he did left some comments:
+The final product was preview and tested by Mr Thu on the Friday, June 16 2023. Sadly he did not tested all the functionality and left some comments:
 
 - Good UI experience. He mentioned that the searching functionality is easy to use and the design is simple.
 - Unoptimized design on the program infrastructures and code base.
-- Existance of some unneeded feature such as the ranking in the top 10 most borrowed title and some core algorithms.
+- Existance of some unneeded feature such as the ranking in the top 10 most borrowed title and some core algorithms I added myself.
 
 The code base is made by me and the database was contributed by Ngan. Therefore I got myself some personal evaluations:
 
 - The UI is kind of old fashion and rough, due to the usage of the framework I had used and lack of personal UI design experience.
-- Missing some of the handy functionality such as the functionality for displaying notification window or some research table.
+- Missing some of the handy functionality such as the functionality for displaying notification window or table related features.
 - Lacking of a error catching system.
-- The un-uniform in the code base design is a huge draw back when the program code base started to scale up and more and more functionality get added to the program.
+- The mixed code base design is a huge draw back when the program code base started to scale up and more and more functionality get added to the program.
 - Lacking of consistency in naming convension and program design.
 
 Overall from my personal view, I will give myself a solid 7 due to the first time from A-Z project without any instructions and helping from teammates.
@@ -159,3 +160,11 @@ Overall from my personal view, I will give myself a solid 7 due to the first tim
 ## Future update
 
 Base on the passed experience with the developing process, I will create an updated version of the code using a better solution for the encountered problems.
+
+## Usage
+
+- This app is developed using Visual Studio 2022. Therefore I suggested you to use that to complie and run the app.
+- Run the `LibraryManagementTool.sln` file using Visual Studio.
+- Then change the solution platform to `x86` then you can run the app.
+
+**Note that there is a bug due to the memory leak so the app can crash suddenly!**
